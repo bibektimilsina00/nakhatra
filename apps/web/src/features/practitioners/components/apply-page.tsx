@@ -2,9 +2,16 @@
 
 import { useRef, useState } from "react";
 import Link from "next/link";
-import { Camera, CheckCircle2, Clock, XCircle } from "lucide-react";
+import { Camera, CheckCircle2, Clock, ShieldCheck, XCircle } from "lucide-react";
 
+import { CustomPlaceInput } from "@/components/ui/custom-place-input";
+import { assetUrl } from "@/lib/api/client";
 import { AppShell } from "@/features/dashboard/components/app-shell";
+import {
+  MIN_DIGITS,
+  PhoneField,
+  splitPhone,
+} from "@/features/practitioners/components/phone-field";
 import {
   useApply,
   useMyApplication,
@@ -57,6 +64,13 @@ export function ApplyPage() {
     sample_reading: "",
   });
 
+  // The number is held as its two halves and joined on submit: what the
+  // server stores is always `+<code><digits>`.
+  const [{ dial, digits }, setPhone] = useState(() => splitPhone(""));
+  const setDial = (value: string) => setPhone((current) => ({ ...current, dial: value }));
+  const setDigits = (value: string) => setPhone((current) => ({ ...current, digits: value }));
+  const [phoneTouched, setPhoneTouched] = useState(false);
+
   const toggle = (key: "languages" | "traditions" | "practice_types", value: string) =>
     setForm((current) => {
       const list = (current[key] ?? []) as string[];
@@ -72,8 +86,9 @@ export function ApplyPage() {
     });
 
   const application = existing.data;
+  const labelText = "mb-1.5 block text-[12px] text-muted";
   const field =
-    "w-full rounded-[8px] border border-white/[0.09] bg-card px-3 py-2.5 text-[13.5px] text-paper placeholder-faint focus:border-gold/45 focus:outline-none";
+    "w-full rounded-[8px] border border-white/[0.09] bg-ink px-3 py-2.5 text-[13.5px] text-paper placeholder-faint focus:border-gold/45 focus:outline-none";
   const chip = (active: boolean) =>
     `rounded-[8px] border px-3 py-1.5 text-[12px] capitalize transition-colors ${
       active
@@ -97,186 +112,277 @@ export function ApplyPage() {
 
   return (
     <AppShell>
-      <main className="mx-auto w-full max-w-[640px] px-5 pb-24 pt-10 sm:px-8">
-        <span className={`text-[11px] text-gold ${eyebrow}`}>{t.practRegister}</span>
-        <h1 className="mt-3 text-[26px] font-bold leading-tight text-paper sm:text-[30px]">
-          {t.practApplyTitle}
-        </h1>
-        <p className="mt-3 max-w-lg text-[14px] leading-[1.75] text-muted">{t.practApplyLead}</p>
+      {/* Wide, and in two columns above `lg`. As a single 640px column the
+          whole form sat in the middle of the screen with nothing either side
+          of it — the width was there, the page just refused to use it. */}
+      <main className="mx-auto w-full max-w-[1120px] px-5 pb-28 pt-10 sm:px-8">
+        <header className="max-w-2xl">
+          <span className={`text-[11px] text-gold ${eyebrow}`}>{t.practRegister}</span>
+          <h1 className="mt-3 text-[26px] font-bold leading-tight text-paper sm:text-[30px]">
+            {t.practApplyTitle}
+          </h1>
+          <p className="mt-3 text-[14px] leading-[1.75] text-muted">{t.practApplyLead}</p>
+        </header>
 
         <form
-          className="mt-8 space-y-6"
+          id="apply"
+          className="mt-9 grid gap-6 lg:grid-cols-[300px_minmax(0,1fr)] lg:items-start lg:gap-8"
           onSubmit={(event) => {
             event.preventDefault();
-            apply.mutate(form);
+            if (digits.length > 0 && digits.length < MIN_DIGITS) {
+              setPhoneTouched(true);
+              return;
+            }
+            apply.mutate({ ...form, phone: digits ? `${dial}${digits}` : "" });
           }}
         >
-          {/* Photograph first: it is the thing a seeker looks at, and putting
-              it after two text areas said the opposite. */}
-          <div className="flex items-center gap-4">
-            <button
-              type="button"
-              onClick={() => filePicker.current?.click()}
-              className="group relative grid size-20 shrink-0 place-items-center overflow-hidden rounded-full border border-dashed border-white/[0.16] bg-card transition-colors hover:border-gold/45"
-            >
-              {form.photo_url ? (
-                // eslint-disable-next-line @next/next/no-img-element -- a data
-                // URL from our own upload; next/image adds a loader for nothing
-                <img src={form.photo_url} alt="" className="size-full object-cover" />
-              ) : (
-                <Camera className="size-6 text-faint transition-colors group-hover:text-gold" />
-              )}
-            </button>
-            <div className="min-w-0">
-              <p className="text-[13px] font-medium text-paper">{t.practPhoto}</p>
-              <p className="mt-0.5 text-[11.5px] leading-[1.6] text-faint">{t.practPhotoNote}</p>
+          {/* The face and the promise, held beside the form rather than
+              stacked on top of it — it is what a seeker looks at first, and
+              what an applicant is most likely to skip. */}
+          <aside className="space-y-4 lg:sticky lg:top-[76px]">
+            <section className="rounded-[14px] border border-white/[0.09] bg-card p-5 text-center">
+              <button
+                type="button"
+                onClick={() => filePicker.current?.click()}
+                className="group relative mx-auto grid size-28 place-items-center overflow-hidden rounded-full border border-dashed border-white/[0.16] bg-ink transition-colors hover:border-gold/45"
+              >
+                {form.photo_url ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={assetUrl(form.photo_url)} alt="" className="size-full object-cover" />
+                ) : (
+                  <Camera className="size-7 text-faint transition-colors group-hover:text-gold" />
+                )}
+                {upload.isPending && (
+                  <span className="absolute inset-0 grid place-items-center bg-black/50 text-[11px] text-paper">
+                    …
+                  </span>
+                )}
+              </button>
+              <p className="mt-3 text-[13px] font-medium text-paper">{t.practPhoto}</p>
+              <p className="mt-1 text-[11.5px] leading-[1.6] text-faint">{t.practPhotoNote}</p>
               {upload.isError && (
-                <p role="alert" className="mt-1 text-[11.5px] text-rose-300">
+                <p role="alert" className="mt-1.5 text-[11.5px] text-rose-300">
                   {upload.error.message}
                 </p>
               )}
+              <input
+                ref={filePicker}
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                className="hidden"
+                onChange={(event) => {
+                  const file = event.target.files?.[0];
+                  if (!file) return;
+                  upload.mutate(file, {
+                    onSuccess: ({ photo_url }) => setForm((c) => ({ ...c, photo_url })),
+                  });
+                }}
+              />
+            </section>
+
+            <section className="rounded-[14px] border border-white/[0.09] bg-card p-5">
+              <h2 className="flex items-center gap-2 text-[12.5px] font-semibold text-paper">
+                <ShieldCheck className="size-4 text-gold" />
+                {t.applyNext}
+              </h2>
+              <p className="mt-2 text-[11.5px] leading-[1.75] text-faint">{t.practPendingNote}</p>
+            </section>
+          </aside>
+
+          <div className="space-y-6">
+            <Card title={t.applyWho}>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <label className="block">
+                  <span className={labelText}>{t.fullName}</span>
+                  <input
+                    required
+                    autoComplete="name"
+                    maxLength={255}
+                    placeholder={t.practNamePlaceholder}
+                    value={form.full_name}
+                    onChange={(e) => setForm({ ...form, full_name: e.target.value })}
+                    className={field}
+                  />
+                </label>
+
+                <label className="block">
+                  <span className={labelText}>{t.practYears}</span>
+                  <span className="relative block">
+                    <input
+                      type="number"
+                      inputMode="numeric"
+                      min={0}
+                      max={100}
+                      step={1}
+                      value={form.years_experience}
+                      onChange={(e) =>
+                        setForm({
+                          ...form,
+                          years_experience: Math.min(100, Math.max(0, Number(e.target.value) || 0)),
+                        })
+                      }
+                      className={`${field} pr-16`}
+                    />
+                    <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-[12px] text-faint">
+                      {t.practYearsSuffix}
+                    </span>
+                  </span>
+                </label>
+              </div>
+
+              <label className="mt-4 block">
+                <span className={labelText}>{t.practHeadline}</span>
+                <input
+                  value={form.headline}
+                  onChange={(e) => setForm({ ...form, headline: e.target.value })}
+                  placeholder={t.practHeadlinePlaceholder}
+                  maxLength={160}
+                  className={field}
+                />
+                <span className="mt-1 block text-right text-[11px] tabular-nums text-faint">
+                  {(form.headline ?? "").length}/160
+                </span>
+              </label>
+            </Card>
+
+            <Card title={t.applyExpertise}>
+              <fieldset>
+                <legend className={labelText}>{t.practPractice}</legend>
+                <div className="flex flex-wrap gap-2">
+                  {PRACTICES.map((value) => (
+                    <button
+                      key={value}
+                      type="button"
+                      onClick={() => toggle("practice_types", value)}
+                      aria-pressed={(form.practice_types ?? []).includes(value)}
+                      className={chip((form.practice_types ?? []).includes(value))}
+                    >
+                      {value}
+                    </button>
+                  ))}
+                </div>
+                <p className="mt-1.5 text-[11.5px] text-faint">{t.practBothNote}</p>
+              </fieldset>
+
+              <fieldset className="mt-5">
+                <legend className={labelText}>{t.practTraditions}</legend>
+                <div className="flex flex-wrap gap-2">
+                  {TRADITIONS.map((value) => (
+                    <button
+                      key={value}
+                      type="button"
+                      onClick={() => toggle("traditions", value)}
+                      aria-pressed={(form.traditions ?? []).includes(value)}
+                      className={chip((form.traditions ?? []).includes(value))}
+                    >
+                      {value}
+                    </button>
+                  ))}
+                </div>
+              </fieldset>
+
+              <fieldset className="mt-5">
+                <legend className={labelText}>{t.selectLanguage}</legend>
+                <div className="flex flex-wrap gap-2">
+                  {LANGUAGES.map((value) => (
+                    <button
+                      key={value}
+                      type="button"
+                      onClick={() => toggle("languages", value)}
+                      aria-pressed={(form.languages ?? []).includes(value)}
+                      className={`${chip((form.languages ?? []).includes(value))} uppercase`}
+                    >
+                      {value}
+                    </button>
+                  ))}
+                </div>
+              </fieldset>
+            </Card>
+
+            <Card title={t.applyReach}>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="min-w-0">
+                  <span className={labelText}>{t.practCity}</span>
+                  {/* The same city search the chart form uses, so the country
+                      comes from the place rather than from a guess. */}
+                  <CustomPlaceInput
+                    value={form.city ?? ""}
+                    placeholder={t.practCityPlaceholder}
+                    onChange={(place) =>
+                      setForm((current) => ({
+                        ...current,
+                        city: place.label.split(",")[0].trim(),
+                        country: (place.country_code || current.country || "NP").toUpperCase(),
+                      }))
+                    }
+                  />
+                  {form.country && (
+                    <p className="mt-1.5 text-[11.5px] text-faint">
+                      {t.practCountry}: {form.country}
+                    </p>
+                  )}
+                </div>
+
+                <div className="min-w-0">
+                  <label htmlFor="apply-phone" className={labelText}>
+                    {t.practPhone}
+                  </label>
+                  <PhoneField
+                    id="apply-phone"
+                    dial={dial}
+                    digits={digits}
+                    invalid={phoneTouched && digits.length > 0 && digits.length < MIN_DIGITS}
+                    onChange={({ dial: nextDial, digits: nextDigits }) => {
+                      setDial(nextDial);
+                      setDigits(nextDigits);
+                    }}
+                  />
+                  <p
+                    className={`mt-1.5 text-[11.5px] ${
+                      phoneTouched && digits.length > 0 && digits.length < MIN_DIGITS
+                        ? "text-rose-300"
+                        : "text-faint"
+                    }`}
+                  >
+                    {phoneTouched && digits.length > 0 && digits.length < MIN_DIGITS
+                      ? t.practPhoneInvalid
+                      : t.practPhoneNote}
+                  </p>
+                </div>
+              </div>
+            </Card>
+
+            {apply.isError && (
+              <p role="alert" className="text-[13px] text-rose-300">
+                {apply.error.message}
+              </p>
+            )}
+
+            <div className="flex flex-wrap items-center justify-end gap-3">
+              <button
+                type="submit"
+                disabled={apply.isPending || !form.full_name.trim()}
+                className="rounded-[9px] bg-gold px-6 py-2.5 text-[13.5px] font-bold text-ink transition-colors hover:bg-gold2 disabled:pointer-events-none disabled:opacity-40"
+              >
+                {t.practApplySubmit}
+              </button>
             </div>
-            <input
-              ref={filePicker}
-              type="file"
-              accept="image/jpeg,image/png,image/webp"
-              className="hidden"
-              onChange={(event) => {
-                const file = event.target.files?.[0];
-                if (!file) return;
-                upload.mutate(file, {
-                  onSuccess: ({ photo_url }) => setForm((c) => ({ ...c, photo_url })),
-                });
-              }}
-            />
           </div>
-
-          <div className="grid gap-4 sm:grid-cols-2">
-            <label className="block">
-              <span className="mb-1.5 block text-[12px] text-muted">{t.fullName}</span>
-              <input
-                required
-                value={form.full_name}
-                onChange={(e) => setForm({ ...form, full_name: e.target.value })}
-                className={field}
-              />
-            </label>
-            <label className="block">
-              <span className="mb-1.5 block text-[12px] text-muted">{t.practCity}</span>
-              <input
-                value={form.city}
-                onChange={(e) => setForm({ ...form, city: e.target.value })}
-                className={field}
-              />
-            </label>
-          </div>
-
-          <fieldset>
-            <legend className="mb-2 text-[12px] text-muted">{t.practPractice}</legend>
-            <div className="flex flex-wrap gap-2">
-              {PRACTICES.map((value) => (
-                <button
-                  key={value}
-                  type="button"
-                  onClick={() => toggle("practice_types", value)}
-                  aria-pressed={(form.practice_types ?? []).includes(value)}
-                  className={chip((form.practice_types ?? []).includes(value))}
-                >
-                  {value}
-                </button>
-              ))}
-            </div>
-            <p className="mt-1.5 text-[11.5px] text-faint">{t.practBothNote}</p>
-          </fieldset>
-
-          <div className="grid gap-4 sm:grid-cols-2">
-            <label className="block">
-              <span className="mb-1.5 block text-[12px] text-muted">{t.practYears}</span>
-              <input
-                type="number"
-                min={0}
-                max={100}
-                value={form.years_experience}
-                onChange={(e) =>
-                  setForm({ ...form, years_experience: Number(e.target.value) || 0 })
-                }
-                className={field}
-              />
-            </label>
-            <label className="block">
-              <span className="mb-1.5 block text-[12px] text-muted">{t.practPhone}</span>
-              <input
-                value={form.phone}
-                onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                className={field}
-              />
-            </label>
-          </div>
-
-          <fieldset>
-            <legend className="mb-2 text-[12px] text-muted">{t.selectLanguage}</legend>
-            <div className="flex flex-wrap gap-2">
-              {LANGUAGES.map((value) => (
-                <button
-                  key={value}
-                  type="button"
-                  onClick={() => toggle("languages", value)}
-                  aria-pressed={(form.languages ?? []).includes(value)}
-                  className={`${chip((form.languages ?? []).includes(value))} uppercase`}
-                >
-                  {value}
-                </button>
-              ))}
-            </div>
-          </fieldset>
-
-          <fieldset>
-            <legend className="mb-2 text-[12px] text-muted">{t.practTraditions}</legend>
-            <div className="flex flex-wrap gap-2">
-              {TRADITIONS.map((value) => (
-                <button
-                  key={value}
-                  type="button"
-                  onClick={() => toggle("traditions", value)}
-                  aria-pressed={(form.traditions ?? []).includes(value)}
-                  className={chip((form.traditions ?? []).includes(value))}
-                >
-                  {value}
-                </button>
-              ))}
-            </div>
-          </fieldset>
-
-          <label className="block">
-            <span className="mb-1.5 block text-[12px] text-muted">{t.practHeadline}</span>
-            <input
-              value={form.headline}
-              onChange={(e) => setForm({ ...form, headline: e.target.value })}
-              placeholder={t.practHeadlinePlaceholder}
-              maxLength={160}
-              className={field}
-            />
-          </label>
-
-          {apply.isError && (
-            <p role="alert" className="text-[13px] text-rose-300">
-              {apply.error.message}
-            </p>
-          )}
-
-          <button
-            type="submit"
-            disabled={apply.isPending || !form.full_name.trim()}
-            className="rounded-[8px] bg-gold px-5 py-2.5 text-[13.5px] font-bold text-ink transition-colors hover:bg-gold2 disabled:pointer-events-none disabled:opacity-40"
-          >
-            {t.practApplySubmit}
-          </button>
         </form>
       </main>
     </AppShell>
   );
 }
 
+/** One group of related questions. Sections beat one long ungrouped scroll. */
+function Card({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <section className="rounded-[14px] border border-white/[0.09] bg-card p-5 sm:p-6">
+      <h2 className="text-[11px] uppercase tracking-[0.14em] text-faint">{title}</h2>
+      <div className="mt-4">{children}</div>
+    </section>
+  );
+}
 
 /**
  * What you submitted, while it is being read.
@@ -369,9 +475,9 @@ function SubmittedProfile({
           <div className="flex items-start gap-4">
             <span className="grid size-16 shrink-0 place-items-center overflow-hidden rounded-full border border-white/[0.09] bg-ink">
               {application.photo_url ? (
-                // eslint-disable-next-line @next/next/no-img-element -- served
-                // by our own endpoint; next/image adds a loader for nothing
-                <img src={application.photo_url} alt="" className="size-full object-cover" />
+                // Served by our own endpoint; next/image adds a loader for nothing.
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={assetUrl(application.photo_url)} alt="" className="size-full object-cover" />
               ) : (
                 <span className="text-[18px] font-bold text-gold">
                   {application.full_name.charAt(0).toUpperCase()}

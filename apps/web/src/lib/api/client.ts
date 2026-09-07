@@ -46,3 +46,20 @@ export async function apiFetch<T>(
 
   return (await response.json()) as T;
 }
+
+/**
+ * An API-relative asset path, made loadable by the browser.
+ *
+ * The API returns `photo_url` as its own path — `/v1/practitioners/photos/x.png`
+ * — which is right for the mobile client and wrong for an `<img src>` here:
+ * the browser resolves it against the *web* origin, where nothing serves `/v1`,
+ * and the upload appears to have failed. Everything the browser fetches goes
+ * through the `/api` proxy, including this.
+ */
+export function assetUrl(url: string): string;
+export function assetUrl(url: string | null | undefined): string | undefined;
+export function assetUrl(url: string | null | undefined): string | undefined {
+  if (!url) return undefined;
+  // Absolute URLs and data URIs are already loadable; only our own paths need it.
+  return url.startsWith("/v1/") ? `/api${url}` : url;
+}

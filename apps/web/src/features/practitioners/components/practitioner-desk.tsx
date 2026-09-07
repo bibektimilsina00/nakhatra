@@ -4,6 +4,8 @@ import { useRef, useState } from "react";
 import Link from "next/link";
 import { Camera, CircleDot, MessagesSquare, TriangleAlert } from "lucide-react";
 
+import { CustomPlaceInput } from "@/components/ui/custom-place-input";
+import { assetUrl } from "@/lib/api/client";
 import { AppShell } from "@/features/dashboard/components/app-shell";
 import { useMyConsultations } from "@/features/consultations/hooks/use-consultations";
 import { formatMinor } from "@/features/consultations/money";
@@ -63,82 +65,105 @@ export function PractitionerDesk() {
 
   return (
     <AppShell>
-      <main className="mx-auto w-full max-w-[720px] px-5 pb-24 pt-10 sm:px-8">
-        <span className={`text-[11px] text-gold ${eyebrow}`}>{t.practDesk}</span>
-        <h1 className="mt-3 text-[26px] font-bold leading-tight text-paper sm:text-[30px]">
-          {me?.display_name ?? "—"}
-        </h1>
+      {/* Two columns above `lg`, for the same reason the application form has
+          them: at 720px the desk was a narrow strip down the middle of a wide
+          screen, and the things a practitioner checks — am I listed, am I
+          priced, who is waiting — were below the fold under the edit form. */}
+      <main className="mx-auto w-full max-w-[1120px] px-5 pb-28 pt-10 sm:px-8">
+        <header>
+          <span className={`text-[11px] text-gold ${eyebrow}`}>{t.practDesk}</span>
+          <h1 className="mt-3 text-[26px] font-bold leading-tight text-paper sm:text-[30px]">
+            {me?.display_name ?? "—"}
+          </h1>
+        </header>
 
-        {/* The two conditions for being consultable, said out loud. */}
-        <div className="mt-5 flex flex-wrap gap-2">
-          <Badge on={Boolean(me?.verified)} label={t.practVerified} off={t.practUnverified} />
-          <Badge on={priced} label={t.practPriced} off={t.practNoRates} />
-        </div>
+        <div className="mt-8 grid gap-6 lg:grid-cols-[320px_minmax(0,1fr)] lg:items-start lg:gap-8">
+          <aside className="space-y-4 lg:sticky lg:top-[76px]">
+            <section className="rounded-[14px] border border-white/[0.09] bg-card p-5">
+              <h2 className="text-[11px] uppercase tracking-[0.14em] text-faint">
+                {t.practStatus}
+              </h2>
+              {/* The two conditions for being consultable, said out loud. */}
+              <div className="mt-3 flex flex-wrap gap-2">
+                <Badge on={Boolean(me?.verified)} label={t.practVerified} off={t.practUnverified} />
+                <Badge on={priced} label={t.practPriced} off={t.practNoRates} />
+              </div>
+              {!priced && (
+                <p className="mt-3 flex items-start gap-2 rounded-[8px] border border-gold/30 bg-[#1A150B] px-3 py-2.5 text-[12px] leading-[1.6] text-gold2">
+                  <TriangleAlert className="mt-0.5 size-4 shrink-0" />
+                  {t.practNoRates}
+                </p>
+              )}
+            </section>
 
-        {!priced && (
-          <p className="mt-4 flex items-start gap-2 rounded-[8px] border border-gold/30 bg-[#1A150B] px-3.5 py-2.5 text-[12.5px] leading-[1.6] text-gold2">
-            <TriangleAlert className="mt-0.5 size-4 shrink-0" />
-            {t.practNoRates}
-          </p>
-        )}
+            <section className="rounded-[14px] border border-white/[0.09] bg-card p-5">
+              <h2 className="text-[11px] uppercase tracking-[0.14em] text-faint">
+                {t.practRequests}
+              </h2>
+              {waiting.length > 0 ? (
+                <ul className="mt-3 space-y-2">
+                  {waiting.map((c) => (
+                    <li key={c.id}>
+                      <Link
+                        href={`/consultations/${c.id}`}
+                        className="flex items-center justify-between gap-3 rounded-[10px] border border-white/[0.09] bg-ink p-3 transition-colors hover:border-gold/35"
+                      >
+                        <span className="min-w-0">
+                          <span className="block truncate text-[13px] text-paper">
+                            {c.counterpart_name || t.talkToAstrologer}
+                          </span>
+                          <span className="block text-[11px] capitalize text-faint">
+                            {c.medium} · {c.state}
+                          </span>
+                        </span>
+                        <span className="shrink-0 text-[11.5px] tabular-nums text-muted">
+                          {formatMinor(c.rate_per_minute_minor, c.currency)}
+                        </span>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <div className="mt-3 rounded-[10px] border border-dashed border-white/[0.14] px-4 py-8 text-center">
+                  <MessagesSquare className="mx-auto size-5 text-faint" />
+                  <p className="mt-2 text-[12px] text-faint">{t.consultNone}</p>
+                </div>
+              )}
+            </section>
+          </aside>
 
-        {me && <ProfileEditor profile={me} />}
+          <div className="space-y-6">
+            {me && <ProfileEditor profile={me} />}
 
-        <section className="mt-10">
-          <h2 className="text-[15px] font-semibold text-paper">{t.practRates}</h2>
-          <p className="mt-1 text-[12.5px] leading-[1.7] text-faint">{t.practRatesNote}</p>
-          <div className="mt-4 space-y-2">
-            {MEDIA.map((medium) => (
-              <RateRow
-                key={medium}
-                medium={medium}
-                // Voice and video connect now. What they still need for the
-                // last mile is a TURN relay: without one they fail on
-                // symmetric NAT and many mobile carriers, and the call panel
-                // says so before anyone dials.
-                comingSoon={false}
-                current={(rates.data ?? []).find((r) => r.medium === medium)}
-                onSave={(perMinute) =>
-                  setRate.mutate({
-                    medium,
-                    per_minute_minor: perMinute,
-                    is_active: perMinute > 0,
-                  })
-                }
-                saving={setRate.isPending}
-                saveLabel={t.practSetRate}
-              />
-            ))}
+            <section className="rounded-[14px] border border-white/[0.09] bg-card p-5 sm:p-6">
+              <h2 className="text-[11px] uppercase tracking-[0.14em] text-faint">{t.practRates}</h2>
+              <p className="mt-2 text-[12.5px] leading-[1.7] text-faint">{t.practRatesNote}</p>
+              <div className="mt-4 space-y-2">
+                {MEDIA.map((medium) => (
+                  <RateRow
+                    key={medium}
+                    medium={medium}
+                    // Voice and video connect now. What they still need for the
+                    // last mile is a TURN relay: without one they fail on
+                    // symmetric NAT and many mobile carriers, and the call panel
+                    // says so before anyone dials.
+                    comingSoon={false}
+                    current={(rates.data ?? []).find((r) => r.medium === medium)}
+                    onSave={(perMinute) =>
+                      setRate.mutate({
+                        medium,
+                        per_minute_minor: perMinute,
+                        is_active: perMinute > 0,
+                      })
+                    }
+                    saving={setRate.isPending}
+                    saveLabel={t.practSetRate}
+                  />
+                ))}
+              </div>
+            </section>
           </div>
-        </section>
-
-        <section className="mt-10">
-          <h2 className="text-[15px] font-semibold text-paper">{t.practRequests}</h2>
-          {waiting.length > 0 ? (
-            <ul className="mt-4 space-y-2">
-              {waiting.map((c) => (
-                <li key={c.id}>
-                  <Link
-                    href={`/consultations/${c.id}`}
-                    className="flex items-center justify-between gap-3 rounded-[10px] border border-white/[0.09] bg-card p-3.5 transition-colors hover:border-gold/35"
-                  >
-                    <span className="text-[13.5px] capitalize text-paper">
-                      {c.medium} · {c.state}
-                    </span>
-                    <span className="text-[12px] tabular-nums text-muted">
-                      {formatMinor(c.rate_per_minute_minor, c.currency)}
-                    </span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <div className="mt-4 rounded-[10px] border border-dashed border-white/[0.14] px-5 py-10 text-center">
-              <MessagesSquare className="mx-auto size-5 text-faint" />
-              <p className="mt-2 text-[12.5px] text-faint">{t.consultNone}</p>
-            </div>
-          )}
-        </section>
+        </div>
       </main>
     </AppShell>
   );
@@ -178,8 +203,9 @@ function ProfileEditor({ profile }: { profile: PractitionerDetail }) {
       return { ...current, [key]: next };
     });
 
+  const labelText = "mb-1.5 block text-[12px] text-muted";
   const field =
-    "w-full rounded-[8px] border border-white/[0.09] bg-card px-3 py-2.5 text-[13.5px] text-paper placeholder-faint focus:border-gold/45 focus:outline-none";
+    "w-full rounded-[8px] border border-white/[0.09] bg-ink px-3 py-2.5 text-[13.5px] text-paper placeholder-faint focus:border-gold/45 focus:outline-none";
   const chip = (active: boolean) =>
     `rounded-[8px] border px-3 py-1.5 text-[12px] capitalize transition-colors ${
       active
@@ -189,97 +215,134 @@ function ProfileEditor({ profile }: { profile: PractitionerDetail }) {
 
   return (
     <form
-      className="mt-8 space-y-6"
+      className="space-y-6"
       onSubmit={(event) => {
         event.preventDefault();
         update.mutate(form);
       }}
     >
-      <h2 className="text-[15px] font-semibold text-paper">{t.practYourProfile}</h2>
+      <Card title={t.practYourProfile}>
+        <div className="flex items-center gap-4">
+          <button
+            type="button"
+            onClick={() => filePicker.current?.click()}
+            className="group relative grid size-24 shrink-0 place-items-center overflow-hidden rounded-full border border-dashed border-white/[0.16] bg-ink transition-colors hover:border-gold/45"
+          >
+            {form.photo_url ? (
+              // Served by our own endpoint; next/image adds a loader for nothing.
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={assetUrl(form.photo_url)} alt="" className="size-full object-cover" />
+            ) : (
+              <Camera className="size-7 text-faint transition-colors group-hover:text-gold" />
+            )}
+            {upload.isPending && (
+              <span className="absolute inset-0 grid place-items-center bg-black/50 text-[11px] text-paper">
+                …
+              </span>
+            )}
+          </button>
+          <div className="min-w-0">
+            <p className="text-[13px] font-medium text-paper">{t.practPhoto}</p>
+            <p className="mt-0.5 text-[11.5px] leading-[1.6] text-faint">{t.practPhotoNote}</p>
+            {upload.isError && (
+              <p role="alert" className="mt-1 text-[11.5px] text-rose-300">
+                {upload.error.message}
+              </p>
+            )}
+          </div>
+          <input
+            ref={filePicker}
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            className="hidden"
+            onChange={(event) => {
+              const file = event.target.files?.[0];
+              if (!file) return;
+              upload.mutate(file, {
+                onSuccess: ({ photo_url }) => setForm((c) => ({ ...c, photo_url })),
+              });
+            }}
+          />
+        </div>
 
-      <div className="flex items-center gap-4">
-        <button
-          type="button"
-          onClick={() => filePicker.current?.click()}
-          className="group grid size-20 shrink-0 place-items-center overflow-hidden rounded-full border border-dashed border-white/[0.16] bg-card transition-colors hover:border-gold/45"
-        >
-          {form.photo_url ? (
-            // eslint-disable-next-line @next/next/no-img-element -- served by
-            // our own endpoint; next/image adds a loader for nothing
-            <img src={form.photo_url} alt="" className="size-full object-cover" />
-          ) : (
-            <Camera className="size-6 text-faint transition-colors group-hover:text-gold" />
-          )}
-        </button>
-        <div className="min-w-0">
-          <p className="text-[13px] font-medium text-paper">{t.practPhoto}</p>
-          <p className="mt-0.5 text-[11.5px] leading-[1.6] text-faint">{t.practPhotoNote}</p>
-          {upload.isError && (
-            <p role="alert" className="mt-1 text-[11.5px] text-rose-300">
-              {upload.error.message}
+        <div className="mt-5 grid gap-4 sm:grid-cols-2">
+          <label className="block">
+            <span className={labelText}>{t.fullName}</span>
+            <input
+              required
+              autoComplete="name"
+              maxLength={255}
+              value={form.display_name}
+              onChange={(e) => setForm({ ...form, display_name: e.target.value })}
+              className={field}
+            />
+          </label>
+
+          <label className="block">
+            <span className={labelText}>{t.practYears}</span>
+            <span className="relative block">
+              <input
+                type="number"
+                inputMode="numeric"
+                min={0}
+                max={100}
+                step={1}
+                value={form.years_experience}
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    years_experience: Math.min(100, Math.max(0, Number(e.target.value) || 0)),
+                  })
+                }
+                className={`${field} pr-16`}
+              />
+              <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-[12px] text-faint">
+                {t.practYearsSuffix}
+              </span>
+            </span>
+          </label>
+        </div>
+
+        <div className="mt-4 min-w-0">
+          <span className={labelText}>{t.practCity}</span>
+          {/* The chart form's city search, so the country comes from the place
+              rather than from whatever two letters were already in the row. */}
+          <CustomPlaceInput
+            value={form.city ?? ""}
+            placeholder={t.practCityPlaceholder}
+            onChange={(place) =>
+              setForm((current) => ({
+                ...current,
+                city: place.label.split(",")[0].trim(),
+                country: (place.country_code || current.country || "NP").toUpperCase(),
+              }))
+            }
+          />
+          {form.country && (
+            <p className="mt-1.5 text-[11.5px] text-faint">
+              {t.practCountry}: {form.country}
             </p>
           )}
         </div>
-        <input
-          ref={filePicker}
-          type="file"
-          accept="image/jpeg,image/png,image/webp"
-          className="hidden"
-          onChange={(event) => {
-            const file = event.target.files?.[0];
-            if (!file) return;
-            upload.mutate(file, {
-              onSuccess: ({ photo_url }) => setForm((c) => ({ ...c, photo_url })),
-            });
-          }}
-        />
-      </div>
 
-      <div className="grid gap-4 sm:grid-cols-2">
-        <label className="block">
-          <span className="mb-1.5 block text-[12px] text-muted">{t.fullName}</span>
+        <label className="mt-4 block">
+          <span className={labelText}>{t.practHeadline}</span>
           <input
-            required
-            value={form.display_name}
-            onChange={(e) => setForm({ ...form, display_name: e.target.value })}
+            value={form.headline}
+            onChange={(e) => setForm({ ...form, headline: e.target.value })}
+            placeholder={t.practHeadlinePlaceholder}
+            maxLength={255}
             className={field}
           />
+          <span className="mt-1 block text-right text-[11px] tabular-nums text-faint">
+            {(form.headline ?? "").length}/255
+          </span>
         </label>
-        <label className="block">
-          <span className="mb-1.5 block text-[12px] text-muted">{t.practCity}</span>
-          <input
-            value={form.city}
-            onChange={(e) => setForm({ ...form, city: e.target.value })}
-            className={field}
-          />
-        </label>
-      </div>
+      </Card>
 
-      <label className="block">
-        <span className="mb-1.5 block text-[12px] text-muted">{t.practHeadline}</span>
-        <input
-          value={form.headline}
-          onChange={(e) => setForm({ ...form, headline: e.target.value })}
-          placeholder={t.practHeadlinePlaceholder}
-          maxLength={160}
-          className={field}
-        />
-      </label>
-
-      <label className="block">
-        <span className="mb-1.5 block text-[12px] text-muted">{t.practBio}</span>
-        <textarea
-          rows={4}
-          value={form.bio}
-          onChange={(e) => setForm({ ...form, bio: e.target.value })}
-          placeholder={t.practBioPlaceholder}
-          className={`${field} resize-y`}
-        />
-      </label>
-
-      <div className="grid gap-4 sm:grid-cols-2">
+      <Card title={t.applyExpertise}>
         <fieldset>
-          <legend className="mb-2 text-[12px] text-muted">{t.practPractice}</legend>
+          <legend className={labelText}>{t.practPractice}</legend>
           <div className="flex flex-wrap gap-2">
             {PRACTICES.map((value) => (
               <button
@@ -294,41 +357,67 @@ function ProfileEditor({ profile }: { profile: PractitionerDetail }) {
             ))}
           </div>
         </fieldset>
+
+        <div className="mt-5 space-y-5">
+          <Facets
+            legend={t.practTraditions}
+            options={TRADITIONS}
+            selected={form.traditions ?? []}
+            onToggle={(v) => toggle("traditions", v)}
+            chip={chip}
+            labelClass={labelText}
+          />
+          <Facets
+            legend={t.practSpecialities}
+            options={SPECIALITIES}
+            selected={form.specialities ?? []}
+            onToggle={(v) => toggle("specialities", v)}
+            chip={chip}
+            labelClass={labelText}
+          />
+          <Facets
+            legend={t.selectLanguage}
+            options={LANGUAGES}
+            selected={form.languages ?? []}
+            onToggle={(v) => toggle("languages", v)}
+            chip={chip}
+            labelClass={labelText}
+            upper
+          />
+        </div>
+      </Card>
+
+      <Card title={t.practBio}>
         <label className="block">
-          <span className="mb-1.5 block text-[12px] text-muted">{t.practYears}</span>
+          <textarea
+            rows={7}
+            value={form.bio}
+            onChange={(e) => setForm({ ...form, bio: e.target.value })}
+            placeholder={t.practBioPlaceholder}
+            maxLength={8000}
+            className={`${field} resize-y leading-[1.8]`}
+          />
+          <span className="mt-1 block text-right text-[11px] tabular-nums text-faint">
+            {(form.bio ?? "").length}/8000
+          </span>
+        </label>
+
+        <label className="mt-4 block">
+          <span className={labelText}>{t.practIntroVideo}</span>
           <input
-            type="number"
-            min={0}
-            max={100}
-            value={form.years_experience}
-            onChange={(e) => setForm({ ...form, years_experience: Number(e.target.value) || 0 })}
+            // A URL field, so the keyboard offers a URL and the browser rejects
+            // "my youtube channel" before the server has to.
+            type="url"
+            inputMode="url"
+            maxLength={512}
+            value={form.intro_video_url ?? ""}
+            onChange={(e) => setForm({ ...form, intro_video_url: e.target.value || null })}
+            placeholder="https://"
             className={field}
           />
+          <span className="mt-1 block text-[11.5px] text-faint">{t.practIntroVideoNote}</span>
         </label>
-      </div>
-
-      <Facets
-        legend={t.selectLanguage}
-        options={LANGUAGES}
-        selected={form.languages ?? []}
-        onToggle={(v) => toggle("languages", v)}
-        chip={chip}
-        upper
-      />
-      <Facets
-        legend={t.practTraditions}
-        options={TRADITIONS}
-        selected={form.traditions ?? []}
-        onToggle={(v) => toggle("traditions", v)}
-        chip={chip}
-      />
-      <Facets
-        legend={t.practSpecialities}
-        options={SPECIALITIES}
-        selected={form.specialities ?? []}
-        onToggle={(v) => toggle("specialities", v)}
-        chip={chip}
-      />
+      </Card>
 
       {update.isError && (
         <p role="alert" className="text-[13px] text-rose-300">
@@ -336,14 +425,10 @@ function ProfileEditor({ profile }: { profile: PractitionerDetail }) {
         </p>
       )}
 
-      <div className="flex flex-wrap items-center gap-3">
-        <button
-          type="submit"
-          disabled={update.isPending || !form.display_name.trim()}
-          className="rounded-[8px] bg-gold px-5 py-2.5 text-[13.5px] font-bold text-ink transition-colors hover:bg-gold2 disabled:pointer-events-none disabled:opacity-40"
-        >
-          {t.practSaveProfile}
-        </button>
+      <div className="flex flex-wrap items-center justify-end gap-3">
+        {update.isSuccess && (
+          <span className="mr-auto text-[12.5px] text-emerald-300">{t.practSaved}</span>
+        )}
         {/* Unlisting is its own action rather than a checkbox next to Save:
             taking yourself out of the directory should not be something that
             happens because a toggle was left in the wrong position. */}
@@ -351,13 +436,29 @@ function ProfileEditor({ profile }: { profile: PractitionerDetail }) {
           type="button"
           disabled={update.isPending}
           onClick={() => update.mutate({ ...form, is_listed: false })}
-          className="rounded-[8px] border border-white/12 px-4 py-2.5 text-[12.5px] text-muted transition-colors hover:border-white/25 hover:text-paper disabled:opacity-40"
+          className="rounded-[9px] border border-white/12 px-4 py-2.5 text-[12.5px] text-muted transition-colors hover:border-white/25 hover:text-paper disabled:opacity-40"
         >
           {t.practUnlist}
         </button>
-        {update.isSuccess && <span className="text-[12.5px] text-emerald-300">{t.practSaved}</span>}
+        <button
+          type="submit"
+          disabled={update.isPending || !form.display_name.trim()}
+          className="rounded-[9px] bg-gold px-6 py-2.5 text-[13.5px] font-bold text-ink transition-colors hover:bg-gold2 disabled:pointer-events-none disabled:opacity-40"
+        >
+          {t.practSaveProfile}
+        </button>
       </div>
     </form>
+  );
+}
+
+/** One group of related questions, matching the application form's sections. */
+function Card({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <section className="rounded-[14px] border border-white/[0.09] bg-card p-5 sm:p-6">
+      <h2 className="text-[11px] uppercase tracking-[0.14em] text-faint">{title}</h2>
+      <div className="mt-4">{children}</div>
+    </section>
   );
 }
 
@@ -367,6 +468,7 @@ function Facets({
   selected,
   onToggle,
   chip,
+  labelClass,
   upper = false,
 }: {
   legend: string;
@@ -374,11 +476,12 @@ function Facets({
   selected: string[];
   onToggle: (value: string) => void;
   chip: (active: boolean) => string;
+  labelClass: string;
   upper?: boolean;
 }) {
   return (
     <fieldset>
-      <legend className="mb-2 text-[12px] text-muted">{legend}</legend>
+      <legend className={labelClass}>{legend}</legend>
       <div className="flex flex-wrap gap-2">
         {options.map((value) => (
           <button
