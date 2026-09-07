@@ -1,6 +1,287 @@
 {
   "components": {
     "schemas": {
+      "ApplicationIn": {
+        "properties": {
+          "city": {
+            "default": "",
+            "maxLength": 255,
+            "title": "City",
+            "type": "string"
+          },
+          "country": {
+            "default": "NP",
+            "maxLength": 2,
+            "minLength": 2,
+            "title": "Country",
+            "type": "string"
+          },
+          "credentials": {
+            "default": "",
+            "maxLength": 4000,
+            "title": "Credentials",
+            "type": "string"
+          },
+          "full_name": {
+            "maxLength": 255,
+            "minLength": 1,
+            "title": "Full Name",
+            "type": "string"
+          },
+          "languages": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Languages",
+            "type": "array"
+          },
+          "phone": {
+            "default": "",
+            "maxLength": 64,
+            "title": "Phone",
+            "type": "string"
+          },
+          "practice_type": {
+            "default": "astrologer",
+            "enum": [
+              "astrologer",
+              "pandit"
+            ],
+            "title": "Practice Type",
+            "type": "string"
+          },
+          "sample_reading": {
+            "default": "",
+            "maxLength": 8000,
+            "title": "Sample Reading",
+            "type": "string"
+          },
+          "traditions": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Traditions",
+            "type": "array"
+          },
+          "years_experience": {
+            "default": 0,
+            "maximum": 100.0,
+            "minimum": 0.0,
+            "title": "Years Experience",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "full_name"
+        ],
+        "title": "ApplicationIn",
+        "type": "object"
+      },
+      "ApplicationOut": {
+        "description": "What an applicant sees about their own application.\n\n`reviewer_note` is deliberately absent. It is the reviewer's working\nnotes \u2014 \"references did not respond\", \"second opinion needed\" \u2014 and\n`decision_note` is the message written to be read.",
+        "properties": {
+          "city": {
+            "title": "City",
+            "type": "string"
+          },
+          "country": {
+            "title": "Country",
+            "type": "string"
+          },
+          "created_at": {
+            "title": "Created At",
+            "type": "string"
+          },
+          "decision_note": {
+            "title": "Decision Note",
+            "type": "string"
+          },
+          "full_name": {
+            "title": "Full Name",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "practice_type": {
+            "enum": [
+              "astrologer",
+              "pandit"
+            ],
+            "title": "Practice Type",
+            "type": "string"
+          },
+          "state": {
+            "enum": [
+              "submitted",
+              "in_review",
+              "approved",
+              "rejected",
+              "withdrawn"
+            ],
+            "title": "State",
+            "type": "string"
+          },
+          "updated_at": {
+            "title": "Updated At",
+            "type": "string"
+          },
+          "years_experience": {
+            "title": "Years Experience",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "practice_type",
+          "full_name",
+          "city",
+          "country",
+          "years_experience",
+          "state",
+          "decision_note",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "ApplicationOut",
+        "type": "object"
+      },
+      "ApplicationReviewOut": {
+        "description": "The same application, as a reviewer sees it. Admin routes only.",
+        "properties": {
+          "city": {
+            "title": "City",
+            "type": "string"
+          },
+          "country": {
+            "title": "Country",
+            "type": "string"
+          },
+          "created_at": {
+            "title": "Created At",
+            "type": "string"
+          },
+          "credentials": {
+            "title": "Credentials",
+            "type": "string"
+          },
+          "decision_note": {
+            "title": "Decision Note",
+            "type": "string"
+          },
+          "full_name": {
+            "title": "Full Name",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "languages": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Languages",
+            "type": "array"
+          },
+          "phone": {
+            "title": "Phone",
+            "type": "string"
+          },
+          "practice_type": {
+            "enum": [
+              "astrologer",
+              "pandit"
+            ],
+            "title": "Practice Type",
+            "type": "string"
+          },
+          "reviewed_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewed At"
+          },
+          "reviewed_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewed By"
+          },
+          "reviewer_note": {
+            "title": "Reviewer Note",
+            "type": "string"
+          },
+          "sample_reading": {
+            "title": "Sample Reading",
+            "type": "string"
+          },
+          "state": {
+            "enum": [
+              "submitted",
+              "in_review",
+              "approved",
+              "rejected",
+              "withdrawn"
+            ],
+            "title": "State",
+            "type": "string"
+          },
+          "traditions": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Traditions",
+            "type": "array"
+          },
+          "updated_at": {
+            "title": "Updated At",
+            "type": "string"
+          },
+          "user_id": {
+            "title": "User Id",
+            "type": "string"
+          },
+          "years_experience": {
+            "title": "Years Experience",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "practice_type",
+          "full_name",
+          "city",
+          "country",
+          "years_experience",
+          "state",
+          "decision_note",
+          "created_at",
+          "updated_at",
+          "user_id",
+          "phone",
+          "credentials",
+          "sample_reading",
+          "languages",
+          "traditions",
+          "reviewer_note",
+          "reviewed_by",
+          "reviewed_at"
+        ],
+        "title": "ApplicationReviewOut",
+        "type": "object"
+      },
       "AvakhadaOut": {
         "description": "Traditional birth attributes, all derived from the Moon.\n\n`paya` is deliberately absent: the rules in circulation disagree and give\ndifferent metals for the same chart, so the engine declines to invent one.",
         "properties": {
@@ -477,6 +758,107 @@
         "title": "ChatTurn",
         "type": "object"
       },
+      "ConsultationOut": {
+        "properties": {
+          "billed_seconds": {
+            "title": "Billed Seconds",
+            "type": "integer"
+          },
+          "charged_minor": {
+            "title": "Charged Minor",
+            "type": "integer"
+          },
+          "connected_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Connected At"
+          },
+          "created_at": {
+            "title": "Created At",
+            "type": "string"
+          },
+          "currency": {
+            "title": "Currency",
+            "type": "string"
+          },
+          "ended_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ended At"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "medium": {
+            "enum": [
+              "chat",
+              "voice",
+              "video"
+            ],
+            "title": "Medium",
+            "type": "string"
+          },
+          "practitioner_user_id": {
+            "title": "Practitioner User Id",
+            "type": "string"
+          },
+          "profile_id": {
+            "title": "Profile Id",
+            "type": "string"
+          },
+          "rate_per_minute_minor": {
+            "title": "Rate Per Minute Minor",
+            "type": "integer"
+          },
+          "seeker_id": {
+            "title": "Seeker Id",
+            "type": "string"
+          },
+          "state": {
+            "enum": [
+              "requested",
+              "accepted",
+              "active",
+              "ended",
+              "declined",
+              "cancelled",
+              "expired"
+            ],
+            "title": "State",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "seeker_id",
+          "practitioner_user_id",
+          "profile_id",
+          "medium",
+          "state",
+          "rate_per_minute_minor",
+          "currency",
+          "connected_at",
+          "ended_at",
+          "billed_seconds",
+          "charged_minor",
+          "created_at"
+        ],
+        "title": "ConsultationOut",
+        "type": "object"
+      },
       "DashaOut": {
         "properties": {
           "balance_years": {
@@ -540,6 +922,165 @@
           "level"
         ],
         "title": "DashaPeriodOut",
+        "type": "object"
+      },
+      "DirectoryOut": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/PractitionerCard"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "total"
+        ],
+        "title": "DirectoryOut",
+        "type": "object"
+      },
+      "EntryOut": {
+        "properties": {
+          "amount_minor": {
+            "title": "Amount Minor",
+            "type": "integer"
+          },
+          "balance_after_minor": {
+            "title": "Balance After Minor",
+            "type": "integer"
+          },
+          "created_at": {
+            "title": "Created At",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "topup",
+              "consultation",
+              "refund",
+              "payout",
+              "commission",
+              "adjustment"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "reference_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reference Id"
+          },
+          "reference_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reference Type"
+          }
+        },
+        "required": [
+          "id",
+          "kind",
+          "amount_minor",
+          "balance_after_minor",
+          "reference_type",
+          "reference_id",
+          "created_at"
+        ],
+        "title": "EntryOut",
+        "type": "object"
+      },
+      "GoogleSignInIn": {
+        "description": "One Google sign-in, arriving by either of the two flows Google offers.\n\n`code` is the web client's: a popup auth-code flow, which is the only way\nto start sign-in from a button we designed ourselves. `credential` is an\nID token handed straight to the page, which is what a native mobile Google\nSign-In returns. Both end at the same verified identity.",
+        "properties": {
+          "code": {
+            "anyOf": [
+              {
+                "maxLength": 2048,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Code"
+          },
+          "credential": {
+            "anyOf": [
+              {
+                "maxLength": 4096,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Credential"
+          }
+        },
+        "title": "GoogleSignInIn",
+        "type": "object"
+      },
+      "GrantOut": {
+        "properties": {
+          "granted_at": {
+            "title": "Granted At",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "kundali_id": {
+            "title": "Kundali Id",
+            "type": "string"
+          },
+          "practitioner_user_id": {
+            "title": "Practitioner User Id",
+            "type": "string"
+          },
+          "revoked_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Revoked At"
+          }
+        },
+        "required": [
+          "id",
+          "kundali_id",
+          "practitioner_user_id",
+          "granted_at",
+          "revoked_at"
+        ],
+        "title": "GrantOut",
         "type": "object"
       },
       "HTTPValidationError": {
@@ -620,6 +1161,32 @@
         "title": "KutaOut",
         "type": "object"
       },
+      "LedgerOut": {
+        "properties": {
+          "balance_minor": {
+            "title": "Balance Minor",
+            "type": "integer"
+          },
+          "currency": {
+            "title": "Currency",
+            "type": "string"
+          },
+          "entries": {
+            "items": {
+              "$ref": "#/components/schemas/EntryOut"
+            },
+            "title": "Entries",
+            "type": "array"
+          }
+        },
+        "required": [
+          "currency",
+          "entries",
+          "balance_minor"
+        ],
+        "title": "LedgerOut",
+        "type": "object"
+      },
       "ManglikCompatibilityOut": {
         "properties": {
           "canceled": {
@@ -683,6 +1250,232 @@
           "is_canceled"
         ],
         "title": "ManglikOut",
+        "type": "object"
+      },
+      "MessageIn": {
+        "properties": {
+          "body": {
+            "maxLength": 4000,
+            "minLength": 1,
+            "title": "Body",
+            "type": "string"
+          }
+        },
+        "required": [
+          "body"
+        ],
+        "title": "MessageIn",
+        "type": "object"
+      },
+      "MessageOut": {
+        "properties": {
+          "body": {
+            "title": "Body",
+            "type": "string"
+          },
+          "created_at": {
+            "title": "Created At",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "read_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Read At"
+          },
+          "sender_id": {
+            "title": "Sender Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "sender_id",
+          "body",
+          "created_at",
+          "read_at"
+        ],
+        "title": "MessageOut",
+        "type": "object"
+      },
+      "MilanAnalysisRequest": {
+        "description": "Birth details, not a finished match.\n\nThe match is recomputed server-side so the model can only ever read a score\nthe engine produced \u2014 and so the request stays four fields wide instead of\ncarrying two full charts back up the wire.",
+        "properties": {
+          "bride": {
+            "$ref": "#/components/schemas/BirthDetailsIn"
+          },
+          "bride_name": {
+            "default": "Bride",
+            "minLength": 1,
+            "title": "Bride Name",
+            "type": "string"
+          },
+          "groom": {
+            "$ref": "#/components/schemas/BirthDetailsIn"
+          },
+          "groom_name": {
+            "default": "Groom",
+            "minLength": 1,
+            "title": "Groom Name",
+            "type": "string"
+          },
+          "language": {
+            "default": "en",
+            "enum": [
+              "en",
+              "ne",
+              "hi"
+            ],
+            "title": "Language",
+            "type": "string"
+          }
+        },
+        "required": [
+          "groom",
+          "bride"
+        ],
+        "title": "MilanAnalysisRequest",
+        "type": "object"
+      },
+      "MilanAnalysisResponse": {
+        "properties": {
+          "concerns": {
+            "items": {
+              "$ref": "#/components/schemas/MilanPointOut"
+            },
+            "title": "Concerns",
+            "type": "array"
+          },
+          "doshas": {
+            "items": {
+              "$ref": "#/components/schemas/MilanDoshaOut"
+            },
+            "title": "Doshas",
+            "type": "array"
+          },
+          "outlook": {
+            "title": "Outlook",
+            "type": "string"
+          },
+          "remedies": {
+            "items": {
+              "$ref": "#/components/schemas/MilanRemedyOut"
+            },
+            "title": "Remedies",
+            "type": "array"
+          },
+          "strengths": {
+            "items": {
+              "$ref": "#/components/schemas/MilanPointOut"
+            },
+            "title": "Strengths",
+            "type": "array"
+          },
+          "verdict": {
+            "title": "Verdict",
+            "type": "string"
+          }
+        },
+        "required": [
+          "verdict",
+          "outlook",
+          "strengths",
+          "concerns",
+          "doshas",
+          "remedies"
+        ],
+        "title": "MilanAnalysisResponse",
+        "type": "object"
+      },
+      "MilanDoshaOut": {
+        "properties": {
+          "affects": {
+            "title": "Affects",
+            "type": "string"
+          },
+          "detail": {
+            "title": "Detail",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "severity": {
+            "enum": [
+              "none",
+              "mild",
+              "moderate",
+              "serious"
+            ],
+            "title": "Severity",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "severity",
+          "affects",
+          "detail"
+        ],
+        "title": "MilanDoshaOut",
+        "type": "object"
+      },
+      "MilanPointOut": {
+        "description": "One thing that matches, or one that does not, and what it rests on.",
+        "properties": {
+          "basis": {
+            "description": "The koota or placement behind this, quoted with its score.",
+            "title": "Basis",
+            "type": "string"
+          },
+          "detail": {
+            "title": "Detail",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "title",
+          "detail",
+          "basis"
+        ],
+        "title": "MilanPointOut",
+        "type": "object"
+      },
+      "MilanRemedyOut": {
+        "properties": {
+          "detail": {
+            "title": "Detail",
+            "type": "string"
+          },
+          "timing": {
+            "title": "Timing",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "title",
+          "detail",
+          "timing"
+        ],
+        "title": "MilanRemedyOut",
         "type": "object"
       },
       "MilanRequest": {
@@ -1067,6 +1860,298 @@
         "title": "PlanetOut",
         "type": "object"
       },
+      "PractitionerCard": {
+        "description": "One row of the directory.\n\nRating and consultation count are absent until reviews exist \u2014 a card that\ninvents `4.9 \u00b7 1,204 readings` for someone who has taken no consultations\nis a fabricated credential, and the preview data in the web app is already\nlabelled as such for the same reason.",
+        "properties": {
+          "city": {
+            "title": "City",
+            "type": "string"
+          },
+          "country": {
+            "title": "Country",
+            "type": "string"
+          },
+          "display_name": {
+            "title": "Display Name",
+            "type": "string"
+          },
+          "headline": {
+            "title": "Headline",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "languages": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Languages",
+            "type": "array"
+          },
+          "photo_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Photo Url"
+          },
+          "practice_type": {
+            "enum": [
+              "astrologer",
+              "pandit"
+            ],
+            "title": "Practice Type",
+            "type": "string"
+          },
+          "specialities": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Specialities",
+            "type": "array"
+          },
+          "traditions": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Traditions",
+            "type": "array"
+          },
+          "verified": {
+            "title": "Verified",
+            "type": "boolean"
+          },
+          "years_experience": {
+            "title": "Years Experience",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "practice_type",
+          "display_name",
+          "headline",
+          "photo_url",
+          "city",
+          "country",
+          "years_experience",
+          "languages",
+          "traditions",
+          "specialities",
+          "verified"
+        ],
+        "title": "PractitionerCard",
+        "type": "object"
+      },
+      "PractitionerDetail": {
+        "properties": {
+          "bio": {
+            "title": "Bio",
+            "type": "string"
+          },
+          "city": {
+            "title": "City",
+            "type": "string"
+          },
+          "country": {
+            "title": "Country",
+            "type": "string"
+          },
+          "display_name": {
+            "title": "Display Name",
+            "type": "string"
+          },
+          "headline": {
+            "title": "Headline",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "intro_video_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Intro Video Url"
+          },
+          "languages": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Languages",
+            "type": "array"
+          },
+          "photo_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Photo Url"
+          },
+          "practice_type": {
+            "enum": [
+              "astrologer",
+              "pandit"
+            ],
+            "title": "Practice Type",
+            "type": "string"
+          },
+          "specialities": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Specialities",
+            "type": "array"
+          },
+          "traditions": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Traditions",
+            "type": "array"
+          },
+          "verified": {
+            "title": "Verified",
+            "type": "boolean"
+          },
+          "years_experience": {
+            "title": "Years Experience",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "practice_type",
+          "display_name",
+          "headline",
+          "photo_url",
+          "city",
+          "country",
+          "years_experience",
+          "languages",
+          "traditions",
+          "specialities",
+          "verified",
+          "bio",
+          "intro_video_url"
+        ],
+        "title": "PractitionerDetail",
+        "type": "object"
+      },
+      "ProfileIn": {
+        "description": "What a practitioner may change about their own listing.\n\n`verification_state` is not here. A practitioner cannot verify themselves.",
+        "properties": {
+          "bio": {
+            "default": "",
+            "maxLength": 8000,
+            "title": "Bio",
+            "type": "string"
+          },
+          "city": {
+            "default": "",
+            "maxLength": 255,
+            "title": "City",
+            "type": "string"
+          },
+          "country": {
+            "default": "NP",
+            "maxLength": 2,
+            "minLength": 2,
+            "title": "Country",
+            "type": "string"
+          },
+          "display_name": {
+            "maxLength": 255,
+            "minLength": 1,
+            "title": "Display Name",
+            "type": "string"
+          },
+          "headline": {
+            "default": "",
+            "maxLength": 255,
+            "title": "Headline",
+            "type": "string"
+          },
+          "intro_video_url": {
+            "anyOf": [
+              {
+                "maxLength": 512,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Intro Video Url"
+          },
+          "is_listed": {
+            "default": true,
+            "title": "Is Listed",
+            "type": "boolean"
+          },
+          "languages": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Languages",
+            "type": "array"
+          },
+          "photo_url": {
+            "anyOf": [
+              {
+                "maxLength": 512,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Photo Url"
+          },
+          "specialities": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Specialities",
+            "type": "array"
+          },
+          "traditions": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Traditions",
+            "type": "array"
+          },
+          "years_experience": {
+            "default": 0,
+            "maximum": 100.0,
+            "minimum": 0.0,
+            "title": "Years Experience",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "display_name"
+        ],
+        "title": "ProfileIn",
+        "type": "object"
+      },
       "RealtimeSessionRequest": {
         "properties": {
           "birth": {
@@ -1216,7 +2301,7 @@
             "type": "array"
           },
           "source": {
-            "description": "'rule_engine' means the deterministic generator produced this \u2014 a complete report, not a degraded one. Surfaced so the client can tell the two apart rather than guess.",
+            "description": "'rule_engine' means the deterministic generator produced this \u2014 a complete report, not a degraded one. Surfaced so the client can tell the two apart rather than guess. 'llm' covers both a freshly generated reading and one replayed from storage; the two are the same reading, and the streaming endpoint's `done` frame carries a `cached` flag if you need to tell them apart.",
             "enum": [
               "llm",
               "rule_engine"
@@ -1279,6 +2364,79 @@
           "reasoning"
         ],
         "title": "ReportSection",
+        "type": "object"
+      },
+      "RequestIn": {
+        "properties": {
+          "kundali_id": {
+            "anyOf": [
+              {
+                "maxLength": 64,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Kundali Id"
+          },
+          "medium": {
+            "default": "chat",
+            "enum": [
+              "chat",
+              "voice",
+              "video"
+            ],
+            "title": "Medium",
+            "type": "string"
+          },
+          "opening_message": {
+            "default": "",
+            "maxLength": 2000,
+            "title": "Opening Message",
+            "type": "string"
+          },
+          "profile_id": {
+            "maxLength": 64,
+            "minLength": 1,
+            "title": "Profile Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "profile_id"
+        ],
+        "title": "RequestIn",
+        "type": "object"
+      },
+      "ReviewDecisionIn": {
+        "properties": {
+          "decision": {
+            "enum": [
+              "approve",
+              "reject",
+              "in_review"
+            ],
+            "title": "Decision",
+            "type": "string"
+          },
+          "decision_note": {
+            "default": "",
+            "maxLength": 2000,
+            "title": "Decision Note",
+            "type": "string"
+          },
+          "reviewer_note": {
+            "default": "",
+            "maxLength": 4000,
+            "title": "Reviewer Note",
+            "type": "string"
+          }
+        },
+        "required": [
+          "decision"
+        ],
+        "title": "ReviewDecisionIn",
         "type": "object"
       },
       "SavedKundaliIn": {
@@ -1557,6 +2715,29 @@
         "title": "TokenResponse",
         "type": "object"
       },
+      "TopUpIn": {
+        "properties": {
+          "amount_minor": {
+            "description": "Minor units, e.g. paisa",
+            "exclusiveMinimum": 0.0,
+            "maximum": 10000000.0,
+            "title": "Amount Minor",
+            "type": "integer"
+          },
+          "reference": {
+            "maxLength": 128,
+            "minLength": 1,
+            "title": "Reference",
+            "type": "string"
+          }
+        },
+        "required": [
+          "amount_minor",
+          "reference"
+        ],
+        "title": "TopUpIn",
+        "type": "object"
+      },
       "TranscriptResponse": {
         "properties": {
           "text": {
@@ -1762,6 +2943,34 @@
         ],
         "title": "VargaPlacementOut",
         "type": "object"
+      },
+      "WalletOut": {
+        "properties": {
+          "available_minor": {
+            "title": "Available Minor",
+            "type": "integer"
+          },
+          "balance_minor": {
+            "title": "Balance Minor",
+            "type": "integer"
+          },
+          "currency": {
+            "title": "Currency",
+            "type": "string"
+          },
+          "held_minor": {
+            "title": "Held Minor",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "currency",
+          "balance_minor",
+          "held_minor",
+          "available_minor"
+        ],
+        "title": "WalletOut",
+        "type": "object"
       }
     }
   },
@@ -1794,6 +3003,185 @@
         "summary": "Liveness probe",
         "tags": [
           "meta"
+        ]
+      }
+    },
+    "/v1/admin/practitioner-applications": {
+      "get": {
+        "operationId": "review_queue_v1_admin_practitioner_applications_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "state",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "State"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ApplicationReviewOut"
+                  },
+                  "title": "Response Review Queue V1 Admin Practitioner Applications Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "The review queue",
+        "tags": [
+          "practitioners"
+        ]
+      }
+    },
+    "/v1/admin/practitioner-applications/{application_id}/review": {
+      "post": {
+        "description": "Approving creates the profile, copies the declared languages and traditions, and promotes the account to the practitioner role \u2014 in one transaction. The profile is created unlisted: approval says they may practise, not that the listing is ready to be read.",
+        "operationId": "review_v1_admin_practitioner_applications__application_id__review_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "application_id",
+            "required": true,
+            "schema": {
+              "title": "Application Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReviewDecisionIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplicationReviewOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Approve, reject, or move an application to in-review",
+        "tags": [
+          "practitioners"
+        ]
+      }
+    },
+    "/v1/auth/google": {
+      "post": {
+        "operationId": "google_sign_in_v1_auth_google_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GoogleSignInIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Exchange a Google ID token for a token",
+        "tags": [
+          "auth"
         ]
       }
     },
@@ -1988,6 +3376,707 @@
         ]
       }
     },
+    "/v1/consultations": {
+      "get": {
+        "operationId": "my_consultations_v1_consultations_get",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ConsultationOut"
+                  },
+                  "title": "Response My Consultations V1 Consultations Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "My Consultations",
+        "tags": [
+          "consultations"
+        ]
+      },
+      "post": {
+        "operationId": "request_consultation_v1_consultations_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RequestIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConsultationOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Request Consultation",
+        "tags": [
+          "consultations"
+        ]
+      }
+    },
+    "/v1/consultations/{consultation_id}": {
+      "get": {
+        "operationId": "one_v1_consultations__consultation_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "consultation_id",
+            "required": true,
+            "schema": {
+              "title": "Consultation Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConsultationOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "One",
+        "tags": [
+          "consultations"
+        ]
+      }
+    },
+    "/v1/consultations/{consultation_id}/accept": {
+      "post": {
+        "operationId": "accept_v1_consultations__consultation_id__accept_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "consultation_id",
+            "required": true,
+            "schema": {
+              "title": "Consultation Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConsultationOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Accept",
+        "tags": [
+          "consultations"
+        ]
+      }
+    },
+    "/v1/consultations/{consultation_id}/cancel": {
+      "post": {
+        "operationId": "cancel_v1_consultations__consultation_id__cancel_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "consultation_id",
+            "required": true,
+            "schema": {
+              "title": "Consultation Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConsultationOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Cancel",
+        "tags": [
+          "consultations"
+        ]
+      }
+    },
+    "/v1/consultations/{consultation_id}/connect": {
+      "post": {
+        "description": "Places a hold for the lesser of the wallet and an hour of talking, and records `connected_at` from the server clock. Refuses with 402 when the wallet cannot fund the minimum billable session \u2014 before anyone starts speaking, rather than cutting them off ten seconds in.",
+        "operationId": "connect_v1_consultations__consultation_id__connect_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "consultation_id",
+            "required": true,
+            "schema": {
+              "title": "Consultation Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConsultationOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Start the session and the meter",
+        "tags": [
+          "consultations"
+        ]
+      }
+    },
+    "/v1/consultations/{consultation_id}/decline": {
+      "post": {
+        "operationId": "decline_v1_consultations__consultation_id__decline_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "consultation_id",
+            "required": true,
+            "schema": {
+              "title": "Consultation Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConsultationOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Decline",
+        "tags": [
+          "consultations"
+        ]
+      }
+    },
+    "/v1/consultations/{consultation_id}/end": {
+      "post": {
+        "description": "Elapsed time is measured server-side from `connected_at`. The hold is a ceiling: the capture is what the measurement says and the remainder is released. Billed per second with a 60-second minimum.",
+        "operationId": "end_v1_consultations__consultation_id__end_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "consultation_id",
+            "required": true,
+            "schema": {
+              "title": "Consultation Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConsultationOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Stop the meter and capture what was used",
+        "tags": [
+          "consultations"
+        ]
+      }
+    },
+    "/v1/consultations/{consultation_id}/messages": {
+      "get": {
+        "operationId": "messages_v1_consultations__consultation_id__messages_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "consultation_id",
+            "required": true,
+            "schema": {
+              "title": "Consultation Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/MessageOut"
+                  },
+                  "title": "Response Messages V1 Consultations  Consultation Id  Messages Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Messages",
+        "tags": [
+          "consultations"
+        ]
+      },
+      "post": {
+        "operationId": "send_v1_consultations__consultation_id__messages_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "consultation_id",
+            "required": true,
+            "schema": {
+              "title": "Consultation Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MessageIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Send",
+        "tags": [
+          "consultations"
+        ]
+      }
+    },
+    "/v1/grants": {
+      "get": {
+        "description": "Consent has to be visible to be meaningful. This is that page.",
+        "operationId": "grants_v1_grants_get",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/GrantOut"
+                  },
+                  "title": "Response Grants V1 Grants Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Every chart this account has shared",
+        "tags": [
+          "consultations"
+        ]
+      }
+    },
+    "/v1/grants/{grant_id}/revoke": {
+      "post": {
+        "description": "Immediate. The practitioner loses access on the next request.",
+        "operationId": "revoke_v1_grants__grant_id__revoke_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "grant_id",
+            "required": true,
+            "schema": {
+              "title": "Grant Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GrantOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Withdraw access to a shared chart",
+        "tags": [
+          "consultations"
+        ]
+      }
+    },
     "/v1/kundali": {
       "post": {
         "description": "Computes a full Vedic chart from birth details: Lahiri ayanamsa, whole-sign houses, mean nodes, Vimshottari dasha. Deterministic and synchronous \u2014 the calculation is local arithmetic against an ephemeris, not a job.\n\nSee docs/astrology-methodology.md for every methodology decision.",
@@ -2043,6 +4132,66 @@
         "summary": "Generate a birth chart",
         "tags": [
           "kundali"
+        ]
+      }
+    },
+    "/v1/milan/analysis": {
+      "post": {
+        "description": "Recomputes the match from the same birth details and hands it, with both complete charts, to the model \u2014 which kootas matched and which did not, the outlook for the marriage, any dosha and what it bears on, and the remedies for it. Separate from `/match` because the arithmetic returns in milliseconds and the reading does not.",
+        "operationId": "analysis_v1_milan_analysis_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MilanAnalysisRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MilanAnalysisResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "A Jyotish reading of an Ashtakoota match",
+        "tags": [
+          "milan"
         ]
       }
     },
@@ -2143,6 +4292,417 @@
         "summary": "Search birthplaces",
         "tags": [
           "places"
+        ]
+      }
+    },
+    "/v1/practitioners": {
+      "get": {
+        "description": "Only verified, listed profiles are returned \u2014 the filter is in the query itself, not a caller's responsibility. Unauthenticated, because browsing is how someone decides whether to sign up.",
+        "operationId": "directory_v1_practitioners_get",
+        "parameters": [
+          {
+            "description": "astrologer | pandit",
+            "in": "query",
+            "name": "practice_type",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "astrologer | pandit",
+              "title": "Practice Type"
+            }
+          },
+          {
+            "description": "Normalised, e.g. `ne`",
+            "in": "query",
+            "name": "language",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Normalised, e.g. `ne`",
+              "title": "Language"
+            }
+          },
+          {
+            "description": "e.g. `parashari`",
+            "in": "query",
+            "name": "tradition",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "e.g. `parashari`",
+              "title": "Tradition"
+            }
+          },
+          {
+            "description": "e.g. `marriage`",
+            "in": "query",
+            "name": "speciality",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "e.g. `marriage`",
+              "title": "Speciality"
+            }
+          },
+          {
+            "description": "Matches the display name",
+            "in": "query",
+            "name": "q",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Matches the display name",
+              "title": "Q"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 20,
+              "maximum": 50,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "minimum": 0,
+              "title": "Offset",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DirectoryOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Browse verified astrologers and pandits",
+        "tags": [
+          "practitioners"
+        ]
+      }
+    },
+    "/v1/practitioners/applications": {
+      "post": {
+        "operationId": "apply_v1_practitioners_applications_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApplicationIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApplicationOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Apply to practise on the platform",
+        "tags": [
+          "practitioners"
+        ]
+      }
+    },
+    "/v1/practitioners/applications/me": {
+      "get": {
+        "operationId": "my_application_v1_practitioners_applications_me_get",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/ApplicationOut"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "title": "Response My Application V1 Practitioners Applications Me Get"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "The signed-in account's own application, if any",
+        "tags": [
+          "practitioners"
+        ]
+      }
+    },
+    "/v1/practitioners/me/profile": {
+      "get": {
+        "operationId": "my_profile_v1_practitioners_me_profile_get",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PractitionerDetail"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "My Profile",
+        "tags": [
+          "practitioners"
+        ]
+      },
+      "put": {
+        "operationId": "update_profile_v1_practitioners_me_profile_put",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProfileIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PractitionerDetail"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Update Profile",
+        "tags": [
+          "practitioners"
+        ]
+      }
+    },
+    "/v1/practitioners/{profile_id}": {
+      "get": {
+        "operationId": "public_profile_v1_practitioners__profile_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "profile_id",
+            "required": true,
+            "schema": {
+              "title": "Profile Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PractitionerDetail"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Public Profile",
+        "tags": [
+          "practitioners"
         ]
       }
     },
@@ -2260,6 +4820,59 @@
           }
         },
         "summary": "Generate a seven-section reading for a chart",
+        "tags": [
+          "report"
+        ]
+      }
+    },
+    "/v1/report/stream": {
+      "post": {
+        "description": "Server-sent events. Each `section` frame carries one finished section the moment the model closes it, rather than making the reader wait a minute for the whole array; the stream ends with `done` or, if it could not be completed, `error`. `/v1/report` is unchanged and still returns the whole report in one response.",
+        "operationId": "report_stream_v1_report_stream_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReportRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "The same report, streamed section by section",
         "tags": [
           "report"
         ]
@@ -2884,6 +5497,177 @@
         "summary": "Add Message",
         "tags": [
           "vault"
+        ]
+      }
+    },
+    "/v1/wallet": {
+      "get": {
+        "operationId": "wallet_v1_wallet_get",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WalletOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Balance, held and available",
+        "tags": [
+          "wallet"
+        ]
+      }
+    },
+    "/v1/wallet/ledger": {
+      "get": {
+        "description": "The wallet's whole history. `amount_minor` is signed \u2014 credits positive, debits negative \u2014 and `balance_after_minor` is what the running total was immediately after each entry.",
+        "operationId": "ledger_v1_wallet_ledger_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 50,
+              "maximum": 200,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LedgerOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Every movement, newest first",
+        "tags": [
+          "wallet"
+        ]
+      }
+    },
+    "/v1/wallet/topup": {
+      "post": {
+        "description": "Idempotent on `reference`: the same payment cannot be credited twice however many times its callback arrives. Disabled outside local development until the provider adapters and signature verification exist \u2014 see docs/astrologer-marketplace.md \u00a76.",
+        "operationId": "top_up_v1_wallet_topup_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TopUpIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WalletOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Credit a confirmed payment (development only)",
+        "tags": [
+          "wallet"
         ]
       }
     }

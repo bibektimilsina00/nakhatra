@@ -1,0 +1,51 @@
+# Caddy site blocks for nakhatra.com.
+#
+# Caddy runs on the host (systemd, not in the compose stack) and already
+# terminates TLS for other projects on this VPS, so this is appended to
+# /etc/caddy/Caddyfile rather than shipped as a container. Kept in the repo
+# because the only other copy is on the server, where nothing reviews it.
+#
+# TLS is a Cloudflare Origin Certificate, matching kundali.riocut.com and the
+# egfilm.xyz hosts. The records are proxied (orange cloud), so visitors get
+# Cloudflare's edge certificate and this one is only ever presented to
+# Cloudflare — which is the whole point of an origin cert. It is not publicly
+# trusted, so hitting the origin IP directly will warn; that is expected.
+#
+# Cloudflare's SSL/TLS mode must be **Full (strict)**. On "Flexible" Cloudflare
+# speaks plain HTTP to this origin, Caddy redirects it to HTTPS, and the two
+# bounce the request between them until the browser gives up.
+#
+# Apply with:
+#     sudo caddy validate --config /etc/caddy/Caddyfile   # never reload unvalidated
+#     sudo systemctl reload caddy                         # reload, not restart:
+#                                                         # restart drops the other sites
+
+# ==========================================
+# Nakhatra Web
+# ==========================================
+nakhatra.com {
+	tls /etc/caddy/certs/cloudflare_nakhatra.crt /etc/caddy/certs/cloudflare_nakhatra.key
+	# The Next.js container publishes on loopback only; Caddy is the only
+	# way in from outside.
+	reverse_proxy 127.0.0.1:3000
+}
+
+# One canonical host. Serving the site on both spellings splits analytics,
+# splits the Google OAuth origin allowlist, and gives search engines two URLs
+# for every page.
+www.nakhatra.com {
+	tls /etc/caddy/certs/cloudflare_nakhatra.crt /etc/caddy/certs/cloudflare_nakhatra.key
+	redir https://nakhatra.com{uri} permanent
+}
+
+# ==========================================
+# Nakhatra API
+# ==========================================
+# A separate host rather than a path under the web app: apps/mobile talks to
+# FastAPI directly and needs a base URL that is not the Next.js server. The web
+# app keeps calling it over the Docker network (FASTAPI_URL), so browser traffic
+# does not come through here at all.
+api.nakhatra.com {
+	tls /etc/caddy/certs/cloudflare_nakhatra.crt /etc/caddy/certs/cloudflare_nakhatra.key
+	reverse_proxy 127.0.0.1:28001
+}

@@ -12,7 +12,7 @@ import logging
 from anthropic import APIError
 
 from app.core.errors import AppError
-from app.integrations.llm import OUTPUT_CONFIG, THINKING, get_client, model_name
+from app.integrations.llm import get_client, model_name, tuning
 from app.modules.chat import prompts
 from app.modules.chat.schemas import ChatRequest, ChatResponse
 
@@ -50,8 +50,7 @@ async def answer(req: ChatRequest) -> ChatResponse:
             max_tokens=MAX_TOKENS,
             system=prompts.system_blocks(req.chart, req.birth, req.language),
             messages=messages,
-            thinking=THINKING,
-            output_config=OUTPUT_CONFIG,
+            **tuning(),
         )
     except APIError as exc:
         # The upstream message can carry request context; it does not go to the

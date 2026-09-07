@@ -25,11 +25,16 @@ ARG NEXT_PUBLIC_POSTHOG_KEY
 ARG NEXT_PUBLIC_POSTHOG_HOST
 ARG NEXT_PUBLIC_UMAMI_WEBSITE_ID
 ARG NEXT_PUBLIC_UMAMI_HOST
+# Not a secret: a Google OAuth client id is public by design and the browser
+# must send it. It is a build arg because Next.js inlines NEXT_PUBLIC_* at
+# build time — supplying it only at run time leaves the button invisible.
+ARG NEXT_PUBLIC_GOOGLE_CLIENT_ID
 
 ENV NEXT_PUBLIC_POSTHOG_KEY=$NEXT_PUBLIC_POSTHOG_KEY
 ENV NEXT_PUBLIC_POSTHOG_HOST=$NEXT_PUBLIC_POSTHOG_HOST
 ENV NEXT_PUBLIC_UMAMI_WEBSITE_ID=$NEXT_PUBLIC_UMAMI_WEBSITE_ID
 ENV NEXT_PUBLIC_UMAMI_HOST=$NEXT_PUBLIC_UMAMI_HOST
+ENV NEXT_PUBLIC_GOOGLE_CLIENT_ID=$NEXT_PUBLIC_GOOGLE_CLIENT_ID
 
 # Install dependencies and build Next.js Web App
 RUN npm --prefix apps/web ci || npm --prefix apps/web install

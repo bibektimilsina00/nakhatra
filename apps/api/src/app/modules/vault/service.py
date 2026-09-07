@@ -88,8 +88,7 @@ def get_session_detail(session: Session, session_id: str, user_id: str) -> ChatS
     if not row:
         raise SessionNotFoundError()
     messages = [
-        ChatMessageOut(**m.model_dump())
-        for m in repository.list_messages(session, session_id)
+        ChatMessageOut(**m.model_dump()) for m in repository.list_messages(session, session_id)
     ]
     return ChatSessionOut(**row.model_dump(), messages=messages)
 

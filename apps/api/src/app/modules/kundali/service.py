@@ -30,9 +30,7 @@ DEFAULT_DASHA_DEPTH = 2
 MAX_DASHA_DEPTH = 3
 
 
-def generate_chart(
-    details: BirthDetailsIn, dasha_depth: int = DEFAULT_DASHA_DEPTH
-) -> ChartOut:
+def generate_chart(details: BirthDetailsIn, dasha_depth: int = DEFAULT_DASHA_DEPTH) -> ChartOut:
     chart = build_chart(_birth_moment(details))
     return _to_schema(chart, dasha_depth=dasha_depth)
 
@@ -89,10 +87,7 @@ def _to_schema(chart: Chart, *, dasha_depth: int) -> ChartOut:
         ),
         panchang=PanchangOut.model_validate(chart.panchang, from_attributes=True),
         avakhada=AvakhadaOut.model_validate(chart.avakhada, from_attributes=True),
-        vargas=[
-            VargaChartOut.model_validate(v, from_attributes=True)
-            for v in chart.vargas
-        ],
+        vargas=[VargaChartOut.model_validate(v, from_attributes=True) for v in chart.vargas],
     )
 
 
@@ -103,9 +98,7 @@ def _planet(p: Planet) -> PlanetOut:
         sign_index=p.sign_index,
         degree_in_sign=p.degree_in_sign,
         house=p.house,
-        nakshatra=NakshatraOut(
-            name=p.nakshatra.name, pada=p.nakshatra.pada, lord=p.nakshatra.lord
-        ),
+        nakshatra=NakshatraOut(name=p.nakshatra.name, pada=p.nakshatra.pada, lord=p.nakshatra.lord),
         retrograde=p.retrograde,
         combust=p.combust,
         avastha=p.avastha,
