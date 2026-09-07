@@ -150,6 +150,19 @@ export interface TranslationCatalog {
   vimshottariLabel: string;
   askAnythingHint: string;
   consultReconnecting: string;
+  callStartVoice: string;
+  callStartVideo: string;
+  callRinging: string;
+  callIncoming: string;
+  callConnecting: string;
+  callLive: string;
+  callAnswer: string;
+  callDecline: string;
+  callMute: string;
+  callCamera: string;
+  callEnd: string;
+  callNoRelay: string;
+  callNoMic: string;
   consultPerMinute: string;
   consultElapsed: string;
   consultCost: string;
@@ -527,6 +540,19 @@ export const translations: Record<Language, TranslationCatalog> = {
     vimshottariLabel: "Vimshottari",
     askAnythingHint: "Ask anything about your chart — career, marriage, timing, or remedies. Every answer is read from the placements on the left.",
     consultReconnecting: "Reconnecting — updates may be slower than usual.",
+    callStartVoice: "Start voice call",
+    callStartVideo: "Start video call",
+    callRinging: "Ringing…",
+    callIncoming: "Incoming call",
+    callConnecting: "Connecting…",
+    callLive: "Connected",
+    callAnswer: "Answer",
+    callDecline: "Decline",
+    callMute: "Mute",
+    callCamera: "Camera",
+    callEnd: "End call",
+    callNoRelay: "No relay server is configured, so this call may not connect on some mobile networks.",
+    callNoMic: "Could not reach your microphone or camera. Check the browser's permission for this site.",
     consultPerMinute: "minute",
     consultElapsed: "Elapsed",
     consultCost: "Cost so far",
@@ -902,6 +928,19 @@ export const translations: Record<Language, TranslationCatalog> = {
     vimshottariLabel: "विंशोत्तरी",
     askAnythingHint: "आफ्नो कुण्डलीबारे जे पनि सोध्नुहोस् — करियर, विवाह, समय वा उपाय। हरेक उत्तर बायाँका ग्रह स्थितिबाट नै आउँछ।",
     consultReconnecting: "पुनः जडान हुँदै — अपडेट अलि ढिलो आउन सक्छ।",
+    callStartVoice: "भ्वाइस कल सुरु",
+    callStartVideo: "भिडियो कल सुरु",
+    callRinging: "घण्टी बज्दै…",
+    callIncoming: "आउँदै गरेको कल",
+    callConnecting: "जोडिँदै…",
+    callLive: "जोडियो",
+    callAnswer: "उठाउनुहोस्",
+    callDecline: "अस्वीकार",
+    callMute: "मौन",
+    callCamera: "क्यामेरा",
+    callEnd: "कल समाप्त",
+    callNoRelay: "रिले सर्भर सेट गरिएको छैन, त्यसैले केही मोबाइल नेटवर्कमा यो कल नजोडिन सक्छ।",
+    callNoMic: "माइक वा क्यामेरामा पहुँच भएन। यो साइटको लागि ब्राउजरको अनुमति हेर्नुहोस्।",
     consultPerMinute: "मिनेट",
     consultElapsed: "बितेको समय",
     consultCost: "अहिलेसम्मको खर्च",
@@ -1277,6 +1316,19 @@ export const translations: Record<Language, TranslationCatalog> = {
     vimshottariLabel: "विंशोत्तरी",
     askAnythingHint: "अपनी कुंडली के बारे में कुछ भी पूछें — करियर, विवाह, समय या उपाय। हर उत्तर बाईं ओर की ग्रह स्थितियों से ही आता है।",
     consultReconnecting: "पुनः कनेक्ट हो रहा है — अपडेट थोड़े धीमे आ सकते हैं।",
+    callStartVoice: "वॉइस कॉल शुरू",
+    callStartVideo: "वीडियो कॉल शुरू",
+    callRinging: "घंटी बज रही है…",
+    callIncoming: "आती हुई कॉल",
+    callConnecting: "जुड़ रहा है…",
+    callLive: "जुड़ गया",
+    callAnswer: "उठाएँ",
+    callDecline: "अस्वीकार",
+    callMute: "म्यूट",
+    callCamera: "कैमरा",
+    callEnd: "कॉल समाप्त",
+    callNoRelay: "कोई रिले सर्वर सेट नहीं है, इसलिए कुछ मोबाइल नेटवर्क पर यह कॉल नहीं जुड़ सकती।",
+    callNoMic: "माइक या कैमरे तक पहुँच नहीं हुई। इस साइट के लिए ब्राउज़र की अनुमति जाँचें।",
     consultPerMinute: "मिनट",
     consultElapsed: "बीता समय",
     consultCost: "अब तक का खर्च",

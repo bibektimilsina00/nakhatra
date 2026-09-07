@@ -7,6 +7,8 @@ import { useRouter } from "next/navigation";
 import { AppShell } from "@/features/dashboard/components/app-shell";
 import { useSession } from "@/features/auth/hooks/use-auth";
 import { SessionMeter } from "@/features/consultations/components/session-meter";
+import { CallPanel } from "@/features/consultations/components/call-panel";
+import { useCall } from "@/features/consultations/hooks/use-call";
 import { useConsultationSocket } from "@/features/consultations/hooks/use-consultation-socket";
 import {
   useConsultation,
@@ -36,9 +38,14 @@ export function ConsultationRoom({ id }: { id: string }) {
   const state = initial.data?.state;
   const live = state === "requested" || state === "accepted" || state === "active";
 
-  // Pushed, not polled. `socketUp` turns the fallback polling off while it
+  // Pushed, not polled. `connected` turns the fallback polling off while it
   // holds, and back on the moment it drops.
-  const socketUp = useConsultationSocket(id, live);
+  const socket = useConsultationSocket(id, live);
+  const socketUp = socket.connected;
+
+  // Signalling rides the same socket: two people talking to each other need no
+  // server in the media path, and the socket already knows who is in the room.
+  const call = useCall(socket.send, socket.onSignal);
 
   const consultation = useConsultation(id, live, socketUp);
   const messages = useMessages(id, live, socketUp);
@@ -80,6 +87,14 @@ export function ConsultationRoom({ id }: { id: string }) {
         </button>
 
         <SessionMeter consultation={c} wallet={wallet.data} />
+
+        {/* A call is only offered while the session is running, because the
+            meter is what a call is billed against. */}
+        <CallPanel
+          call={call}
+          medium={(consultation.data?.medium ?? "chat") as "chat" | "voice" | "video"}
+          canCall={consultation.data?.state === "active"}
+        />
 
         {live && !socketUp && (
           // Said out loud rather than degrading silently: updates still arrive,

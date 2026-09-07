@@ -92,7 +92,11 @@ export function PractitionerDesk() {
               <RateRow
                 key={medium}
                 medium={medium}
-                comingSoon={medium !== "chat"}
+                // Voice and video connect now. What they still need for the
+                // last mile is a TURN relay: without one they fail on
+                // symmetric NAT and many mobile carriers, and the call panel
+                // says so before anyone dials.
+                comingSoon={false}
                 current={(rates.data ?? []).find((r) => r.medium === medium)}
                 onSave={(perMinute) =>
                   setRate.mutate({

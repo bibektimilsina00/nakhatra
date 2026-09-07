@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 
 import { useAuthStore } from "@/features/auth/store/auth-store";
@@ -22,11 +22,26 @@ import type { Consultation, ConsultationMessage } from "@/features/consultations
 /** Backoff between reconnection attempts, in milliseconds. */
 const RETRY_MS = [1_000, 2_000, 5_000, 10_000];
 
-export function useConsultationSocket(consultationId: string | null, enabled: boolean): boolean {
+export type SocketHandle = {
+  connected: boolean;
+  /** Send a signalling frame to the other party. Dropped when not connected. */
+  send: (frame: unknown) => void;
+  /** Subscribe to signalling frames. Returns an unsubscribe. */
+  onSignal: (handler: (frame: never) => void) => () => void;
+};
+
+export function useConsultationSocket(
+  consultationId: string | null,
+  enabled: boolean,
+): SocketHandle {
   const queryClient = useQueryClient();
   const token = useAuthStore((state) => state.token);
   const [open, setOpen] = useState(false);
   const attempt = useRef(0);
+  // Held in a ref so `send` stays stable across reconnects — a changing
+  // identity would restart the call hook's effects on every retry.
+  const live = useRef<WebSocket | null>(null);
+  const signalHandlers = useRef(new Set<(frame: never) => void>());
 
   useEffect(() => {
     // No setState on this path: "not connected" when disabled is derived at
@@ -41,6 +56,7 @@ export function useConsultationSocket(consultationId: string | null, enabled: bo
     const open = () => {
       if (closed) return;
       socket = new WebSocket(socketUrl(consultationId));
+      live.current = socket;
 
       socket.onopen = () => {
         // Auth is the first frame, never the URL: a token in a query string
@@ -69,6 +85,13 @@ export function useConsultationSocket(consultationId: string | null, enabled: bo
           queryClient.invalidateQueries({ queryKey: ["consultations"] });
         }
 
+        // Signalling is relayed by the server and never stored, so it is
+        // handed to subscribers rather than into the query cache.
+        if (SIGNAL_TYPES.has(payload.type ?? "")) {
+          for (const handler of signalHandlers.current) handler(payload as never);
+          return;
+        }
+
         if (payload.type === "message" && payload.message) {
           const incoming = payload.message;
           queryClient.setQueryData<ConsultationMessage[]>(
@@ -82,6 +105,7 @@ export function useConsultationSocket(consultationId: string | null, enabled: bo
       };
 
       socket.onclose = () => {
+        live.current = null;
         setOpen(false);
         if (closed) return;
         // Reconnect with backoff. The page polls in the meantime, so a long
@@ -100,13 +124,44 @@ export function useConsultationSocket(consultationId: string | null, enabled: bo
       closed = true;
       if (retry) clearTimeout(retry);
       socket?.close();
+      live.current = null;
       setOpen(false);
     };
   }, [consultationId, enabled, token, queryClient]);
 
+  const send = useCallback((frame: unknown) => {
+    // Silently dropped when the socket is down. A signal is only meaningful to
+    // a peer that is present, and queueing offers to deliver later would
+    // reconnect someone into a call that ended minutes ago.
+    if (live.current?.readyState === WebSocket.OPEN) {
+      live.current.send(JSON.stringify(frame));
+    }
+  }, []);
+
+  const onSignal = useCallback((handler: (frame: never) => void) => {
+    signalHandlers.current.add(handler);
+    return () => {
+      signalHandlers.current.delete(handler);
+    };
+  }, []);
+
   // Derived, so a disabled hook reports "down" without an effect writing it.
-  return open && enabled && Boolean(consultationId);
+  return {
+    connected: open && enabled && Boolean(consultationId),
+    send,
+    onSignal,
+  };
 }
+
+/** Frames the server relays between the two parties. Mirrors `SIGNAL_TYPES`. */
+const SIGNAL_TYPES = new Set([
+  "offer",
+  "answer",
+  "ice",
+  "call-start",
+  "call-end",
+  "call-decline",
+]);
 
 /**
  * Where the socket lives.

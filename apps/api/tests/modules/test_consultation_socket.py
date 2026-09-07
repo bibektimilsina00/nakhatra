@@ -208,3 +208,57 @@ def test_an_event_with_nobody_listening_is_harmless(session: Session) -> None:
         f"/v1/consultations/{cid}/accept", headers={"Authorization": f"Bearer {pract_tok}"}
     )
     assert res.status_code == 200
+
+
+# --- call signalling ---
+
+
+def test_a_signal_reaches_the_other_party_only(session: Session) -> None:
+    """Offers and candidates are the one thing a client may pass onward."""
+    cid, _, seeker_tok, _, pract_tok = _consultation(session)
+    a = _open(cid, seeker_tok)
+    b = _open(cid, pract_tok)
+    try:
+        a.send_json({"type": "offer", "sdp": "v=0 fake", "video": True})
+        got = b.receive_json()
+        assert got["type"] == "offer"
+        assert got["sdp"] == "v=0 fake"
+        # Not echoed back, or a peer would answer its own offer.
+        a.send_json({"type": "ice", "candidate": {"candidate": "x"}})
+        assert b.receive_json()["type"] == "ice"
+    finally:
+        a.__exit__(None, None, None)
+        b.__exit__(None, None, None)
+
+
+def test_a_non_signal_frame_is_dropped(session: Session) -> None:
+    """The socket must not become an unmoderated side-channel."""
+    cid, _, seeker_tok, _, pract_tok = _consultation(session)
+    a = _open(cid, seeker_tok)
+    b = _open(cid, pract_tok)
+    try:
+        a.send_json({"type": "message", "message": {"body": "smuggled"}})
+        # Nothing relayed, so the next thing b sees is the real event that
+        # follows — proving the smuggled frame never arrived.
+        client.post(
+            f"/v1/consultations/{cid}/accept", headers={"Authorization": f"Bearer {pract_tok}"}
+        )
+        assert b.receive_json()["type"] == "state"
+    finally:
+        a.__exit__(None, None, None)
+        b.__exit__(None, None, None)
+
+
+def test_an_oversized_frame_is_dropped(session: Session) -> None:
+    cid, _, seeker_tok, _, pract_tok = _consultation(session)
+    a = _open(cid, seeker_tok)
+    b = _open(cid, pract_tok)
+    try:
+        a.send_json({"type": "offer", "sdp": "x" * 70_000, "video": False})
+        client.post(
+            f"/v1/consultations/{cid}/accept", headers={"Authorization": f"Bearer {pract_tok}"}
+        )
+        assert b.receive_json()["type"] == "state"
+    finally:
+        a.__exit__(None, None, None)
+        b.__exit__(None, None, None)

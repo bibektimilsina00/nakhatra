@@ -183,6 +183,20 @@ product.
 | **Twilio Video** | Reliable, good docs, one vendor for SMS/OTP too. | Being de-emphasised by Twilio; pricier; weaker in the region. |
 | **100ms / Daily** | Fast to integrate, good DX. | Less regional presence; another dependency. |
 
+> **What was actually built.** One-to-one calls do not need an SFU, and the
+> consultation already has a WebSocket that knows who is in the room — so
+> signalling rides that and the media goes peer-to-peer. No provider, no
+> account, no per-minute media cost.
+>
+> What that does not give us is the last mile: **a TURN relay**. On symmetric
+> NAT and many mobile carriers a peer-to-peer call never connects, which is
+> roughly one connection in five. `/v1/calls/ice` reports whether a relay is
+> configured and the call panel warns when it is not, so this fails loudly
+> rather than spinning. Set `TURN_URL`, `TURN_USERNAME` and `TURN_PASSWORD` —
+> a coturn box or a hosted relay — and it is a config change.
+>
+> Recording and group calls still need a provider. When that day comes:
+
 **Recommendation: LiveKit Cloud**, with Agora as the fallback if South Asian
 call quality proves poor in testing. LiveKit's egress covers recording, its
 token model matches the ephemeral-key pattern already built, and self-hosting
@@ -533,7 +547,7 @@ and independently useful.
 | **1** | Applications, verification queue, admin console, profiles, public directory with filters. No booking. | That supply exists and can be verified. | weeks |
 | **2** | Wallet, top-ups on both rails, ledger, holds. Payout runs, manual. | That money moves correctly before anything depends on it. | weeks |
 | **3** | Realtime **chat** consultations, per-minute metered. Chart grants. Notes. Reviews. | That the handoff is valuable and metering is trusted. **This is a coherent product on its own.** | weeks |
-| **4** | **Voice and video** on the media provider. Presence, ringing, reconnection, quality fallback, recording with consent. | That live sessions can be delivered on real Nepali networks. | weeks |
+| **4** | **Voice and video**, peer-to-peer over the consultation socket. Ringing, mute, camera, teardown. *Shipped without a media provider — see below.* | That live sessions can be delivered on real Nepali networks. **Not yet proven: needs TURN.** | weeks |
 | **5** | **Rituals**: catalogue, muhurta from the engine, bookings, deposits, fulfilment. | That the physical product works. | weeks |
 | **6** | Scale: ranking, packages, promotions, practitioner tiers. | Growth, once the base is sound. | ongoing |
 

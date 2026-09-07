@@ -49,6 +49,34 @@ async def leave(consultation_id: str, socket: WebSocket) -> None:
             _rooms.pop(consultation_id, None)
 
 
+async def relay(consultation_id: str, sender: WebSocket, event: dict) -> None:
+    """Pass one frame to the *other* party, and to nobody else.
+
+    Used only for WebRTC signalling — offers, answers and ICE candidates — which
+    two browsers must exchange and which no server needs to understand. It is
+    the one thing a client may send that reaches another client, and it is safe
+    for the reason it is useful: a signal changes no state, costs nothing, and
+    is meaningless outside the call it belongs to.
+
+    Not echoed to the sender, which would make a peer answer its own offer.
+    """
+    async with _lock:
+        others = [s for s in _rooms.get(consultation_id, ()) if s is not sender]
+
+    if not others:
+        return
+
+    payload = json.dumps(event, ensure_ascii=False)
+    dead: list[WebSocket] = []
+    for socket in others:
+        try:
+            await socket.send_text(payload)
+        except Exception:  # noqa: BLE001 -- any transport failure means gone
+            dead.append(socket)
+    for socket in dead:
+        await leave(consultation_id, socket)
+
+
 async def publish(consultation_id: str, event: dict) -> None:
     """Send one event to everyone watching this consultation.
 

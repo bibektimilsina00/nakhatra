@@ -8,6 +8,7 @@ nothing that costs money.
 from __future__ import annotations
 
 import asyncio
+import json
 
 from fastapi import APIRouter, Depends, WebSocket, WebSocketDisconnect
 from sqlmodel import Session
@@ -15,7 +16,7 @@ from sqlmodel import Session
 from app.core.db import SessionDep, get_engine
 from app.modules.auth.jwt_handler import decode_jwt_token
 from app.modules.auth.router_deps import get_current_user
-from app.modules.consultations import realtime, service
+from app.modules.consultations import calls, realtime, service
 from app.modules.consultations.schemas import (
     ConsultationOut,
     GrantOut,
@@ -27,7 +28,30 @@ from app.modules.consultations.schemas import (
 #: How long a socket has to send its auth frame before it is closed.
 AUTH_TIMEOUT_SECONDS = 10
 
+#: What a client may pass to the other party. Anything else is dropped, so the
+#: socket cannot become an unmoderated side-channel.
+SIGNAL_TYPES = frozenset({"offer", "answer", "ice", "call-start", "call-end", "call-decline"})
+
+#: An SDP with candidates inline is a few kilobytes. This is generous and still
+#: stops a socket being used to push megabytes at the other party.
+MAX_SIGNAL_BYTES = 64 * 1024
+
 router = APIRouter(prefix="/v1", tags=["consultations"])
+
+
+@router.get(
+    "/calls/ice",
+    response_model=calls.IceConfig,
+    summary="ICE servers for a browser placing a call",
+    description=(
+        "Served from settings rather than the client bundle, because TURN "
+        "credentials are credentials. `has_relay` is false when none is "
+        "configured, which the client shows as a warning — without a relay a "
+        "call fails on symmetric NAT and many mobile carriers."
+    ),
+)
+def ice(_user_id: str = Depends(get_current_user)) -> calls.IceConfig:
+    return calls.ice_config()
 
 
 @router.post("/consultations", response_model=ConsultationOut)
@@ -226,10 +250,20 @@ async def consultation_socket(websocket: WebSocket, consultation_id: str) -> Non
 
     try:
         while True:
-            # Nothing sent by a client changes state — every mutation goes
-            # through the HTTP routes, where it is authorised and, where it
-            # costs money, metered. This read exists to notice a disconnect.
-            await websocket.receive_text()
+            raw = await websocket.receive_text()
+
+            # Signalling is the one thing a client may send onward, and it goes
+            # only to the other party in this room. Everything that changes
+            # state still goes through the HTTP routes, where it is authorised
+            # and, where it costs money, metered.
+            if len(raw) > MAX_SIGNAL_BYTES:
+                continue
+            try:
+                frame = json.loads(raw)
+            except ValueError:
+                continue
+            if isinstance(frame, dict) and frame.get("type") in SIGNAL_TYPES:
+                await realtime.relay(consultation_id, websocket, frame)
     except WebSocketDisconnect:
         pass
     finally:

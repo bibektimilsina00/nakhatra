@@ -126,6 +126,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/calls/ice": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * ICE servers for a browser placing a call
+         * @description Served from settings rather than the client bundle, because TURN credentials are credentials. `has_relay` is false when none is configured, which the client shows as a warning — without a relay a call fails on symmetric NAT and many mobile carriers.
+         */
+        get: operations["ice_v1_calls_ice_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/chat": {
         parameters: {
             query?: never;
@@ -1368,6 +1388,22 @@ export interface components {
              */
             sign_index: number;
         };
+        /** IceConfig */
+        IceConfig: {
+            /** Has Relay */
+            has_relay: boolean;
+            /** Ice Servers */
+            ice_servers: components["schemas"]["IceServer"][];
+        };
+        /** IceServer */
+        IceServer: {
+            /** Credential */
+            credential?: string | null;
+            /** Urls */
+            urls: string[];
+            /** Username */
+            username?: string | null;
+        };
         /** KutaOut */
         KutaOut: {
             /** Description */
@@ -2454,6 +2490,37 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["TokenResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    ice_v1_calls_ice_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IceConfig"];
                 };
             };
             /** @description Validation Error */

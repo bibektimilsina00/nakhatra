@@ -39,6 +39,21 @@ class Settings(BaseSettings):
     #: the database, which is right for one machine and wrong for several.
     MEDIA_DIR: str = ""
 
+    # --- Calls ---
+    #
+    # STUN alone gets two browsers connected on most home and office networks.
+    # It does not on symmetric NAT and on many mobile carriers, which is
+    # roughly one connection in five — those need a TURN relay, and without one
+    # the call simply never connects while both sides show "connecting".
+    #
+    # Left empty, calls still work for most people and fail silently for the
+    # rest, so `/v1/calls/ice` reports whether a relay is configured and the
+    # client says so rather than spinning.
+    STUN_URLS: str = "stun:stun.l.google.com:19302,stun:stun1.l.google.com:19302"
+    TURN_URL: str = ""
+    TURN_USERNAME: str = ""
+    TURN_PASSWORD: str = ""
+
     # Google sign-in. Empty disables the endpoint rather than accepting any
     # audience — a blank client id would make every Google token valid here.
     GOOGLE_CLIENT_ID: str = ""

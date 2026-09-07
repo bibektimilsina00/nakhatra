@@ -1251,6 +1251,65 @@
         "title": "HouseOut",
         "type": "object"
       },
+      "IceConfig": {
+        "properties": {
+          "has_relay": {
+            "title": "Has Relay",
+            "type": "boolean"
+          },
+          "ice_servers": {
+            "items": {
+              "$ref": "#/components/schemas/IceServer"
+            },
+            "title": "Ice Servers",
+            "type": "array"
+          }
+        },
+        "required": [
+          "ice_servers",
+          "has_relay"
+        ],
+        "title": "IceConfig",
+        "type": "object"
+      },
+      "IceServer": {
+        "properties": {
+          "credential": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Credential"
+          },
+          "urls": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Urls",
+            "type": "array"
+          },
+          "username": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Username"
+          }
+        },
+        "required": [
+          "urls"
+        ],
+        "title": "IceServer",
+        "type": "object"
+      },
       "KutaOut": {
         "properties": {
           "description": {
@@ -3550,6 +3609,56 @@
         "summary": "Create an account",
         "tags": [
           "auth"
+        ]
+      }
+    },
+    "/v1/calls/ice": {
+      "get": {
+        "description": "Served from settings rather than the client bundle, because TURN credentials are credentials. `has_relay` is false when none is configured, which the client shows as a warning \u2014 without a relay a call fails on symmetric NAT and many mobile carriers.",
+        "operationId": "ice_v1_calls_ice_get",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IceConfig"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "ICE servers for a browser placing a call",
+        "tags": [
+          "consultations"
         ]
       }
     },
