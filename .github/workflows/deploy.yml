@@ -66,6 +66,7 @@ jobs:
             NEXT_PUBLIC_POSTHOG_HOST=${{ secrets.NEXT_PUBLIC_POSTHOG_HOST }}
             NEXT_PUBLIC_UMAMI_WEBSITE_ID=${{ secrets.NEXT_PUBLIC_UMAMI_WEBSITE_ID }}
             NEXT_PUBLIC_UMAMI_HOST=${{ secrets.NEXT_PUBLIC_UMAMI_HOST }}
+            NEXT_PUBLIC_GOOGLE_CLIENT_ID=${{ secrets.NEXT_PUBLIC_GOOGLE_CLIENT_ID }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -127,10 +128,14 @@ jobs:
             LLM_API_KEY="${{ secrets.LLM_API_KEY }}"
             LLM_MODEL="${{ secrets.LLM_MODEL }}"
             JWT_SECRET="${{ secrets.JWT_SECRET }}"
+            GOOGLE_CLIENT_ID="${{ secrets.NEXT_PUBLIC_GOOGLE_CLIENT_ID }}"
+            GOOGLE_CLIENT_SECRET="${{ secrets.GOOGLE_CLIENT_SECRET }}"
+            CORS_ORIGINS='["https://nakhatra.com","https://www.nakhatra.com"]'
             NEXT_PUBLIC_POSTHOG_KEY="${{ secrets.NEXT_PUBLIC_POSTHOG_KEY }}"
             NEXT_PUBLIC_POSTHOG_HOST="${{ secrets.NEXT_PUBLIC_POSTHOG_HOST }}"
             NEXT_PUBLIC_UMAMI_WEBSITE_ID="${{ secrets.NEXT_PUBLIC_UMAMI_WEBSITE_ID }}"
             NEXT_PUBLIC_UMAMI_HOST="${{ secrets.NEXT_PUBLIC_UMAMI_HOST }}"
+            NEXT_PUBLIC_GOOGLE_CLIENT_ID="${{ secrets.NEXT_PUBLIC_GOOGLE_CLIENT_ID }}"
             EOF
 
             # 4. Pull microservice container images
@@ -201,12 +206,39 @@ jobs:
               fi
             fi
 
-            # 7. Clean up unused images to preserve VPS disk space
+            # 7. Prove the stack is actually serving before calling this a success.
+            #    A previous image was missing half its dependencies and
+            #    crash-looped 84 times while this job reported ✅, because
+            #    nothing ever asked the containers whether they came up.
+            echo "Waiting for the API to answer /health..."
+            for i in $(seq 1 30); do
+              curl -fsS http://127.0.0.1:28001/health >/dev/null 2>&1 && { API_UP=1; break; }
+              sleep 2
+            done
+            if [ -z "$API_UP" ]; then
+              echo "::error::API never became healthy. Last 40 lines:"
+              docker logs --tail 40 nakhatra_api 2>&1 || true
+              exit 1
+            fi
+            echo "API healthy."
+
+            echo "Waiting for the web app..."
+            for i in $(seq 1 30); do
+              curl -fsS -o /dev/null http://127.0.0.1:3000 2>/dev/null && { WEB_UP=1; break; }
+              sleep 2
+            done
+            if [ -z "$WEB_UP" ]; then
+              echo "::error::Web app never responded. Last 40 lines:"
+              docker logs --tail 40 nakhatra_web 2>&1 || true
+              exit 1
+            fi
+            echo "Web healthy."
+
+            # 8. Clean up unused images to preserve VPS disk space
             docker image prune -f
 
             echo "========================================="
             echo "✅ Nakhatra Microservices Stack Deployed Successfully!"
-            echo "🌐 Web App Live at: http://${{ env.SERVER_HOST }}:3000"
-            echo "🌐 Web App (Alt Port): http://${{ env.SERVER_HOST }}:29000"
-            echo "🔌 FastAPI Backend: http://${{ env.SERVER_HOST }}:28001/health"
+            echo "🌐 Web:  https://nakhatra.com        (Caddy -> 127.0.0.1:3000)"
+            echo "🔌 API:  https://api.nakhatra.com/health (Caddy -> 127.0.0.1:28001)"
             echo "========================================="

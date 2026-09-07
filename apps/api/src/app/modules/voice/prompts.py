@@ -17,9 +17,7 @@ _LANGUAGE_INSTRUCTIONS: dict[str, str] = {
 }
 
 
-def build_realtime_prompt(
-    chart: ChartOut, birth: BirthDetailsIn, language: str = "en"
-) -> str:
+def build_realtime_prompt(chart: ChartOut, birth: BirthDetailsIn, language: str = "en") -> str:
     periods = chart.dasha.periods
     maha = periods[0] if periods else None
     antar = periods[1] if len(periods) > 1 else None
@@ -31,9 +29,7 @@ def build_realtime_prompt(
         + ")"
         for p in chart.planets
     )
-    vargas = "\n".join(
-        f"- {v.code} ({v.name}): Lagna in {v.lagna_sign}" for v in chart.vargas[:5]
-    )
+    vargas = "\n".join(f"- {v.code} ({v.name}): Lagna in {v.lagna_sign}" for v in chart.vargas[:5])
 
     return f"""You are an authentic, wise, and grounded Vedic Astrologer (Jyotishi) conducting a live 1-on-1 audio consultation.
 

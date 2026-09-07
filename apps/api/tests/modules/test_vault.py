@@ -94,9 +94,9 @@ def test_out_of_range_coordinates_are_rejected(field: str, value: float) -> None
 
 def test_session_list_omits_message_bodies() -> None:
     headers = _auth()
-    session_id = client.post(
-        "/v1/vault/sessions", json={"title": "T"}, headers=headers
-    ).json()["id"]
+    session_id = client.post("/v1/vault/sessions", json={"title": "T"}, headers=headers).json()[
+        "id"
+    ]
     client.post(
         f"/v1/vault/sessions/{session_id}/messages",
         json={"sender": "user", "content": "hello"},
@@ -113,9 +113,9 @@ def test_session_list_omits_message_bodies() -> None:
 def test_another_users_rows_are_not_reachable() -> None:
     owner, intruder = _auth(), _auth()
     kundali_id = client.post("/v1/vault/kundalis", json=KUNDALI, headers=owner).json()["id"]
-    session_id = client.post(
-        "/v1/vault/sessions", json={"title": "Private"}, headers=owner
-    ).json()["id"]
+    session_id = client.post("/v1/vault/sessions", json={"title": "Private"}, headers=owner).json()[
+        "id"
+    ]
 
     assert client.get("/v1/vault/kundalis", headers=intruder).json() == []
     assert client.get("/v1/vault/sessions", headers=intruder).json() == []

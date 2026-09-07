@@ -28,3 +28,16 @@ def get_current_user(authorization: str | None = Header(None)) -> str:
         raise NotAuthenticatedError("Invalid or expired token.")
 
     return str(payload["sub"])
+
+
+def get_optional_user(authorization: str | None = Header(None)) -> str | None:
+    """The user id when signed in, `None` when not.
+
+    A public page that shows one extra thing to a signed-in reader — whether
+    they already follow this practitioner — must not 401 the anonymous reader
+    who is deciding whether to sign up at all.
+    """
+    try:
+        return get_current_user(authorization)
+    except NotAuthenticatedError:
+        return None

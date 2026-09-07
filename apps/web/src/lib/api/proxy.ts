@@ -17,7 +17,12 @@ const API_URL = process.env.FASTAPI_URL || process.env.NAKHATRA_API_URL || proce
 export async function proxy(req: Request, path: string): Promise<NextResponse> {
   try {
     const auth = req.headers.get("authorization");
-    const res = await fetch(`${API_URL}${path}`, {
+    // Query strings are forwarded. Without this a filtered request arrived
+    // upstream unfiltered and returned everything — which reads as "the filter
+    // does nothing" rather than as an error. `/places` had already hand-rolled
+    // its own route to work around it.
+    const search = new URL(req.url).search;
+    const res = await fetch(`${API_URL}${path}${search}`, {
       method: req.method,
       headers: {
         "Content-Type": "application/json",

@@ -89,9 +89,7 @@ def _edit_distance(a: str, b: str, cap: int) -> int:
         current = [i]
         best = i
         for j, cb in enumerate(b, 1):
-            current.append(
-                min(previous[j] + 1, current[j - 1] + 1, previous[j - 1] + (ca != cb))
-            )
+            current.append(min(previous[j] + 1, current[j - 1] + 1, previous[j - 1] + (ca != cb)))
             best = min(best, current[-1])
         if best > cap:
             return cap + 1
@@ -142,9 +140,7 @@ _RANGE_END = "\uffff"
 
 
 def _prefix_search(db: sqlite3.Connection, term: str, limit: int) -> list[sqlite3.Row]:
-    return db.execute(
-        _PREFIX_SQL, (term, term, term + _RANGE_END, limit)
-    ).fetchall()
+    return db.execute(_PREFIX_SQL, (term, term, term + _RANGE_END, limit)).fetchall()
 
 
 def _fuzzy_search(db: sqlite3.Connection, term: str, limit: int) -> list[sqlite3.Row]:
@@ -184,9 +180,7 @@ def _fuzzy_search(db: sqlite3.Connection, term: str, limit: int) -> list[sqlite3
     ).fetchall()
 
     # Closest spelling first, then the place someone most likely meant.
-    return sorted(rows, key=lambda r: (distance[r["matched_term"]], -r["population"]))[
-        :limit
-    ]
+    return sorted(rows, key=lambda r: (distance[r["matched_term"]], -r["population"]))[:limit]
 
 
 def search(query: str, limit: int = 20) -> list[sqlite3.Row]:

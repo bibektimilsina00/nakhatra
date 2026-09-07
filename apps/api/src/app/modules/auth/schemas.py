@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime
 
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, EmailStr, Field, model_validator
 
 from app.modules.auth.jwt_handler import TOKEN_TTL_SECONDS
 
@@ -23,10 +23,52 @@ class UserLoginIn(BaseModel):
     password: str = Field(..., min_length=1)
 
 
+class GoogleSignInIn(BaseModel):
+    """One Google sign-in, arriving by either of the two flows Google offers.
+
+    `code` is the web client's: a popup auth-code flow, which is the only way
+    to start sign-in from a button we designed ourselves. `credential` is an
+    ID token handed straight to the page, which is what a native mobile Google
+    Sign-In returns. Both end at the same verified identity.
+    """
+
+    code: str | None = Field(default=None, min_length=1, max_length=2048)
+    credential: str | None = Field(default=None, min_length=1, max_length=4096)
+
+    @model_validator(mode="after")
+    def _exactly_one(self) -> GoogleSignInIn:
+        if bool(self.code) == bool(self.credential):
+            raise ValueError("Send exactly one of `code` or `credential`.")
+        return self
+
+
+class ProfileUpdateIn(BaseModel):
+    """What a person may change about themselves.
+
+    Not the email: it is the login identity and the key Google sign-in matches
+    on, so changing it is an account-recovery flow rather than a text field.
+    Not the role either — an account cannot promote itself.
+    """
+
+    full_name: str = Field(..., min_length=1, max_length=100)
+
+
+class PasswordChangeIn(BaseModel):
+    #: Proof it is really them. A session token is not enough — a borrowed
+    #: laptop is exactly the case this stops.
+    current_password: str = Field(..., min_length=1)
+    new_password: str = Field(..., min_length=8, max_length=100)
+
+
 class UserProfileOut(BaseModel):
     id: str
     email: str
     full_name: str
+    #: `seeker` | `practitioner` | `admin`. Additive, and never trusted for
+    #: authorisation — every protected route checks the role server-side. This
+    #: exists so the interface can offer the review queue to someone who can
+    #: actually open it, rather than to everyone.
+    role: str = "seeker"
     # Typed as a datetime rather than the column's TEXT. ISO-8601 serialises
     # identically, so this is not a wire change — but it survives Phase 9 turning
     # the column into a real timestamp.

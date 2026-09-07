@@ -28,13 +28,20 @@ services:
     container_name: nakhatra_api
     restart: always
     ports:
-      - "28001:8000"
+      # Loopback only: Caddy on the host terminates TLS for api.nakhatra.com and
+      # proxies here. Published on 0.0.0.0 this was a second, unencrypted door
+      # into the same API.
+      - "127.0.0.1:28001:8000"
     environment:
       - ENV=production
       - DATABASE_URL=postgresql://${POSTGRES_USER:-nakhatra}:${POSTGRES_PASSWORD:-nakhatrapassword}@nakhatra_postgres:5432/${POSTGRES_DB:-nakhatra}
-      - LLM_BASE_URL=${AGENT_ROUTER_BASE_URL:-https://agentrouter.org/v1}
+      - LLM_BASE_URL=${LLM_BASE_URL:-https://openrouter.ai/api}
       - LLM_API_KEY=${AGENT_ROUTER_API_KEY}
       - LLM_MODEL=${AGENT_ROUTER_MODEL:-gpt-4o-mini}
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+      - CORS_ORIGINS=${CORS_ORIGINS:-[]}
+      - JWT_SECRET=${JWT_SECRET}
     depends_on:
       nakhatra_postgres:
         condition: service_healthy

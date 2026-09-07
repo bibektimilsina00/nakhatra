@@ -7,16 +7,21 @@ envelope both clients parse. Routers do not catch anything.
 
 from __future__ import annotations
 
+import secrets
 import uuid
 from datetime import UTC, datetime
 
 from sqlmodel import Session
 
 from app.core.errors import AppError, NotFoundError
+from app.integrations.google_identity import exchange_code_for_id_token, verify_id_token
 from app.modules.auth import hashing, repository
 from app.modules.auth.jwt_handler import create_jwt_token
 from app.modules.auth.models import User
 from app.modules.auth.schemas import (
+    GoogleSignInIn,
+    PasswordChangeIn,
+    ProfileUpdateIn,
     TokenResponse,
     UserLoginIn,
     UserProfileOut,
@@ -82,6 +87,38 @@ def login(session: Session, body: UserLoginIn) -> TokenResponse:
     return _token_for(_profile(row))
 
 
+def sign_in_with_google(session: Session, body: GoogleSignInIn) -> TokenResponse:
+    """Exchange a verified Google ID token for one of ours.
+
+    Accounts are matched on email. Google only ever gets here with
+    `email_verified` true, so an existing password account with the same address
+    is the same person and is signed in rather than refused — refusing would
+    leave them with two accounts and no way to merge them.
+
+    A user created this way gets a random password hash rather than a nullable
+    column: no migration, and no row where "no password" and "empty password"
+    look alike. They cannot log in with a password because nobody, including
+    them, knows what it is.
+    """
+    # The popup flow hands us a one-use code; the mobile flow hands us the ID
+    # token directly. Everything after this line is identical.
+    id_token = exchange_code_for_id_token(body.code) if body.code else body.credential
+    identity = verify_id_token(id_token)  # type: ignore[arg-type]
+
+    row = repository.find_by_email(session, identity.email)
+    if row is None:
+        row = repository.create(
+            session,
+            user_id=f"usr_{uuid.uuid4().hex[:12]}",
+            email=identity.email,
+            password_hash=hashing.hash_password(secrets.token_urlsafe(32)),
+            full_name=identity.full_name,
+            created_at=datetime.now(UTC).isoformat(),
+        )
+
+    return _token_for(_profile(row))
+
+
 def get_profile(session: Session, user_id: str) -> UserProfileOut:
     row = repository.find_by_id(session, user_id)
     if not row:
@@ -89,11 +126,44 @@ def get_profile(session: Session, user_id: str) -> UserProfileOut:
     return _profile(row)
 
 
+def update_profile(session: Session, user_id: str, body: ProfileUpdateIn) -> UserProfileOut:
+    row = repository.find_by_id(session, user_id)
+    if not row:
+        raise UserNotFoundError()
+    row.full_name = body.full_name.strip()
+    session.add(row)
+    session.commit()
+    session.refresh(row)
+    return _profile(row)
+
+
+def change_password(session: Session, user_id: str, body: PasswordChangeIn) -> UserProfileOut:
+    """Replace the password, on proof of the current one.
+
+    An account created through Google has a random hash nobody knows, so this
+    refuses for them — which is correct: there is no password to change, and
+    they sign in the way they always have.
+    """
+    row = repository.find_by_id(session, user_id)
+    if not row:
+        raise UserNotFoundError()
+    if not hashing.verify_password(body.current_password, row.password_hash):
+        raise InvalidCredentialsError()
+    repository.update_password_hash(session, row, hashing.hash_password(body.new_password))
+    return _profile(row)
+
+
 def _profile(row: User) -> UserProfileOut:
     """Table row to wire shape. `password_hash` is not in `UserProfileOut`, and
     mapping explicitly is what keeps it that way."""
     return UserProfileOut(
-        id=row.id, email=row.email, full_name=row.full_name, created_at=row.created_at
+        id=row.id,
+        email=row.email,
+        full_name=row.full_name,
+        # NULL on every row written before the column existed, and on any row a
+        # client that predates it writes. Both mean an ordinary user.
+        role=row.role or "seeker",
+        created_at=row.created_at,
     )
 
 

@@ -1,12 +1,13 @@
 """Voice business logic: synthesis, transcription, realtime session minting.
 
-OpenAI-specific. TTS, Whisper and the Realtime API have no AgentRouter
+OpenAI-specific. TTS, Whisper and the Realtime API have no OpenRouter
 equivalent, so this module talks to OpenAI directly rather than through
 `integrations/llm.py`, which is the Anthropic-wire client.
 """
 
 from __future__ import annotations
 
+import asyncio
 import logging
 
 import httpx
@@ -27,15 +28,18 @@ logger = logging.getLogger(__name__)
 
 OPENAI_BASE = "https://api.openai.com/v1"
 TTS_MODEL = "tts-1"
+#: Spacing and retries for the free fallback engine, which throttles on bursts.
+_CHUNK_GAP_SECONDS = 0.12
+_CHUNK_ATTEMPTS = 3
 TRANSCRIBE_MODEL = "whisper-1"
 TIMEOUT = httpx.Timeout(30.0, connect=10.0)
 
 # Tried in order; the first the account has access to wins.
 REALTIME_MODELS = (
-    "gpt-4o-mini-realtime-preview-2024-12-17",
-    "gpt-4o-realtime-preview-2024-12-17",
+    "gpt-realtime",
     "gpt-4o-realtime-preview",
     "gpt-4o-mini-realtime-preview",
+    "gpt-4o-realtime-preview-2024-12-17",
 )
 
 _TTS_LANGUAGE_CODES = {"ne": "ne-NP", "hi": "hi-IN", "en": "en-US"}
@@ -79,9 +83,7 @@ async def speak(req: SpeakRequest) -> SpeakResponse:
         raise VoiceUnavailableError("Could not synthesise audio right now.")
 
     cache.write(name, audio)
-    return SpeakResponse(
-        audio_url=audio_url(name), spoken_text=spoken, cached=False, source=source
-    )
+    return SpeakResponse(audio_url=audio_url(name), spoken_text=spoken, cached=False, source=source)
 
 
 def audio_url(name: str) -> str:
@@ -119,21 +121,61 @@ async def _fallback_speech(text: str, language_code: str) -> bytes:
 
     Its query string is length-limited, which is why `split_into_chunks` splits
     on sentence boundaries rather than slicing.
+
+    A failed chunk used to `break` and return whatever had arrived, so a rate
+    limit two sentences in produced a reading that stopped after the heading and
+    was played as though it were the whole thing. This engine throttles quickly,
+    which made that the normal outcome for a long answer rather than a rare one.
+    So: retry a chunk before giving up on it, and if it still will not come,
+    return nothing. A caller that gets no audio says so; one that gets half a
+    reading cannot tell, and neither can the listener.
     """
     chunks = split_into_chunks(text)
-    audio = b""
+    parts: list[bytes] = []
+
     async with httpx.AsyncClient(timeout=TIMEOUT) as client:
-        for chunk in chunks:
+        for index, chunk in enumerate(chunks):
+            content = await _fallback_chunk(client, chunk, language_code)
+            if content is None:
+                logger.warning(
+                    "fallback tts gave up at chunk %d/%d; discarding %d chunks "
+                    "rather than reading a truncated answer aloud",
+                    index + 1,
+                    len(chunks),
+                    len(parts),
+                )
+                return b""
+            parts.append(content)
+            # The engine throttles on bursts. A short gap between sentences
+            # costs less than the retry it avoids.
+            if index + 1 < len(chunks):
+                await asyncio.sleep(_CHUNK_GAP_SECONDS)
+
+    return b"".join(parts)
+
+
+async def _fallback_chunk(
+    client: httpx.AsyncClient, chunk: str, language_code: str
+) -> bytes | None:
+    """One sentence, with retries. `None` once it is genuinely unavailable."""
+    for attempt in range(_CHUNK_ATTEMPTS):
+        try:
             res = await client.get(
                 "https://translate.google.com/translate_tts",
                 params={"ie": "UTF-8", "q": chunk, "tl": language_code, "client": "tw-ob"},
                 headers={"User-Agent": "Mozilla/5.0"},
             )
-            if res.status_code != 200:
-                logger.warning("fallback tts chunk failed: %s", res.status_code)
-                break
-            audio += res.content
-    return audio
+        except httpx.HTTPError as exc:
+            logger.warning("fallback tts chunk error: %s", exc)
+            res = None
+
+        if res is not None and res.status_code == 200 and res.content:
+            return res.content
+
+        # Backs off, because the failure this hits is a rate limit.
+        await asyncio.sleep(_CHUNK_GAP_SECONDS * (attempt + 1) * 2)
+
+    return None
 
 
 # --- Transcription ---
@@ -182,47 +224,81 @@ async def create_realtime_session(req: RealtimeSessionRequest) -> RealtimeSessio
         # Instructions are returned either way: the client shows them in its
         # debug panel, and a special case that omits them is a second shape to
         # handle for no benefit.
-        return RealtimeSessionResponse(
-            fallback="media_recorder_whisper", instructions=instructions
-        )
+        return RealtimeSessionResponse(fallback="media_recorder_whisper", instructions=instructions)
 
-    payload = {
-        "voice": req.voice,
-        "instructions": instructions,
-        "input_audio_transcription": {"model": TRANSCRIBE_MODEL},
-        "turn_detection": {
-            "type": "server_vad",
-            "threshold": 0.5,
-            "prefix_padding_ms": 300,
-            "silence_duration_ms": 600,
-        },
-    }
+    def session(model: str) -> dict:
+        """The session as the current API wants it.
+
+        `POST /realtime/sessions` was retired and now answers `404 Invalid URL`
+        for every model — which the old loop treated as "this tier lacks
+        access" and fell back from, silently, forever. Voice and turn detection
+        moved under `audio.input` / `audio.output` at the same time.
+        """
+        return {
+            "type": "realtime",
+            "model": model,
+            "instructions": instructions,
+            "audio": {
+                "input": {
+                    "transcription": {"model": TRANSCRIBE_MODEL},
+                    # Server-side cleanup of the caller's microphone, on top of
+                    # the browser's own echo cancellation. `near_field` is the
+                    # right profile for a laptop or a headset held close.
+                    "noise_reduction": {"type": "near_field"},
+                    # Semantic rather than energy-based. `server_vad` answers
+                    # anything louder than a threshold, so a door, a cough or a
+                    # television started a turn and the astrologer replied to
+                    # noise. This one judges whether a *thought* finished, which
+                    # is the difference between "heard a sound" and "was asked
+                    # something". It also stops cutting people off mid-sentence
+                    # when they pause to think, which a fixed silence timer does.
+                    "turn_detection": {
+                        "type": "semantic_vad",
+                        "eagerness": "medium",
+                        "create_response": True,
+                        # Half-duplex, deliberately. Talking over the astrologer
+                        # sounds good in a demo and is miserable in a room with
+                        # any noise in it: the reply gets cut off by a cough and
+                        # nobody can tell why. The caller stops it themselves
+                        # when they want the turn, and the microphone is muted
+                        # while it speaks so nothing else can.
+                        "interrupt_response": False,
+                    },
+                },
+                "output": {"voice": req.voice, "speed": 1.0},
+            },
+        }
 
     async with httpx.AsyncClient(timeout=TIMEOUT) as client:
         for model in REALTIME_MODELS:
             try:
                 res = await client.post(
-                    f"{OPENAI_BASE}/realtime/sessions",
-                    headers={
-                        "Authorization": f"Bearer {key}",
-                        "OpenAI-Beta": "realtime=v1",
-                    },
-                    json={"model": model, **payload},
+                    f"{OPENAI_BASE}/realtime/client_secrets",
+                    headers={"Authorization": f"Bearer {key}"},
+                    json={"session": session(model)},
                 )
             except httpx.HTTPError as exc:
                 logger.warning("realtime session request failed for %s: %s", model, exc)
                 continue
 
             if res.status_code == 200:
-                secret = (res.json().get("client_secret") or {}).get("value")
+                secret = res.json().get("value")
                 if secret:
                     return RealtimeSessionResponse(
                         client_secret=secret, model=model, instructions=instructions
                     )
 
+            # This was a bare `continue`. A retired endpoint and an account
+            # without access looked identical from the outside, which is how a
+            # 404 went unnoticed long enough to become "live voice is buggy".
+            logger.warning(
+                "realtime session refused for %s: %s %s",
+                model,
+                res.status_code,
+                res.text[:200],
+            )
+
     # Not an error: the client has a working path without a live session, and
-    # the Realtime API is simply not on every account tier.
+    # the Realtime API is not on every account tier.
     logger.info("realtime unavailable on all candidate models; client will fall back")
-    return RealtimeSessionResponse(
-        fallback="media_recorder_whisper", instructions=instructions
-    )
+    return RealtimeSessionResponse(fallback="media_recorder_whisper", instructions=instructions)

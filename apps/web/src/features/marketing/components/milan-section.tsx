@@ -1,21 +1,30 @@
+"use client";
+
 import Link from "next/link";
 
 import { KUTAS } from "@/features/marketing/data/demo";
+import { useLatinTracking, useMarketing } from "@/lib/i18n/language-context";
 
 /** Ashtakoota matching, broken down koota by koota. */
 export function MilanSection() {
+  const c = useMarketing().milan;
+  const eyebrow = useLatinTracking("uppercase tracking-[0.22em]");
+  const micro = useLatinTracking("uppercase tracking-[0.18em]");
+  const pill = useLatinTracking("uppercase tracking-[0.14em]");
+  const label = useLatinTracking("uppercase tracking-[0.2em]");
+
   return (
     <section id="milan" className="bg-ink2 py-24">
       <div className="mx-auto grid max-w-[1360px] items-center gap-14 px-8 lg:grid-cols-2 lg:gap-20">
         <div>
-          <span className="font-mono text-[11px] uppercase tracking-[0.22em] text-gold">Kundali Milan</span>
-          <h2 className="mt-4 font-disp text-[30px] font-bold leading-[1.12] tracking-[-0.015em] text-paper sm:text-[38px]">Ashtakoota matching, with the reasoning shown</h2>
-          <p className="mt-4 text-[15.5px] leading-[1.7] text-muted">All eight kutas for the full 36 gunas, Manglik dosha checked on both sides with cancellation rules applied — and the score broken down koota by koota rather than handed over as one number.</p>
+          <span className={`font-mono text-[11px] text-gold ${eyebrow}`}>{c.eyebrow}</span>
+          <h2 className="mt-4 font-disp text-[30px] font-bold leading-[1.12] tracking-[-0.015em] text-paper sm:text-[38px]">{c.title}</h2>
+          <p className="mt-4 text-[15.5px] leading-[1.7] text-muted">{c.sub}</p>
 
           <dl className="mt-9 max-w-md border-t border-white/[0.09] text-[13.5px]">
-            <div className="flex items-baseline justify-between gap-4 border-b border-white/[0.06] py-3"><dt className="text-muted">Kutas computed</dt><dd className="font-mono text-paper">8 of 8</dd></div>
-            <div className="flex items-baseline justify-between gap-4 border-b border-white/[0.06] py-3"><dt className="text-muted">Dosha checked</dt><dd className="font-mono text-paper">Manglik, both sides</dd></div>
-            <div className="flex items-baseline justify-between gap-4 py-3"><dt className="text-muted">Cancellation rules</dt><dd className="font-mono text-paper">Applied</dd></div>
+            <div className="flex items-baseline justify-between gap-4 border-b border-white/[0.06] py-3"><dt className="text-muted">{c.kutasLabel}</dt><dd className="font-mono text-paper">{c.kutasValue}</dd></div>
+            <div className="flex items-baseline justify-between gap-4 border-b border-white/[0.06] py-3"><dt className="text-muted">{c.doshaLabel}</dt><dd className="font-mono text-paper">{c.doshaValue}</dd></div>
+            <div className="flex items-baseline justify-between gap-4 py-3"><dt className="text-muted">{c.rulesLabel}</dt><dd className="font-mono text-paper">{c.rulesValue}</dd></div>
           </dl>
 
           {/* There is a real matching page; this is not a marketing anchor. */}
@@ -36,12 +45,12 @@ export function MilanSection() {
                       <path d="M0 0 L100 100 M100 0 L0 100" strokeOpacity=".18"/>
                     </g>
                   </svg>
-                  <div className="mt-3 font-mono text-[9.5px] uppercase tracking-[0.18em] text-gold">Bride</div>
-                  <div className="mt-1.5 font-mono text-[10.5px] leading-relaxed text-faint">Taurus lagna<br/>Moon Rohini</div>
+                  <div className={`mt-3 font-mono text-[9.5px] text-gold ${micro}`}>{c.bride}</div>
+                  <div className="mt-1.5 font-mono text-[10.5px] leading-relaxed text-faint">{c.brideChart[0]}<br/>{c.brideChart[1]}</div>
                 </div>
             <div className="shrink-0 text-center">
               <div className="font-mono text-[46px] font-bold leading-none tracking-tight text-gold">28<span className="text-[20px] text-faint">/36</span></div>
-              <div className="mt-2.5 inline-block rounded-full border border-emerald-400/30 bg-emerald-400/10 px-2.5 py-0.5 font-mono text-[9.5px] uppercase tracking-[0.14em] text-emerald-300/90">Good</div>
+              <div className={`mt-2.5 inline-block rounded-full border border-emerald-400/30 bg-emerald-400/10 px-2.5 py-0.5 font-mono text-[9.5px] text-emerald-300/90 ${pill}`}>{c.verdict}</div>
             </div>
             <div className="flex-1 text-center">
                   <svg viewBox="-1 -1 102 102" className="mx-auto w-full max-w-[104px]">
@@ -50,22 +59,22 @@ export function MilanSection() {
                       <path d="M0 0 L100 100 M100 0 L0 100" strokeOpacity=".18"/>
                     </g>
                   </svg>
-                  <div className="mt-3 font-mono text-[9.5px] uppercase tracking-[0.18em] text-gold">Groom</div>
-                  <div className="mt-1.5 font-mono text-[10.5px] leading-relaxed text-faint">Leo lagna<br/>Moon Magha</div>
+                  <div className={`mt-3 font-mono text-[9.5px] text-gold ${micro}`}>{c.groom}</div>
+                  <div className="mt-1.5 font-mono text-[10.5px] leading-relaxed text-faint">{c.groomChart[0]}<br/>{c.groomChart[1]}</div>
                 </div>
           </div>
 
           <div className="p-7 sm:p-8">
             <div className="mb-5 flex items-baseline justify-between gap-4">
-              <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-gold">Koota by koota</span>
-              <span className="font-mono text-[10px] text-faint">Bar length = what it is worth</span>
+              <span className={`font-mono text-[10px] text-gold ${label}`}>{c.kootaByKoota}</span>
+              <span className="font-mono text-[10px] text-faint">{c.barNote}</span>
             </div>
             <ul className="space-y-3.5">
-              {KUTAS.map(([name, g, m]) => {
+              {KUTAS.map(([, g, m], ki) => {
                 const zero = g === 0;
                 return (
-                  <li key={name} className="grid grid-cols-[92px_1fr_44px] items-center gap-4 text-[13px]">
-                    <span className={zero ? "text-rose-300/85" : "text-muted"}>{name}</span>
+                  <li key={c.kutaNames[ki]} className="grid grid-cols-[92px_1fr_44px] items-center gap-4 text-[13px]">
+                    <span className={zero ? "text-rose-300/85" : "text-muted"}>{c.kutaNames[ki]}</span>
                     <span className="flex h-2 items-center">
                       {/* Width is what the kuta is worth out of eight; the fill is
                           what it scored. Scaling each bar to its own maximum made
@@ -91,16 +100,16 @@ export function MilanSection() {
             {/* The dosha the copy promises, actually shown. */}
             <div className="mt-7 rounded-[8px] border border-white/[0.09] bg-ink/50 p-4">
               <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-                <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-gold">Manglik</span>
-                <span className="font-mono text-[11.5px] text-muted">Bride <span className="text-rose-400/85">yes</span></span>
-                <span className="font-mono text-[11.5px] text-muted">Groom <span className="text-rose-400/85">yes</span></span>
-                <span className="ml-auto rounded-full border border-emerald-400/30 bg-emerald-400/10 px-2.5 py-0.5 font-mono text-[9.5px] uppercase tracking-[0.14em] text-emerald-300/90">Cancelled</span>
+                <span className={`font-mono text-[10px] text-gold ${micro}`}>{c.manglik}</span>
+                <span className="font-mono text-[11.5px] text-muted">{c.bride} <span className="text-rose-400/85">{c.yes}</span></span>
+                <span className="font-mono text-[11.5px] text-muted">{c.groom} <span className="text-rose-400/85">{c.yes}</span></span>
+                <span className={`ml-auto rounded-full border border-emerald-400/30 bg-emerald-400/10 px-2.5 py-0.5 font-mono text-[9.5px] text-emerald-300/90 ${pill}`}>{c.cancelled}</span>
               </div>
-              <p className="mt-2.5 text-[12.5px] leading-[1.7] text-faint">Present on both sides, which cancels it — the classical rule, rather than flagging one chart and alarming the couple.</p>
+              <p className="mt-2.5 text-[12.5px] leading-[1.7] text-faint">{c.manglikNote}</p>
             </div>
 
             <p className="mt-6 border-t border-white/[0.07] pt-5 text-[12.5px] leading-[1.7] text-faint">
-              Illustrative. Bhakoot at zero is exactly the result worth reading the reasoning for, rather than reading the total — it costs seven of the eight points lost here.
+              {c.illustrative}
             </p>
           </div>
         </div>

@@ -405,7 +405,7 @@ backend's import-linter contracts (§4) — same principle, same reason.
 | DB | Postgres 16 | JSONB for charts |
 | Cache | Redis | Sessions, geocoder cache, rate limits |
 | Queue | **none yet** | See §6. Add `arq` (not Celery) when a real background job exists. |
-| LLM | Claude Opus 5 (`claude-opus-5`) **via AgentRouter** | Anthropic-wire-compatible: official `anthropic` SDK + `base_url` override, bare model IDs. Going direct later is a `.env` change. See [`ai-astrologer.md`](ai-astrologer.md) |
+| LLM | Gemini 3.6 Flash (`google/gemini-3.6-flash`) **via OpenRouter** | OpenRouter serves Anthropic's wire at `/v1/messages`: official `anthropic` SDK + `base_url` override, namespaced model IDs. Changing model or provider is a `.env` change. See [`ai-astrologer.md`](ai-astrologer.md) |
 | Web | Next.js App Router, TanStack Query, Zustand, Tailwind, shadcn/ui | — |
 | Mobile | Flutter, `flutter_bloc`, `get_it`, `dio`, `go_router`, `drift`, `flutter_secure_storage` | Clean architecture; see [`mobile.md`](mobile.md). No `freezed`/`injectable`/`dartz` — reasons in §11 there. |
 | Contract | OpenAPI, committed to `contracts/` | Both clients generate from it (§7) |

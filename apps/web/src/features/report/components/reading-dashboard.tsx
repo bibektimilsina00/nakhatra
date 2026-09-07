@@ -3,11 +3,10 @@
 import { useState, useEffect, useRef } from "react";
 
 import { authHeaders } from "@/features/auth/store/auth-store";
-import { useReport } from "@/features/report/hooks/use-report";
+import { useStreamingReport } from "@/features/report/hooks/use-streaming-report";
 import { ReportSectionCard } from "@/features/report/components/report-section-card";
 import { SectionIcon } from "@/features/report/components/section-icon";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { exportElementToPdf } from "@/lib/utils/pdf-exporter";
 import { NorthIndianChart } from "@/features/kundali/components/north-indian-chart";
 import { SouthIndianChart } from "@/features/kundali/components/south-indian-chart";
@@ -24,14 +23,19 @@ import {
   seekAudioToPercent,
   setPlaybackRate,
 } from "@/lib/utils/audio-speaker";
+import { OptionMenu } from "@/components/ui/option-menu";
+import { AppShell } from "@/features/dashboard/components/app-shell";
+import { ChartSwitcher } from "@/features/kundali/components/chart-switcher";
+import { currentDasha, useToday } from "@/features/kundali/dasha";
 import { GeneratingScreen } from "@/features/kundali/components/generating-screen";
+import { ReadingSkeleton, ReadingStatus } from "@/features/report/components/reading-status";
 import { ASTROLOGER_VOICES } from "@/lib/constants/voices";
 
 import { generateDynamicAstrologyReport } from "@/features/kundali/api/report-generator";
 import { useTranslation, type Language } from "@/lib/i18n/language-context";
 import { CustomVoiceSelector } from "@/features/voice/components/voice-selector";
-import { CustomLanguageSelector } from "@/components/ui/custom-language-selector";
 import {
+  ArrowLeft,
   Download,
   Share2,
   Sparkles,
@@ -157,9 +161,18 @@ function getAuspiciousElements(lagnaSign: string) {
   return map[lagnaSign] || map.Cancer;
 }
 
+/** The rate each option actually sets, and the label the reader sees. */
+const SPEED_RATES = { "1x": 1.0, "1.2x": 1.2, "1.5x": 1.5 } as const;
+const PLAYBACK_SPEEDS = [
+  { value: "1x" as const, label: "1.0x" },
+  { value: "1.2x" as const, label: "1.2x" },
+  { value: "1.5x" as const, label: "1.5x" },
+];
+
 export function ReadingDashboard() {
   const router = useRouter();
-  const { t, language, setLanguage } = useTranslation();
+  const { t, language } = useTranslation();
+  const today = useToday();
   const [chartStyle, setChartStyle] = useState<"north" | "south">("north");
   const [chartType, setChartType] = useState<"D1" | "D9">("D1");
   const [activeDashaTab, setActiveDashaTab] = useState<"vimshottari" | "yogini" | "tribhagi">("vimshottari");
@@ -299,20 +312,22 @@ export function ReadingDashboard() {
       setActiveBirth(stored.birth);
       setActiveChart(stored.chart);
     } else {
-      // Nothing to read. Previously this computed a chart for the hardcoded
-      // sample birth data and presented it as the visitor's own reading.
-      router.replace("/kundali");
+      // Nothing chosen — ask, rather than reading somebody else's chart.
+      // Previously this computed a chart for hardcoded sample birth data and
+      // presented it as the visitor's own reading.
+      router.replace("/reading/choose");
     }
   }, []);
 
-  // The generated report is server state: same chart and language, same report.
-  // As a query it survives remounts instead of paying for the model again.
-  const report = useReport(
+  // Streamed, not awaited: the model takes about a minute to write seven
+  // sections, and there is no reason to hold all seven back until the last one
+  // lands. Each arrives the moment it is finished.
+  const report = useStreamingReport(
     activeChart ? { chart: activeChart, birth: activeBirth, language } : null,
   );
 
-  // Shown instantly while the request is in flight. Duplicates
-  // `modules/report/generator.py`; `report-generator.test.ts` and
+  // The deterministic reading, used only when the request fails outright.
+  // Duplicates `modules/report/generator.py`; `report-generator.test.ts` and
   // `test_report_generator.py` pin both copies to the same fixtures so they
   // cannot drift apart silently.
   // No useMemo: the React Compiler is enabled for this project and memoises
@@ -322,12 +337,19 @@ export function ReadingDashboard() {
     ? generateDynamicAstrologyReport(activeChart, activeBirth, language)
     : [];
 
-  // Derived, not stored. Holding this in state meant two effects writing to it
-  // and a render pass between each — the report is simply "the server's if it
-  // arrived, otherwise the local one", which is a value, not a lifecycle.
-  const reportSections: ReportSection[] = report.data?.report.length
-    ? report.data.report
-    : localReport;
+  // Derived, not stored. This used to paint `localReport` immediately and swap
+  // the model's in behind it — which made a model that had been failing for
+  // weeks look identical to one that worked. Now nothing is shown until the
+  // request settles, and the local copy is a failure path, not a first frame.
+  // Whatever has streamed in so far. The deterministic copy is used only when
+  // the stream failed before producing anything — partial output is real output
+  // and is better than swapping it for a different reading mid-read.
+  const reportSections: ReportSection[] =
+    report.sections.length > 0
+      ? report.sections
+      : report.isError
+        ? localReport
+        : [];
 
   const filterCategory = (id: string) => {
     setActiveCategory(id);
@@ -338,7 +360,11 @@ export function ReadingDashboard() {
     : reportSections.filter((s) => s.id === activeCategory);
 
   if (!activeChart) {
-    return <GeneratingScreen />;
+    return (
+      <AppShell sidebar={false}>
+        <GeneratingScreen />
+      </AppShell>
+    );
   }
 
   const d9Varga = activeChart.vargas?.find((v) => v.code === "D9");
@@ -378,37 +404,61 @@ export function ReadingDashboard() {
     ? chartToRender.planets.filter((p) => p.house === selectedHouse)
     : [];
 
-  const currentDashaText = activeChart.dasha?.periods?.[0]
-    ? `${activeChart.dasha.periods[0].lord} Mahadasha ${activeChart.dasha.periods[1] ? `➔ ${activeChart.dasha.periods[1].lord} Antardasha` : ""}`
-    : "Rahu Mahadasha ➔ Jupiter Antardasha";
+  // The periods running today. This was `periods[0]` and `periods[1]` — the
+  // first two mahadashas from birth, the second mislabelled as an antardasha —
+  // with a hardcoded "Rahu ➔ Jupiter" when the chart had none at all, which is
+  // a sentence about a chart nobody owns.
+  const running = currentDasha(activeChart, today);
+  const currentDashaText = running.maha
+    ? `${getPlanetName(running.maha.lord, language)} ${t.mahadashaLabel}` +
+      (running.antar ? ` ➔ ${getPlanetName(running.antar.lord, language)} ${t.antardashaLabel}` : "")
+    : t.noActiveDasha;
 
   return (
-    <div className="min-h-dvh bg-[#090A10] text-[#94A3B8]">
-      {/* 1. STICKY TOP BAR */}
-      <header className="sticky top-0 z-40 border-b border-white/10 bg-[#090A10]">
-        <div className="mx-auto flex w-full max-w-[1600px] items-center justify-between px-6 lg:px-10 py-3">
-          <div className="flex items-center gap-3">
-            <Link href="/" className="grid size-8 place-items-center rounded-[8px] bg-[#E5A93C] text-[#090A10] font-bold">
-              <Sparkles className="size-4 text-[#090A10]" />
-            </Link>
-            <div>
-              <h1 className="font-serif text-sm font-bold text-[#F8FAFC]">
-                {activeBirth.name}&apos;s Kundali
-              </h1>
-              <p className="text-[11px] text-[#94A3B8]">
-                {activeBirth.date} · {activeBirth.time} · {activeBirth.place_label.split("(")[0]}
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <CustomLanguageSelector />
-          </div>
+    <AppShell
+      sidebar={false}
+      // One bar, not two: the way back, whose chart this is, and which chart —
+      // in the app bar itself, where the search would otherwise sit.
+      bar={
+        <div className="flex min-w-0 flex-1 items-center gap-3">
+          <button
+            type="button"
+            onClick={() => router.back()}
+            aria-label={t.readingBack}
+            className="grid size-9 shrink-0 place-items-center rounded-[8px] border border-white/10 text-muted transition-colors hover:border-white/25 hover:text-paper"
+          >
+            <ArrowLeft className="size-4" />
+          </button>
+          {/* Arriving from the sidebar reads whatever chart was opened last, so
+              the title says which one and doubles as the way to change it. */}
+          <ChartSwitcher
+            activeName={activeBirth.name}
+            onSelect={(birth, chart) => {
+              setActiveBirth(birth);
+              setActiveChart(chart);
+            }}
+            trigger={
+              <span className="min-w-0">
+                <span className="block truncate text-[14px] font-bold text-paper">
+                  {activeBirth.name}&apos;s Kundali
+                </span>
+                <span className="block truncate text-[11px] text-faint">
+                  {activeBirth.date} · {activeBirth.time} · {activeBirth.place_label.split("(")[0]}
+                </span>
+              </span>
+            }
+          />
         </div>
-      </header>
-
+      }
+    >
       {/* Main Two-Column Desktop Layout */}
       <main className="mx-auto w-full max-w-[1600px] px-6 lg:px-10 py-6">
+        <ReadingStatus
+          isPending={report.isPending}
+          isError={report.isError && report.sections.length === 0}
+          source={undefined}
+          onRetry={report.retry}
+        />
         <div className="grid gap-8 lg:grid-cols-[460px_minmax(0,1fr)] xl:grid-cols-[500px_minmax(0,1fr)] lg:items-start">
           
           {/* LEFT COLUMN (Wider layout) - Fixed/Sticky on Scroll with Dual Charts */}
@@ -831,41 +881,7 @@ export function ReadingDashboard() {
           {/* RIGHT COLUMN (65% width) - Deep Narrative & Audio */}
           <div className="space-y-6">
 
-            {/* 1. Live AI Astrologer Consultation Card */}
-            <div className="rounded-[8px] border border-[#E5A93C]/40 bg-gradient-to-r from-[#161B2B] via-[#1A2035] to-[#090A10] p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xl">
-              <div className="flex items-center gap-3.5">
-                <div className="grid size-11 shrink-0 place-items-center rounded-[8px] bg-[#E5A93C]/15 border border-[#E5A93C]/40 text-[#E5A93C]">
-                  <MessageSquareText className="size-5 text-[#E5A93C]" />
-                </div>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <h3 className="font-serif text-sm font-bold text-[#F8FAFC]">
-                      {language === "ne" ? "AI ज्योतिषीसँग कुराकानी गर्नुहोस्" : language === "hi" ? "AI ज्योतिषी से बात करें" : "Talk to AI Astrologer"}
-                    </h3>
-                    <span className="rounded-[4px] bg-[#10B981]/20 border border-[#10B981]/40 px-2 py-0.5 text-[9px] font-extrabold uppercase tracking-wide text-[#10B981]">
-                      100% FREE
-                    </span>
-                  </div>
-                  <p className="text-xs text-[#CBD5E1] mt-0.5 leading-snug">
-                    {language === "ne"
-                      ? "आफ्नो कुण्डली, करियर, विवाह वा उपायहरूका बारेमा नि:शुल्क प्रश्न सोध्नुहोस्।"
-                      : language === "hi"
-                      ? "अपनी कुंडली, करियर, विवाह या उपायों के बारे में मुफ़्त में सवाल पूछें।"
-                      : "Ask any question about your Kundali, career, marriage, or remedies directly with our AI Astrologer for FREE!"}
-                  </p>
-                </div>
-              </div>
-
-              <button
-                onClick={() => router.push("/reading/live")}
-                className="group flex shrink-0 items-center gap-2 rounded-[8px] bg-[#E5A93C] hover:bg-[#F3C766] px-4 py-2.5 text-xs font-bold text-[#090A10] shadow-lg shadow-[#E5A93C]/20 transition-all duration-200 active:scale-95 cursor-pointer"
-              >
-                <MessageSquareText className="size-4" />
-                <span>{t.talkToAstrologer}</span>
-              </button>
-            </div>
-
-            {/* 2. Hero Audio Player Bar (Sticky beneath top nav) */}
+            {/* Hero Audio Player Bar (Sticky beneath top nav) */}
             <div className="sticky top-[57px] z-30 rounded-[8px] border border-white/10 bg-[#161B2B] p-4 space-y-3 shadow-xl backdrop-blur-md">
               {/* Top Row: Play Info on Left, Modern Action Icons on Top Right */}
               <div className="flex items-center justify-between gap-4">
@@ -1014,20 +1030,17 @@ export function ReadingDashboard() {
                   </button>
                 </div>
 
-                <select
+                {/* Was a native <select>, which took the operating system's
+                    styling and rendered a light Aqua menu inside a dark page. */}
+                <OptionMenu
+                  label={t.playbackSpeed}
                   value={playbackSpeed}
-                  onChange={(e) => {
-                    const speed = e.target.value as "1x" | "1.2x" | "1.5x";
+                  options={PLAYBACK_SPEEDS}
+                  onChange={(speed) => {
                     setPlaybackSpeed(speed);
-                    const rateMap: Record<string, number> = { "1x": 1.0, "1.2x": 1.2, "1.5x": 1.5 };
-                    setPlaybackRate(rateMap[speed] || 1.0);
+                    setPlaybackRate(SPEED_RATES[speed]);
                   }}
-                  className="rounded-[8px] border border-white/10 bg-[#090A10] px-2 py-1 text-xs text-[#F3C766] cursor-pointer"
-                >
-                  <option value="1x">1.0x</option>
-                  <option value="1.2x">1.2x</option>
-                  <option value="1.5x">1.5x</option>
-                </select>
+                />
               </div>
             </div>
 
@@ -1101,6 +1114,11 @@ export function ReadingDashboard() {
                   onPlacementClick={() => setSelectedHouse(10)}
                 />
               ))}
+              {/* Placeholders for the sections still being written, so the page
+                  grows downward instead of jumping when each one lands. */}
+              {report.isStreaming && activeCategory === "all" && (
+                <ReadingSkeleton count={Math.max(1, 7 - report.sections.length)} />
+              )}
             </div>
 
             {/* Bottom Fixed Banner / Floating CTA */}
@@ -1274,6 +1292,6 @@ export function ReadingDashboard() {
           <span>{toastMessage}</span>
         </div>
       )}
-    </div>
+    </AppShell>
   );
 }

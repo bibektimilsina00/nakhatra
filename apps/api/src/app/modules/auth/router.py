@@ -13,6 +13,9 @@ from app.core.db import SessionDep
 from app.modules.auth import service
 from app.modules.auth.router_deps import get_current_user
 from app.modules.auth.schemas import (
+    GoogleSignInIn,
+    PasswordChangeIn,
+    ProfileUpdateIn,
     TokenResponse,
     UserLoginIn,
     UserProfileOut,
@@ -26,17 +29,22 @@ __all__ = ["router", "get_current_user"]
 
 
 @router.post("/signup", response_model=TokenResponse, summary="Create an account")
-def signup(
-    body: UserSignupIn, session: SessionDep
-) -> TokenResponse:
+def signup(body: UserSignupIn, session: SessionDep) -> TokenResponse:
     return service.signup(session, body)
 
 
 @router.post("/login", response_model=TokenResponse, summary="Exchange credentials for a token")
-def login(
-    body: UserLoginIn, session: SessionDep
-) -> TokenResponse:
+def login(body: UserLoginIn, session: SessionDep) -> TokenResponse:
     return service.login(session, body)
+
+
+@router.post(
+    "/google",
+    response_model=TokenResponse,
+    summary="Exchange a Google ID token for a token",
+)
+def google_sign_in(body: GoogleSignInIn, session: SessionDep) -> TokenResponse:
+    return service.sign_in_with_google(session, body)
 
 
 @router.get("/me", response_model=UserProfileOut, summary="The signed-in user's profile")
@@ -45,3 +53,33 @@ def me(
     user_id: str = Depends(get_current_user),
 ) -> UserProfileOut:
     return service.get_profile(session, user_id)
+
+
+@router.patch(
+    "/me",
+    response_model=UserProfileOut,
+    summary="Change your own display name",
+)
+def update_me(
+    body: ProfileUpdateIn,
+    session: SessionDep,
+    user_id: str = Depends(get_current_user),
+) -> UserProfileOut:
+    return service.update_profile(session, user_id, body)
+
+
+@router.post(
+    "/password",
+    response_model=UserProfileOut,
+    summary="Change your password",
+    description=(
+        "The current password is required as well as the token: a session left "
+        "open on a borrowed machine should not be enough to lock its owner out."
+    ),
+)
+def change_password(
+    body: PasswordChangeIn,
+    session: SessionDep,
+    user_id: str = Depends(get_current_user),
+) -> UserProfileOut:
+    return service.change_password(session, user_id, body)

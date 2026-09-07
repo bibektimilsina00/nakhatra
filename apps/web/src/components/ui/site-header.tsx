@@ -3,8 +3,7 @@
 import Link from "next/link";
 import { ZODIAC } from "./zodiac";
 import { useTranslation } from "@/lib/i18n/language-context";
-import { Language } from "@/lib/i18n/translations";
-import { CustomLanguageSelector } from "./custom-language-selector";
+import { LanguageMenu } from "@/components/ui/language-menu";
 
 const CATEGORIES = [
   "Horoscope", "Kundali", "Matching", "Panchang", "Dasha",
@@ -20,7 +19,7 @@ const QUICK_LINKS = [
 ] as const;
 
 export function SiteHeader() {
-  const { language, setLanguage, t } = useTranslation();
+  const { t } = useTranslation();
 
   return (
     <header className="border-b border-line-strong bg-surface">
@@ -38,7 +37,7 @@ export function SiteHeader() {
           </nav>
           <div className="flex items-center gap-2.5">
             {/* Global Language Switcher */}
-            <CustomLanguageSelector size="sm" />
+            <LanguageMenu />
 
             <Link
               href="/reading"
@@ -64,10 +63,10 @@ export function SiteHeader() {
           </span>
           <span className="leading-tight">
             <span className="block font-display text-lg font-bold tracking-tight text-fg">
-              Kundali
+              {t.brandName}
             </span>
             <span className="block text-2xs font-medium uppercase tracking-[0.16em] text-accent-ink">
-              Vedic astrology
+              {t.vedicAstrology}
             </span>
           </span>
         </Link>

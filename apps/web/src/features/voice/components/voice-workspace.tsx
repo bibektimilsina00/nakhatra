@@ -3,14 +3,17 @@
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { NorthIndianChart } from "@/features/kundali/components/north-indian-chart";
+import { AppShell } from "@/features/dashboard/components/app-shell";
+import { ChartSwitcher } from "@/features/kundali/components/chart-switcher";
+import { currentDasha, useToday } from "@/features/kundali/dasha";
 import { loadKundaliFromStorage } from "@/features/kundali/store/kundali-store";
+import { getPlanetName, getSignName } from "@/lib/i18n/vedic-translations";
 import type { Chart, BirthDetailsIn } from "@/features/kundali/types";
 import type { ChatMessage } from "@/features/chat/types";
 import { speakText, stopSpeech } from "@/lib/utils/audio-speaker";
 import { OpenAIRealtimeWebRTCClient } from "@/lib/utils/openai-realtime-webrtc";
 import { ASTROLOGER_VOICES } from "@/lib/constants/voices";
 import { CustomVoiceSelector } from "@/features/voice/components/voice-selector";
-import { CustomLanguageSelector } from "@/components/ui/custom-language-selector";
 import { authHeaders } from "@/features/auth/store/auth-store";
 import { useAskAstrologer } from "@/features/chat/hooks/use-ask-astrologer";
 import { MarkdownRenderer } from "@/components/ui/markdown-renderer";
@@ -19,6 +22,7 @@ import { ChatMessageBubble } from "@/features/chat/components/chat-message-bubbl
 import { useTranslation } from "@/lib/i18n/language-context";
 import { trackAiChatMessageSent, trackLiveVoiceStarted } from "@/lib/utils/analytics";
 import {
+  TriangleAlert,
   ArrowLeft,
   Sparkles,
   Mic,
@@ -66,6 +70,10 @@ export function LiveModeWorkspace() {
   const [isMicMuted, setIsMicMuted] = useState(false);
   const [micPermissionError, setMicPermissionError] = useState<string | null>(null);
   const [isWebRTCActive, setIsWebRTCActive] = useState<boolean>(false);
+  /** Shown in the desk, so a failed voice session is not silent. */
+  const [realtimeError, setRealtimeError] = useState<string | null>(null);
+  /** Whether the microphone is open — not the same thing as being connected. */
+  const [micOpen, setMicOpen] = useState(true);
   const [isRecordingMedia, setIsRecordingMedia] = useState<boolean>(false);
   const [isDictating, setIsDictating] = useState<boolean>(false);
 
@@ -198,20 +206,18 @@ export function LiveModeWorkspace() {
       setActiveBirth(stored.birth);
       setActiveChart(stored.chart);
     } else {
-      fetch("/api/v1/kundali", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(activeBirth),
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          if (!data.error) setActiveChart(data);
-        })
-        .catch(console.error);
+      // Nothing chosen. This used to POST the placeholder birth — an empty
+      // name at 1900-01-01, latitude 0 — and talk about the chart that came
+      // back as though it were yours.
+      router.replace("/reading/choose?mode=live");
     }
   }, []);
 
-  const [selectedLanguage, setSelectedLanguage] = useState<"en" | "ne" | "hi">(globalLang);
+  // Mirrors the app bar's selector rather than owning a second copy of it.
+  // Two selectors on screen disagreed about what "language" meant.
+  const selectedLanguage = globalLang;
+  const today = useToday();
+  const todayRef = useRef(today);
   const selectedLanguageRef = useRef<"en" | "ne" | "hi">(globalLang);
 
   const [selectedVoice, setSelectedVoice] = useState<string>("onyx");
@@ -230,8 +236,23 @@ export function LiveModeWorkspace() {
   };
 
   useEffect(() => {
-    setSelectedLanguage(globalLang);
+    todayRef.current = today;
+  }, [today]);
+
+  // The app bar's selector is the only one now, so this is where a language
+  // change reaches the astrologer. A realtime session has its language baked
+  // in, so it reconnects — but only on an actual change, or the first render
+  // would tear down the session it just opened.
+  useEffect(() => {
+    if (selectedLanguageRef.current === globalLang) return;
     selectedLanguageRef.current = globalLang;
+    addDebugLog("LANGUAGE_CHANGED", `Astrologer language switched to ${globalLang.toUpperCase()}`);
+    if (isWebRTCActiveRef.current && webrtcClientRef.current) {
+      webrtcClientRef.current.disconnect();
+      startOpenAIRealtimeWebRTC();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- the reconnect
+    // helpers are recreated every render; depending on them would loop.
   }, [globalLang]);
 
   // Transcribe recorded MediaRecorder audio blob using OpenAI Whisper API
@@ -300,7 +321,14 @@ export function LiveModeWorkspace() {
         return;
       }
 
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      // Reuse the realtime session's microphone when there is one. Opening a
+      // second capture of the same device is what made the meter and the
+      // model fight over the input.
+      const stream =
+        webrtcClientRef.current?.micStream ??
+        (await navigator.mediaDevices.getUserMedia({
+          audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true },
+        }));
       mediaStreamRef.current = stream;
 
       const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
@@ -318,8 +346,10 @@ export function LiveModeWorkspace() {
 
       addDebugLog("MIC_HARDWARE_CONNECTED", "Hardware Mic Connected & Web Audio Analyser Active");
 
-      // Setup MediaRecorder for native audio capture
-      startMediaRecorder();
+      // Only in fallback mode. While the realtime session is up it owns the
+      // turn-taking, and a MediaRecorder buffering in parallel is a second
+      // transcription pipeline nobody reads plus a buffer that never drains.
+      if (!isWebRTCActiveRef.current) startMediaRecorder();
 
       const updateLevel = () => {
         if (!mediaStreamRef.current || !mediaStreamRef.current.active) return;
@@ -467,16 +497,25 @@ export function LiveModeWorkspace() {
   // Initialize initial greeting dynamically
   useEffect(() => {
     if (activeChart && messages.length === 0) {
-      const mahaLord = activeChart.dasha?.periods?.[0]?.lord ?? "Main";
-      const antarLord = activeChart.dasha?.periods?.[1]?.lord ?? "Sub";
-      const dashaText = `${mahaLord}-${antarLord} Dasha`;
+      // `periods[0]` and `periods[1]` were the first two mahadashas *from
+      // birth*, the second mislabelled as the antardasha. A 1998 chart opened
+      // with its birth-era dashas announced as current.
+      const runningNow = currentDasha(activeChart, todayRef.current);
+      const mahaLord = runningNow.maha?.lord ?? "Main";
+      const antarLord = runningNow.antar?.lord ?? "Sub";
+      // The words around the names have to follow the reader's language too,
+      // or the chip reads "कर्कट Ascendant · शुक्र-केतु Dasha".
+      const lang = selectedLanguageRef.current;
+      const ascendantWord = lang === "en" ? "Ascendant" : "लग्न";
+      const dashaWord = lang === "en" ? "Dasha" : "दशा";
+      const dashaText = `${getPlanetName(mahaLord, lang)}-${getPlanetName(antarLord, lang)} ${dashaWord}`;
 
       const greeting =
         selectedLanguage === "ne"
-          ? `नमस्ते ${activeBirth.name}! मैले तपाईंको कुण्डलीको विस्तृत विश्लेषण गरेको छु। तपाईंको ${activeChart.lagna_sign} लग्न${activeChart.panchang?.moon_sign ? ` र ${activeChart.panchang.moon_sign} चन्द्रमा` : ""} तथा वर्तमान ${mahaLord}-${antarLord} दशाले तपाईंको जीवनमा नयाँ अवसर सङ्केत गर्दछ। आज तपाईं के सोध्न चाहनुहुन्छ?`
+          ? `नमस्ते ${activeBirth.name}! मैले तपाईंको कुण्डलीको विस्तृत विश्लेषण गरेको छु। तपाईंको ${getSignName(activeChart.lagna_sign, selectedLanguageRef.current)} लग्न${activeChart.panchang?.moon_sign ? ` र ${getSignName(activeChart.panchang.moon_sign, selectedLanguageRef.current)} चन्द्रमा` : ""} तथा वर्तमान ${getPlanetName(mahaLord, selectedLanguageRef.current)}-${getPlanetName(antarLord, selectedLanguageRef.current)} दशाले तपाईंको जीवनमा नयाँ अवसर सङ्केत गर्दछ। आज तपाईं के सोध्न चाहनुहुन्छ?`
           : selectedLanguage === "hi"
-          ? `नमस्ते ${activeBirth.name}! मैंने आपकी कुंडली का विस्तृत विश्लेषण किया है। आपका ${activeChart.lagna_sign} लग्न${activeChart.panchang?.moon_sign ? ` एवं ${activeChart.panchang.moon_sign} चंद्रमा` : ""} तथा वर्तमान ${mahaLord}-${antarLord} दशा आपके जीवन में महत्वपूर्ण समय का संकेत देती है। आज आप क्या पूछना चाहते हैं?`
-          : `Namaste ${activeBirth.name}! I have thoroughly analyzed your Kundali. Your ${activeChart.lagna_sign} Ascendant${activeChart.panchang?.moon_sign ? ` with ${activeChart.panchang.moon_sign} Moon` : ""} under current ${dashaText} make this a significant phase for your personal growth. What specific questions do you have today?`;
+          ? `नमस्ते ${activeBirth.name}! मैंने आपकी कुंडली का विस्तृत विश्लेषण किया है। आपका ${getSignName(activeChart.lagna_sign, selectedLanguageRef.current)} लग्न${activeChart.panchang?.moon_sign ? ` एवं ${getSignName(activeChart.panchang.moon_sign, selectedLanguageRef.current)} चंद्रमा` : ""} तथा वर्तमान ${getPlanetName(mahaLord, selectedLanguageRef.current)}-${getPlanetName(antarLord, selectedLanguageRef.current)} दशा आपके जीवन में महत्वपूर्ण समय का संकेत देती है। आज आप क्या पूछना चाहते हैं?`
+          : `Namaste ${activeBirth.name}! I have thoroughly analyzed your Kundali. Your ${getSignName(activeChart.lagna_sign, selectedLanguageRef.current)} Ascendant${activeChart.panchang?.moon_sign ? ` with ${getSignName(activeChart.panchang.moon_sign, selectedLanguageRef.current)} Moon` : ""} under current ${dashaText} make this a significant phase for your personal growth. What specific questions do you have today?`;
 
       setMessages([
         {
@@ -484,12 +523,12 @@ export function LiveModeWorkspace() {
           sender: "astrologer",
           text: greeting,
           timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-          astrologicalBasis: `Chart initialized: ${activeChart.lagna_sign} Ascendant · ${dashaText}`,
+          astrologicalBasis: `${getSignName(activeChart.lagna_sign, selectedLanguageRef.current)} ${ascendantWord} · ${dashaText}`,
         },
       ]);
       setTeleprompterText(greeting);
-      setTeleprompterBasis(`${activeChart.lagna_sign} Ascendant · ${dashaText}`);
-      addDebugLog("SESSION_INIT", `Dynamic greeting built for ${activeBirth.name} (${activeChart.lagna_sign} Ascendant)`);
+      setTeleprompterBasis(`${getSignName(activeChart.lagna_sign, selectedLanguageRef.current)} Ascendant · ${dashaText}`);
+      addDebugLog("SESSION_INIT", `Dynamic greeting built for ${activeBirth.name} (${getSignName(activeChart.lagna_sign, selectedLanguageRef.current)} Ascendant)`);
     }
   }, [activeChart, activeBirth, messages.length, selectedLanguage]);
 
@@ -640,6 +679,7 @@ export function LiveModeWorkspace() {
     
     addDebugLog("WEBRTC_CONNECTING", "Initializing OpenAI Realtime WebRTC native audio stream...");
 
+    setRealtimeError(null);
     const client = new OpenAIRealtimeWebRTCClient({
       onStateChange: (state) => {
         addDebugLog("WEBRTC_STATE", `State: ${state}`);
@@ -660,11 +700,22 @@ export function LiveModeWorkspace() {
               sender: "astrologer",
               text,
               timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-              astrologicalBasis: `${activeChart.lagna_sign} Ascendant · OpenAI Realtime`,
+              astrologicalBasis: `${getSignName(activeChart.lagna_sign, selectedLanguageRef.current)} Ascendant · OpenAI Realtime`,
             },
           ]);
         }
       },
+      // Barge-in: the moment the reader speaks, anything we are playing
+      // locally stops. Without this the browser's own TTS kept going while the
+      // realtime session was already listening, and both were audible at once.
+      onUserSpeechStart: () => {
+        stopSpeech();
+        setIsThinking(false);
+        updateVoiceState("listening");
+      },
+      // Mirrors the microphone, so the indicator can say "paused" during the
+      // astrologer's turn instead of claiming to listen while it talks.
+      onMicEnabledChange: setMicOpen,
       onUserTranscript: (userText) => {
         if (userText) {
           setInterimTranscript(userText);
@@ -684,9 +735,12 @@ export function LiveModeWorkspace() {
       },
       onError: (err) => {
         addDebugLog("WEBRTC_ERROR", err);
+        // The client reconnects transport drops on its own; reaching here means
+        // it gave up or the service refused. Say so instead of going quiet, and
+        // hand turn-taking back to the Whisper pipeline.
+        setRealtimeError(err);
         updateWebRTCActive(false);
         updateVoiceState("listening");
-        // Fallback to MediaRecorder + OpenAI Whisper API
         startMediaRecorder();
       },
     });
@@ -711,10 +765,12 @@ export function LiveModeWorkspace() {
       setViewMode("live_voice");
       activeSessionRef.current = true;
       updateVoiceState("listening");
-      setupMicAnalyzer();
-
-      // Try OpenAI Realtime WebRTC first!
-      startOpenAIRealtimeWebRTC();
+      // Realtime first: it opens the microphone with echo cancellation, and
+      // the level meter then attaches to that same stream rather than opening
+      // its own. Reversed, the meter won the race and the two fought.
+      void startOpenAIRealtimeWebRTC().finally(() => {
+        void setupMicAnalyzer();
+      });
       addDebugLog("MODE_SWITCH", "Entered Live Voice Mode");
       trackLiveVoiceStarted();
     } else {
@@ -739,11 +795,50 @@ export function LiveModeWorkspace() {
   };
 
   // Interrupt AI speaking
+  // Leaving the page must actually leave it. There was no unmount cleanup at
+  // all: navigating back kept the astrologer talking over the next screen, held
+  // the microphone open with the browser's recording dot lit, left the realtime
+  // session running and billing, and kept an animation loop measuring audio
+  // levels for a component that no longer existed.
+  useEffect(() => {
+    return () => {
+      stopSpeech();
+      activeSessionRef.current = false;
+      isWebRTCActiveRef.current = false;
+
+      webrtcClientRef.current?.disconnect();
+      webrtcClientRef.current = null;
+
+      const recorder = mediaRecorderRef.current;
+      if (recorder && recorder.state !== "inactive") {
+        try {
+          recorder.stop();
+        } catch {}
+      }
+      mediaRecorderRef.current = null;
+
+      mediaStreamRef.current?.getTracks().forEach((track) => track.stop());
+      mediaStreamRef.current = null;
+
+      // Closes the audio graph, which is also what stops the rAF level loop:
+      // it bails as soon as the stream is gone.
+      const ctx = audioContextRef.current;
+      if (ctx && ctx.state !== "closed") void ctx.close().catch(() => {});
+      audioContextRef.current = null;
+    };
+    // Runs once, on unmount. Anything in the dependency list would tear the
+    // live session down mid-conversation.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const handleInterrupt = () => {
-    addDebugLog("USER_INTERRUPT", "User interrupted active AI speech output");
+    addDebugLog("USER_INTERRUPT", "User took the turn");
     stopSpeech();
     if (isWebRTCActiveRef.current && webrtcClientRef.current) {
-      webrtcClientRef.current.sendTextMessage("Hello");
+      // Was `sendTextMessage("Hello")`: pressing stop *asked a question*
+      // instead of stopping, so the astrologer answered and kept talking.
+      webrtcClientRef.current.takeTurn();
+      updateVoiceState("listening");
     } else {
       activeSessionRef.current = true;
       updateVoiceState("listening");
@@ -753,58 +848,87 @@ export function LiveModeWorkspace() {
 
   if (!activeChart) {
     return (
-      <div className="min-h-dvh bg-[#090A10] flex flex-col items-center justify-center space-y-4 text-center">
-        <div className="size-12 animate-spin rounded-full border-4 border-[#E5A93C] border-t-transparent" />
-        <p className="font-serif text-sm font-bold text-[#F8FAFC]">{t.connectingToDesk}</p>
-        <p className="text-xs text-[#94A3B8]">{t.calculatingEphemeris}</p>
-      </div>
+      <AppShell sidebar={false} fill>
+        <div className="flex flex-1 flex-col items-center justify-center space-y-4 text-center">
+          <div className="size-12 animate-spin rounded-full border-4 border-[#E5A93C] border-t-transparent" />
+          <p className="text-sm font-bold text-[#F8FAFC]">{t.connectingToDesk}</p>
+          <p className="text-xs text-[#94A3B8]">{t.calculatingEphemeris}</p>
+        </div>
+      </AppShell>
     );
   }
 
-  const mahaLord = activeChart.dasha?.periods?.[0]?.lord ?? "Main";
-  const antarLord = activeChart.dasha?.periods?.[1]?.lord ?? "Sub";
+  const runningNow = currentDasha(activeChart, today);
+  const mahaLord = runningNow.maha?.lord ?? "Main";
+  const antarLord = runningNow.antar?.lord ?? "Sub";
+
+  // One list. It drives the empty state in the middle of the chat and the
+  // strip above the input; written twice it would drift, and the empty
+  // state is where these actually get read.
+  const suggestions = (selectedLanguage === "ne"
+                ? [
+                    { icon: "✨", title: "करियर र धन योग?", query: "मेरो करियर र नोकरीमा कहिले राम्रो समय आउँछ?" },
+                    { icon: "❤️", title: "विवाह र ७औं भाव?", query: "मेरो विवाह र दाम्पत्य जीवनको विश्लेषण गर्नुहोस्।" },
+                    { icon: "🪔", title: `${getPlanetName(mahaLord, selectedLanguage)} दशा शान्ति उपाय`, query: `मेरो ${getPlanetName(mahaLord, selectedLanguage)} महादशा सन्तुलन गर्न के उपाय गर्नुपर्छ?` },
+                    { icon: "💎", title: `${getSignName(activeChart.lagna_sign, selectedLanguage)} रत्न`, query: `मेरो ${getSignName(activeChart.lagna_sign, selectedLanguage)} लग्नको लागि कुन रत्न उत्तम हुन्छ?` },
+                    { icon: "✈️", title: "विदेश यात्रा योग?", query: `के मेरो ${getPlanetName(mahaLord, selectedLanguage)} महादशामा विदेश यात्राको योग छ?` },
+                  ]
+                : selectedLanguage === "hi"
+                ? [
+                    { icon: "✨", title: "करियर एवं धन समय?", query: "मेरे करियर और पदोन्नति का सबसे अच्छा समय कब है?" },
+                    { icon: "❤️", title: "विवाह और 7वां भाव?", query: "मेरे विवाह और 7वें भाव का विस्तृत विश्लेषण करें।" },
+                    { icon: "🪔", title: `${getPlanetName(mahaLord, selectedLanguage)} दशा उपाय`, query: `मेरी ${getPlanetName(mahaLord, selectedLanguage)} महादशा के लिए कौन से उपाय करने चाहिए?` },
+                    { icon: "💎", title: `${getSignName(activeChart.lagna_sign, selectedLanguage)} रत्न`, query: `मेरे ${getSignName(activeChart.lagna_sign, selectedLanguage)} लग्न के लिए कौन सा रत्न शुभ है?` },
+                    { icon: "✈️", title: "विदेश यात्रा योग?", query: `क्या मेरी ${getPlanetName(mahaLord, selectedLanguage)} महादशा में विदेश यात्रा का योग है?` },
+                  ]
+                : [
+                    { icon: "✨", title: "Career growth timing?", query: "When is the strongest period for my career growth?" },
+                    { icon: "❤️", title: "Marriage & 7th house?", query: "Analyze my 7th house for marriage & relationship." },
+                    { icon: "🪔", title: `${getPlanetName(mahaLord, selectedLanguage)} Dasha remedies`, query: `What remedies help balance my ${getPlanetName(mahaLord, selectedLanguage)} period?` },
+                    { icon: "💎", title: `Gemstone for ${getSignName(activeChart.lagna_sign, selectedLanguage)}`, query: `What gemstone is recommended for my ${getSignName(activeChart.lagna_sign, selectedLanguage)} Ascendant?` },
+                    { icon: "✈️", title: "Foreign relocation?", query: `Will I travel or relocate abroad during my ${getPlanetName(mahaLord, selectedLanguage)} dasha?` },
+                  ]);
 
   return (
-    <div className="h-dvh max-h-dvh overflow-hidden bg-[#090A10] text-[#94A3B8] flex flex-col font-sans selection:bg-[#E5A93C]/30 selection:text-[#F3C766]">
-      {/* Top Header Bar */}
-      <header className="border-b border-white/10 bg-[#090A10]/90 backdrop-blur-md px-4 sm:px-6 py-3 flex items-center justify-between z-20 sticky top-0">
-        <div className="flex items-center gap-3 sm:gap-4">
+    <AppShell
+      sidebar={false}
+      fill
+      // One bar. The back button, the title and which chart is loaded go where
+      // the search would otherwise sit; the brand, language, notifications and
+      // account are the shell's, exactly as on the dashboard.
+      bar={
+        <div className="flex min-w-0 flex-1 items-center gap-3">
           <button
             onClick={() => {
               toggleLiveVoiceMode(false);
-              router.push("/reading");
+              router.back();
             }}
-            className="flex items-center gap-2 rounded-[8px] border border-white/10 bg-[#161B2B] px-3 py-1.5 text-xs font-semibold text-[#F8FAFC] hover:border-[#E5A93C]/40 hover:bg-[#1E2538] transition cursor-pointer active:scale-95"
+            aria-label={t.readingBack}
+            className="grid size-9 shrink-0 place-items-center rounded-[8px] border border-white/10 text-[#94A3B8] transition-colors hover:border-white/25 hover:text-[#F8FAFC]"
           >
-            <ArrowLeft className="size-3.5 text-[#E5A93C]" />
-            <span className="hidden sm:inline">{t.backToReport}</span>
+            <ArrowLeft className="size-4" />
           </button>
-          
-          <div className="flex items-center gap-2">
-            <div className="grid size-7 place-items-center rounded-[6px] bg-[#E5A93C] text-[#090A10] font-bold">
-              <Sparkles className="size-4 text-[#090A10]" />
-            </div>
-            <span className="font-serif text-sm font-bold text-[#F8FAFC]">
-              {t.brandName} Live AI
-            </span>
-          </div>
-        </div>
-
-        {/* Right ONLY: Reusable Custom Language Selector */}
-        <CustomLanguageSelector
-          value={selectedLanguage}
-          onChange={(lang) => {
-            setSelectedLanguage(lang);
-            selectedLanguageRef.current = lang;
-            setGlobalLang(lang);
-            addDebugLog("LANGUAGE_CHANGED", `Astrologer language switched to ${lang.toUpperCase()}`);
-            if (isWebRTCActiveRef.current && webrtcClientRef.current) {
-              webrtcClientRef.current.disconnect();
-              startOpenAIRealtimeWebRTC();
+          {/* Arriving from the sidebar loads whichever chart was opened last,
+              so the title names it and doubles as the way to change it. */}
+          <ChartSwitcher
+            activeName={activeBirth.name}
+            onSelect={(birth, chart) => {
+              setActiveBirth(birth);
+              setActiveChart(chart);
+            }}
+            trigger={
+              <span className="min-w-0">
+                <span className="block truncate text-[14px] font-bold text-[#F8FAFC]">
+                  {t.brandName} Live AI
+                </span>
+                <span className="block truncate text-[11px] text-[#94A3B8]">{activeBirth.name}</span>
+              </span>
             }
-          }}
-        />
-      </header>
+          />
+        </div>
+      }
+    >
+    <div className="flex min-h-0 flex-1 flex-col overflow-hidden bg-[#090A10] text-[#94A3B8] font-sans selection:bg-[#E5A93C]/30 selection:text-[#F3C766]">
 
       {/* =================================================================== */}
       {/* REAL-TIME AUDIO TELEMETRY & RECORDING DEBUG PANEL                  */}
@@ -949,94 +1073,6 @@ export function LiveModeWorkspace() {
       {viewMode === "live_voice" ? (
         <div className="relative flex-1 min-h-0 h-full bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[#1E1B4B]/40 via-[#090A10] to-[#090A10] flex flex-col items-start justify-start p-4 sm:p-5 overflow-hidden">
           
-          {/* Top Status & Mode Control Bar inside Live Room */}
-          <div className="w-full flex flex-wrap items-center justify-between gap-3 bg-[#161B2B]/90 border border-white/10 rounded-[8px] p-2.5 shadow-xl mb-3 shrink-0">
-            {/* Realtime Status Badge & Mic VU Meter */}
-            <div className="flex items-center gap-3">
-              <span
-                className={`inline-flex items-center gap-1.5 rounded-[6px] px-3 py-1 text-xs font-bold border transition-all ${
-                  voiceState === "listening"
-                    ? "bg-cyan-500/10 border-cyan-500/50 text-cyan-300 shadow-[0_0_15px_rgba(6,182,212,0.25)]"
-                    : voiceState === "thinking"
-                    ? "bg-[#E5A93C]/10 border-[#E5A93C]/50 text-[#F3C766] shadow-[0_0_15px_rgba(229,169,60,0.25)]"
-                    : voiceState === "speaking"
-                    ? "bg-amber-500/10 border-amber-500/50 text-amber-300 shadow-[0_0_20px_rgba(243,199,102,0.35)]"
-                    : "bg-slate-800/80 border-slate-700 text-slate-300"
-                }`}
-              >
-                {voiceState === "listening" && (
-                  <>
-                    <span className="size-2 rounded-full bg-cyan-400 animate-ping" />
-                    {t.realtimeListening}
-                  </>
-                )}
-                {voiceState === "thinking" && (
-                  <>
-                    <span className="size-2 rounded-full bg-[#E5A93C] animate-spin" />
-                    {t.analyzingSpeech}
-                  </>
-                )}
-                {voiceState === "speaking" && (
-                  <>
-                    <span className="size-2 rounded-full bg-amber-400 animate-pulse" />
-                    {t.astrologerSpeaking}
-                  </>
-                )}
-                {voiceState === "paused" && <>{t.voiceReadyPaused}</>}
-              </span>
-
-              {/* Hardware Mic Level Indicator (VU Meter) */}
-              <div className="hidden sm:flex items-center gap-2 bg-[#090A10] border border-white/10 rounded-[6px] px-2.5 py-1 text-[10px] text-[#94A3B8]">
-                <span className="font-medium">{t.micVu}:</span>
-                <div className="w-12 bg-[#161B2B] h-2 rounded-[4px] overflow-hidden border border-white/10">
-                  <div
-                    className="h-full bg-gradient-to-r from-emerald-500 via-cyan-400 to-[#E5A93C] transition-all duration-75"
-                    style={{ width: `${Math.max(5, audioLevel)}%` }}
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* View Mode & Debug Toggle */}
-            <div className="flex items-center gap-2">
-              <button
-                onClick={handleToggleDebugPanel}
-                className={`rounded-[6px] border px-2.5 py-1 text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
-                  showDebugPanel
-                    ? "bg-amber-500/20 border-amber-500/60 text-amber-300 shadow-[0_0_15px_rgba(245,158,11,0.3)]"
-                    : "bg-[#090A10] border-white/10 text-[#94A3B8] hover:text-[#F8FAFC]"
-                }`}
-              >
-                <Bug className="size-3.5 text-[#E5A93C]" />
-                <span className="hidden sm:inline">{t.debugLabel}</span>
-              </button>
-
-              <div className="flex items-center rounded-[6px] bg-[#090A10] border border-white/10 p-0.5 text-xs">
-                <button
-                  onClick={() => toggleLiveVoiceMode(false)}
-                  className={`flex items-center gap-1.5 rounded-[4px] px-2.5 py-0.5 text-[11px] font-semibold transition ${
-                    (viewMode as string) === "desk"
-                      ? "bg-[#E5A93C] text-[#090A10]"
-                      : "text-[#94A3B8] hover:text-[#F8FAFC]"
-                  }`}
-                >
-                  <Monitor className="size-3" />
-                  <span>{t.deskView}</span>
-                </button>
-                <button
-                  onClick={() => toggleLiveVoiceMode(true)}
-                  className={`flex items-center gap-1.5 rounded-[4px] px-2.5 py-0.5 text-[11px] font-semibold transition ${
-                    viewMode === "live_voice"
-                      ? "bg-[#E5A93C] text-[#090A10]"
-                      : "text-[#F3C766] hover:text-[#F8FAFC]"
-                  }`}
-                >
-                  <Radio className="size-3 text-[#090A10] animate-pulse" />
-                  <span>{t.voiceView}</span>
-                </button>
-              </div>
-            </div>
-          </div>
           <div className="w-full flex-1 grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch min-h-0">
             
             {/* LEFT COLUMN (4 COLS): SEEKER NAME CARD + REALTIME RESPONSE CARD - DYNAMICALLY FIT TO SCREEN */}
@@ -1049,7 +1085,7 @@ export function LiveModeWorkspace() {
                 </div>
                 <div className="min-w-0 flex-1">
                   <span className="text-sm font-bold text-[#F8FAFC] block truncate leading-tight">{activeBirth.name}</span>
-                  <span className="text-[11px] text-[#94A3B8] block truncate">{activeChart.lagna_sign} {t.ascendantLabel} · {mahaLord}-{antarLord} {selectedLanguage === "ne" ? "दशा" : selectedLanguage === "hi" ? "दशा" : "Dasha"}</span>
+                  <span className="text-[11px] text-[#94A3B8] block truncate">{getSignName(activeChart.lagna_sign, selectedLanguage)} {t.ascendantLabel} · {getPlanetName(mahaLord, selectedLanguage)}-{getPlanetName(antarLord, selectedLanguage)} {selectedLanguage === "ne" ? "दशा" : selectedLanguage === "hi" ? "दशा" : "Dasha"}</span>
                 </div>
               </div>
 
@@ -1129,17 +1165,6 @@ export function LiveModeWorkspace() {
                     <div className="absolute inset-0 m-auto size-72 md:size-80 rounded-full border-2 border-dashed border-[#E5A93C]/50 animate-rotate-slow pointer-events-none" />
                   )}
 
-                  {/* Dynamic Equalizer Waves when AI is Speaking */}
-                  {voiceState === "speaking" && (
-                    <div className="absolute -top-14 flex items-end gap-1.5 h-10 z-10 pointer-events-none">
-                      <span className="w-1.5 bg-[#E5A93C] rounded-[4px] animate-equalizer-1" />
-                      <span className="w-1.5 bg-[#F3C766] rounded-[4px] animate-equalizer-2" />
-                      <span className="w-1.5 bg-[#E5A93C] rounded-[4px] animate-equalizer-3" />
-                      <span className="w-1.5 bg-[#F3C766] rounded-[4px] animate-equalizer-4" />
-                      <span className="w-1.5 bg-[#E5A93C] rounded-[4px] animate-equalizer-5" />
-                    </div>
-                  )}
-
                   {/* Core 3D Spherical Cosmic Mandala Orb */}
                   <button
                     onClick={() => {
@@ -1172,18 +1197,43 @@ export function LiveModeWorkspace() {
                     </svg>
                     
                     <div className="text-center z-10 p-5 space-y-1">
-                      <span className="block text-4xl md:text-5xl drop-shadow-[0_4px_10px_rgba(0,0,0,0.5)]">🕉️</span>
-                      <span className="block font-serif text-xs font-bold tracking-wide text-[#F8FAFC] leading-snug">
-                        {voiceState === "listening"
-                          ? t.listeningState
+                      <span className="block text-[34px] leading-none opacity-90">🕉️</span>
+
+                      <span className="mt-3 block text-[14px] font-semibold leading-snug text-[#F8FAFC]">
+                        {voiceState === "speaking"
+                          ? t.astrologerSpeaking
                           : voiceState === "thinking"
                           ? t.thinkingState
-                          : voiceState === "speaking"
-                          ? t.tapToInterrupt
-                          : t.tapToStartVoice}
+                          : micOpen
+                            ? t.listeningState
+                            : t.voiceReadyPaused}
                       </span>
-                      <span className="text-[10px] text-[#F3C766]/80 block font-medium">
-                        {isWebRTCActive ? t.realtimeAudioEngine : t.vedicVoiceEngine}
+
+                      {/* One meter, inside the circle. Bars while listening are
+                          the level from this room, so you can see it hears you;
+                          while speaking they move on their own. */}
+                      <span className="mt-3 flex h-5 items-end justify-center gap-[3px]" aria-hidden>
+                        {[0, 1, 2, 3, 4].map((bar) => {
+                          const speaking = voiceState === "speaking";
+                          const on = speaking || (micOpen && audioLevel >= (bar + 1) * 16);
+                          return (
+                            <span
+                              key={bar}
+                              className={`w-[3px] rounded-full transition-all duration-100 ${
+                                speaking
+                                  ? `bg-[#F3C766] animate-equalizer-${bar + 1}`
+                                  : on
+                                    ? "bg-cyan-400"
+                                    : "bg-white/15"
+                              }`}
+                              style={speaking ? undefined : { height: on ? 7 + bar * 3 : 5 }}
+                            />
+                          );
+                        })}
+                      </span>
+
+                      <span className="mt-3 block text-[10.5px] text-[#94A3B8]">
+                        {voiceState === "speaking" ? t.tapToInterrupt : t.tapToStartVoice}
                       </span>
                     </div>
                   </button>
@@ -1219,18 +1269,18 @@ export function LiveModeWorkspace() {
                     ? [
                         { label: "✨ करियरको योग?", query: "मेरो करियर र नोकरीमा कहिले राम्रो समय आउँछ?" },
                         { label: "❤️ विवाह र ७औं भाव?", query: "मेरो विवाह र दाम्पत्य जीवनको विश्लेषण गर्नुहोस्।" },
-                        { label: `🪔 ${mahaLord} दशा उपाय?`, query: `मेरो ${mahaLord} महादशाको लागि के शान्ति उपायहरू छन्?` },
+                        { label: `🪔 ${getPlanetName(mahaLord, selectedLanguage)} दशा उपाय?`, query: `मेरो ${getPlanetName(mahaLord, selectedLanguage)} महादशाको लागि के शान्ति उपायहरू छन्?` },
                       ]
                     : selectedLanguage === "hi"
                     ? [
                         { label: "✨ करियर का समय?", query: "मेरे करियर और पदोन्नति का सबसे अच्छा समय कब है?" },
                         { label: "❤️ विवाह और 7वां भाव?", query: "मेरे विवाह और 7वें भाव का विस्तृत विश्लेषण करें।" },
-                        { label: `🪔 ${mahaLord} दशा उपाय?`, query: `मेरी ${mahaLord} महादशा के लिए कौन से उपाय करने चाहिए?` },
+                        { label: `🪔 ${getPlanetName(mahaLord, selectedLanguage)} दशा उपाय?`, query: `मेरी ${getPlanetName(mahaLord, selectedLanguage)} महादशा के लिए कौन से उपाय करने चाहिए?` },
                       ]
                     : [
                         { label: "✨ Career shift timing?", query: "When is the strongest period for my career growth?" },
                         { label: "❤️ Marriage & relationship?", query: "Analyze my 7th house for marriage & relationship." },
-                        { label: `🪔 ${mahaLord} Remedies?`, query: `What remedies help my ${mahaLord} Dasha period?` },
+                        { label: `🪔 ${getPlanetName(mahaLord, selectedLanguage)} Remedies?`, query: `What remedies help my ${getPlanetName(mahaLord, selectedLanguage)} Dasha period?` },
                       ]
                   ).map((chip) => (
                     <button
@@ -1383,7 +1433,7 @@ export function LiveModeWorkspace() {
                 />
               </div>
               <p className="text-[10px] text-center text-[#94A3B8]">
-                {activeChart.lagna_sign} {t.ascendantLabel} ({activeChart.lagna_degree.toFixed(2)}°)
+                {getSignName(activeChart.lagna_sign, selectedLanguage)} {t.ascendantLabel} ({activeChart.lagna_degree.toFixed(2)}°)
               </p>
             </div>
           )}
@@ -1427,29 +1477,29 @@ export function LiveModeWorkspace() {
         <div className="flex-1 min-h-0 h-full grid gap-0 lg:grid-cols-[38%_62%] overflow-hidden">
           
           {/* LEFT COLUMN (38% width) - Interactive Kundali Reference & Seeker Context */}
-          <aside className="border-r border-white/10 bg-[#0D0F19] p-6 space-y-5 overflow-y-auto h-full min-h-0">
+          <aside className="h-full min-h-0 space-y-4 overflow-y-auto border-r border-white/[0.06] bg-ink2 p-5">
             
             {/* Seeker Profile & D1 Chart Reference Card */}
-            <div className="rounded-[8px] border border-white/10 bg-gradient-to-b from-[#161B2B] via-[#121625] to-[#0D0F19] p-5 space-y-4 shadow-xl relative overflow-hidden">
+            <div className="space-y-4 rounded-[12px] border border-white/[0.09] bg-card p-5">
               <div className="flex items-center justify-between border-b border-white/10 pb-3">
                 <div className="flex items-center gap-2.5">
                   <div className="size-8 rounded-full bg-gradient-to-br from-[#E5A93C] to-[#F3C766] text-[#090A10] flex items-center justify-center font-bold text-xs shadow-md">
                     {activeBirth.name.charAt(0)}
                   </div>
                   <div>
-                    <h2 className="font-serif text-sm font-bold text-[#F8FAFC] tracking-wide leading-tight">
-                      {activeBirth.name}&apos;s Kundali
+                    <h2 className="text-[14px] font-bold leading-tight text-paper">
+                      {activeBirth.name}
                     </h2>
                     <span className="text-[10px] text-[#94A3B8] block">{t.d1SiderealBirthChart}</span>
                   </div>
                 </div>
                 <span className="rounded-[8px] bg-[#E5A93C]/10 border border-[#E5A93C]/30 text-[#F3C766] px-2.5 py-0.5 text-[10px] font-bold">
-                  {activeChart.lagna_sign} {t.ascendantLabel}
+                  {getSignName(activeChart.lagna_sign, selectedLanguage)} {t.ascendantLabel}
                 </span>
               </div>
               
               {/* Illuminated North Indian Chart Container */}
-              <div className="relative mx-auto w-full max-w-[290px] rounded-[8px] bg-[#090A10] border border-[#E5A93C]/30 p-2.5 shadow-[0_0_25px_rgba(229,169,60,0.08)]">
+              <div className="relative mx-auto w-full max-w-[290px] rounded-[10px] border border-white/[0.08] bg-ink p-2.5">
                 <NorthIndianChart
                   chart={activeChart}
                   selectedHouse={highlightedHouse}
@@ -1462,76 +1512,45 @@ export function LiveModeWorkspace() {
             </div>
 
             {/* Quick Dasha & Active Time Lords Widget */}
-            <div className="rounded-[8px] border border-white/10 bg-gradient-to-b from-[#161B2B] to-[#121625] p-4 space-y-3 text-xs shadow-lg">
-              <div className="flex items-center justify-between border-b border-white/10 pb-2">
-                <h3 className="font-serif text-xs font-bold text-[#F8FAFC] flex items-center gap-1.5">
-                  <span>🪔</span> {t.activeTimeLords}
-                </h3>
-                <span className="text-[10px] text-[#E5A93C] font-mono font-bold">Vimshottari</span>
-              </div>
-              
-              <div className="grid grid-cols-2 gap-2">
-                <div className="rounded-[8px] bg-[#090A10]/70 border border-white/5 p-2.5 space-y-0.5">
-                  <span className="text-[10px] text-[#94A3B8] block uppercase font-medium">{t.mahadashaLabel}</span>
-                  <span className="font-serif font-bold text-[#F3C766] text-xs">{mahaLord}</span>
-                </div>
-                <div className="rounded-[8px] bg-[#090A10]/70 border border-white/5 p-2.5 space-y-0.5">
-                  <span className="text-[10px] text-[#94A3B8] block uppercase font-medium">{t.antardashaLabel}</span>
-                  <span className="font-serif font-bold text-amber-300 text-xs">{antarLord}</span>
-                </div>
+            <div className="space-y-3 rounded-[12px] border border-white/[0.09] bg-card p-4">
+              <div className="flex items-center justify-between border-b border-white/[0.07] pb-2.5">
+                <h3 className="text-[12.5px] font-semibold text-paper">{t.activeTimeLords}</h3>
+                <span className="text-[10px] uppercase tracking-[0.1em] text-faint">
+                  {t.vimshottariLabel}
+                </span>
               </div>
 
-              <div className="pt-1 flex items-center justify-between text-[11px] text-[#94A3B8]">
+              <div className="grid gap-2 sm:grid-cols-2">
+                <DashaCell
+                  label={t.mahadashaLabel}
+                  lord={getPlanetName(mahaLord, selectedLanguage)}
+                  period={runningNow.maha}
+                  tone="text-gold"
+                />
+                <DashaCell
+                  label={t.antardashaLabel}
+                  lord={getPlanetName(antarLord, selectedLanguage)}
+                  period={runningNow.antar}
+                  tone="text-amber-300"
+                />
+              </div>
+
+              <div className="flex items-center justify-between border-t border-white/[0.07] pt-2.5 text-[11.5px] text-faint">
                 <span>{t.ascendantPlacementLabel}</span>
-                <span className="font-mono text-[#F8FAFC] font-semibold">{activeChart.lagna_sign} ({activeChart.lagna_degree.toFixed(2)}°)</span>
+                <span className="font-medium text-paper">
+                  {getSignName(activeChart.lagna_sign, selectedLanguage)} ·{" "}
+                  {activeChart.lagna_degree.toFixed(2)}°
+                </span>
               </div>
             </div>
 
-            {/* Suggested Consultations */}
-            <div className="space-y-2.5">
-              <h3 className="font-serif text-xs font-bold uppercase tracking-wider text-[#94A3B8] flex items-center gap-1.5">
-                <span>💡</span> {t.consultSuggestedTopics}
-              </h3>
-              <div className="space-y-2">
-                {(selectedLanguage === "ne"
-                  ? [
-                      { icon: "✨", query: "मेरो करियर र नोकरीमा कहिले राम्रो समय आउँछ?" },
-                      { icon: "❤️", query: "मेरो विवाह र दाम्पत्य जीवनको विश्लेषण गर्नुहोस्।" },
-                      { icon: "🪔", query: `मेरो ${mahaLord} महादशाको लागि के शान्ति उपायहरू छन्?` }
-                    ]
-                  : selectedLanguage === "hi"
-                  ? [
-                      { icon: "✨", query: "मेरे करियर और पदोन्नति का सबसे अच्छा समय कब है?" },
-                      { icon: "❤️", query: "मेरे विवाह और 7वें भाव का विस्तृत विश्लेषण करें।" },
-                      { icon: "🪔", query: `मेरी ${mahaLord} महादशा के लिए कौन से उपाय करने चाहिए?` }
-                    ]
-                  : [
-                      { icon: "✨", query: "When is the strongest period for my career growth?" },
-                      { icon: "❤️", query: "Analyze my 7th house for marriage & relationship." },
-                      { icon: "🪔", query: `What remedies help my ${mahaLord} Dasha period?` }
-                    ]
-                ).map((q) => (
-                  <button
-                    key={q.query}
-                    onClick={() => handleSend(q.query)}
-                    className="w-full rounded-[8px] border border-white/10 bg-gradient-to-r from-[#161B2B] to-[#121625] p-3 text-left text-xs font-medium text-[#F8FAFC] hover:border-[#E5A93C]/60 hover:text-[#F3C766] hover:shadow-[0_0_15px_rgba(229,169,60,0.15)] transition-all group flex items-center justify-between"
-                  >
-                    <span className="flex items-center gap-2.5 truncate">
-                      <span className="text-sm">{q.icon}</span>
-                      <span className="truncate">{q.query}</span>
-                    </span>
-                    <span className="text-[#94A3B8] group-hover:text-[#E5A93C] group-hover:translate-x-0.5 transition-transform text-xs shrink-0 ml-2">→</span>
-                  </button>
-                ))}
-              </div>
-            </div>
           </aside>
 
           {/* RIGHT COLUMN (62% width) - Interactive Live Chat Desk */}
           <main className="flex flex-col flex-1 min-h-0 h-full bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[#131728] via-[#090A10] to-[#090A10] overflow-hidden">
             
             {/* Streamed Chat Feed */}
-            <div ref={chatScrollRef} className="flex-1 min-h-0 overflow-y-auto p-4 sm:p-6 space-y-5 scroll-smooth">
+            <div ref={chatScrollRef} className="flex min-h-0 flex-1 flex-col gap-5 overflow-y-auto scroll-smooth p-4 sm:p-6">
               {messages.map((msg) => (
                 <ChatMessageBubble
                   key={msg.id}
@@ -1545,6 +1564,31 @@ export function LiveModeWorkspace() {
                   }}
                 />
               ))}
+
+              {messages.length <= 1 && !isThinking && (
+                <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col justify-center px-1 py-6">
+                  <h2 className="text-[13px] font-semibold text-paper">{t.consultSuggestedTopics}</h2>
+                  <p className="mt-1 text-[12.5px] leading-[1.7] text-faint">{t.askAnythingHint}</p>
+                  <div className="mt-4 grid gap-2.5 sm:grid-cols-2">
+                    {suggestions.map((chip) => (
+                      <button
+                        key={chip.title}
+                        onClick={() => handleSend(chip.query)}
+                        className="group flex items-start gap-3 rounded-[10px] border border-white/[0.09] bg-card p-3.5 text-left transition-colors hover:border-gold/40 hover:bg-ink2"
+                      >
+                        <span className="text-[15px] leading-none">{chip.icon}</span>
+                        <span className="min-w-0 flex-1">
+                          <span className="block text-[13px] font-medium text-paper">{chip.title}</span>
+                          <span className="mt-1 block text-[11.5px] leading-[1.6] text-faint">
+                            {chip.query}
+                          </span>
+                        </span>
+                        <ArrowLeft className="mt-0.5 size-3.5 shrink-0 rotate-180 text-faint transition-colors group-hover:text-gold" />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {/* Thinking / Analyzing Indicator */}
               {isThinking && (
@@ -1562,36 +1606,34 @@ export function LiveModeWorkspace() {
               )}
             </div>
 
-            {/* Modern Floating Quick Suggestion Chips */}
-            <div className="px-4 py-2 flex items-center justify-center gap-2 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden shrink-0 z-10">
-              {(selectedLanguage === "ne"
-                ? [
-                    { icon: "✨", title: "करियर र धन योग?", query: "मेरो करियर र नोकरीमा कहिले राम्रो समय आउँछ?" },
-                    { icon: "❤️", title: "विवाह र ७औं भाव?", query: "मेरो विवाह र दाम्पत्य जीवनको विश्लेषण गर्नुहोस्।" },
-                    { icon: "🪔", title: `${mahaLord} दशा शान्ति उपाय`, query: `मेरो ${mahaLord} महादशा सन्तुलन गर्न के उपाय गर्नुपर्छ?` },
-                    { icon: "💎", title: `${activeChart.lagna_sign} रत्न`, query: `मेरो ${activeChart.lagna_sign} लग्नको लागि कुन रत्न उत्तम हुन्छ?` },
-                    { icon: "✈️", title: "विदेश यात्रा योग?", query: `के मेरो ${mahaLord} महादशामा विदेश यात्राको योग छ?` },
-                  ]
-                : selectedLanguage === "hi"
-                ? [
-                    { icon: "✨", title: "करियर एवं धन समय?", query: "मेरे करियर और पदोन्नति का सबसे अच्छा समय कब है?" },
-                    { icon: "❤️", title: "विवाह और 7वां भाव?", query: "मेरे विवाह और 7वें भाव का विस्तृत विश्लेषण करें।" },
-                    { icon: "🪔", title: `${mahaLord} दशा उपाय`, query: `मेरी ${mahaLord} महादशा के लिए कौन से उपाय करने चाहिए?` },
-                    { icon: "💎", title: `${activeChart.lagna_sign} रत्न`, query: `मेरे ${activeChart.lagna_sign} लग्न के लिए कौन सा रत्न शुभ है?` },
-                    { icon: "✈️", title: "विदेश यात्रा योग?", query: `क्या मेरी ${mahaLord} महादशा में विदेश यात्रा का योग है?` },
-                  ]
-                : [
-                    { icon: "✨", title: "Career growth timing?", query: "When is the strongest period for my career growth?" },
-                    { icon: "❤️", title: "Marriage & 7th house?", query: "Analyze my 7th house for marriage & relationship." },
-                    { icon: "🪔", title: `${mahaLord} Dasha remedies`, query: `What remedies help balance my ${mahaLord} period?` },
-                    { icon: "💎", title: `Gemstone for ${activeChart.lagna_sign}`, query: `What gemstone is recommended for my ${activeChart.lagna_sign} Ascendant?` },
-                    { icon: "✈️", title: "Foreign relocation?", query: `Will I travel or relocate abroad during my ${mahaLord} dasha?` },
-                  ]
-              ).map((chip) => (
+            {realtimeError && (
+              <div className="mx-4 mb-2 flex shrink-0 items-center gap-2.5 rounded-[8px] border border-gold/30 bg-[#1A150B] px-3.5 py-2.5">
+                <TriangleAlert className="size-4 shrink-0 text-gold" />
+                <span className="min-w-0 flex-1 text-[12px] leading-[1.6] text-muted">
+                  {t.voiceFellBack}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setRealtimeError(null)}
+                  aria-label={t.dashClose}
+                  className="shrink-0 text-[11px] text-faint transition-colors hover:text-paper"
+                >
+                  ✕
+                </button>
+              </div>
+            )}
+
+            {/* The same suggestions as a thin strip, once the middle is busy. */}
+            <div
+              className={`z-10 shrink-0 items-center justify-center gap-2 overflow-x-auto px-4 py-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${
+                messages.length > 1 ? "flex" : "hidden"
+              }`}
+            >
+              {suggestions.map((chip) => (
                 <button
                   key={chip.title}
                   onClick={() => handleSend(chip.query)}
-                  className="group shrink-0 inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-[#161B2B]/70 hover:bg-[#1E2538] px-3.5 py-1.5 text-xs text-[#CBD5E1] hover:border-[#E5A93C]/60 hover:text-[#F3C766] hover:shadow-[0_0_12px_rgba(229,169,60,0.15)] transition-all cursor-pointer active:scale-95"
+                  className="group inline-flex shrink-0 cursor-pointer items-center gap-1.5 rounded-full border border-white/[0.09] bg-card px-3.5 py-1.5 text-xs text-muted transition-colors hover:border-gold/40 hover:text-paper"
                 >
                   <span className="text-xs">{chip.icon}</span>
                   <span className="font-medium text-[11px] sm:text-xs">{chip.title}</span>
@@ -1686,6 +1728,38 @@ export function LiveModeWorkspace() {
             </footer>
           </main>
         </div>
+      )}
+    </div>
+    </AppShell>
+  );
+}
+
+/**
+ * One running period: who rules it, and for how long.
+ *
+ * The dates are the point. "Rahu / Saturn" alone is two words the reader has to
+ * take on trust; "2024 – 2031" is the same claim with its working shown, and it
+ * is the difference between a label and a fact.
+ */
+function DashaCell({
+  label,
+  lord,
+  period,
+  tone,
+}: {
+  label: string;
+  lord: string;
+  period: { start: string; end: string } | null;
+  tone: string;
+}) {
+  return (
+    <div className="rounded-[10px] border border-white/[0.06] bg-ink p-3">
+      <span className="block text-[10px] uppercase tracking-[0.1em] text-faint">{label}</span>
+      <span className={`mt-1 block text-[15px] font-bold ${tone}`}>{lord}</span>
+      {period && (
+        <span className="mt-1 block text-[10.5px] tabular-nums text-faint">
+          {period.start.slice(0, 4)} – {period.end.slice(0, 4)}
+        </span>
       )}
     </div>
   );

@@ -3,9 +3,10 @@ import type { Metadata } from "next";
 import { CONTACT_EMAIL, LegalPage } from "@/features/marketing/components/legal-page";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy — Nakhatra",
+  title: "Privacy Policy",
   description:
     "What Nakhatra collects, why, who it is shared with, and how to have it deleted.",
+  alternates: { canonical: "/privacy" },
 };
 
 export default function PrivacyPage() {
@@ -85,17 +86,19 @@ export default function PrivacyPage() {
       </p>
       <ul>
         <li>
-          <strong>AgentRouter</strong> — receives your computed chart, your birth details
-          and your question in order to generate a reading. This is how the astrologer
-          works; it cannot answer without them.
+          <strong>OpenRouter</strong> — receives your computed chart, your birth details
+          and your question in order to generate a reading, and forwards them to the
+          model provider that answers it. This is how the astrologer works; it cannot
+          answer without them.
         </li>
         <li>
           <strong>OpenAI</strong> — receives the text of a reading to synthesise speech,
           audio you record for transcription, and live audio during voice conversations.
         </li>
         <li>
-          <strong>Google</strong> — receives the text of a reading when our fallback
-          speech synthesis is used.
+          <strong>Google</strong> — runs the model that writes your reading, so it
+          receives the same chart, birth details and question through OpenRouter. Also
+          receives the text of a reading when our fallback speech synthesis is used.
         </li>
         <li>
           <strong>PostHog and Umami</strong> — usage analytics, as described above.

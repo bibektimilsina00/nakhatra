@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useTranslation, type Language } from "@/lib/i18n/language-context";
-import { CustomLanguageSelector } from "@/components/ui/custom-language-selector";
+import { LanguageMenu } from "@/components/ui/language-menu";
 import { Globe, ShieldCheck, Compass, Radio, Layers } from "lucide-react";
 
 import { NakhatraMark } from "@/components/ui/nakhatra-mark";
@@ -77,7 +77,7 @@ export function MainFooter() {
             <h4 className="font-serif text-xs font-bold text-[#F8FAFC] uppercase tracking-wider flex items-center gap-1.5">
               <Globe className="size-3.5 text-[#E5A93C]" /> Language
             </h4>
-            <CustomLanguageSelector dropUp={true} size="sm" />
+            <LanguageMenu dropUp />
           </div>
         </div>
 

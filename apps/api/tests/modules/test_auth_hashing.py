@@ -71,14 +71,13 @@ def test_login_upgrades_a_legacy_hash_in_place() -> None:
     with Session(get_engine()) as session:
         upgraded = session.get(User, user_id)
         assert upgraded is not None
-        assert upgraded.password_hash.startswith("$argon2"), (
-            "login must rehash a legacy password"
-        )
+        assert upgraded.password_hash.startswith("$argon2"), "login must rehash a legacy password"
 
     # And the upgraded row still authenticates.
-    assert client.post(
-        "/v1/auth/login", json={"email": email, "password": password}
-    ).status_code == 200
+    assert (
+        client.post("/v1/auth/login", json={"email": email, "password": password}).status_code
+        == 200
+    )
 
 
 def test_errors_use_the_shared_envelope() -> None:

@@ -174,9 +174,7 @@ class AvakhadaOut(BaseModel):
     charan: int = Field(description="The Moon's nakshatra pada, 1-4")
     tatva: str
     nakshatra: str
-    name_syllable: str = Field(
-        description="Syllable traditionally used to name the child"
-    )
+    name_syllable: str = Field(description="Syllable traditionally used to name the child")
     yunja: str
 
 

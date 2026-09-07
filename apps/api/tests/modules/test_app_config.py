@@ -60,3 +60,46 @@ def test_health_reports_degraded_when_the_database_is_gone(
     res = TestClient(app).get("/health")
     assert res.status_code == 503, "a dead database must take the instance out of rotation"
     assert res.json()["database"] == "unreachable"
+
+
+@pytest.mark.parametrize(
+    "configured,expected",
+    [
+        # Routers document their endpoint with the /v1, so that is what gets
+        # pasted in. The SDK appends its own, and /v1/v1/messages 404s with a
+        # message that reads like a bad model id.
+        ("https://openrouter.ai/api/v1", "https://openrouter.ai/api"),
+        ("https://openrouter.ai/api/v1/", "https://openrouter.ai/api"),
+        ("https://openrouter.ai/api", "https://openrouter.ai/api"),
+        # Only an exact trailing /v1 segment goes.
+        ("https://example.com/v1beta", "https://example.com/v1beta"),
+        (None, None),
+    ],
+)
+def test_llm_base_url_accepts_both_forms(configured, expected) -> None:
+    from app.integrations.llm import _origin
+
+    assert _origin(configured) == expected
+
+
+@pytest.mark.parametrize(
+    "model,anthropic_only",
+    [
+        # Anthropic's own knobs. A router forwards them verbatim, so a Gemini
+        # model behind the same endpoint 400s rather than ignoring them.
+        ("anthropic/claude-opus-5", True),
+        ("claude-opus-5", True),
+        ("claude-haiku-4-5", True),
+        ("google/gemini-3.6-flash", False),
+        ("qwen/qwen3.6-35b-a3b", False),
+    ],
+)
+def test_thinking_is_sent_only_to_models_that_accept_it(
+    monkeypatch, model: str, anthropic_only: bool
+) -> None:
+    from app.integrations import llm
+
+    monkeypatch.setattr(llm, "model_name", lambda: model)
+    knobs = llm.tuning()
+    assert ("thinking" in knobs) is anthropic_only
+    assert ("output_config" in knobs) is anthropic_only

@@ -1,6 +1,8 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
+
+import { useDismissable } from "@/components/ui/use-dismissable";
 import { ASTROLOGER_VOICES, type AstrologerVoice } from "@/lib/constants/voices";
 import { speakText, stopSpeech } from "@/lib/utils/audio-speaker";
 import type { Language } from "@/lib/i18n/language-context";
@@ -32,21 +34,9 @@ export function CustomVoiceSelector({
   const currentVoiceObj =
     ASTROLOGER_VOICES.find((v) => v.id === selectedVoice) || ASTROLOGER_VOICES[0];
 
-  // Close dropdown on click outside
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (
-        containerRef.current &&
-        !containerRef.current.contains(event.target as Node)
-      ) {
-        setIsOpen(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
+  // Closes on an outside click or Escape. It used to handle only the first,
+  // and kept the listener attached even while closed.
+  useDismissable(isOpen, containerRef, useCallback(() => setIsOpen(false), []));
 
   // Stop preview audio if component unmounts or dropdown closes
   useEffect(() => {

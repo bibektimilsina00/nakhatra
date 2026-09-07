@@ -149,3 +149,68 @@ def test_milan_matching_endpoint():
     assert "groom_manglik" in data
     assert "bride_manglik" in data
     assert "manglik_compatibility" in data
+
+
+# --- managing your own account ---
+
+
+def _signed_up(prefix: str = "acct") -> tuple[str, dict[str, str]]:
+    email = f"{prefix}_{uuid.uuid4().hex[:8]}@example.com"
+    res = client.post(
+        "/v1/auth/signup",
+        json={"email": email, "password": "password-8", "full_name": "Before"},
+    )
+    assert res.status_code == 200, res.text
+    return email, {"Authorization": f"Bearer {res.json()['access_token']}"}
+
+
+def test_a_person_can_rename_themselves():
+    _, headers = _signed_up()
+    res = client.patch("/v1/auth/me", json={"full_name": "After"}, headers=headers)
+    assert res.status_code == 200, res.text
+    assert res.json()["full_name"] == "After"
+    assert client.get("/v1/auth/me", headers=headers).json()["full_name"] == "After"
+
+
+def test_renaming_requires_a_session():
+    assert client.patch("/v1/auth/me", json={"full_name": "Nobody"}).status_code == 401
+
+
+def test_the_password_changes_only_with_the_current_one():
+    """A token is not proof enough — a session left open on a borrowed laptop
+    should not be able to lock its owner out."""
+    email, headers = _signed_up()
+
+    wrong = client.post(
+        "/v1/auth/password",
+        json={"current_password": "not-the-one", "new_password": "brand-new-8"},
+        headers=headers,
+    )
+    assert wrong.status_code == 401
+
+    ok = client.post(
+        "/v1/auth/password",
+        json={"current_password": "password-8", "new_password": "brand-new-8"},
+        headers=headers,
+    )
+    assert ok.status_code == 200, ok.text
+
+    # The new one works and the old one does not.
+    assert (
+        client.post("/v1/auth/login", json={"email": email, "password": "brand-new-8"}).status_code
+        == 200
+    )
+    assert (
+        client.post("/v1/auth/login", json={"email": email, "password": "password-8"}).status_code
+        == 401
+    )
+
+
+def test_a_new_password_must_be_long_enough():
+    _, headers = _signed_up()
+    res = client.post(
+        "/v1/auth/password",
+        json={"current_password": "password-8", "new_password": "short"},
+        headers=headers,
+    )
+    assert res.status_code == 422

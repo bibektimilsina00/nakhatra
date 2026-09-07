@@ -1,17 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { CustomLanguageSelector } from "@/components/ui/custom-language-selector";
+import { LanguageMenu } from "@/components/ui/language-menu";
 import { User, LogOut, BookmarkCheck } from "lucide-react";
 
 import { NakhatraMark } from "@/components/ui/nakhatra-mark";
 import { useLogout, useSession } from "@/features/auth/hooks/use-auth";
-import { useAuthStore } from "@/features/auth/store/auth-store";
 import { useSavedKundalis } from "@/features/vault/hooks/use-vault";
 
 export function MainNavbar() {
   const { user } = useSession();
-  const openAuthModal = useAuthStore((s) => s.openAuthModal);
   const logout = useLogout();
   const { data: savedKundalis = [] } = useSavedKundalis();
 
@@ -34,12 +32,16 @@ export function MainNavbar() {
         {/* Navigation Links & Actions */}
         <div className="flex items-center gap-3 sm:gap-4">
           {/* Reusable Custom Language Selector */}
-          <CustomLanguageSelector />
+          <LanguageMenu />
 
           {/* Auth Button / Profile */}
           {user ? (
             <div className="flex items-center gap-2">
-              <div className="flex items-center gap-2 rounded-[8px] border border-white/10 bg-[#161B2B] px-3 py-1.5 text-xs font-medium text-slate-200">
+              <Link
+                href="/dashboard"
+                title="Dashboard"
+                className="flex items-center gap-2 rounded-[8px] border border-white/10 bg-[#161B2B] px-3 py-1.5 text-xs font-medium text-slate-200 transition hover:border-[#E5A93C]/50 hover:text-white"
+              >
                 <User className="size-3.5 text-[#E5A93C]" />
                 <span className="max-w-[100px] truncate">{user.full_name.split(" ")[0]}</span>
                 {savedKundalis.length > 0 && (
@@ -48,7 +50,7 @@ export function MainNavbar() {
                     {savedKundalis.length}
                   </span>
                 )}
-              </div>
+              </Link>
 
               <button
                 onClick={logout}

@@ -40,3 +40,6 @@ htmlcov/
 apps/web/public/audio-cache/
 image.png
 
+# Generated speech, written at runtime by modules/voice/cache.py. Regenerated
+# on demand and keyed by a hash of the text, so it is a cache and not an asset.
+apps/api/src/data/
