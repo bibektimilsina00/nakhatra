@@ -1,6 +1,8 @@
 import { authHeaders } from "@/features/auth/store/auth-store";
 import type {
   ApplicationIn,
+  RateIn,
+  RateOut,
   ApplicationOut,
   ApplicationReview,
   DirectoryOut,
@@ -57,6 +59,18 @@ export function reviewQueue(state?: string): Promise<ApplicationReview[]> {
 export function review(id: string, body: ReviewDecision): Promise<ApplicationReview> {
   return apiFetch(`/v1/admin/practitioner-applications/${encodeURIComponent(id)}/review`, {
     method: "POST",
+    body,
+    headers: authHeaders(),
+  });
+}
+
+export function myRates(): Promise<RateOut[]> {
+  return apiFetch("/v1/practitioners/me/rates", { headers: authHeaders() });
+}
+
+export function setRate(body: RateIn): Promise<RateOut[]> {
+  return apiFetch("/v1/practitioners/me/rates", {
+    method: "PUT",
     body,
     headers: authHeaders(),
   });

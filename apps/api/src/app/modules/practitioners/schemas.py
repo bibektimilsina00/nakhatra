@@ -122,3 +122,23 @@ class ProfileIn(BaseModel):
 class DirectoryOut(BaseModel):
     items: list[PractitionerCard]
     total: int
+
+
+class RateIn(BaseModel):
+    """What a practitioner charges, per medium.
+
+    A rate of zero withdraws that medium rather than making it free: the
+    directory will not offer a consultation the practitioner has not priced,
+    and "free" is a decision nobody has asked for.
+    """
+
+    medium: Literal["chat", "voice", "video"]
+    per_minute_minor: int = Field(ge=0, le=100_000, description="Minor units per minute")
+    is_active: bool = True
+
+
+class RateOut(BaseModel):
+    medium: Literal["chat", "voice", "video"]
+    per_minute_minor: int
+    currency: str
+    is_active: bool

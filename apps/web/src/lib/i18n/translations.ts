@@ -173,6 +173,16 @@ export interface TranslationCatalog {
   consultGrants: string;
   consultRevoke: string;
   consultShared: string;
+  practBecome: string;
+  practApplicationStatus: string;
+  practDesk: string;
+  practRates: string;
+  practRatesNote: string;
+  practSetRate: string;
+  practRequests: string;
+  practLive: string;
+  practOffline: string;
+  practNoRates: string;
   practSearch: string;
   practUnavailable: string;
   practNoneYet: string;
@@ -515,6 +525,16 @@ export const translations: Record<Language, TranslationCatalog> = {
     consultGrants: "Shared charts",
     consultRevoke: "Revoke",
     consultShared: "Shared",
+    practBecome: "Become an astrologer",
+    practApplicationStatus: "Your application",
+    practDesk: "Astrologer desk",
+    practRates: "Your rates",
+    practRatesNote: "What you charge per minute. A medium with no price is not offered.",
+    practSetRate: "Save",
+    practRequests: "Requests",
+    practLive: "Listed",
+    practOffline: "Not listed",
+    practNoRates: "Set a price before anyone can consult you.",
     practSearch: "Search astrologers and pandits",
     practUnavailable: "The directory is unavailable right now.",
     practNoneYet: "No verified practitioners yet",
@@ -855,6 +875,16 @@ export const translations: Record<Language, TranslationCatalog> = {
     consultGrants: "साझा गरिएका कुण्डली",
     consultRevoke: "फिर्ता लिनुहोस्",
     consultShared: "साझा गरिएको",
+    practBecome: "ज्योतिषी बन्नुहोस्",
+    practApplicationStatus: "तपाईंको आवेदन",
+    practDesk: "ज्योतिषी डेस्क",
+    practRates: "तपाईंका दरहरू",
+    practRatesNote: "प्रति मिनेट तपाईंले लिने शुल्क। मूल्य नराखिएको माध्यम देखाइँदैन।",
+    practSetRate: "सुरक्षित गर्नुहोस्",
+    practRequests: "अनुरोधहरू",
+    practLive: "सूचीबद्ध",
+    practOffline: "सूचीबद्ध छैन",
+    practNoRates: "कसैले परामर्श लिनुअघि मूल्य राख्नुहोस्।",
     practSearch: "ज्योतिषी र पण्डित खोज्नुहोस्",
     practUnavailable: "अहिले निर्देशिका उपलब्ध छैन।",
     practNoneYet: "अहिलेसम्म कुनै प्रमाणित ज्योतिषी छैनन्",
@@ -1195,6 +1225,16 @@ export const translations: Record<Language, TranslationCatalog> = {
     consultGrants: "साझा कुंडलियाँ",
     consultRevoke: "वापस लें",
     consultShared: "साझा",
+    practBecome: "ज्योतिषी बनें",
+    practApplicationStatus: "आपका आवेदन",
+    practDesk: "ज्योतिषी डेस्क",
+    practRates: "आपकी दरें",
+    practRatesNote: "प्रति मिनट आपका शुल्क। बिना मूल्य वाला माध्यम नहीं दिखाया जाता।",
+    practSetRate: "सहेजें",
+    practRequests: "अनुरोध",
+    practLive: "सूचीबद्ध",
+    practOffline: "सूचीबद्ध नहीं",
+    practNoRates: "परामर्श से पहले एक मूल्य निर्धारित करें।",
     practSearch: "ज्योतिषी और पंडित खोजें",
     practUnavailable: "अभी निर्देशिका उपलब्ध नहीं है।",
     practNoneYet: "अभी तक कोई सत्यापित ज्योतिषी नहीं",

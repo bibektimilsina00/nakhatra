@@ -485,6 +485,27 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/practitioners/me/rates": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** What this practitioner charges, per medium */
+        get: operations["my_rates_v1_practitioners_me_rates_get"];
+        /**
+         * Set the price for one medium
+         * @description One row per medium, so setting a price twice replaces it. A rate of zero withdraws that medium rather than making it free — the directory will not offer a consultation nobody has priced.
+         */
+        put: operations["set_rate_v1_practitioners_me_rates_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/practitioners/{profile_id}": {
         parameters: {
             query?: never;
@@ -1708,6 +1729,45 @@ export interface components {
              * @default 0
              */
             years_experience: number;
+        };
+        /**
+         * RateIn
+         * @description What a practitioner charges, per medium.
+         *
+         *     A rate of zero withdraws that medium rather than making it free: the
+         *     directory will not offer a consultation the practitioner has not priced,
+         *     and "free" is a decision nobody has asked for.
+         */
+        RateIn: {
+            /**
+             * Is Active
+             * @default true
+             */
+            is_active: boolean;
+            /**
+             * Medium
+             * @enum {string}
+             */
+            medium: "chat" | "voice" | "video";
+            /**
+             * Per Minute Minor
+             * @description Minor units per minute
+             */
+            per_minute_minor: number;
+        };
+        /** RateOut */
+        RateOut: {
+            /** Currency */
+            currency: string;
+            /** Is Active */
+            is_active: boolean;
+            /**
+             * Medium
+             * @enum {string}
+             */
+            medium: "chat" | "voice" | "video";
+            /** Per Minute Minor */
+            per_minute_minor: number;
         };
         /** RealtimeSessionRequest */
         RealtimeSessionRequest: {
@@ -3032,6 +3092,72 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PractitionerDetail"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    my_rates_v1_practitioners_me_rates_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RateOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    set_rate_v1_practitioners_me_rates_put: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RateIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RateOut"][];
                 };
             };
             /** @description Validation Error */

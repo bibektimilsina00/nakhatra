@@ -14,6 +14,7 @@ from app.modules.practitioners.models import (
     PractitionerApplication,
     PractitionerAttribute,
     PractitionerProfile,
+    RateCard,
 )
 
 # --- applications ---
@@ -203,3 +204,16 @@ def directory(
         ).all()
     )
     return rows, total
+
+
+# --- rates ---
+
+
+def rates_for(session: Session, profile_id: str) -> list[RateCard]:
+    return list(session.exec(select(RateCard).where(RateCard.profile_id == profile_id)).all())
+
+
+def rate_for(session: Session, profile_id: str, medium: str) -> RateCard | None:
+    return session.exec(
+        select(RateCard).where(RateCard.profile_id == profile_id, RateCard.medium == medium)
+    ).first()

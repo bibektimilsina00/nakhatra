@@ -2,10 +2,11 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { Bell, CheckCheck, LogOut, Menu, Search, Settings, UserRound } from "lucide-react";
+import { Bell, CheckCheck, LogOut, Menu, Search, Settings, Sparkles, UserRound } from "lucide-react";
 
 import { LanguageMenu } from "@/components/ui/language-menu";
 import { useLogout } from "@/features/auth/hooks/use-auth";
+import { useMyApplication } from "@/features/practitioners/hooks/use-practitioners";
 import type { UserProfile } from "@/features/auth/types";
 import { useDismissable } from "@/components/ui/use-dismissable";
 import { markAllRead, relativeTime, useNotifications, useNow } from "@/features/dashboard/hooks/use-notifications";
@@ -45,6 +46,10 @@ export function AppNav({
 }) {
   const { t } = useTranslation();
   const logout = useLogout();
+  // Where an account learns it can become a practitioner. Buried in a section
+  // heading it was invisible; changing what an account *is* belongs with the
+  // account, which is here.
+  const application = useMyApplication(true);
   const { items, unread, total } = useNotifications();
   const now = useNow();
 
@@ -230,6 +235,27 @@ export function AppNav({
                     <span className="block truncate text-[11.5px] text-faint">{user.email}</span>
                   </span>
                 </div>
+
+                <div className="my-1 h-px bg-white/[0.08]" />
+
+                {/* One entry, three meanings: apply, check on an application,
+                    or go to the desk once approved. */}
+                <Link
+                  href={
+                    application.data?.state === "approved"
+                      ? "/practitioners/me"
+                      : "/practitioners/apply"
+                  }
+                  onClick={close}
+                  className="flex items-center gap-2.5 rounded-[6px] px-2.5 py-2 text-[13px] text-gold transition-colors hover:bg-gold/[0.08]"
+                >
+                  <Sparkles className="size-3.5" />
+                  {application.data?.state === "approved"
+                    ? t.practDesk
+                    : application.data
+                      ? t.practApplicationStatus
+                      : t.practBecome}
+                </Link>
 
                 <div className="my-1 h-px bg-white/[0.08]" />
 

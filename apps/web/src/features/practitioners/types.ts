@@ -13,3 +13,5 @@ export type ProfileIn = components["schemas"]["ProfileIn"];
 export type DirectoryQuery = NonNullable<
   paths["/v1/practitioners"]["get"]["parameters"]["query"]
 >;
+export type RateIn = components["schemas"]["RateIn"];
+export type RateOut = components["schemas"]["RateOut"];

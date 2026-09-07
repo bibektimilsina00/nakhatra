@@ -2152,6 +2152,71 @@
         "title": "ProfileIn",
         "type": "object"
       },
+      "RateIn": {
+        "description": "What a practitioner charges, per medium.\n\nA rate of zero withdraws that medium rather than making it free: the\ndirectory will not offer a consultation the practitioner has not priced,\nand \"free\" is a decision nobody has asked for.",
+        "properties": {
+          "is_active": {
+            "default": true,
+            "title": "Is Active",
+            "type": "boolean"
+          },
+          "medium": {
+            "enum": [
+              "chat",
+              "voice",
+              "video"
+            ],
+            "title": "Medium",
+            "type": "string"
+          },
+          "per_minute_minor": {
+            "description": "Minor units per minute",
+            "maximum": 100000.0,
+            "minimum": 0.0,
+            "title": "Per Minute Minor",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "medium",
+          "per_minute_minor"
+        ],
+        "title": "RateIn",
+        "type": "object"
+      },
+      "RateOut": {
+        "properties": {
+          "currency": {
+            "title": "Currency",
+            "type": "string"
+          },
+          "is_active": {
+            "title": "Is Active",
+            "type": "boolean"
+          },
+          "medium": {
+            "enum": [
+              "chat",
+              "voice",
+              "video"
+            ],
+            "title": "Medium",
+            "type": "string"
+          },
+          "per_minute_minor": {
+            "title": "Per Minute Minor",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "medium",
+          "per_minute_minor",
+          "currency",
+          "is_active"
+        ],
+        "title": "RateOut",
+        "type": "object"
+      },
       "RealtimeSessionRequest": {
         "properties": {
           "birth": {
@@ -4659,6 +4724,121 @@
           }
         },
         "summary": "Update Profile",
+        "tags": [
+          "practitioners"
+        ]
+      }
+    },
+    "/v1/practitioners/me/rates": {
+      "get": {
+        "operationId": "my_rates_v1_practitioners_me_rates_get",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/RateOut"
+                  },
+                  "title": "Response My Rates V1 Practitioners Me Rates Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "What this practitioner charges, per medium",
+        "tags": [
+          "practitioners"
+        ]
+      },
+      "put": {
+        "description": "One row per medium, so setting a price twice replaces it. A rate of zero withdraws that medium rather than making it free \u2014 the directory will not offer a consultation nobody has priced.",
+        "operationId": "set_rate_v1_practitioners_me_rates_put",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RateIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/RateOut"
+                  },
+                  "title": "Response Set Rate V1 Practitioners Me Rates Put",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Set the price for one medium",
         "tags": [
           "practitioners"
         ]

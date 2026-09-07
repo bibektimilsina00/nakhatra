@@ -27,6 +27,7 @@ from app.modules.practitioners.models import (
     PractitionerApplication,
     PractitionerAttribute,
     PractitionerProfile,
+    RateCard,
 )
 from app.modules.practitioners.schemas import (
     ApplicationIn,
@@ -36,6 +37,8 @@ from app.modules.practitioners.schemas import (
     PractitionerCard,
     PractitionerDetail,
     ProfileIn,
+    RateIn,
+    RateOut,
     ReviewDecisionIn,
 )
 
@@ -336,4 +339,45 @@ def _review_out(row: PractitionerApplication) -> ApplicationReviewOut:
         reviewer_note=row.reviewer_note,
         reviewed_by=row.reviewed_by,
         reviewed_at=row.reviewed_at,
+    )
+
+
+# --- rates ---
+
+
+def my_rates(session: Session, user_id: str) -> list[RateOut]:
+    profile = repository.profile_for_user(session, user_id)
+    if profile is None:
+        raise NotFoundError("This account has no practitioner profile.")
+    return [_rate_out(r) for r in repository.rates_for(session, profile.id)]
+
+
+def set_rate(session: Session, user_id: str, body: RateIn) -> list[RateOut]:
+    """Set or replace one medium's price.
+
+    One row per medium, so setting a price twice updates rather than
+    accumulating — a practitioner with two chat rates is a question the
+    consultation code should never have to answer.
+    """
+    profile = repository.profile_for_user(session, user_id)
+    if profile is None:
+        raise NotFoundError("This account has no practitioner profile.")
+
+    existing = repository.rate_for(session, profile.id, body.medium)
+    if existing is None:
+        existing = RateCard(id=_id(), profile_id=profile.id, medium=body.medium, updated_at=_now())
+    existing.per_minute_minor = body.per_minute_minor
+    # A price of zero cannot be offered, whatever the flag says.
+    existing.is_active = body.is_active and body.per_minute_minor > 0
+    existing.updated_at = _now()
+    repository.save(session, existing)
+    return my_rates(session, user_id)
+
+
+def _rate_out(row: RateCard) -> RateOut:
+    return RateOut(
+        medium=row.medium,  # type: ignore[arg-type]
+        per_minute_minor=row.per_minute_minor,
+        currency=row.currency,
+        is_active=row.is_active,
     )

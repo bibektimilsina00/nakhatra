@@ -15,6 +15,8 @@ from app.modules.practitioners.schemas import (
     DirectoryOut,
     PractitionerDetail,
     ProfileIn,
+    RateIn,
+    RateOut,
     ReviewDecisionIn,
 )
 
@@ -105,6 +107,35 @@ def update_profile(
     user_id: str = Depends(require_role(PRACTITIONER, ADMIN)),
 ) -> PractitionerDetail:
     return service.update_profile(session, user_id, body)
+
+
+@router.get(
+    "/practitioners/me/rates",
+    response_model=list[RateOut],
+    summary="What this practitioner charges, per medium",
+)
+def my_rates(
+    session: SessionDep, user_id: str = Depends(require_role(PRACTITIONER, ADMIN))
+) -> list[RateOut]:
+    return service.my_rates(session, user_id)
+
+
+@router.put(
+    "/practitioners/me/rates",
+    response_model=list[RateOut],
+    summary="Set the price for one medium",
+    description=(
+        "One row per medium, so setting a price twice replaces it. A rate of "
+        "zero withdraws that medium rather than making it free — the directory "
+        "will not offer a consultation nobody has priced."
+    ),
+)
+def set_rate(
+    body: RateIn,
+    session: SessionDep,
+    user_id: str = Depends(require_role(PRACTITIONER, ADMIN)),
+) -> list[RateOut]:
+    return service.set_rate(session, user_id, body)
 
 
 # --- review queue ---
