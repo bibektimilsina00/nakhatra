@@ -83,15 +83,18 @@ things with two or more real consumers.
 
 ## LLM
 
-`claude-opus-5` served through **AgentRouter** — Anthropic-wire-compatible, so
-the official `anthropic` SDK with `base_url=settings.LLM_BASE_URL`. Bare model
-IDs. Pass base URL and key explicitly from typed settings; never rely on the
-SDK reading `ANTHROPIC_BASE_URL` from the environment (a missing var silently
-sends an AgentRouter key to api.anthropic.com and 401s like a bad key).
+`google/gemini-3.6-flash` served through **OpenRouter**, which serves
+Anthropic's wire at `/v1/messages` — so it stays the official `anthropic` SDK
+with `base_url=settings.LLM_BASE_URL`. Namespaced model IDs (`vendor/model`).
+Pass base URL and key explicitly from typed settings; never rely on the SDK
+reading `ANTHROPIC_BASE_URL` from the environment (a missing var silently sends
+a router key to api.anthropic.com and 401s like a bad key).
 
-Adaptive thinking, `effort: "medium"`. No `temperature`, no assistant prefill
-(both 400 on this model). Check `stop_reason == "refusal"` before reading
-`content`. Every client construction lives in `integrations/llm.py`.
+`thinking` and `output_config` are Anthropic's own — a router forwards them
+verbatim and a non-Anthropic model 400s, so they are gated behind
+`llm.tuning()` rather than passed at each call site. Check
+`stop_reason == "refusal"` before reading `content`. Every client construction
+lives in `integrations/llm.py`.
 Details: [`docs/ai-astrologer.md`](docs/ai-astrologer.md).
 
 Don't break prompt caching: no `datetime.now()`, request ids, or user names in

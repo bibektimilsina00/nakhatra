@@ -155,18 +155,31 @@ def test_realtime_falls_back_when_no_key_is_configured(
     chart = client.post(
         "/v1/kundali",
         json={
-            "name": "N", "date": "1975-06-14", "time": "08:30",
-            "tz_name": "Asia/Kathmandu", "latitude": 27.7, "longitude": 85.3,
-            "place_label": "KTM", "time_accuracy": "exact",
+            "name": "N",
+            "date": "1975-06-14",
+            "time": "08:30",
+            "tz_name": "Asia/Kathmandu",
+            "latitude": 27.7,
+            "longitude": 85.3,
+            "place_label": "KTM",
+            "time_accuracy": "exact",
         },
     ).json()
     res = client.post(
         "/v1/realtime-session",
-        json={"chart": chart, "birth": {
-            "name": "N", "date": "1975-06-14", "time": "08:30",
-            "tz_name": "Asia/Kathmandu", "latitude": 27.7, "longitude": 85.3,
-            "place_label": "KTM", "time_accuracy": "exact",
-        }},
+        json={
+            "chart": chart,
+            "birth": {
+                "name": "N",
+                "date": "1975-06-14",
+                "time": "08:30",
+                "tz_name": "Asia/Kathmandu",
+                "latitude": 27.7,
+                "longitude": 85.3,
+                "place_label": "KTM",
+                "time_accuracy": "exact",
+            },
+        },
         headers=headers,
     )
     # A missing key must not deny the feature — the client records and
@@ -176,3 +189,74 @@ def test_realtime_falls_back_when_no_key_is_configured(
     assert body["client_secret"] is None
     assert body["fallback"] == "media_recorder_whisper"
     assert "Lagna (Ascendant)" in body["instructions"]
+
+
+@pytest.mark.anyio
+async def test_a_throttled_fallback_returns_nothing_rather_than_half_a_reading(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The bug this guards: a reading that stopped after the first heading.
+
+    The free engine throttles a few sentences in. The old loop `break`ed on the
+    first non-200 and returned the bytes it already had, so the listener got the
+    opening line played as though it were the whole answer — with nothing, in
+    the audio or the UI, to say otherwise.
+    """
+    calls = {"n": 0}
+
+    class Res:
+        def __init__(self, status: int, content: bytes) -> None:
+            self.status_code = status
+            self.content = content
+
+    class Client:
+        async def __aenter__(self):
+            return self
+
+        async def __aexit__(self, *_):
+            return False
+
+        async def get(self, *_args, **_kwargs):
+            calls["n"] += 1
+            # The first sentence succeeds, everything after is throttled.
+            return Res(200, b"AUDIO") if calls["n"] == 1 else Res(429, b"")
+
+    monkeypatch.setattr(service.httpx, "AsyncClient", lambda **_: Client())
+    monkeypatch.setattr(service, "_CHUNK_GAP_SECONDS", 0)
+
+    long_text = " ".join(f"Sentence number {i} about the chart." for i in range(6))
+    audio = await service._fallback_speech(long_text, "en-US")
+
+    assert audio == b"", "a partial reading must not be returned as a whole one"
+    assert calls["n"] > 2, "the failing chunk should have been retried before giving up"
+
+
+@pytest.mark.anyio
+async def test_every_chunk_arriving_is_concatenated_in_order(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    seen: list[str] = []
+
+    class Res:
+        status_code = 200
+
+        def __init__(self, content: bytes) -> None:
+            self.content = content
+
+    class Client:
+        async def __aenter__(self):
+            return self
+
+        async def __aexit__(self, *_):
+            return False
+
+        async def get(self, _url, params=None, headers=None):
+            seen.append(params["q"])
+            return Res(params["q"].encode()[:4])
+
+    monkeypatch.setattr(service.httpx, "AsyncClient", lambda **_: Client())
+    monkeypatch.setattr(service, "_CHUNK_GAP_SECONDS", 0)
+
+    audio = await service._fallback_speech("One. Two. Three.", "en-US")
+    assert len(seen) >= 1
+    assert audio == b"".join(q.encode()[:4] for q in seen)

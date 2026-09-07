@@ -1,7 +1,7 @@
 """Typed settings, validated at startup.
 
 Fail fast and loudly: a missing LLM_BASE_URL that defaults to empty means
-requests silently go to api.anthropic.com with an AgentRouter key and 401 like
+requests silently go to api.anthropic.com with a router key and 401 like
 a bad key (docs/ai-astrologer.md). Better to refuse to boot.
 """
 
@@ -28,15 +28,23 @@ class Settings(BaseSettings):
 
     # LLM (Phase 2). Declared now so a misconfigured deploy fails at boot rather
     # than on the first user question.
-    LLM_BASE_URL: str = "https://agentrouter.org/v1"
+    LLM_BASE_URL: str = "https://openrouter.ai/api"
     LLM_API_KEY: str = ""
-    LLM_MODEL: str = "claude-opus-5"
+    LLM_MODEL: str = "google/gemini-3.6-flash"
 
     # Voice. OpenAI-specific: TTS, Whisper and the Realtime API have no
-    # AgentRouter equivalent, so this is a second provider rather than the same
+    # OpenRouter equivalent, so this is a second provider rather than the same
     # key under another name.
     OPENAI_API_KEY: str = ""
     TTS_CACHE_DIR: str = ""
+
+    # Google sign-in. Empty disables the endpoint rather than accepting any
+    # audience — a blank client id would make every Google token valid here.
+    GOOGLE_CLIENT_ID: str = ""
+    # Needed only for the popup auth-code flow the web client uses, which is
+    # what lets the button be ours rather than one Google draws. The ID-token
+    # flow (mobile) needs the id alone.
+    GOOGLE_CLIENT_SECRET: str = ""
 
     CORS_ORIGINS: list[str] = []
 

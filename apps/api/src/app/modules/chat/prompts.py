@@ -16,6 +16,7 @@ Two rules govern the shape of what this module returns:
 
 from __future__ import annotations
 
+from datetime import date
 from typing import Literal
 
 from app.modules.kundali.schemas import BirthDetailsIn, ChartOut
@@ -81,9 +82,7 @@ Respond ONLY in valid JSON, with no prose before or after it:
 }"""
 
 
-def system_blocks(
-    chart: ChartOut, birth: BirthDetailsIn, language: Language = "en"
-) -> list[dict]:
+def system_blocks(chart: ChartOut, birth: BirthDetailsIn, language: Language = "en") -> list[dict]:
     """System prompt as cacheable blocks: stable instructions, then this chart.
 
     The `cache_control` marker ends the cacheable prefix. Everything before it is
@@ -109,8 +108,12 @@ def system_blocks(
     ]
 
 
-def format_chart_for_ai(chart: ChartOut, birth: BirthDetailsIn) -> str:
-    """The computed chart as structured text. Formatting only — no astrology."""
+def format_chart_for_ai(chart: ChartOut, birth: BirthDetailsIn, today: date | None = None) -> str:
+    """The computed chart as structured text. Formatting only — no astrology.
+
+    `today` is a parameter rather than a `date.today()` call inside, so the
+    output is a function of its inputs and the golden tests can pin it.
+    """
     sections = [
         _birth_section(birth),
         _lagna_section(chart),
@@ -118,7 +121,7 @@ def format_chart_for_ai(chart: ChartOut, birth: BirthDetailsIn) -> str:
         _panchang_section(chart),
         _avakhada_section(chart),
         _vargas_section(chart),
-        _dasha_section(chart),
+        _dasha_section(chart, today or date.today()),
     ]
     return "\n\n".join(s for s in sections if s)
 
@@ -206,16 +209,55 @@ def _vargas_section(chart: ChartOut) -> str:
     return f"=== DIVISIONAL VARGA CHARTS ===\n{lines}"
 
 
-def _dasha_section(chart: ChartOut) -> str:
+def _dasha_section(chart: ChartOut, today: date) -> str:
+    """The timeline, with the running periods named.
+
+    Without this the model was asked which dasha is current while being told
+    neither today's date nor which period contains it — so it answered with the
+    first row in the list, and a chart could be reported as sitting in a
+    mahadasha that ended in 2013. The engine knows; it just was not saying.
+    """
     if not chart.dasha.periods:
         return ""
-    lines = "\n".join(
-        f"• {d.lord} Level {d.level} Dasha: {d.start} ➔ {d.end}"
-        for d in chart.dasha.periods
-    )
+
+    lines = []
+    for d in chart.dasha.periods:
+        running = d.start <= today <= d.end
+        line = f"• {d.lord} Level {d.level} Dasha: {d.start} ➔ {d.end}"
+        if running:
+            line += "   <<< RUNNING NOW"
+        lines.append(line)
+        # Only the running mahadasha's children are worth the tokens; the
+        # antardashas of a period that ended in 1997 are noise.
+        if running:
+            for c in d.children:
+                sub_running = c.start <= today <= c.end
+                lines.append(
+                    f"    - {c.lord} Level {c.level} Antardasha: {c.start} ➔ {c.end}"
+                    + ("   <<< RUNNING NOW" if sub_running else "")
+                )
+
+    current = _running_names(chart, today)
     return (
         "=== VIMSHOTTARI DASHA TIME LORDS TIMELINE ===\n"
+        f"• Today: {today.isoformat()}\n"
         f"• Birth Lord: {chart.dasha.birth_lord} "
         f"(balance {chart.dasha.balance_years:.2f} years)\n"
-        f"{lines}"
+        f"• RUNNING NOW: {current}\n" + "\n".join(lines)
     )
+
+
+def _running_names(chart: ChartOut, today: date) -> str:
+    """`Saturn Mahadasha ➔ Mercury Antardasha`, or a plain statement of absence.
+
+    Stated once, in words, at the top. Leaving the model to scan the timeline
+    for the row whose range contains today is exactly the arithmetic it should
+    never be doing (CLAUDE.md rule 1).
+    """
+    maha = next((d for d in chart.dasha.periods if d.start <= today <= d.end), None)
+    if maha is None:
+        return "none — today falls outside the computed timeline"
+    antar = next((c for c in maha.children if c.start <= today <= c.end), None)
+    if antar is None:
+        return f"{maha.lord} Mahadasha"
+    return f"{maha.lord} Mahadasha ➔ {antar.lord} Antardasha"
