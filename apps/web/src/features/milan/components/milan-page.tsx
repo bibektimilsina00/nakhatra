@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ArrowRight, Heart, Plus } from "lucide-react";
+import { ArrowRight, Heart } from "lucide-react";
 
 import { AppShell } from "@/features/dashboard/components/app-shell";
 import { ChartPicker } from "@/features/milan/components/chart-picker";
@@ -56,7 +56,6 @@ export function MilanPage() {
   const [groom, setGroom] = useState<SavedKundali | null>(null);
   const [creating, setCreating] = useState(false);
 
-  const usable = kundalis.filter((k) => k.birth).length;
   const sameChart = Boolean(bride && groom && bride.id === groom.id);
   const ready = Boolean(bride?.birth && groom?.birth) && !sameChart;
 
@@ -120,8 +119,6 @@ export function MilanPage() {
             <div className="h-[188px] animate-pulse rounded-[12px] border border-white/[0.07] bg-card" />
             <div className="h-[188px] animate-pulse rounded-[12px] border border-white/[0.07] bg-card" />
           </div>
-        ) : usable < 2 ? (
-          <EmptyVault count={usable} onCreate={() => setCreating(true)} />
         ) : (
           <>
             {/* The pair, joined. The rule behind the heart makes them one
@@ -192,29 +189,6 @@ export function MilanPage() {
   );
 }
 
-/** Fewer than two usable charts: matching is impossible, so say what to do. */
-function EmptyVault({ count, onCreate }: { count: number; onCreate: () => void }) {
-  const { t } = useTranslation();
-  return (
-    <div className="mt-10 rounded-[12px] border border-dashed border-white/[0.14] px-6 py-14 text-center">
-      <span className="mx-auto grid size-12 place-items-center rounded-full border border-white/[0.10] text-gold">
-        <Heart className="size-5" />
-      </span>
-      <h2 className="mt-4 text-[16px] font-semibold text-paper">{t.milanNeedTwoTitle}</h2>
-      <p className="mx-auto mt-2 max-w-sm text-[13px] leading-[1.75] text-faint">
-        {t.milanNeedTwo.replace("{n}", String(count))}
-      </p>
-      <button
-        type="button"
-        onClick={onCreate}
-        className="mt-5 inline-flex items-center gap-2 rounded-[8px] bg-gold px-5 py-2.5 text-[13px] font-bold text-ink transition-colors hover:bg-gold2"
-      >
-        <Plus className="size-4" />
-        {t.dashNewKundali}
-      </button>
-    </div>
-  );
-}
 
 /** What the match will actually compute — the page's teaching moment. */
 function WhatItChecks() {

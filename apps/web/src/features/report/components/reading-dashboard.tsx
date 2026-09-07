@@ -312,9 +312,10 @@ export function ReadingDashboard() {
       setActiveBirth(stored.birth);
       setActiveChart(stored.chart);
     } else {
-      // Nothing to read. Previously this computed a chart for the hardcoded
-      // sample birth data and presented it as the visitor's own reading.
-      router.replace("/kundali");
+      // Nothing chosen — ask, rather than reading somebody else's chart.
+      // Previously this computed a chart for hardcoded sample birth data and
+      // presented it as the visitor's own reading.
+      router.replace("/reading/choose");
     }
   }, []);
 

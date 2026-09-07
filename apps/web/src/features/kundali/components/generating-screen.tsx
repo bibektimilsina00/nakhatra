@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 
 const STEPS = [
   "Calculating planetary longitudes using Swiss Ephemeris...",
@@ -13,9 +12,14 @@ const STEPS = [
 export function GeneratingScreen({
   onComplete,
 }: {
+  /**
+   * What to do when the animation finishes. Without it this is a loader and
+   * nothing more — it used to navigate to /reading on its own, which fired
+   * behind the reading page's own loading state and raced whatever that page
+   * had decided to do next.
+   */
   onComplete?: () => void;
 }) {
-  const router = useRouter();
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
 
   useEffect(() => {
@@ -23,19 +27,13 @@ export function GeneratingScreen({
       setCurrentStepIndex((prev) => {
         if (prev < STEPS.length - 1) return prev + 1;
         clearInterval(interval);
-        setTimeout(() => {
-          if (onComplete) {
-            onComplete();
-          } else {
-            router.push("/reading");
-          }
-        }, 800);
+        setTimeout(() => onComplete?.(), 800);
         return prev;
       });
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [router, onComplete]);
+  }, [onComplete]);
 
   return (
     <div className="min-h-dvh bg-gradient-to-b from-[#090A10] via-[#0D101A] to-[#0F121E] flex flex-col items-center justify-center p-6 text-center">

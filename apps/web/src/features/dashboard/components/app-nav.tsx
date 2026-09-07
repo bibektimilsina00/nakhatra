@@ -16,6 +16,7 @@ import {
 
 import { LanguageMenu } from "@/components/ui/language-menu";
 import { useLogout } from "@/features/auth/hooks/use-auth";
+import { MARKETPLACE_LIVE } from "@/features/practitioners/marketplace";
 import { useMyApplication } from "@/features/practitioners/hooks/use-practitioners";
 import type { UserProfile } from "@/features/auth/types";
 import { useDismissable } from "@/components/ui/use-dismissable";
@@ -58,8 +59,9 @@ export function AppNav({
   const logout = useLogout();
   // Where an account learns it can become a practitioner. Buried in a section
   // heading it was invisible; changing what an account *is* belongs with the
-  // account, which is here.
-  const application = useMyApplication(true);
+  // account, which is here. Not asked for at all while the marketplace is
+  // closed — a request on every page load to decide the label of a hidden link.
+  const application = useMyApplication(MARKETPLACE_LIVE);
   const { items, unread, total } = useNotifications();
   const now = useNow();
 
@@ -249,56 +251,63 @@ export function AppNav({
                 <div className="my-1 h-px bg-white/[0.08]" />
 
                 {/* One entry, three meanings: apply, check on an application,
-                    or go to the desk once approved. */}
-                <Link
-                  href={
-                    application.data?.state === "approved"
-                      ? "/practitioners/me"
-                      : "/practitioners/apply"
-                  }
-                  onClick={close}
-                  className="flex items-center gap-2.5 rounded-[6px] px-2.5 py-2 text-[13px] text-gold transition-colors hover:bg-gold/[0.08]"
-                >
-                  <Sparkles className="size-3.5" />
-                  {application.data?.state === "approved"
-                    ? t.practDesk
-                    : application.data
-                      ? t.practApplicationStatus
-                      : t.practBecome}
-                </Link>
+                    or go to the desk once approved. Hidden entirely while the
+                    marketplace is closed — there is nothing to apply to yet. */}
+                {MARKETPLACE_LIVE && (
+                  <>
+                    <Link
+                      href={
+                        application.data?.state === "approved"
+                          ? "/practitioners/me"
+                          : "/practitioners/apply"
+                      }
+                      onClick={close}
+                      className="flex items-center gap-2.5 rounded-[6px] px-2.5 py-2 text-[13px] text-gold transition-colors hover:bg-gold/[0.08]"
+                    >
+                      <Sparkles className="size-3.5" />
+                      {application.data?.state === "approved"
+                        ? t.practDesk
+                        : application.data
+                          ? t.practApplicationStatus
+                          : t.practBecome}
+                    </Link>
 
-                {/* Offered only to an account that can actually open it. The
-                    route itself is still guarded server-side — hiding a link is
-                    not a permission. */}
-                {user.role === "admin" && (
-                  <Link
-                    href="/admin/practitioners"
-                    onClick={close}
-                    className="flex items-center gap-2.5 rounded-[6px] px-2.5 py-2 text-[13px] text-muted transition-colors hover:bg-white/[0.05] hover:text-paper"
-                  >
-                    <ShieldCheck className="size-3.5" />
-                    {t.practReviewLink}
-                  </Link>
+                    {/* Offered only to an account that can actually open it. The
+                        route itself is still guarded server-side — hiding a link
+                        is not a permission. */}
+                    {user.role === "admin" && (
+                      <Link
+                        href="/admin/practitioners"
+                        onClick={close}
+                        className="flex items-center gap-2.5 rounded-[6px] px-2.5 py-2 text-[13px] text-muted transition-colors hover:bg-white/[0.05] hover:text-paper"
+                      >
+                        <ShieldCheck className="size-3.5" />
+                        {t.practReviewLink}
+                      </Link>
+                    )}
+                  </>
                 )}
 
                 <div className="my-1 h-px bg-white/[0.08]" />
 
-                <a
-                  href="#account"
-                  onClick={() => setOpen(null)}
+                {/* Real pages. Both of these used to be `#account`, an anchor
+                    that existed on no page in the app. */}
+                <Link
+                  href="/profile"
+                  onClick={close}
                   className="flex items-center gap-2.5 rounded-[6px] px-2.5 py-2 text-[13px] text-muted transition-colors hover:bg-white/[0.05] hover:text-paper"
                 >
                   <UserRound className="size-3.5" />
                   {t.dashProfile}
-                </a>
-                <a
-                  href="#account"
-                  onClick={() => setOpen(null)}
+                </Link>
+                <Link
+                  href="/settings"
+                  onClick={close}
                   className="flex items-center gap-2.5 rounded-[6px] px-2.5 py-2 text-[13px] text-muted transition-colors hover:bg-white/[0.05] hover:text-paper"
                 >
                   <Settings className="size-3.5" />
                   {t.dashSettings}
-                </a>
+                </Link>
 
                 <div className="my-1 h-px bg-white/[0.08]" />
 

@@ -1,12 +1,13 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { X } from "lucide-react";
 
 import { useSession } from "@/features/auth/hooks/use-auth";
 import { toRequestBody } from "@/features/kundali/api/kundali.api";
 import { BirthDetailsForm } from "@/features/kundali/components/birth-details-form";
+import { GeneratingScreen } from "@/features/kundali/components/generating-screen";
 import { useCreateKundali } from "@/features/kundali/hooks/use-create-kundali";
 import { saveKundaliToStorage } from "@/features/kundali/store/kundali-store";
 import { useSaveKundali } from "@/features/vault/hooks/use-vault";
@@ -38,6 +39,11 @@ export function CreateKundaliDialog({
   const create = useCreateKundali();
   const save = useSaveKundali();
   const panel = useRef<HTMLDivElement>(null);
+  // The casting animation is a state of this dialog, not a page. As a route it
+  // sat in the history: going back from the reading landed on /generating,
+  // which replayed itself and pushed you forward again — a trap you could not
+  // reverse out of.
+  const [casting, setCasting] = useState(false);
 
   useEffect(() => {
     if (!open) return;
@@ -55,6 +61,20 @@ export function CreateKundaliDialog({
   }, [open, onClose]);
 
   if (!open) return null;
+
+  if (casting) {
+    return (
+      <div className="fixed inset-0 z-[60]">
+        <GeneratingScreen
+          onComplete={() => {
+            setCasting(false);
+            onClose();
+            router.push("/reading");
+          }}
+        />
+      </div>
+    );
+  }
 
   const error = create.error;
   const fieldErrors = error instanceof ApiError ? error.fieldErrors : undefined;
@@ -139,14 +159,11 @@ export function CreateKundaliDialog({
                 }
 
                 saveKundaliToStorage(birth, chart);
-                onClose();
-                // Via /generating, not straight to the reading. The chart is
-                // already stashed above, so that page is free to run its
-                // full-screen animation and hand over when it is done — which
-                // is what it was built for and what the marketing hero has
-                // always done. Landing on a bare reading the instant the form
-                // submits reads as if nothing was computed.
-                router.push("/generating");
+                // The chart is already stashed, so the animation is free to run
+                // and hand over when it is done — landing on a bare reading the
+                // instant the form submits reads as if nothing was computed.
+                // Kept in this component so it never enters the history.
+                setCasting(true);
               }}
             />
             </div>

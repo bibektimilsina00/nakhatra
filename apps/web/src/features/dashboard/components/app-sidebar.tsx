@@ -10,6 +10,7 @@ import {
 
 import { NakhatraMark } from "@/components/ui/nakhatra-mark";
 import { useOpenKundali } from "@/features/dashboard/hooks/use-open-kundali";
+import { MARKETPLACE_LIVE } from "@/features/practitioners/marketplace";
 import type { SavedKundali } from "@/features/vault/types";
 import { useLatinTracking, useTranslation } from "@/lib/i18n/language-context";
 
@@ -41,30 +42,64 @@ export function AppSidebar({
   const label = useLatinTracking("uppercase tracking-[0.16em]");
   const { open, openingId } = useOpenKundali();
 
+  // Both of these lead only into the marketplace, so while it is closed they
+  // are not links to somewhere quieter — they are links to a door.
   const links = [
     { href: "/dashboard", label: t.dashNavHome, icon: <Star className="size-[16px]" /> },
-    { href: "/reading", label: t.dashNavReading, icon: <ScrollText className="size-[16px]" /> },
-    { href: "/reading/live", label: t.dashNavLive, icon: <MessageCircle className="size-[16px]" /> },
+    // These two land on the chooser, not on the page: arriving from the
+    // sidebar means no chart has been picked, and the pages would otherwise
+    // show whichever one was opened last. `match` is what lights the row up,
+    // so the reading page still highlights "Reading".
     {
-      href: "/dashboard#jyotish",
-      label: t.dashNavJyotish,
-      icon: <Sun className="size-[16px]" />,
-      badge: onlineAstrologers > 0 ? t.dashOnlineCount.replace("{n}", String(onlineAstrologers)) : undefined,
+      href: "/reading/choose",
+      match: "/reading",
+      label: t.dashNavReading,
+      icon: <ScrollText className="size-[16px]" />,
     },
+    {
+      href: "/reading/choose?mode=live",
+      match: "/reading/live",
+      label: t.dashNavLive,
+      icon: <MessageCircle className="size-[16px]" />,
+    },
+    ...(MARKETPLACE_LIVE
+      ? [
+          {
+            href: "/dashboard#jyotish",
+            label: t.dashNavJyotish,
+            icon: <Sun className="size-[16px]" />,
+            badge:
+              onlineAstrologers > 0
+                ? t.dashOnlineCount.replace("{n}", String(onlineAstrologers))
+                : undefined,
+          },
+        ]
+      : []),
     { href: "/milan", label: t.dashNavMilan, icon: <Heart className="size-[16px]" /> },
-    {
-      href: "/consultations",
-      label: t.consultTitle,
-      icon: <MessagesSquare className="size-[16px]" />,
-    },
+    ...(MARKETPLACE_LIVE
+      ? [
+          {
+            href: "/consultations",
+            label: t.chatTab,
+            icon: <MessagesSquare className="size-[16px]" />,
+          },
+        ]
+      : []),
   ];
 
   // `/reading` is a prefix of `/reading/live`, so the longest match wins —
   // otherwise both rows light up on the live page.
   const activeHref = links
     .filter((l) => !l.href.includes("#"))
-    .filter((l) => pathname === l.href || pathname.startsWith(`${l.href}/`))
-    .sort((a, b) => b.href.length - a.href.length)[0]?.href;
+    .filter((l) => {
+      const path = ("match" in l && l.match) || l.href;
+      return pathname === path || pathname.startsWith(`${path}/`);
+    })
+    .sort((a, b) => {
+      const am = (("match" in a && a.match) || a.href).length;
+      const bm = (("match" in b && b.match) || b.href).length;
+      return bm - am;
+    })[0]?.href;
 
   const item = (active: boolean) =>
     `flex items-center gap-3 rounded-[8px] px-2.5 py-2 text-[13.5px] transition-colors ${
@@ -137,7 +172,7 @@ export function AppSidebar({
             </Link>
           </li>
           <li>
-            <Link href="/reading/live" onClick={onNavigate} className={item(false)}>
+            <Link href="/reading/choose?mode=live" onClick={onNavigate} className={item(false)}>
               <MessageCircle className="size-[16px] shrink-0" />
               <span className="truncate">{t.dashConversations}</span>
               <span className="ml-auto text-[11px] text-faint">{sessionCount}</span>
@@ -182,7 +217,7 @@ export function AppSidebar({
           <HelpCircle className="size-[16px] shrink-0" />
           <span>{t.dashHelp}</span>
         </a>
-        <Link href="/dashboard#account" onClick={onNavigate} className={item(false)}>
+        <Link href="/settings" onClick={onNavigate} className={item(false)}>
           <Settings className="size-[16px] shrink-0" />
           <span>{t.dashSettings}</span>
         </Link>

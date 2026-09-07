@@ -206,16 +206,10 @@ export function LiveModeWorkspace() {
       setActiveBirth(stored.birth);
       setActiveChart(stored.chart);
     } else {
-      fetch("/api/v1/kundali", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(activeBirth),
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          if (!data.error) setActiveChart(data);
-        })
-        .catch(console.error);
+      // Nothing chosen. This used to POST the placeholder birth — an empty
+      // name at 1900-01-01, latitude 0 — and talk about the chart that came
+      // back as though it were yours.
+      router.replace("/reading/choose?mode=live");
     }
   }, []);
 

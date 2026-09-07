@@ -1,6 +1,5 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { MapPin, MoreHorizontal, Trash2 } from "lucide-react";
 
@@ -14,14 +13,20 @@ export function KundaliCard({
   busy,
   failed,
   onOpen,
+  onAsk,
 }: {
   kundali: SavedKundali;
   busy: boolean;
   failed: boolean;
   onOpen: () => void;
+  /**
+   * Open *this* chart in live mode. It used to navigate straight to
+   * `/reading/live`, which starts a conversation about whichever chart happened
+   * to be stashed — usually not the card that was clicked.
+   */
+  onAsk: () => void;
 }) {
   const { t } = useTranslation();
-  const router = useRouter();
   const remove = useDeleteKundali();
   const [confirming, setConfirming] = useState(false);
   const { fill, stroke } = chartArt(kundali.id);
@@ -62,7 +67,13 @@ export function KundaliCard({
           >
             {t.dashReadingAction}
           </button>
-          <button type="button" onClick={() => router.push("/reading/live")} className={ghost}>
+          <button
+            type="button"
+            disabled={!openable || busy}
+            onClick={onAsk}
+            title={openable ? undefined : t.dashNotRecalculable}
+            className={ghost}
+          >
             {t.dashAsk}
           </button>
           <button

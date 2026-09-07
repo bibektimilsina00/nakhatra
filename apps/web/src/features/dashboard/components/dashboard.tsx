@@ -1,10 +1,12 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Plus } from "lucide-react";
 
 import { AppShell } from "@/features/dashboard/components/app-shell";
 import { JyotishSection } from "@/features/dashboard/components/jyotish-section";
+import { MARKETPLACE_LIVE } from "@/features/practitioners/marketplace";
 import { KundaliCard } from "@/features/dashboard/components/kundali-card";
 import { useOpenKundali } from "@/features/dashboard/hooks/use-open-kundali";
 import { CreateKundaliDialog } from "@/features/kundali/components/create-kundali-dialog";
@@ -23,7 +25,13 @@ export function Dashboard() {
   const { t } = useTranslation();
 
   const { data: kundalis = [], isLoading } = useSavedKundalis();
+  const router = useRouter();
   const { open, openingId, failedId } = useOpenKundali();
+  // The same open, landing somewhere else. Both recalculate and stash before
+  // navigating, which is what the destination reads.
+  const { open: openLive, openingId: openingLiveId } = useOpenKundali(() =>
+    router.push("/reading/live"),
+  );
 
   const [query, setQuery] = useState("");
   const [creating, setCreating] = useState(false);
@@ -86,9 +94,10 @@ export function Dashboard() {
                     <KundaliCard
                       key={k.id}
                       kundali={k}
-                      busy={openingId === k.id}
+                      busy={openingId === k.id || openingLiveId === k.id}
                       failed={failedId === k.id}
                       onOpen={() => open(k)}
+                      onAsk={() => openLive(k)}
                     />
                   ))}
                 </div>
@@ -107,7 +116,7 @@ export function Dashboard() {
               )}
             </section>
 
-        <JyotishSection />
+        {MARKETPLACE_LIVE && <JyotishSection />}
       </main>
 
       <CreateKundaliDialog open={creating} onClose={() => setCreating(false)} />
