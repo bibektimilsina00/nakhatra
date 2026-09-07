@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { CircleDot, MessagesSquare, TriangleAlert } from "lucide-react";
 
@@ -187,10 +187,14 @@ function RateRow({
   saveLabel: string;
 }) {
   // Rupees in the field, paisa on the wire. Nobody types 2500 meaning NPR 25.
-  const [rupees, setRupees] = useState("");
-  useEffect(() => {
-    setRupees(current ? String(current.per_minute_minor / 100) : "");
-  }, [current]);
+  //
+  // Seeded from the saved rate and thereafter owned by the field, keyed on that
+  // saved value: a refetch landing mid-typing does not overwrite what is being
+  // typed, and no effect writes state during a render.
+  const saved = current ? String(current.per_minute_minor / 100) : "";
+  const [edit, setEdit] = useState<{ key: string; value: string } | null>(null);
+  const rupees = edit?.key === saved ? edit.value : saved;
+  const setRupees = (value: string) => setEdit({ key: saved, value });
 
   return (
     <div className="flex items-center gap-3 rounded-[10px] border border-white/[0.09] bg-card p-3">
