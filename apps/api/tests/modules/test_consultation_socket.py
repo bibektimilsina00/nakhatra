@@ -14,8 +14,8 @@ from datetime import UTC, datetime
 
 import pytest
 from fastapi.testclient import TestClient
-from starlette.websockets import WebSocketDisconnect
 from sqlmodel import Session, select
+from starlette.websockets import WebSocketDisconnect
 
 from app.core.db import get_engine
 from app.main import app
