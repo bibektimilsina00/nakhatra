@@ -90,22 +90,32 @@ def apply(session: Session, user_id: str, body: ApplicationIn) -> ApplicationOut
     if existing is not None and existing.state == "approved":
         raise ApplicationError("This account is already an approved practitioner.")
 
+    practices = _normalise([str(p) for p in (body.practice_types or [body.practice_type])]) or [
+        "astrologer"
+    ]
+
     now = _now()
     row = PractitionerApplication(
         id=_id(),
         user_id=user_id,
-        practice_type=body.practice_type,
+        # The first is the primary, for clients that understand only one.
+        practice_type=practices[0],
         full_name=body.full_name.strip(),
         phone=body.phone.strip(),
         city=body.city.strip(),
         country=body.country.upper(),
         years_experience=body.years_experience,
-        credentials=body.credentials.strip(),
         sample_reading=body.sample_reading.strip(),
         # Stored as a comma-joined string on the application because nothing
         # filters on it — the facets become rows only once a profile exists.
         languages=",".join(_normalise(body.languages)),
         traditions=",".join(_normalise(body.traditions)),
+        # Carried on the application so approval can copy them onto the
+        # profile without asking for them a second time.
+        practices=",".join(practices),
+        headline=body.headline.strip(),
+        photo_url=body.photo_url,
+        credentials=body.credentials.strip(),
         state="submitted",
         created_at=now,
         updated_at=now,
@@ -171,6 +181,8 @@ def _promote(session: Session, application: PractitionerApplication) -> None:
             user_id=application.user_id,
             practice_type=application.practice_type,
             display_name=application.full_name,
+            headline=application.headline,
+            photo_url=application.photo_url,
             city=application.city,
             country=application.country,
             years_experience=application.years_experience,
@@ -187,6 +199,7 @@ def _promote(session: Session, application: PractitionerApplication) -> None:
     for kind, raw in (
         ("language", application.languages),
         ("tradition", application.traditions),
+        ("practice", application.practices),
     ):
         for value in _normalise(raw.split(",")):
             session.add(
@@ -227,10 +240,15 @@ def update_profile(session: Session, user_id: str, body: ProfileIn) -> Practitio
     profile.is_listed = body.is_listed
     profile.updated_at = _now()
 
+    if body.practice_types:
+        # The primary stays the first one, for clients that read only it.
+        profile.practice_type = _normalise([str(p) for p in body.practice_types])[0]
+
     for kind, values in (
         ("language", body.languages),
         ("tradition", body.traditions),
         ("speciality", body.specialities),
+        ("practice", [str(p) for p in body.practice_types]),
     ):
         repository.replace_attributes(session, profile.id, kind, values)
         for value in _normalise(values):
@@ -288,9 +306,13 @@ def _facets(attributes: list[PractitionerAttribute], kind: str) -> list[str]:
 
 
 def _card(profile: PractitionerProfile, attributes: list[PractitionerAttribute]):
+    # A profile written before practices were a list has none of these rows, so
+    # its single `practice_type` stands in — no backfill needed.
+    practices = _facets(attributes, "practice") or [profile.practice_type]
     return PractitionerCard(
         id=profile.id,
         practice_type=profile.practice_type,  # type: ignore[arg-type]
+        practice_types=practices,  # type: ignore[arg-type]
         display_name=profile.display_name,
         headline=profile.headline,
         photo_url=profile.photo_url,

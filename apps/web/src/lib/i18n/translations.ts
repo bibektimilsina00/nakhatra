@@ -183,6 +183,17 @@ export interface TranslationCatalog {
   practLive: string;
   practOffline: string;
   practNoRates: string;
+  practRegister: string;
+  practPhoto: string;
+  practPhotoNote: string;
+  practPractice: string;
+  practBothNote: string;
+  practYears: string;
+  practPhone: string;
+  practCity: string;
+  practTraditions: string;
+  practHeadline: string;
+  practHeadlinePlaceholder: string;
   practSearch: string;
   practUnavailable: string;
   practNoneYet: string;
@@ -535,12 +546,23 @@ export const translations: Record<Language, TranslationCatalog> = {
     practLive: "Listed",
     practOffline: "Not listed",
     practNoRates: "Set a price before anyone can consult you.",
+    practRegister: "Register as a jyotish",
+    practPhoto: "Profile photo",
+    practPhotoNote: "A clear photo of your face. JPG, PNG or WebP, up to 4MB.",
+    practPractice: "What you practise",
+    practBothNote: "Choose both if you do both.",
+    practYears: "Years practising",
+    practPhone: "Phone",
+    practCity: "City",
+    practTraditions: "Traditions",
+    practHeadline: "One line about you",
+    practHeadlinePlaceholder: "KP paddhati · career and marriage",
     practSearch: "Search astrologers and pandits",
     practUnavailable: "The directory is unavailable right now.",
     practNoneYet: "No verified practitioners yet",
     practNoneYetNote: "Astrologers and pandits appear here once they have applied and been verified. Nobody is listed before review.",
     practApplyTitle: "Practise on Nakhatra",
-    practApplyLead: "Tell us who you are and how you work. Every application is read by a person, and nothing is listed publicly before it is approved.",
+    practApplyLead: "A few details and a photo — that is all. A person reads every profile before it goes live, so nobody is listed unchecked.",
     practApplySubmit: "Submit application",
     practApplyPending: "Your application is with a reviewer.",
     practApplyApproved: "Approved — your profile is ready to publish.",
@@ -885,12 +907,23 @@ export const translations: Record<Language, TranslationCatalog> = {
     practLive: "सूचीबद्ध",
     practOffline: "सूचीबद्ध छैन",
     practNoRates: "कसैले परामर्श लिनुअघि मूल्य राख्नुहोस्।",
+    practRegister: "ज्योतिषीको रूपमा दर्ता",
+    practPhoto: "प्रोफाइल फोटो",
+    practPhotoNote: "अनुहार स्पष्ट देखिने फोटो। JPG, PNG वा WebP, ४MB सम्म।",
+    practPractice: "तपाईं के गर्नुहुन्छ",
+    practBothNote: "दुवै गर्नुहुन्छ भने दुवै छान्नुहोस्।",
+    practYears: "कति वर्षदेखि",
+    practPhone: "फोन",
+    practCity: "सहर",
+    practTraditions: "परम्परा",
+    practHeadline: "आफ्नो बारेमा एक हरफ",
+    practHeadlinePlaceholder: "केपी पद्धति · करियर र विवाह",
     practSearch: "ज्योतिषी र पण्डित खोज्नुहोस्",
     practUnavailable: "अहिले निर्देशिका उपलब्ध छैन।",
     practNoneYet: "अहिलेसम्म कुनै प्रमाणित ज्योतिषी छैनन्",
     practNoneYetNote: "आवेदन दिई प्रमाणित भएपछि मात्र ज्योतिषी र पण्डितहरू यहाँ देखिन्छन्। जाँच नभई कोही सूचीबद्ध हुँदैन।",
     practApplyTitle: "नखत्रमा सेवा दिनुहोस्",
-    practApplyLead: "तपाईं को हुनुहुन्छ र कसरी काम गर्नुहुन्छ बताउनुहोस्। हरेक आवेदन मानिसले पढ्छ, र स्वीकृत नभई सार्वजनिक हुँदैन।",
+    practApplyLead: "केही विवरण र एउटा फोटो — त्यति भए पुग्छ। सार्वजनिक हुनुअघि हरेक प्रोफाइल मानिसले हेर्छ, त्यसैले कोही जाँच नभई सूचीबद्ध हुँदैन।",
     practApplySubmit: "आवेदन पठाउनुहोस्",
     practApplyPending: "तपाईंको आवेदन जाँचमा छ।",
     practApplyApproved: "स्वीकृत — तपाईंको प्रोफाइल प्रकाशन गर्न तयार छ।",
@@ -1235,6 +1268,17 @@ export const translations: Record<Language, TranslationCatalog> = {
     practLive: "सूचीबद्ध",
     practOffline: "सूचीबद्ध नहीं",
     practNoRates: "परामर्श से पहले एक मूल्य निर्धारित करें।",
+    practRegister: "ज्योतिषी के रूप में पंजीकरण",
+    practPhoto: "प्रोफ़ाइल फ़ोटो",
+    practPhotoNote: "चेहरा साफ़ दिखने वाली फ़ोटो। JPG, PNG या WebP, 4MB तक।",
+    practPractice: "आप क्या करते हैं",
+    practBothNote: "दोनों करते हैं तो दोनों चुनें।",
+    practYears: "कितने वर्षों से",
+    practPhone: "फ़ोन",
+    practCity: "शहर",
+    practTraditions: "परंपरा",
+    practHeadline: "अपने बारे में एक पंक्ति",
+    practHeadlinePlaceholder: "केपी पद्धति · करियर और विवाह",
     practSearch: "ज्योतिषी और पंडित खोजें",
     practUnavailable: "अभी निर्देशिका उपलब्ध नहीं है।",
     practNoneYet: "अभी तक कोई सत्यापित ज्योतिषी नहीं",
@@ -1242,7 +1286,7 @@ export const translations: Record<Language, TranslationCatalog> = {
     dashVerified: "सत्यापित",
     dashYears: "वर्ष",
     practApplyTitle: "नखत्र पर सेवा दें",
-    practApplyLead: "बताइए आप कौन हैं और कैसे काम करते हैं। हर आवेदन एक व्यक्ति पढ़ता है, और स्वीकृति से पहले कुछ भी सार्वजनिक नहीं होता।",
+    practApplyLead: "कुछ विवरण और एक फ़ोटो — बस इतना ही। सार्वजनिक होने से पहले हर प्रोफ़ाइल एक व्यक्ति देखता है, इसलिए कोई बिना जाँच सूचीबद्ध नहीं होता।",
     practApplySubmit: "आवेदन भेजें",
     practApplyPending: "आपका आवेदन समीक्षा में है।",
     practApplyApproved: "स्वीकृत — आपकी प्रोफ़ाइल प्रकाशित करने के लिए तैयार है।",

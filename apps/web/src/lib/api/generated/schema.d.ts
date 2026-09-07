@@ -506,6 +506,51 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/practitioners/photo": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Upload a profile photograph
+         * @description Any signed-in account may upload, because the photograph is chosen while applying and there is no profile yet to attach it to. The returned URL is then submitted with the application or saved on the profile.
+         */
+        post: operations["upload_photo_v1_practitioners_photo_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/practitioners/photos/{name}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Serve a profile photograph
+         * @description Deliberately unauthenticated.
+         *
+         *     The browser fetches this from an `<img>` tag, which sends no Authorization
+         *     header, and the directory it appears in is public anyway. The name is a
+         *     hash of the bytes, so it is unguessable and cannot address anything this
+         *     service did not write.
+         */
+        get: operations["photo_v1_practitioners_photos__name__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/practitioners/{profile_id}": {
         parameters: {
             query?: never;
@@ -788,7 +833,16 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
-        /** ApplicationIn */
+        /**
+         * ApplicationIn
+         * @description Setting up a practitioner profile.
+         *
+         *     Short on purpose. This was an essay — where you trained, and a written
+         *     sample reading — which is a reasonable thing to ask a stranger and a
+         *     terrible thing to put between someone and joining. What a reader actually
+         *     chooses on is the name, the photograph, the languages and what you practise;
+         *     everything else can be filled in later from the desk.
+         */
         ApplicationIn: {
             /**
              * City
@@ -807,6 +861,11 @@ export interface components {
             credentials: string;
             /** Full Name */
             full_name: string;
+            /**
+             * Headline
+             * @default
+             */
+            headline: string;
             /** Languages */
             languages?: string[];
             /**
@@ -814,12 +873,16 @@ export interface components {
              * @default
              */
             phone: string;
+            /** Photo Url */
+            photo_url?: string | null;
             /**
              * Practice Type
              * @default astrologer
              * @enum {string}
              */
             practice_type: "astrologer" | "pandit";
+            /** Practice Types */
+            practice_types?: ("astrologer" | "pandit")[];
             /**
              * Sample Reading
              * @default
@@ -1003,6 +1066,11 @@ export interface components {
              * @default
              */
             language: string;
+        };
+        /** Body_upload_photo_v1_practitioners_photo_post */
+        Body_upload_photo_v1_practitioners_photo_post: {
+            /** File */
+            file: string;
         };
         /** ChartOut */
         ChartOut: {
@@ -1524,6 +1592,14 @@ export interface components {
              */
             yoga: string;
         };
+        /**
+         * PhotoOut
+         * @description Where an uploaded photograph now lives.
+         */
+        PhotoOut: {
+            /** Photo Url */
+            photo_url: string;
+        };
         /** PlaceOut */
         PlaceOut: {
             /**
@@ -1637,6 +1713,8 @@ export interface components {
              * @enum {string}
              */
             practice_type: "astrologer" | "pandit";
+            /** Practice Types */
+            practice_types: ("astrologer" | "pandit")[];
             /** Specialities */
             specialities: string[];
             /** Traditions */
@@ -1671,6 +1749,8 @@ export interface components {
              * @enum {string}
              */
             practice_type: "astrologer" | "pandit";
+            /** Practice Types */
+            practice_types: ("astrologer" | "pandit")[];
             /** Specialities */
             specialities: string[];
             /** Traditions */
@@ -1720,6 +1800,8 @@ export interface components {
             languages?: string[];
             /** Photo Url */
             photo_url?: string | null;
+            /** Practice Types */
+            practice_types?: ("astrologer" | "pandit")[];
             /** Specialities */
             specialities?: string[];
             /** Traditions */
@@ -3159,6 +3241,70 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["RateOut"][];
                 };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    upload_photo_v1_practitioners_photo_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["Body_upload_photo_v1_practitioners_photo_post"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PhotoOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    photo_v1_practitioners_photos__name__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                name: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description Validation Error */
             422: {

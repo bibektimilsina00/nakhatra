@@ -127,3 +127,7 @@ export function useSetRate() {
     },
   });
 }
+
+export function useUploadPhoto() {
+  return useMutation<{ photo_url: string }, Error, File>({ mutationFn: api.uploadPhoto });
+}

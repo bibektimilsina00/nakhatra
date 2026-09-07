@@ -2,6 +2,7 @@
   "components": {
     "schemas": {
       "ApplicationIn": {
+        "description": "Setting up a practitioner profile.\n\nShort on purpose. This was an essay \u2014 where you trained, and a written\nsample reading \u2014 which is a reasonable thing to ask a stranger and a\nterrible thing to put between someone and joining. What a reader actually\nchooses on is the name, the photograph, the languages and what you practise;\neverything else can be filled in later from the desk.",
         "properties": {
           "city": {
             "default": "",
@@ -28,6 +29,12 @@
             "title": "Full Name",
             "type": "string"
           },
+          "headline": {
+            "default": "",
+            "maxLength": 160,
+            "title": "Headline",
+            "type": "string"
+          },
           "languages": {
             "items": {
               "type": "string"
@@ -41,6 +48,18 @@
             "title": "Phone",
             "type": "string"
           },
+          "photo_url": {
+            "anyOf": [
+              {
+                "maxLength": 512,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Photo Url"
+          },
           "practice_type": {
             "default": "astrologer",
             "enum": [
@@ -49,6 +68,17 @@
             ],
             "title": "Practice Type",
             "type": "string"
+          },
+          "practice_types": {
+            "items": {
+              "enum": [
+                "astrologer",
+                "pandit"
+              ],
+              "type": "string"
+            },
+            "title": "Practice Types",
+            "type": "array"
           },
           "sample_reading": {
             "default": "",
@@ -441,6 +471,20 @@
           "file"
         ],
         "title": "Body_transcribe_v1_transcribe_post",
+        "type": "object"
+      },
+      "Body_upload_photo_v1_practitioners_photo_post": {
+        "properties": {
+          "file": {
+            "contentMediaType": "application/octet-stream",
+            "title": "File",
+            "type": "string"
+          }
+        },
+        "required": [
+          "file"
+        ],
+        "title": "Body_upload_photo_v1_practitioners_photo_post",
         "type": "object"
       },
       "ChartOut": {
@@ -1703,6 +1747,20 @@
         "title": "PanchangOut",
         "type": "object"
       },
+      "PhotoOut": {
+        "description": "Where an uploaded photograph now lives.",
+        "properties": {
+          "photo_url": {
+            "title": "Photo Url",
+            "type": "string"
+          }
+        },
+        "required": [
+          "photo_url"
+        ],
+        "title": "PhotoOut",
+        "type": "object"
+      },
       "PlaceOut": {
         "properties": {
           "admin1": {
@@ -1909,6 +1967,17 @@
             "title": "Practice Type",
             "type": "string"
           },
+          "practice_types": {
+            "items": {
+              "enum": [
+                "astrologer",
+                "pandit"
+              ],
+              "type": "string"
+            },
+            "title": "Practice Types",
+            "type": "array"
+          },
           "specialities": {
             "items": {
               "type": "string"
@@ -1935,6 +2004,7 @@
         "required": [
           "id",
           "practice_type",
+          "practice_types",
           "display_name",
           "headline",
           "photo_url",
@@ -2012,6 +2082,17 @@
             "title": "Practice Type",
             "type": "string"
           },
+          "practice_types": {
+            "items": {
+              "enum": [
+                "astrologer",
+                "pandit"
+              ],
+              "type": "string"
+            },
+            "title": "Practice Types",
+            "type": "array"
+          },
           "specialities": {
             "items": {
               "type": "string"
@@ -2038,6 +2119,7 @@
         "required": [
           "id",
           "practice_type",
+          "practice_types",
           "display_name",
           "headline",
           "photo_url",
@@ -2123,6 +2205,17 @@
               }
             ],
             "title": "Photo Url"
+          },
+          "practice_types": {
+            "items": {
+              "enum": [
+                "astrologer",
+                "pandit"
+              ],
+              "type": "string"
+            },
+            "title": "Practice Types",
+            "type": "array"
           },
           "specialities": {
             "items": {
@@ -4839,6 +4932,102 @@
           }
         },
         "summary": "Set the price for one medium",
+        "tags": [
+          "practitioners"
+        ]
+      }
+    },
+    "/v1/practitioners/photo": {
+      "post": {
+        "description": "Any signed-in account may upload, because the photograph is chosen while applying and there is no profile yet to attach it to. The returned URL is then submitted with the application or saved on the profile.",
+        "operationId": "upload_photo_v1_practitioners_photo_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_upload_photo_v1_practitioners_photo_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PhotoOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Upload a profile photograph",
+        "tags": [
+          "practitioners"
+        ]
+      }
+    },
+    "/v1/practitioners/photos/{name}": {
+      "get": {
+        "description": "Deliberately unauthenticated.\n\nThe browser fetches this from an `<img>` tag, which sends no Authorization\nheader, and the directory it appears in is public anyway. The name is a\nhash of the bytes, so it is unguessable and cannot address anything this\nservice did not write.",
+        "operationId": "photo_v1_practitioners_photos__name__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "required": true,
+            "schema": {
+              "title": "Name",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Serve a profile photograph",
         "tags": [
           "practitioners"
         ]

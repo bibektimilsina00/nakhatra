@@ -14,6 +14,7 @@ from datetime import UTC, datetime
 
 import pytest
 from fastapi.testclient import TestClient
+from starlette.websockets import WebSocketDisconnect
 from sqlmodel import Session, select
 
 from app.core.db import get_engine
@@ -110,7 +111,9 @@ def test_a_stranger_is_closed_out(session: Session) -> None:
 
     with client.websocket_connect(f"/v1/consultations/{cid}/ws") as ws:
         ws.send_json({"type": "auth", "token": stranger_tok})
-        with pytest.raises(Exception):
+        # The server closes rather than answering, which the test client
+        # surfaces as a disconnect on the next read.
+        with pytest.raises(WebSocketDisconnect):
             ws.receive_json()
     assert realtime.room_size(cid) == 0
 
@@ -119,7 +122,9 @@ def test_a_bad_token_is_closed_out(session: Session) -> None:
     cid, *_ = _consultation(session)
     with client.websocket_connect(f"/v1/consultations/{cid}/ws") as ws:
         ws.send_json({"type": "auth", "token": "not-a-token"})
-        with pytest.raises(Exception):
+        # The server closes rather than answering, which the test client
+        # surfaces as a disconnect on the next read.
+        with pytest.raises(WebSocketDisconnect):
             ws.receive_json()
     assert realtime.room_size(cid) == 0
 
@@ -128,7 +133,9 @@ def test_no_token_at_all_is_closed_out(session: Session) -> None:
     cid, *_ = _consultation(session)
     with client.websocket_connect(f"/v1/consultations/{cid}/ws") as ws:
         ws.send_json({"type": "hello"})
-        with pytest.raises(Exception):
+        # The server closes rather than answering, which the test client
+        # surfaces as a disconnect on the next read.
+        with pytest.raises(WebSocketDisconnect):
             ws.receive_json()
     assert realtime.room_size(cid) == 0
 

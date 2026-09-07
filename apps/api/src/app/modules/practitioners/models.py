@@ -115,6 +115,11 @@ class PractitionerApplication(SQLModel, table=True):
     sample_reading: str = Field(default="")
     languages: str = Field(default="")
     traditions: str = Field(default="")
+    #: Comma-joined. One person is often both an astrologer and a pandit.
+    practices: str = Field(default="astrologer")
+    #: A line, carried through to the profile on approval.
+    headline: str = Field(default="", max_length=160)
+    photo_url: str | None = Field(default=None, max_length=512)
 
     #: `submitted` | `in_review` | `approved` | `rejected` | `withdrawn`.
     state: str = Field(default="submitted", max_length=32)

@@ -2,17 +2,20 @@
 
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, File, Query, UploadFile
+from fastapi.responses import FileResponse
 
 from app.core.db import SessionDep
+from app.core.errors import AppError
 from app.modules.auth.roles import ADMIN, PRACTITIONER, require_role
 from app.modules.auth.router_deps import get_current_user
-from app.modules.practitioners import service
+from app.modules.practitioners import photos, service
 from app.modules.practitioners.schemas import (
     ApplicationIn,
     ApplicationOut,
     ApplicationReviewOut,
     DirectoryOut,
+    PhotoOut,
     PractitionerDetail,
     ProfileIn,
     RateIn,
@@ -61,6 +64,57 @@ def directory(
 @router.get("/practitioners/{profile_id}", response_model=PractitionerDetail)
 def public_profile(profile_id: str, session: SessionDep) -> PractitionerDetail:
     return service.public_profile(session, profile_id)
+
+
+class PhotoError(AppError):
+    status_code = 400
+    code = "photo_invalid"
+
+
+class PhotoNotFound(AppError):
+    status_code = 404
+    code = "not_found"
+
+
+@router.post(
+    "/practitioners/photo",
+    response_model=PhotoOut,
+    summary="Upload a profile photograph",
+    description=(
+        "Any signed-in account may upload, because the photograph is chosen "
+        "while applying and there is no profile yet to attach it to. The "
+        "returned URL is then submitted with the application or saved on the "
+        "profile."
+    ),
+)
+async def upload_photo(
+    file: UploadFile = File(...),  # noqa: B008 -- FastAPI's own idiom
+    user_id: str = Depends(get_current_user),
+) -> PhotoOut:
+    try:
+        name = photos.store(await file.read(), file.content_type or "")
+    except ValueError as exc:
+        raise PhotoError(str(exc)) from exc
+    return PhotoOut(photo_url=photos.url_for(name))
+
+
+@router.get(
+    "/practitioners/photos/{name}",
+    response_class=FileResponse,
+    summary="Serve a profile photograph",
+)
+def photo(name: str) -> FileResponse:
+    """Deliberately unauthenticated.
+
+    The browser fetches this from an `<img>` tag, which sends no Authorization
+    header, and the directory it appears in is public anyway. The name is a
+    hash of the bytes, so it is unguessable and cannot address anything this
+    service did not write.
+    """
+    path = photos.path_for(name)
+    if path is None:
+        raise PhotoNotFound("No such photograph.")
+    return FileResponse(path)
 
 
 # --- applying ---

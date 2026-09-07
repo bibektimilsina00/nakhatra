@@ -15,9 +15,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(
-        env_file=".env", env_file_encoding="utf-8", extra="ignore"
-    )
+    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
 
     ENV: Literal["local", "staging", "production"] = "local"
     DEBUG: bool = False
@@ -37,6 +35,9 @@ class Settings(BaseSettings):
     # key under another name.
     OPENAI_API_KEY: str = ""
     TTS_CACHE_DIR: str = ""
+    #: Where profile photographs are written. Empty means a directory beside
+    #: the database, which is right for one machine and wrong for several.
+    MEDIA_DIR: str = ""
 
     # Google sign-in. Empty disables the endpoint rather than accepting any
     # audience — a blank client id would make every Google token valid here.

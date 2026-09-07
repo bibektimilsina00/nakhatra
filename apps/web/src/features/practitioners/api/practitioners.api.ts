@@ -75,3 +75,24 @@ export function setRate(body: RateIn): Promise<RateOut[]> {
     headers: authHeaders(),
   });
 }
+
+/**
+ * Upload a photograph and get back its URL.
+ *
+ * Not through `apiFetch`: that sets a JSON content type and serialises the
+ * body, and multipart needs the browser to set its own boundary.
+ */
+export async function uploadPhoto(file: File): Promise<{ photo_url: string }> {
+  const form = new FormData();
+  form.append("file", file);
+  const res = await fetch("/api/v1/practitioners/photo", {
+    method: "POST",
+    headers: authHeaders(),
+    body: form,
+  });
+  if (!res.ok) {
+    const body = await res.json().catch(() => null);
+    throw new Error(body?.error?.message ?? "That image could not be uploaded.");
+  }
+  return res.json();
+}
