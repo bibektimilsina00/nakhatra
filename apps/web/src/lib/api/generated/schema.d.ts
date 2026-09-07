@@ -21,6 +21,60 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/admin/practitioner-applications": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The review queue */
+        get: operations["review_queue_v1_admin_practitioner_applications_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/practitioner-applications/{application_id}/review": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Approve, reject, or move an application to in-review
+         * @description Approving creates the profile, copies the declared languages and traditions, and promotes the account to the practitioner role — in one transaction. The profile is created unlisted: approval says they may practise, not that the listing is ready to be read.
+         */
+        post: operations["review_v1_admin_practitioner_applications__application_id__review_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/auth/google": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Exchange a Google ID token for a token */
+        post: operations["google_sign_in_v1_auth_google_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/auth/login": {
         parameters: {
             query?: never;
@@ -92,6 +146,190 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/consultations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** My Consultations */
+        get: operations["my_consultations_v1_consultations_get"];
+        put?: never;
+        /** Request Consultation */
+        post: operations["request_consultation_v1_consultations_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/consultations/{consultation_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** One */
+        get: operations["one_v1_consultations__consultation_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/consultations/{consultation_id}/accept": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Accept */
+        post: operations["accept_v1_consultations__consultation_id__accept_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/consultations/{consultation_id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Cancel */
+        post: operations["cancel_v1_consultations__consultation_id__cancel_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/consultations/{consultation_id}/connect": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Start the session and the meter
+         * @description Places a hold for the lesser of the wallet and an hour of talking, and records `connected_at` from the server clock. Refuses with 402 when the wallet cannot fund the minimum billable session — before anyone starts speaking, rather than cutting them off ten seconds in.
+         */
+        post: operations["connect_v1_consultations__consultation_id__connect_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/consultations/{consultation_id}/decline": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Decline */
+        post: operations["decline_v1_consultations__consultation_id__decline_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/consultations/{consultation_id}/end": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Stop the meter and capture what was used
+         * @description Elapsed time is measured server-side from `connected_at`. The hold is a ceiling: the capture is what the measurement says and the remainder is released. Billed per second with a 60-second minimum.
+         */
+        post: operations["end_v1_consultations__consultation_id__end_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/consultations/{consultation_id}/messages": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Messages */
+        get: operations["messages_v1_consultations__consultation_id__messages_get"];
+        put?: never;
+        /** Send */
+        post: operations["send_v1_consultations__consultation_id__messages_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/grants": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Every chart this account has shared
+         * @description Consent has to be visible to be meaningful. This is that page.
+         */
+        get: operations["grants_v1_grants_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/grants/{grant_id}/revoke": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Withdraw access to a shared chart
+         * @description Immediate. The practitioner loses access on the next request.
+         */
+        post: operations["revoke_v1_grants__grant_id__revoke_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/kundali": {
         parameters: {
             query?: never;
@@ -108,6 +346,26 @@ export interface paths {
          *     See docs/astrology-methodology.md for every methodology decision.
          */
         post: operations["create_kundali_v1_kundali_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/milan/analysis": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * A Jyotish reading of an Ashtakoota match
+         * @description Recomputes the match from the same birth details and hands it, with both complete charts, to the model — which kootas matched and which did not, the outlook for the marriage, any dosha and what it bears on, and the remedies for it. Separate from `/match` because the arithmetic returns in milliseconds and the reading does not.
+         */
+        post: operations["analysis_v1_milan_analysis_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -155,6 +413,95 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/practitioners": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Browse verified astrologers and pandits
+         * @description Only verified, listed profiles are returned — the filter is in the query itself, not a caller's responsibility. Unauthenticated, because browsing is how someone decides whether to sign up.
+         */
+        get: operations["directory_v1_practitioners_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/practitioners/applications": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Apply to practise on the platform */
+        post: operations["apply_v1_practitioners_applications_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/practitioners/applications/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The signed-in account's own application, if any */
+        get: operations["my_application_v1_practitioners_applications_me_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/practitioners/me/profile": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** My Profile */
+        get: operations["my_profile_v1_practitioners_me_profile_get"];
+        /** Update Profile */
+        put: operations["update_profile_v1_practitioners_me_profile_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/practitioners/{profile_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Public Profile */
+        get: operations["public_profile_v1_practitioners__profile_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/realtime-session": {
         parameters: {
             query?: never;
@@ -186,6 +533,26 @@ export interface paths {
          * @description Reads an already-computed chart. `source` says whether the model or the deterministic generator produced it; both return the same seven sections.
          */
         post: operations["report_v1_report_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/report/stream": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * The same report, streamed section by section
+         * @description Server-sent events. Each `section` frame carries one finished section the moment the model closes it, rather than making the reader wait a minute for the whole array; the stream ends with `done` or, if it could not be completed, `error`. `/v1/report` is unchanged and still returns the whole report in one response.
+         */
+        post: operations["report_stream_v1_report_stream_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -339,10 +706,198 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/wallet": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Balance, held and available */
+        get: operations["wallet_v1_wallet_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/wallet/ledger": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Every movement, newest first
+         * @description The wallet's whole history. `amount_minor` is signed — credits positive, debits negative — and `balance_after_minor` is what the running total was immediately after each entry.
+         */
+        get: operations["ledger_v1_wallet_ledger_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/wallet/topup": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Credit a confirmed payment (development only)
+         * @description Idempotent on `reference`: the same payment cannot be credited twice however many times its callback arrives. Disabled outside local development until the provider adapters and signature verification exist — see docs/astrologer-marketplace.md §6.
+         */
+        post: operations["top_up_v1_wallet_topup_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** ApplicationIn */
+        ApplicationIn: {
+            /**
+             * City
+             * @default
+             */
+            city: string;
+            /**
+             * Country
+             * @default NP
+             */
+            country: string;
+            /**
+             * Credentials
+             * @default
+             */
+            credentials: string;
+            /** Full Name */
+            full_name: string;
+            /** Languages */
+            languages?: string[];
+            /**
+             * Phone
+             * @default
+             */
+            phone: string;
+            /**
+             * Practice Type
+             * @default astrologer
+             * @enum {string}
+             */
+            practice_type: "astrologer" | "pandit";
+            /**
+             * Sample Reading
+             * @default
+             */
+            sample_reading: string;
+            /** Traditions */
+            traditions?: string[];
+            /**
+             * Years Experience
+             * @default 0
+             */
+            years_experience: number;
+        };
+        /**
+         * ApplicationOut
+         * @description What an applicant sees about their own application.
+         *
+         *     `reviewer_note` is deliberately absent. It is the reviewer's working
+         *     notes — "references did not respond", "second opinion needed" — and
+         *     `decision_note` is the message written to be read.
+         */
+        ApplicationOut: {
+            /** City */
+            city: string;
+            /** Country */
+            country: string;
+            /** Created At */
+            created_at: string;
+            /** Decision Note */
+            decision_note: string;
+            /** Full Name */
+            full_name: string;
+            /** Id */
+            id: string;
+            /**
+             * Practice Type
+             * @enum {string}
+             */
+            practice_type: "astrologer" | "pandit";
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "submitted" | "in_review" | "approved" | "rejected" | "withdrawn";
+            /** Updated At */
+            updated_at: string;
+            /** Years Experience */
+            years_experience: number;
+        };
+        /**
+         * ApplicationReviewOut
+         * @description The same application, as a reviewer sees it. Admin routes only.
+         */
+        ApplicationReviewOut: {
+            /** City */
+            city: string;
+            /** Country */
+            country: string;
+            /** Created At */
+            created_at: string;
+            /** Credentials */
+            credentials: string;
+            /** Decision Note */
+            decision_note: string;
+            /** Full Name */
+            full_name: string;
+            /** Id */
+            id: string;
+            /** Languages */
+            languages: string[];
+            /** Phone */
+            phone: string;
+            /**
+             * Practice Type
+             * @enum {string}
+             */
+            practice_type: "astrologer" | "pandit";
+            /** Reviewed At */
+            reviewed_at: string | null;
+            /** Reviewed By */
+            reviewed_by: string | null;
+            /** Reviewer Note */
+            reviewer_note: string;
+            /** Sample Reading */
+            sample_reading: string;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "submitted" | "in_review" | "approved" | "rejected" | "withdrawn";
+            /** Traditions */
+            traditions: string[];
+            /** Updated At */
+            updated_at: string;
+            /** User Id */
+            user_id: string;
+            /** Years Experience */
+            years_experience: number;
+        };
         /**
          * AvakhadaOut
          * @description Traditional birth attributes, all derived from the Moon.
@@ -560,6 +1115,41 @@ export interface components {
             /** Text */
             text: string;
         };
+        /** ConsultationOut */
+        ConsultationOut: {
+            /** Billed Seconds */
+            billed_seconds: number;
+            /** Charged Minor */
+            charged_minor: number;
+            /** Connected At */
+            connected_at: string | null;
+            /** Created At */
+            created_at: string;
+            /** Currency */
+            currency: string;
+            /** Ended At */
+            ended_at: string | null;
+            /** Id */
+            id: string;
+            /**
+             * Medium
+             * @enum {string}
+             */
+            medium: "chat" | "voice" | "video";
+            /** Practitioner User Id */
+            practitioner_user_id: string;
+            /** Profile Id */
+            profile_id: string;
+            /** Rate Per Minute Minor */
+            rate_per_minute_minor: number;
+            /** Seeker Id */
+            seeker_id: string;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "requested" | "accepted" | "active" | "ended" | "declined" | "cancelled" | "expired";
+        };
         /** DashaOut */
         DashaOut: {
             /** Balance Years */
@@ -594,6 +1184,61 @@ export interface components {
              */
             start: string;
         };
+        /** DirectoryOut */
+        DirectoryOut: {
+            /** Items */
+            items: components["schemas"]["PractitionerCard"][];
+            /** Total */
+            total: number;
+        };
+        /** EntryOut */
+        EntryOut: {
+            /** Amount Minor */
+            amount_minor: number;
+            /** Balance After Minor */
+            balance_after_minor: number;
+            /** Created At */
+            created_at: string;
+            /** Id */
+            id: string;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "topup" | "consultation" | "refund" | "payout" | "commission" | "adjustment";
+            /** Reference Id */
+            reference_id: string | null;
+            /** Reference Type */
+            reference_type: string | null;
+        };
+        /**
+         * GoogleSignInIn
+         * @description One Google sign-in, arriving by either of the two flows Google offers.
+         *
+         *     `code` is the web client's: a popup auth-code flow, which is the only way
+         *     to start sign-in from a button we designed ourselves. `credential` is an
+         *     ID token handed straight to the page, which is what a native mobile Google
+         *     Sign-In returns. Both end at the same verified identity.
+         */
+        GoogleSignInIn: {
+            /** Code */
+            code?: string | null;
+            /** Credential */
+            credential?: string | null;
+        };
+        /** GrantOut */
+        GrantOut: {
+            /** Granted At */
+            granted_at: string;
+            /** Id */
+            id: string;
+            /** Kundali Id */
+            kundali_id: string;
+            /** Practitioner User Id */
+            practitioner_user_id: string;
+            /** Revoked At */
+            revoked_at: string | null;
+        };
         /** HTTPValidationError */
         HTTPValidationError: {
             /** Detail */
@@ -626,6 +1271,15 @@ export interface components {
             /** Obtained */
             obtained: number;
         };
+        /** LedgerOut */
+        LedgerOut: {
+            /** Balance Minor */
+            balance_minor: number;
+            /** Currency */
+            currency: string;
+            /** Entries */
+            entries: components["schemas"]["EntryOut"][];
+        };
         /** ManglikCompatibilityOut */
         ManglikCompatibilityOut: {
             /** Canceled */
@@ -647,6 +1301,105 @@ export interface components {
             is_manglik: boolean;
             /** Severity */
             severity: string;
+        };
+        /** MessageIn */
+        MessageIn: {
+            /** Body */
+            body: string;
+        };
+        /** MessageOut */
+        MessageOut: {
+            /** Body */
+            body: string;
+            /** Created At */
+            created_at: string;
+            /** Id */
+            id: string;
+            /** Read At */
+            read_at: string | null;
+            /** Sender Id */
+            sender_id: string;
+        };
+        /**
+         * MilanAnalysisRequest
+         * @description Birth details, not a finished match.
+         *
+         *     The match is recomputed server-side so the model can only ever read a score
+         *     the engine produced — and so the request stays four fields wide instead of
+         *     carrying two full charts back up the wire.
+         */
+        MilanAnalysisRequest: {
+            bride: components["schemas"]["BirthDetailsIn"];
+            /**
+             * Bride Name
+             * @default Bride
+             */
+            bride_name: string;
+            groom: components["schemas"]["BirthDetailsIn"];
+            /**
+             * Groom Name
+             * @default Groom
+             */
+            groom_name: string;
+            /**
+             * Language
+             * @default en
+             * @enum {string}
+             */
+            language: "en" | "ne" | "hi";
+        };
+        /** MilanAnalysisResponse */
+        MilanAnalysisResponse: {
+            /** Concerns */
+            concerns: components["schemas"]["MilanPointOut"][];
+            /** Doshas */
+            doshas: components["schemas"]["MilanDoshaOut"][];
+            /** Outlook */
+            outlook: string;
+            /** Remedies */
+            remedies: components["schemas"]["MilanRemedyOut"][];
+            /** Strengths */
+            strengths: components["schemas"]["MilanPointOut"][];
+            /** Verdict */
+            verdict: string;
+        };
+        /** MilanDoshaOut */
+        MilanDoshaOut: {
+            /** Affects */
+            affects: string;
+            /** Detail */
+            detail: string;
+            /** Name */
+            name: string;
+            /**
+             * Severity
+             * @enum {string}
+             */
+            severity: "none" | "mild" | "moderate" | "serious";
+        };
+        /**
+         * MilanPointOut
+         * @description One thing that matches, or one that does not, and what it rests on.
+         */
+        MilanPointOut: {
+            /**
+             * Basis
+             * @description The koota or placement behind this, quoted with its score.
+             */
+            basis: string;
+            /** Detail */
+            detail: string;
+            /** Title */
+            title: string;
+        };
+        /** MilanRemedyOut */
+        MilanRemedyOut: {
+            /** Detail */
+            detail: string;
+            /** Timing */
+            timing: string;
+            /** Title */
+            title: string;
         };
         /** MilanRequest */
         MilanRequest: {
@@ -834,6 +1587,128 @@ export interface components {
             /** Sign Index */
             sign_index: number;
         };
+        /**
+         * PractitionerCard
+         * @description One row of the directory.
+         *
+         *     Rating and consultation count are absent until reviews exist — a card that
+         *     invents `4.9 · 1,204 readings` for someone who has taken no consultations
+         *     is a fabricated credential, and the preview data in the web app is already
+         *     labelled as such for the same reason.
+         */
+        PractitionerCard: {
+            /** City */
+            city: string;
+            /** Country */
+            country: string;
+            /** Display Name */
+            display_name: string;
+            /** Headline */
+            headline: string;
+            /** Id */
+            id: string;
+            /** Languages */
+            languages: string[];
+            /** Photo Url */
+            photo_url: string | null;
+            /**
+             * Practice Type
+             * @enum {string}
+             */
+            practice_type: "astrologer" | "pandit";
+            /** Specialities */
+            specialities: string[];
+            /** Traditions */
+            traditions: string[];
+            /** Verified */
+            verified: boolean;
+            /** Years Experience */
+            years_experience: number;
+        };
+        /** PractitionerDetail */
+        PractitionerDetail: {
+            /** Bio */
+            bio: string;
+            /** City */
+            city: string;
+            /** Country */
+            country: string;
+            /** Display Name */
+            display_name: string;
+            /** Headline */
+            headline: string;
+            /** Id */
+            id: string;
+            /** Intro Video Url */
+            intro_video_url: string | null;
+            /** Languages */
+            languages: string[];
+            /** Photo Url */
+            photo_url: string | null;
+            /**
+             * Practice Type
+             * @enum {string}
+             */
+            practice_type: "astrologer" | "pandit";
+            /** Specialities */
+            specialities: string[];
+            /** Traditions */
+            traditions: string[];
+            /** Verified */
+            verified: boolean;
+            /** Years Experience */
+            years_experience: number;
+        };
+        /**
+         * ProfileIn
+         * @description What a practitioner may change about their own listing.
+         *
+         *     `verification_state` is not here. A practitioner cannot verify themselves.
+         */
+        ProfileIn: {
+            /**
+             * Bio
+             * @default
+             */
+            bio: string;
+            /**
+             * City
+             * @default
+             */
+            city: string;
+            /**
+             * Country
+             * @default NP
+             */
+            country: string;
+            /** Display Name */
+            display_name: string;
+            /**
+             * Headline
+             * @default
+             */
+            headline: string;
+            /** Intro Video Url */
+            intro_video_url?: string | null;
+            /**
+             * Is Listed
+             * @default true
+             */
+            is_listed: boolean;
+            /** Languages */
+            languages?: string[];
+            /** Photo Url */
+            photo_url?: string | null;
+            /** Specialities */
+            specialities?: string[];
+            /** Traditions */
+            traditions?: string[];
+            /**
+             * Years Experience
+             * @default 0
+             */
+            years_experience: number;
+        };
         /** RealtimeSessionRequest */
         RealtimeSessionRequest: {
             birth: components["schemas"]["BirthDetailsIn"];
@@ -895,7 +1770,7 @@ export interface components {
             report: components["schemas"]["ReportSection"][];
             /**
              * Source
-             * @description 'rule_engine' means the deterministic generator produced this — a complete report, not a degraded one. Surfaced so the client can tell the two apart rather than guess.
+             * @description 'rule_engine' means the deterministic generator produced this — a complete report, not a degraded one. Surfaced so the client can tell the two apart rather than guess. 'llm' covers both a freshly generated reading and one replayed from storage; the two are the same reading, and the streaming endpoint's `done` frame carries a `cached` flag if you need to tell them apart.
              * @enum {string}
              */
             source: "llm" | "rule_engine";
@@ -916,6 +1791,42 @@ export interface components {
             summary: string;
             /** Title */
             title: string;
+        };
+        /** RequestIn */
+        RequestIn: {
+            /** Kundali Id */
+            kundali_id?: string | null;
+            /**
+             * Medium
+             * @default chat
+             * @enum {string}
+             */
+            medium: "chat" | "voice" | "video";
+            /**
+             * Opening Message
+             * @default
+             */
+            opening_message: string;
+            /** Profile Id */
+            profile_id: string;
+        };
+        /** ReviewDecisionIn */
+        ReviewDecisionIn: {
+            /**
+             * Decision
+             * @enum {string}
+             */
+            decision: "approve" | "reject" | "in_review";
+            /**
+             * Decision Note
+             * @default
+             */
+            decision_note: string;
+            /**
+             * Reviewer Note
+             * @default
+             */
+            reviewer_note: string;
         };
         /** SavedKundaliIn */
         SavedKundaliIn: {
@@ -1049,6 +1960,16 @@ export interface components {
             token_type: string;
             user: components["schemas"]["UserProfileOut"];
         };
+        /** TopUpIn */
+        TopUpIn: {
+            /**
+             * Amount Minor
+             * @description Minor units, e.g. paisa
+             */
+            amount_minor: number;
+            /** Reference */
+            reference: string;
+        };
         /** TranscriptResponse */
         TranscriptResponse: {
             /** Text */
@@ -1138,6 +2059,17 @@ export interface components {
             /** Sign Index */
             sign_index: number;
         };
+        /** WalletOut */
+        WalletOut: {
+            /** Available Minor */
+            available_minor: number;
+            /** Balance Minor */
+            balance_minor: number;
+            /** Currency */
+            currency: string;
+            /** Held Minor */
+            held_minor: number;
+        };
     };
     responses: never;
     parameters: never;
@@ -1165,6 +2097,109 @@ export interface operations {
                     "application/json": {
                         [key: string]: string;
                     };
+                };
+            };
+        };
+    };
+    review_queue_v1_admin_practitioner_applications_get: {
+        parameters: {
+            query?: {
+                state?: string | null;
+            };
+            header?: {
+                authorization?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApplicationReviewOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    review_v1_admin_practitioner_applications__application_id__review_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path: {
+                application_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReviewDecisionIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApplicationReviewOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    google_sign_in_v1_auth_google_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GoogleSignInIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TokenResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };
@@ -1301,6 +2336,404 @@ export interface operations {
             };
         };
     };
+    my_consultations_v1_consultations_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConsultationOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    request_consultation_v1_consultations_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RequestIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConsultationOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    one_v1_consultations__consultation_id__get: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path: {
+                consultation_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConsultationOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    accept_v1_consultations__consultation_id__accept_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path: {
+                consultation_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConsultationOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    cancel_v1_consultations__consultation_id__cancel_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path: {
+                consultation_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConsultationOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    connect_v1_consultations__consultation_id__connect_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path: {
+                consultation_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConsultationOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    decline_v1_consultations__consultation_id__decline_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path: {
+                consultation_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConsultationOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    end_v1_consultations__consultation_id__end_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path: {
+                consultation_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConsultationOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    messages_v1_consultations__consultation_id__messages_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path: {
+                consultation_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MessageOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    send_v1_consultations__consultation_id__messages_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path: {
+                consultation_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MessageIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MessageOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    grants_v1_grants_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GrantOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    revoke_v1_grants__grant_id__revoke_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path: {
+                grant_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GrantOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     create_kundali_v1_kundali_post: {
         parameters: {
             query?: {
@@ -1324,6 +2757,41 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ChartOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    analysis_v1_milan_analysis_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MilanAnalysisRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MilanAnalysisResponse"];
                 };
             };
             /** @description Validation Error */
@@ -1403,6 +2871,211 @@ export interface operations {
             };
         };
     };
+    directory_v1_practitioners_get: {
+        parameters: {
+            query?: {
+                /** @description astrologer | pandit */
+                practice_type?: string | null;
+                /** @description Normalised, e.g. `ne` */
+                language?: string | null;
+                /** @description e.g. `parashari` */
+                tradition?: string | null;
+                /** @description e.g. `marriage` */
+                speciality?: string | null;
+                /** @description Matches the display name */
+                q?: string | null;
+                limit?: number;
+                offset?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DirectoryOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    apply_v1_practitioners_applications_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ApplicationIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApplicationOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    my_application_v1_practitioners_applications_me_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApplicationOut"] | null;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    my_profile_v1_practitioners_me_profile_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PractitionerDetail"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_profile_v1_practitioners_me_profile_put: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ProfileIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PractitionerDetail"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    public_profile_v1_practitioners__profile_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                profile_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PractitionerDetail"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     realtime_session_v1_realtime_session_post: {
         parameters: {
             query?: never;
@@ -1461,6 +3134,39 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["ReportResponse"];
                 };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    report_stream_v1_report_stream_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReportRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description Validation Error */
             422: {
@@ -1831,6 +3537,105 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ChatMessageOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    wallet_v1_wallet_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WalletOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    ledger_v1_wallet_ledger_get: {
+        parameters: {
+            query?: {
+                limit?: number;
+            };
+            header?: {
+                authorization?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LedgerOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    top_up_v1_wallet_topup_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TopUpIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WalletOut"];
                 };
             };
             /** @description Validation Error */

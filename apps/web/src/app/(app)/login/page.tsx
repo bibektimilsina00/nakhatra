@@ -6,6 +6,7 @@ import React, { Suspense, useEffect, useState } from "react";
 import { ArrowRight, Eye, EyeOff } from "lucide-react";
 
 import { NakhatraMark } from "@/components/ui/nakhatra-mark";
+import { GoogleButton } from "@/features/auth/components/google-button";
 import { useLogin, useSession, useSignup } from "@/features/auth/hooks/use-auth";
 import { loginSchema, signupSchema } from "@/features/auth/schema/auth-forms";
 
@@ -16,17 +17,11 @@ const FIELD =
 
 const LABEL = "block text-[13px] font-semibold text-[#E2E8F0] mb-1.5";
 
-function GoogleGlyph() {
-  return (
-    <svg className="size-4" viewBox="0 0 24 24" aria-hidden="true">
-      <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z" />
-      <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.26v3.15C3.25 21.3 7.31 24 12 24z" />
-      <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.26C.46 8.18 0 10.02 0 12s.46 3.82 1.26 5.42l4.02-3.15z" />
-      <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.31 0 3.25 2.7 1.26 6.58l4.02 3.15c.95-2.83 3.6-4.98 6.72-4.98z" />
-    </svg>
-  );
-}
-
+/**
+ * Where a signed-in visitor lands. One constant because three paths reach it —
+ * email, Google, and arriving already signed in — and three literals drift.
+ */
+const AFTER_SIGN_IN = "/dashboard";
 
 /**
  * Auth backdrop.
@@ -147,7 +142,7 @@ function LoginFormContent() {
   const isLogin = mode === "login";
 
   useEffect(() => {
-    if (user) router.push("/reading");
+    if (user) router.push(AFTER_SIGN_IN);
   }, [user, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -165,7 +160,7 @@ function LoginFormContent() {
         if (!parsed.success) throw new Error(parsed.error.issues[0].message);
         await signup.mutateAsync(parsed.data);
       }
-      router.push("/reading");
+      router.push(AFTER_SIGN_IN);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not sign you in.");
     } finally {
@@ -196,17 +191,7 @@ function LoginFormContent() {
             </p>
           </div>
 
-          <button
-            type="button"
-            onClick={() => {
-              setEmail("demo.user@nakhatra.com");
-              setPassword("demopass123");
-            }}
-            className="flex w-full items-center justify-center gap-3 rounded-[8px] border border-white/10 bg-[#181B27] px-4 py-2.5 text-sm font-medium text-[#F8FAFC] transition-colors hover:border-white/20 hover:bg-[#1E2230] focus-visible:border-[#E5A93C] focus-visible:outline-none"
-          >
-            <GoogleGlyph />
-            <span>Continue with Google</span>
-          </button>
+          <GoogleButton onSignedIn={() => router.push(AFTER_SIGN_IN)} />
 
           <div className="my-6 flex items-center gap-4">
             <span className="h-px flex-1 bg-white/10" />

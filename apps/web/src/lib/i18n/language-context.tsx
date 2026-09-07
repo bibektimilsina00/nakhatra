@@ -1,6 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from "react";
+import { marketing, type MarketingCopy } from "./marketing";
 import { Language, translations, TranslationCatalog } from "./translations";
 
 export type { Language };
@@ -60,4 +61,17 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
 
 export function useTranslation() {
   return useContext(LanguageContext);
+}
+
+/** The marketing site's copy in the active language. */
+export function useMarketing(): MarketingCopy {
+  return marketing[useContext(LanguageContext).language] ?? marketing.en;
+}
+
+/**
+ * Wide letter-spacing is a Latin display convention. Applied to Devanagari it
+ * pulls conjuncts apart ("स्क्रोल" -> "स् क्रो ल"), so it only ships for `en`.
+ */
+export function useLatinTracking(classes: string) {
+  return useContext(LanguageContext).language === "en" ? classes : "";
 }

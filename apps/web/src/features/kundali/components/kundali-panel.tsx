@@ -1,5 +1,7 @@
 "use client";
 
+import { Suspense } from "react";
+
 import { useCreateKundali } from "@/features/kundali/hooks/use-create-kundali";
 import { toRequestBody } from "@/features/kundali/api/kundali.api";
 import { BirthDetailsForm } from "@/features/kundali/components/birth-details-form";
@@ -35,12 +37,25 @@ export function KundaliPanel() {
           {banner}
         </div>
       )}
-      <BirthDetailsForm
-        pending={mutation.isPending}
-        serverFieldErrors={fieldErrors}
-        onSubmit={(values, place) => mutation.mutate(toRequestBody(values, place))}
-      />
+      {/* The form reads `?name=` so the dashboard's quick-start can hand it a
+          name. `useSearchParams` opts a route out of static prerendering
+          unless it sits behind a boundary, and this panel is on the marketing
+          page too — one boundary here keeps both routes static. */}
+      <Suspense fallback={<FormSkeleton />}>
+        <BirthDetailsForm
+          pending={mutation.isPending}
+          serverFieldErrors={fieldErrors}
+          onSubmit={(values, place) => mutation.mutate(toRequestBody(values, place))}
+        />
+      </Suspense>
     </div>
+  );
+}
+
+/** Same box as the form, so nothing shifts when it swaps in. */
+function FormSkeleton() {
+  return (
+    <div className="mx-auto h-[520px] w-full max-w-lg animate-pulse rounded-[8px] border border-white/10 bg-[#161B2B]" />
   );
 }
 

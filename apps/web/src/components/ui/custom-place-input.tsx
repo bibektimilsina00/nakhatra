@@ -4,6 +4,7 @@ import { useState, useRef, useEffect, useMemo } from "react";
 
 import { searchPlaces, DEFAULT_POPULAR_PLACES } from "@/features/kundali/api/places.api";
 import type { Place } from "@/features/kundali/types";
+import { placementClass, popoverFit, type Fit } from "@/components/ui/popover-placement";
 
 interface CustomPlaceInputProps {
   value: string;
@@ -16,6 +17,9 @@ function coords(lat: number, lon: number) {
   return `${Math.abs(lat).toFixed(2)}°${lat >= 0 ? "N" : "S"} ${Math.abs(lon).toFixed(2)}°${lon >= 0 ? "E" : "W"}`;
 }
 
+/** `max-h-64` worth of rows, plus the header and padding. */
+const PREFERRED_HEIGHT = 300;
+
 export function CustomPlaceInput({
   value,
   onChange,
@@ -24,6 +28,7 @@ export function CustomPlaceInput({
   const [query, setQuery] = useState(value);
   const [suggestions, setSuggestions] = useState<Place[]>(DEFAULT_POPULAR_PLACES);
   const [isOpen, setIsOpen] = useState(false);
+  const [fit, setFit] = useState<Fit>({ placement: "down", maxHeight: PREFERRED_HEIGHT });
   const [active, setActive] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
@@ -122,10 +127,14 @@ export function CustomPlaceInput({
         aria-autocomplete="list"
         aria-controls="place-listbox"
         value={query}
-        onFocus={() => setIsOpen(true)}
+        onFocus={() => {
+          setFit(popoverFit(containerRef.current, PREFERRED_HEIGHT));
+          setIsOpen(true);
+        }}
         onKeyDown={onKeyDown}
         onChange={(e) => {
           setQuery(e.target.value);
+          setFit(popoverFit(containerRef.current, PREFERRED_HEIGHT));
           setIsOpen(true);
         }}
         placeholder={placeholder}
@@ -137,7 +146,8 @@ export function CustomPlaceInput({
           ref={listRef}
           id="place-listbox"
           role="listbox"
-          className="absolute left-0 top-full z-50 mt-2 max-h-64 w-full overflow-y-auto rounded-[8px] border border-white/12 bg-[#0B0E18]/95 p-1.5 shadow-2xl shadow-black/50 backdrop-blur-xl"
+          className={`absolute left-0 z-50 w-full overflow-y-auto rounded-[8px] border border-white/12 bg-[#0B0E18]/95 p-1.5 shadow-2xl shadow-black/50 backdrop-blur-xl ${placementClass(fit.placement)}`}
+          style={{ maxHeight: fit.maxHeight }}
         >
           <div className="px-2.5 pb-2 pt-1 font-mono text-[9.5px] uppercase tracking-[0.18em] text-[#E5A93C]">
             {query.trim() ? "Matches" : "Popular"}

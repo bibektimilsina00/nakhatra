@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 
+import { useLatinTracking, useMarketing } from "@/lib/i18n/language-context";
+
 /**
  * The human-astrologer marketplace, and its waitlist.
  *
@@ -11,6 +13,10 @@ import { useState } from "react";
  * "thanks, you're on the list" toast that stored nothing would be a lie.
  */
 export function AstrologersSection() {
+  const m = useMarketing().astrologers;
+  const badge = useLatinTracking("uppercase tracking-[0.16em]");
+  const label = useLatinTracking("uppercase tracking-[0.2em]");
+  const chip = useLatinTracking("uppercase tracking-[0.14em]");
   const [email, setEmail] = useState("");
 
   const joinWaitlist = (e: React.FormEvent) => {
@@ -28,15 +34,15 @@ export function AstrologersSection() {
           <div className="grid gap-12 p-8 sm:p-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,.92fr)] lg:gap-16 lg:p-14">
             <div className="flex flex-col">
               <div className="flex flex-wrap items-center gap-3">
-                <span className="rounded-[4px] border border-gold/40 px-2.5 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-gold">Coming soon</span>
-                <span className="text-[13px] text-faint">In development</span>
+                <span className={`rounded-[4px] border border-gold/40 px-2.5 py-1 font-mono text-[10px] font-bold text-gold ${badge}`}>{m.badge}</span>
+                <span className="text-[13px] text-faint">{m.status}</span>
               </div>
-              <h2 className="mt-7 font-disp text-[28px] font-bold leading-[1.12] tracking-[-0.015em] text-paper sm:text-[36px]">When you want a second opinion, talk to a real astrologer</h2>
-              <p className="mt-5 text-[15.5px] leading-[1.7] text-muted">Verified jyotish taking consultations on the platform. Not another directory — they arrive already holding your chart, your questions and what the AI told you, so the hour is spent reading rather than re-explaining.</p>
+              <h2 className="mt-7 font-disp text-[28px] font-bold leading-[1.12] tracking-[-0.015em] text-paper sm:text-[36px]">{m.title}</h2>
+              <p className="mt-5 text-[15.5px] leading-[1.7] text-muted">{m.body}</p>
 
               {/* Phase 0 is a waitlist, so the section asks for one. */}
               <div className="mt-9">
-                <label htmlFor="wl-email" className="block font-mono text-[10px] uppercase tracking-[0.2em] text-gold">Tell me when it opens</label>
+                <label htmlFor="wl-email" className={`block font-mono text-[10px] text-gold ${label}`}>{m.waitlistLabel}</label>
                 <form onSubmit={joinWaitlist} className="mt-3 flex flex-wrap gap-2.5">
                   <input
                 type="email"
@@ -46,30 +52,30 @@ export function AstrologersSection() {
                 autoComplete="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="you@example.com"
+                placeholder={m.emailPlaceholder}
                 className="min-w-0 flex-1 rounded-[8px] border border-white/12 bg-ink px-4 py-3 text-[14px] text-paper outline-none placeholder:text-faint focus:border-gold/60"
               />
                   <button
                 type="submit"
                 className="shrink-0 rounded-[8px] bg-gold px-6 py-3 text-[14px] font-semibold text-ink transition hover:bg-gold2"
               >
-                Join the waitlist
+                {m.submit}
               </button>
                 </form>
-                <p className="mt-3 text-[12.5px] text-faint">Practising astrologer? <a href="mailto:hello@nakhatra.com?subject=Astrologer%20application" className="text-muted underline decoration-white/25 underline-offset-4 transition-colors hover:text-gold">Apply to be verified</a>.</p>
+                <p className="mt-3 text-[12.5px] text-faint">{m.practising}<a href="mailto:hello@nakhatra.com?subject=Astrologer%20application" className="text-muted underline decoration-white/25 underline-offset-4 transition-colors hover:text-gold">{m.apply}</a>.</p>
               </div>
             </div>
 
             {/* The directory it is describing, drawn. */}
             <div className="rounded-[8px] border border-white/10 bg-ink/60 p-6">
               <div className="mb-5 flex items-center justify-between gap-4">
-                <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-gold">Find a jyotish</span>
-                <span className="rounded-[4px] border border-white/12 px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-[0.14em] text-faint">Preview</span>
+                <span className={`font-mono text-[10px] text-gold ${label}`}>{m.findLabel}</span>
+                <span className={`rounded-[4px] border border-white/12 px-1.5 py-0.5 font-mono text-[9px] text-faint ${chip}`}>{m.preview}</span>
               </div>
               <div className="mb-1 flex flex-wrap gap-2">
                 <span className="rounded-full border border-gold/40 bg-gold/10 px-3 py-1 text-[11.5px] text-gold2">Parashari</span>
                 <span className="rounded-full border border-white/10 px-3 py-1 text-[11.5px] text-muted">नेपाली</span>
-                <span className="rounded-full border border-white/10 px-3 py-1 text-[11.5px] text-muted">Marriage</span>
+                <span className="rounded-full border border-white/10 px-3 py-1 text-[11.5px] text-muted">{m.marriage}</span>
                 <span className="rounded-full border border-white/10 px-3 py-1 text-[11.5px] text-faint">+4</span>
               </div>
               <ul className="mt-3">
@@ -118,7 +124,7 @@ export function AstrologersSection() {
               </ul>
               <div className="mt-5 flex gap-3 border-t border-white/[0.09] pt-4">
                 <span className="mt-px shrink-0 text-gold"><svg className="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><rect x="4" y="10.5" width="16" height="10" rx="2"/><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"/></svg></span>
-                <p className="text-[12px] leading-[1.7] text-faint">Your chart is shared only when you choose it, with one astrologer, and the grant is revocable.</p>
+                <p className="text-[12px] leading-[1.7] text-faint">{m.shareNote}</p>
               </div>
             </div>
           </div>
@@ -126,23 +132,23 @@ export function AstrologersSection() {
           <div className="grid gap-x-10 gap-y-9 border-t border-white/[0.09] p-8 sm:p-12 sm:grid-cols-2 lg:grid-cols-4 lg:p-14 lg:pt-12">
             <div>
               <span className="text-gold"><svg className="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 4.5 4.5"/></svg></span>
-              <h3 className="mt-3.5 text-[15px] font-semibold text-paper">Find a jyotish</h3>
-              <p className="mt-2 text-[13px] leading-[1.7] text-muted">Search by tradition, language, speciality and price. Verified profiles only.</p>
+              <h3 className="mt-3.5 text-[15px] font-semibold text-paper">{m.cards[0].title}</h3>
+              <p className="mt-2 text-[13px] leading-[1.7] text-muted">{m.cards[0].body}</p>
             </div>
             <div>
               <span className="text-gold"><svg className="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 12a7.5 7.5 0 0 1-10.9 6.7L4 20l1.3-4.1A7.5 7.5 0 1 1 20 12Z"/></svg></span>
-              <h3 className="mt-3.5 text-[15px] font-semibold text-paper">Chat first</h3>
-              <p className="mt-2 text-[13px] leading-[1.7] text-muted">Start in writing, at your pace, with your chart already shared.</p>
+              <h3 className="mt-3.5 text-[15px] font-semibold text-paper">{m.cards[1].title}</h3>
+              <p className="mt-2 text-[13px] leading-[1.7] text-muted">{m.cards[1].body}</p>
             </div>
             <div>
               <span className="text-gold"><svg className="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M6.2 3.5 8.6 8 6.8 9.8a12 12 0 0 0 5.9 5.9L14.5 14l4.5 2.4v3.1a1 1 0 0 1-1.1 1A16.5 16.5 0 0 1 3 5.6a1 1 0 0 1 1-1.1h2.2Z"/></svg></span>
-              <h3 className="mt-3.5 text-[15px] font-semibold text-paper">Then speak</h3>
-              <p className="mt-2 text-[13px] leading-[1.7] text-muted">Audio or video when writing is not enough, scheduled across time zones.</p>
+              <h3 className="mt-3.5 text-[15px] font-semibold text-paper">{m.cards[2].title}</h3>
+              <p className="mt-2 text-[13px] leading-[1.7] text-muted">{m.cards[2].body}</p>
             </div>
             <div>
               <span className="text-gold"><svg className="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3 4.5 6v6c0 4.4 3.1 7.9 7.5 9 4.4-1.1 7.5-4.6 7.5-9V6L12 3Z"/><path d="m9 12 2.2 2.2L15.5 10"/></svg></span>
-              <h3 className="mt-3.5 text-[15px] font-semibold text-paper">Your data, your call</h3>
-              <p className="mt-2 text-[13px] leading-[1.7] text-muted">Sharing a chart is an explicit grant to one person, and revocable.</p>
+              <h3 className="mt-3.5 text-[15px] font-semibold text-paper">{m.cards[3].title}</h3>
+              <p className="mt-2 text-[13px] leading-[1.7] text-muted">{m.cards[3].body}</p>
             </div>
           </div>
         </div>

@@ -188,6 +188,11 @@ body {
 
 :focus-visible { outline:2px solid rgba(229,169,60,.75); outline-offset:2px; border-radius:4px }
 :focus:not(:focus-visible) { outline:none }
+/* Fields draw their own focus state — the border turns gold — so the ring
+   above would be a second gold rectangle around the first. Removing it keeps
+   focus visible (WCAG asks for a visible indicator, not for an outline
+   specifically) without doubling it. */
+input:focus-visible, textarea:focus-visible, select:focus-visible { outline:none }
 
 .reveal { opacity:0; transform:translateY(26px);
   transition:opacity .8s cubic-bezier(.2,.7,.2,1), transform .8s cubic-bezier(.2,.7,.2,1) }

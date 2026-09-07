@@ -1,5 +1,6 @@
 "use client";
 
+import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 
 import { CustomPlaceInput } from "@/components/ui/custom-place-input";
@@ -10,10 +11,23 @@ import {
   type BirthDetailsForm as FormValues,
 } from "@/features/kundali/schema/birth-details";
 import type { Place } from "@/features/kundali/types";
+import { useTranslation } from "@/lib/i18n/language-context";
 import { convertBsToAd } from "@/lib/utils/date-converter";
 
 type Props = {
+  /**
+   * `gender` is not part of the chart — `BirthDetailsIn` has no field for it
+   * and no position depends on it — but the vault stores it, so it rides along
+   * as a third argument rather than being dropped on the floor. Callers that
+   * do not save can ignore it.
+   */
   onSubmit: (values: FormValues, place: Place) => void;
+  /**
+   * The form draws its own card by default, which is right on a page and wrong
+   * inside a dialog that already is one — two nested borders around the same
+   * four fields.
+   */
+  chrome?: boolean;
   pending: boolean;
   /** Field errors returned by the API's 422, merged with local zod errors. */
   serverFieldErrors?: Record<string, string>;
@@ -36,12 +50,13 @@ const FIELD_MAP: Record<string, string> = {
  * zod at the boundary, a mutation for the call, and 422 field errors
  * landing on the input that caused them.
  */
-export function BirthDetailsForm({ onSubmit, pending, serverFieldErrors }: Props) {
-  const [name, setName] = useState("");
-  // ponytail: UI only, exactly as it always was. The chart does not depend
-  // on it and `BirthDetailsIn` has no field for it — adding one is an API
-  // change, and rule 7 makes that a deliberate decision, not a side effect.
-  const [gender, setGender] = useState<"male" | "female" | "other">("male");
+export function BirthDetailsForm({ onSubmit, pending, serverFieldErrors, chrome = true }: Props) {
+  const { t } = useTranslation();
+  const searchParams = useSearchParams();
+  // The dashboard's quick-start asks for the name and sends it here, so the
+  // form opens part-filled instead of asking for it twice. Used as the initial
+  // value only — editing the field must not be undone by the URL.
+  const [name, setName] = useState(() => searchParams.get("name")?.slice(0, 100) ?? "");
   const [era, setEra] = useState<"AD" | "BS">("AD");
   const [day, setDay] = useState("");
   const [month, setMonth] = useState("");
@@ -108,17 +123,21 @@ export function BirthDetailsForm({ onSubmit, pending, serverFieldErrors }: Props
   return (
     <form
       onSubmit={handleSubmit}
-      className="mx-auto w-full max-w-lg rounded-[8px] border border-white/10 bg-[#161B2B] p-6 sm:p-7"
+      className={
+        chrome
+          ? "mx-auto w-full max-w-lg rounded-[8px] border border-white/10 bg-[#161B2B] p-6 sm:p-7"
+          : "w-full"
+      }
     >
       <div className="mb-5">
-        <h2 className="font-serif text-xl font-bold text-[#F8FAFC]">Your birth details</h2>
+        <h2 className="font-serif text-xl font-bold text-[#F8FAFC]">{t.birthDetails}</h2>
         <p className="mt-1 text-xs leading-relaxed text-[#94A3B8]">
-          Birth time sets the ascendant, and the ascendant sets every house in your Kundali.
+          {t.birthTimeNote}
         </p>
       </div>
 
       <div className="space-y-4">
-        <Field label="Full name" required error={shown.name}>
+        <Field label={t.fullName} required error={shown.name}>
           <input
             type="text"
             value={name}
@@ -126,34 +145,14 @@ export function BirthDetailsForm({ onSubmit, pending, serverFieldErrors }: Props
               setName(e.target.value);
               if (errors.name) setErrors({ ...errors, name: "" });
             }}
-            placeholder="Full name"
+            placeholder={t.fullName}
             className={`w-full rounded-[8px] border bg-[#090A10] px-3.5 py-2.5 text-xs text-[#F8FAFC] placeholder-[#94A3B8]/40 transition focus:outline-none ${
               shown.name ? "border-rose-500" : "border-white/10 focus:border-[#E5A93C]"
             }`}
           />
         </Field>
 
-        <Field label="Gender">
-          <div className="grid grid-cols-3 gap-2 rounded-[8px] border border-white/10 bg-[#090A10] p-1">
-            {(["male", "female", "other"] as const).map((g) => (
-              <button
-                key={g}
-                type="button"
-                onClick={() => setGender(g)}
-                aria-pressed={gender === g}
-                className={`rounded-[6px] py-1.5 text-xs font-bold capitalize transition ${
-                  gender === g
-                    ? "bg-[#E5A93C] text-[#090A10]"
-                    : "text-[#94A3B8] hover:text-[#F8FAFC]"
-                }`}
-              >
-                {g}
-              </button>
-            ))}
-          </div>
-        </Field>
-
-        <Field label="Date of birth" required error={shown.date}>
+        <Field label={t.birthDate} required error={shown.date}>
           <ModernDatePicker
             era={era}
             onEraChange={setEra}
@@ -170,7 +169,7 @@ export function BirthDetailsForm({ onSubmit, pending, serverFieldErrors }: Props
           />
         </Field>
 
-        <Field label="Time of birth" required error={shown.time}>
+        <Field label={t.birthTime} required error={shown.time}>
           <ModernTimePicker
             hour={hour}
             minute={minute}
@@ -187,7 +186,7 @@ export function BirthDetailsForm({ onSubmit, pending, serverFieldErrors }: Props
           />
         </Field>
 
-        <Field label="Place of birth" required error={shown.place}>
+        <Field label={t.birthPlace} required error={shown.place}>
           <CustomPlaceInput
             value={place?.label ?? ""}
             placeholder="Search city, e.g. Kathmandu or San Francisco"
@@ -203,7 +202,7 @@ export function BirthDetailsForm({ onSubmit, pending, serverFieldErrors }: Props
           disabled={pending}
           className="mt-1 flex w-full items-center justify-center gap-2 rounded-[8px] bg-[#E5A93C] py-3.5 text-sm font-bold text-[#090A10] shadow-md transition hover:bg-[#F3C766] disabled:opacity-50"
         >
-          <span>{pending ? "Calculating your birth chart…" : "✨ Calculate Kundali"}</span>
+          <span>{pending ? t.calculating : t.calculateKundali}</span>
           {!pending && <span className="text-base">→</span>}
         </button>
       </div>

@@ -1,6 +1,10 @@
 "use client";
 
+import { useTranslation } from "@/lib/i18n/language-context";
+
 import { useState, useRef, useEffect } from "react";
+
+import { placementClass, popoverFit, type Fit } from "@/components/ui/popover-placement";
 import { Calendar, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 import { AD_MONTH_SHORT, BS_MONTH_SHORT, getDaysInBsMonth } from "@/lib/utils/date-converter";
 import { CustomSelect, type CustomSelectOption } from "@/components/ui/custom-select";
@@ -18,6 +22,9 @@ interface ModernDatePickerProps {
 const AD_YEARS = Array.from({ length: 95 }, (_, i) => 2026 - i);
 const BS_YEARS = Array.from({ length: 95 }, (_, i) => 2083 - i);
 
+/** What the panel wants, in pixels; capped to what the viewport allows. */
+const PREFERRED_HEIGHT = 440;
+
 export function ModernDatePicker({
   era,
   onEraChange,
@@ -27,7 +34,16 @@ export function ModernDatePicker({
   onDateChange,
   error,
 }: ModernDatePickerProps) {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
+  const [fit, setFit] = useState<Fit>({ placement: "down", maxHeight: PREFERRED_HEIGHT });
+
+  // The calendar is tall; inside a dialog it is the one most likely to run off
+
+  const toggle = () => {
+    if (!isOpen) setFit(popoverFit(containerRef.current, PREFERRED_HEIGHT));
+    setIsOpen((wasOpen) => !wasOpen);
+  };
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Default values if empty
@@ -83,7 +99,7 @@ export function ModernDatePicker({
   }, []);
 
   const formatDisplayDate = () => {
-    if (!day || !month || !year) return "Select Date of Birth";
+    if (!day || !month || !year) return t.selectDate;
     const mName = monthNames[parseInt(month, 10) - 1] || "";
     return `${day} ${mName} ${year} ${era}`;
   };
@@ -93,7 +109,7 @@ export function ModernDatePicker({
       {/* Interactive Trigger Field */}
       <button
         type="button"
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={toggle}
         className={`flex w-full items-center justify-between rounded-[8px] border bg-[#090A10] px-4 py-3 text-xs font-semibold text-[#F8FAFC] transition hover:border-[#E5A93C] focus:outline-none ${
           error ? "border-rose-500" : isOpen ? "border-[#E5A93C] ring-1 ring-[#E5A93C]" : "border-white/10"
         }`}
@@ -116,7 +132,9 @@ export function ModernDatePicker({
 
       {/* Floating Popover Calendar Modal */}
       {isOpen && (
-        <div className="absolute left-0 top-full z-50 mt-2 w-full max-w-sm rounded-[8px] border border-[#E5A93C]/30 bg-[#161B2B] p-4 shadow-2xl space-y-4 animate-in fade-in zoom-in-95 duration-150">
+        <div className={`absolute left-0 z-50 w-full max-w-sm overflow-y-auto rounded-[8px] border border-[#E5A93C]/30 bg-[#161B2B] p-4 shadow-2xl space-y-4 animate-in fade-in zoom-in-95 duration-150 ${placementClass(fit.placement)}`}
+          style={{ maxHeight: fit.maxHeight }}
+        >
           
           {/* Era Tab Bar */}
           <div className="border-b border-white/10 pb-3">

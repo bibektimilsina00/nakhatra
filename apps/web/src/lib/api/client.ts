@@ -11,7 +11,7 @@
 import { ApiError, type ApiErrorBody, NetworkError } from "./errors";
 
 type RequestOptions = {
-  method?: "GET" | "POST" | "PATCH" | "DELETE";
+  method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
   body?: unknown;
   signal?: AbortSignal;
   /** Extra headers, typically `authHeaders()` from the auth store. */

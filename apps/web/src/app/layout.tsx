@@ -3,7 +3,6 @@ import { Cinzel, JetBrains_Mono, Sora } from "next/font/google";
 import Script from "next/script";
 
 import { SessionSync } from "@/features/auth/components/session-sync";
-import { AuthModal } from "@/features/auth/components/auth-modal";
 import { QueryProvider } from "@/providers/query-provider";
 import { LanguageProvider } from "@/lib/i18n/language-context";
 
@@ -78,7 +77,6 @@ export default function RootLayout({
           <QueryProvider>
             <SessionSync />
             {children}
-            <AuthModal />
           </QueryProvider>
         </LanguageProvider>
         {umamiWebsiteId && (

@@ -5,6 +5,7 @@ import {
   ChartCaption, LiveChart, useChartFocus,
 } from "@/features/marketing/components/live-chart";
 import { useSky } from "@/features/marketing/hooks/use-sky";
+import { useLatinTracking, useMarketing } from "@/lib/i18n/language-context";
 
 /**
  * The hero: real planetary positions behind the copy, and the D1/D9 pair
@@ -14,6 +15,8 @@ import { useSky } from "@/features/marketing/hooks/use-sky";
  * on the page reads from it.
  */
 export function Hero() {
+  const m = useMarketing().hero;
+  const tracking = useLatinTracking("uppercase tracking-[0.25em]");
   const sky = useSky(true);
   const d1 = useChartFocus();
   const d9 = useChartFocus();
@@ -28,18 +31,18 @@ export function Hero() {
       <div className="relative mx-auto grid min-h-screen max-w-[1360px] items-center gap-16 px-8 pb-28 pt-28 lg:grid-cols-[1fr_auto]">
         <div className="max-w-2xl">
           <h1 className="font-disp text-[8.5vw] font-bold leading-[1.02] tracking-[-0.02em] text-paper sm:text-[52px]">
-            The sky, at the minute<br />you <span className="text-gold2">arrived</span>
+            {m.titleA}<br />
+            <span className="text-gold2">{m.titleB}</span>
           </h1>
           <p className="mt-6 max-w-lg text-[15.5px] leading-[1.7] text-muted">
-            Swiss Ephemeris casts your chart to the arcsecond. An astrologer reads it back —
-            and can only tell you what is actually there.
+            {m.sub}
           </p>
           <div className="mt-8 flex flex-wrap items-center gap-3">
             <a href="#form" className="group inline-flex items-center gap-2 rounded-[8px] bg-gold px-7 py-3 text-[14px] font-semibold text-ink transition hover:bg-gold2">
-              Cast my kundali
+              {m.ctaPrimary}
               <svg className="size-4 transition-transform group-hover:translate-x-0.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2"><path d="M2 8h11M9 4l4 4-4 4" /></svg>
             </a>
-            <a href="#reading" className="glass rounded-[8px] border border-white/15 px-7 py-3 text-[14px] font-semibold text-paper transition hover:border-gold/50">See a real reading</a>
+            <a href="#reading" className="glass rounded-[8px] border border-white/15 px-7 py-3 text-[14px] font-semibold text-paper transition hover:border-gold/50">{m.ctaSecondary}</a>
           </div>
         </div>
 
@@ -76,7 +79,7 @@ export function Hero() {
       </div>
 
       <a href="#pillars" className="absolute inset-x-0 bottom-8 mx-auto flex w-fit flex-col items-center gap-2 text-faint">
-        <span className="text-[10px] uppercase tracking-[0.25em]">Scroll</span>
+        <span className={`text-[10px] ${tracking}`}>{m.scroll}</span>
         <svg className="bob size-4" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6"><path d="M8 3v10M4 9l4 4 4-4" /></svg>
       </a>
     </section>
