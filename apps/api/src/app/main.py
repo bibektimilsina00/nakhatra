@@ -13,10 +13,13 @@ from app.core.config import get_settings
 from app.core.db import get_engine
 from app.core.errors import install_error_handlers
 from app.modules.auth.router import router as auth_router
+from app.modules.billing.router import router as billing_router
 from app.modules.chat.router import router as chat_router
+from app.modules.consultations.router import router as consultations_router
 from app.modules.kundali.router import router as kundali_router
 from app.modules.milan.router import router as milan_router
 from app.modules.places.router import router as places_router
+from app.modules.practitioners.router import router as practitioners_router
 from app.modules.report.router import router as report_router
 from app.modules.vault.router import router as vault_router
 from app.modules.voice.router import router as voice_router
@@ -81,10 +84,13 @@ def create_app() -> FastAPI:
     app.include_router(vault_router)
     app.include_router(milan_router)
     app.include_router(kundali_router)
+    app.include_router(billing_router)
     app.include_router(chat_router)
+    app.include_router(consultations_router)
     app.include_router(report_router)
     app.include_router(voice_router)
     app.include_router(places_router)
+    app.include_router(practitioners_router)
 
     @app.get("/health", tags=["meta"], summary="Liveness probe")
     async def health() -> dict[str, str]:
