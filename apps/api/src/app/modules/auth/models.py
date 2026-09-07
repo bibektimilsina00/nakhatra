@@ -22,4 +22,11 @@ class User(SQLModel, table=True):
     email: str = Field(unique=True, max_length=255)
     password_hash: str
     full_name: str = Field(max_length=255)
+    #: `seeker` | `practitioner` | `admin`.
+    #:
+    #: Nullable with a default so every existing row and every deployed mobile
+    #: build is unaffected — the additive-only policy applies to columns as
+    #: much as to routes (CLAUDE.md rule 7). Read through `role_of()`, which
+    #: treats NULL as `seeker`, so no backfill is required for correctness.
+    role: str | None = Field(default="seeker", max_length=32)
     created_at: str

@@ -12,19 +12,14 @@ beforeEach(() => {
   useAuthStore.setState({
     token: null,
     user: null,
-    isAuthModalOpen: false,
-    authModalMode: "login",
   });
 });
 
 describe("auth store", () => {
-  it("starting a session closes the auth modal", () => {
-    useAuthStore.getState().openAuthModal("signup");
-    expect(useAuthStore.getState().isAuthModalOpen).toBe(true);
-
+  it("starting a session stores token and user", () => {
     useAuthStore.getState().setSession("t0ken", USER);
-    // Otherwise the dialog stays open on top of the app the user just entered.
-    expect(useAuthStore.getState().isAuthModalOpen).toBe(false);
+    expect(useAuthStore.getState().token).toBe("t0ken");
+    expect(useAuthStore.getState().user).toEqual(USER);
   });
 
   it("clearing a session drops both token and user", () => {

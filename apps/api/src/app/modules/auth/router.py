@@ -13,6 +13,7 @@ from app.core.db import SessionDep
 from app.modules.auth import service
 from app.modules.auth.router_deps import get_current_user
 from app.modules.auth.schemas import (
+    GoogleSignInIn,
     TokenResponse,
     UserLoginIn,
     UserProfileOut,
@@ -37,6 +38,15 @@ def login(
     body: UserLoginIn, session: SessionDep
 ) -> TokenResponse:
     return service.login(session, body)
+
+
+@router.post(
+    "/google",
+    response_model=TokenResponse,
+    summary="Exchange a Google ID token for a token",
+)
+def google_sign_in(body: GoogleSignInIn, session: SessionDep) -> TokenResponse:
+    return service.sign_in_with_google(session, body)
 
 
 @router.get("/me", response_model=UserProfileOut, summary="The signed-in user's profile")

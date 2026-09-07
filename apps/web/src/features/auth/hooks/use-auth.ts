@@ -1,12 +1,12 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useEffect, useSyncExternalStore } from "react";
 
 import * as authApi from "@/features/auth/api/auth.api";
 import type { LoginForm, SignupForm } from "@/features/auth/schema/auth-forms";
 import { useAuthStore } from "@/features/auth/store/auth-store";
-import type { TokenResponse, UserProfile } from "@/features/auth/types";
+import type { GoogleSignInBody, TokenResponse, UserProfile } from "@/features/auth/types";
 import type { ApiError } from "@/lib/api/errors";
 import { identifyUser, resetUser, trackEvent } from "@/providers/posthog-provider";
 
@@ -44,6 +44,19 @@ export function useSignup() {
   });
 }
 
+/**
+ * Google sign-in. The same session start as email/password — the server hands
+ * back one of our tokens, not Google's, so nothing downstream knows or cares
+ * which button was pressed.
+ */
+export function useGoogleSignIn() {
+  const start = useSessionStart();
+  return useMutation<TokenResponse, ApiError, GoogleSignInBody>({
+    mutationFn: authApi.signInWithGoogle,
+    onSuccess: (data) => start(data, "login"),
+  });
+}
+
 export function useLogout() {
   const clearSession = useAuthStore((s) => s.clearSession);
   const queryClient = useQueryClient();
@@ -55,6 +68,25 @@ export function useLogout() {
     // previous user's cached vault until the queries refetch.
     queryClient.clear();
   };
+}
+
+/**
+ * Whether the persisted session has been read back from localStorage yet.
+ *
+ * `persist` cannot hydrate during the first client render — that render has to
+ * match the server's HTML, which knows nothing about localStorage. So for one
+ * tick `token` is null even for a signed-in visitor, and any guard that reads
+ * `isSignedIn` immediately bounces them to the sign-in page. Gate on this
+ * before acting on a signed-out answer.
+ */
+export function useAuthHydrated(): boolean {
+  return useSyncExternalStore(
+    (onChange) => useAuthStore.persist.onFinishHydration(onChange),
+    () => useAuthStore.persist.hasHydrated(),
+    // The server has no localStorage, so it is never hydrated. Returning false
+    // here keeps the first client render identical to the server's.
+    () => false,
+  );
 }
 
 /** Current session. Read-only — mutate through the hooks above. */

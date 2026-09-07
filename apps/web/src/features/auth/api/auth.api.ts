@@ -1,5 +1,5 @@
 import type { LoginForm, SignupForm } from "@/features/auth/schema/auth-forms";
-import type { TokenResponse, UserProfile } from "@/features/auth/types";
+import type { GoogleSignInBody, TokenResponse, UserProfile } from "@/features/auth/types";
 import { apiFetch } from "@/lib/api/client";
 
 export function login(body: LoginForm): Promise<TokenResponse> {
@@ -8,6 +8,11 @@ export function login(body: LoginForm): Promise<TokenResponse> {
 
 export function signup(body: SignupForm): Promise<TokenResponse> {
   return apiFetch("/v1/auth/signup", { method: "POST", body });
+}
+
+/** Exchange a Google ID token for one of ours. */
+export function signInWithGoogle(body: GoogleSignInBody): Promise<TokenResponse> {
+  return apiFetch("/v1/auth/google", { method: "POST", body });
 }
 
 export function fetchMe(token: string): Promise<UserProfile> {

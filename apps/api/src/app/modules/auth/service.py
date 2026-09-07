@@ -7,16 +7,19 @@ envelope both clients parse. Routers do not catch anything.
 
 from __future__ import annotations
 
+import secrets
 import uuid
 from datetime import UTC, datetime
 
 from sqlmodel import Session
 
 from app.core.errors import AppError, NotFoundError
+from app.integrations.google_identity import exchange_code_for_id_token, verify_id_token
 from app.modules.auth import hashing, repository
 from app.modules.auth.jwt_handler import create_jwt_token
 from app.modules.auth.models import User
 from app.modules.auth.schemas import (
+    GoogleSignInIn,
     TokenResponse,
     UserLoginIn,
     UserProfileOut,
@@ -78,6 +81,38 @@ def login(session: Session, body: UserLoginIn) -> TokenResponse:
     # the argon2 switch keeps its timestamp-derived salt forever.
     if hashing.needs_rehash(row.password_hash):
         repository.update_password_hash(session, row, hashing.hash_password(body.password))
+
+    return _token_for(_profile(row))
+
+
+def sign_in_with_google(session: Session, body: GoogleSignInIn) -> TokenResponse:
+    """Exchange a verified Google ID token for one of ours.
+
+    Accounts are matched on email. Google only ever gets here with
+    `email_verified` true, so an existing password account with the same address
+    is the same person and is signed in rather than refused — refusing would
+    leave them with two accounts and no way to merge them.
+
+    A user created this way gets a random password hash rather than a nullable
+    column: no migration, and no row where "no password" and "empty password"
+    look alike. They cannot log in with a password because nobody, including
+    them, knows what it is.
+    """
+    # The popup flow hands us a one-use code; the mobile flow hands us the ID
+    # token directly. Everything after this line is identical.
+    id_token = exchange_code_for_id_token(body.code) if body.code else body.credential
+    identity = verify_id_token(id_token)  # type: ignore[arg-type]
+
+    row = repository.find_by_email(session, identity.email)
+    if row is None:
+        row = repository.create(
+            session,
+            user_id=f"usr_{uuid.uuid4().hex[:12]}",
+            email=identity.email,
+            password_hash=hashing.hash_password(secrets.token_urlsafe(32)),
+            full_name=identity.full_name,
+            created_at=datetime.now(UTC).isoformat(),
+        )
 
     return _token_for(_profile(row))
 

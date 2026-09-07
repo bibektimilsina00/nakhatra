@@ -11,7 +11,10 @@ dependencies = [
     "email-validator>=2.3.0",
     "psycopg2-binary>=2.9.12",
     "argon2-cffi>=25.1.0",
-    "pyjwt>=2.13.0",
+    # [crypto] is not optional here: our own tokens are HS256, but Google
+    # signs ID tokens with RS256 and bare PyJWT ships HMAC only. Without the
+    # extra, every Google sign-in fails with MissingCryptographyError.
+    "pyjwt[crypto]>=2.13.0",
     "anthropic>=1.4.0",
     "alembic>=1.19.2",
     "sqlmodel>=0.0.42",

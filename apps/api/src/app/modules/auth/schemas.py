@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime
 
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, EmailStr, Field, model_validator
 
 from app.modules.auth.jwt_handler import TOKEN_TTL_SECONDS
 
@@ -21,6 +21,25 @@ class UserLoginIn(BaseModel):
     # Deliberately not min_length=8: existing accounts have shorter passwords and
     # must still be able to log in (and then be rehashed).
     password: str = Field(..., min_length=1)
+
+
+class GoogleSignInIn(BaseModel):
+    """One Google sign-in, arriving by either of the two flows Google offers.
+
+    `code` is the web client's: a popup auth-code flow, which is the only way
+    to start sign-in from a button we designed ourselves. `credential` is an
+    ID token handed straight to the page, which is what a native mobile Google
+    Sign-In returns. Both end at the same verified identity.
+    """
+
+    code: str | None = Field(default=None, min_length=1, max_length=2048)
+    credential: str | None = Field(default=None, min_length=1, max_length=4096)
+
+    @model_validator(mode="after")
+    def _exactly_one(self) -> GoogleSignInIn:
+        if bool(self.code) == bool(self.credential):
+            raise ValueError("Send exactly one of `code` or `credential`.")
+        return self
 
 
 class UserProfileOut(BaseModel):
