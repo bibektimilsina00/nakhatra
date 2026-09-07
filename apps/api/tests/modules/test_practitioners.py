@@ -278,3 +278,33 @@ def test_a_practitioner_cannot_verify_themselves(listed: tuple[str, dict]) -> No
     from app.modules.practitioners.schemas import ProfileIn
 
     assert "verification_state" not in ProfileIn.model_fields
+
+
+def test_the_public_profile_carries_the_account_and_the_prices() -> None:
+    """The detail page follows, messages and books from one response.
+
+    Without `user_id` it cannot ask for stats or press follow; without `rates`
+    the booking form would offer a medium the server refuses.
+    """
+    user_id, headers = _account("priced")
+    application = _apply(headers)
+    _, admin_headers = _account("admin")
+    _make_admin(_account_id_of(admin_headers))
+    _approve(application["id"], admin_headers)
+
+    client.put(
+        "/v1/practitioners/me/profile",
+        json={"display_name": "Priced Acharya", "is_listed": True},
+        headers=headers,
+    )
+    client.put(
+        "/v1/practitioners/me/rates",
+        json={"medium": "voice", "per_minute_minor": 4_000},
+        headers=headers,
+    )
+
+    profile_id = client.get("/v1/practitioners/me/profile", headers=headers).json()["id"]
+    detail = client.get(f"/v1/practitioners/{profile_id}").json()
+
+    assert detail["user_id"] == user_id
+    assert [(r["medium"], r["per_minute_minor"]) for r in detail["rates"]] == [("voice", 4_000)]

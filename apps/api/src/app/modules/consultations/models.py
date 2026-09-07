@@ -8,7 +8,7 @@ suits neither (docs/astrologer-marketplace.md §8).
 
 from __future__ import annotations
 
-from sqlalchemy import Index
+from sqlalchemy import Index, UniqueConstraint
 from sqlmodel import Field, SQLModel
 
 
@@ -41,6 +41,11 @@ class Consultation(SQLModel, table=True):
 
     #: The hold placed when the session started. Captured or released on end.
     hold_id: str | None = Field(default=None, max_length=64)
+
+    #: Set when this was booked for a time rather than started now. The state
+    #: machine is the same either way — a booking is a consultation that has
+    #: not connected yet, not a different kind of thing.
+    scheduled_at: str | None = Field(default=None, max_length=64)
 
     #: Metering runs between these two, and nothing else.
     #:
@@ -131,4 +136,54 @@ class GrantAccess(SQLModel, table=True):
     id: str = Field(primary_key=True, max_length=64)
     grant_id: str = Field(max_length=64)
     accessed_by: str = Field(max_length=64)
+    created_at: str
+
+
+class Review(SQLModel, table=True):
+    """A rating, one per completed consultation.
+
+    Keyed on the consultation rather than the practitioner, and unique on it, so
+    a rating is always something that was paid for and happened. A directory
+    whose ratings can be written by anyone is a directory whose ratings mean
+    nothing.
+    """
+
+    __tablename__ = "reviews"
+    __table_args__ = (
+        UniqueConstraint("consultation_id", name="uq_reviews_consultation"),
+        Index("idx_reviews_practitioner", "practitioner_user_id", "created_at"),
+    )
+
+    id: str = Field(primary_key=True, max_length=64)
+    consultation_id: str = Field(max_length=64)
+    practitioner_user_id: str = Field(max_length=64)
+    seeker_id: str = Field(max_length=64)
+    #: 1 to 5. Validated in the schema, not here — the column is storage.
+    rating: int
+    body: str = Field(default="")
+    #: The practitioner's right of reply. A one-sided review system is a
+    #: complaints box.
+    reply: str = Field(default="")
+    replied_at: str | None = Field(default=None, max_length=64)
+    created_at: str
+
+
+class Follow(SQLModel, table=True):
+    """Someone keeping track of a practitioner.
+
+    Deliberately one-directional and public-facing only as a count. Following
+    is not a relationship the practitioner has to accept, and it grants no
+    access to anything — a follower sees what any visitor sees.
+    """
+
+    __tablename__ = "follows"
+    __table_args__ = (
+        UniqueConstraint("follower_id", "practitioner_user_id", name="uq_follow"),
+        Index("idx_follows_practitioner", "practitioner_user_id"),
+        Index("idx_follows_follower", "follower_id"),
+    )
+
+    id: str = Field(primary_key=True, max_length=64)
+    follower_id: str = Field(max_length=64)
+    practitioner_user_id: str = Field(max_length=64)
     created_at: str

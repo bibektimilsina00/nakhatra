@@ -15,3 +15,5 @@ export type DirectoryQuery = NonNullable<
 >;
 export type RateIn = components["schemas"]["RateIn"];
 export type RateOut = components["schemas"]["RateOut"];
+export type PractitionerStats = components["schemas"]["PractitionerStats"];
+export type PractitionerReview = components["schemas"]["ReviewOut"];

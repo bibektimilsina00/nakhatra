@@ -363,3 +363,99 @@ def test_a_stranger_cannot_read_the_conversation(session: Session) -> None:
 
     with pytest.raises(service.NotFoundError):
         service.messages(session, c.id, stranger)
+
+
+# --- reviews and follows ---
+
+
+def _ended(session: Session) -> tuple[str, str, str]:
+    """A finished consultation. Returns (seeker, practitioner, consultation id)."""
+    pract, profile_id = _practitioner(session)
+    seeker = _seeker_with(session, 100_000)
+    c = _request(session, seeker, profile_id)
+    service.accept(session, c.id, pract)
+    service.connect(session, c.id, pract)
+    _rewind(session, c.id, 120)
+    service.end(session, c.id, seeker)
+    return seeker, pract, c.id
+
+
+def test_only_a_finished_consultation_can_be_reviewed(session: Session) -> None:
+    pract, profile_id = _practitioner(session)
+    seeker = _seeker_with(session, 100_000)
+    c = _request(session, seeker, profile_id)
+    with pytest.raises(service.ConsultationError):
+        service.leave_review(session, c.id, seeker, 5, "Great")
+
+
+def test_only_the_seeker_may_review_and_only_once(session: Session) -> None:
+    seeker, pract, cid = _ended(session)
+    with pytest.raises(service.ForbiddenError):
+        service.leave_review(session, cid, pract, 5, "I was excellent")
+
+    service.leave_review(session, cid, seeker, 5, "Clear and kind")
+    with pytest.raises(service.ConsultationError):
+        service.leave_review(session, cid, seeker, 1, "Changed my mind")
+
+
+def test_an_unrated_practitioner_has_no_rating_not_a_zero(session: Session) -> None:
+    """0.0 out of 5 says 'terrible'. A new practitioner is unrated, not bad."""
+    pract, _ = _practitioner(session)
+    stats = service.stats_for(session, pract, None)
+    assert stats.rating_average is None
+    assert (stats.rating_count, stats.consultations_completed) == (0, 0)
+
+
+def test_the_average_and_counts_are_what_happened(session: Session) -> None:
+    seeker, pract, cid = _ended(session)
+    service.leave_review(session, cid, seeker, 4, "Good")
+
+    stats = service.stats_for(session, pract, seeker)
+    assert stats.rating_average == 4.0
+    assert (stats.rating_count, stats.consultations_completed) == (1, 1)
+    assert stats.is_following is False
+
+
+def test_a_practitioner_can_reply_once_and_nobody_else_can(session: Session) -> None:
+    seeker, pract, cid = _ended(session)
+    review = service.leave_review(session, cid, seeker, 2, "Rushed")
+
+    # NotFoundError, not Forbidden: a stranger should not learn the review is
+    # there by being told they may not touch it.
+    with pytest.raises(service.NotFoundError):
+        service.reply_to_review(session, review.id, seeker, "Sorry about that")
+
+    replied = service.reply_to_review(session, review.id, pract, "Sorry — the line dropped.")
+    assert replied.reply == "Sorry — the line dropped."
+
+
+def test_following_is_idempotent_and_reversible(session: Session) -> None:
+    pract, _ = _practitioner(session)
+    follower = _seeker_with(session, 0)
+
+    assert service.follow(session, follower, pract).follower_count == 1
+    # Pressing follow twice is one follower, not two.
+    stats = service.follow(session, follower, pract)
+    assert (stats.follower_count, stats.is_following) == (1, True)
+    assert service.following_ids(session, follower) == [pract]
+
+    stats = service.unfollow(session, follower, pract)
+    assert (stats.follower_count, stats.is_following) == (0, False)
+    assert service.following_ids(session, follower) == []
+
+
+def test_the_inbox_says_who_and_what_was_last_said(session: Session) -> None:
+    """A conversation list without a name and a preview is a table of rows."""
+    pract, profile_id = _practitioner(session)
+    seeker = _seeker_with(session, 100_000)
+    c = _request(session, seeker, profile_id)
+    service.send_message(session, c.id, pract, "Namaste — send me your birth details.")
+
+    row = next(item for item in service.mine(session, seeker) if item.id == c.id)
+    assert row.counterpart_name == "Test Acharya"
+    assert row.last_message == "Namaste — send me your birth details."
+    assert row.unread_count == 1
+
+    # The sender's own message is not unread to them.
+    theirs = next(item for item in service.mine(session, pract) if item.id == c.id)
+    assert theirs.unread_count == 0

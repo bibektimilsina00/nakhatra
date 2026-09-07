@@ -198,6 +198,19 @@ export interface TranslationCatalog {
   practNoRates: string;
   practPendingNote: string;
   practSubmitted: string;
+  practIntroVideo: string;
+  practIntroVideoNote: string;
+  practStatus: string;
+  applyWho: string;
+  applyReach: string;
+  applyExpertise: string;
+  applyNext: string;
+  practCountry: string;
+  practYearsSuffix: string;
+  practPhoneNote: string;
+  practPhoneInvalid: string;
+  practCityPlaceholder: string;
+  practNamePlaceholder: string;
   practReviewLink: string;
   practVerified: string;
   practUnverified: string;
@@ -210,6 +223,7 @@ export interface TranslationCatalog {
   practSaved: string;
   practUnlist: string;
   practComingSoon: string;
+  soonNote: string;
   practRegister: string;
   practPhoto: string;
   practPhotoNote: string;
@@ -234,6 +248,41 @@ export interface TranslationCatalog {
   practReviewQueue: string;
   practApprove: string;
   practReject: string;
+  profFollow: string;
+  profFollowing: string;
+  profMessage: string;
+  profBook: string;
+  profAbout: string;
+  profRates: string;
+  profReviews: string;
+  profNoReviews: string;
+  profNoReviewsNote: string;
+  profUnrated: string;
+  profConsultations: string;
+  profFollowers: string;
+  profReply: string;
+  profReplyPlaceholder: string;
+  profNotFound: string;
+  profSpeaks: string;
+  bookTitle: string;
+  bookMedium: string;
+  bookWhen: string;
+  bookNow: string;
+  bookLater: string;
+  bookDate: string;
+  bookTime: string;
+  bookNote: string;
+  bookConfirm: string;
+  bookPast: string;
+  bookUnpriced: string;
+  chatTab: string;
+  chatNoMessages: string;
+  chatScheduled: string;
+  reviewTitle: string;
+  reviewNote: string;
+  reviewPlaceholder: string;
+  reviewSubmit: string;
+  reviewThanks: string;
   voiceFellBack: string;
   notifSavedToVault: string;
   notifConversationUpdated: string;
@@ -274,6 +323,10 @@ export interface TranslationCatalog {
   dashEmptyBody: string;
   dashOpen: string;
   dashOpening: string;
+  chooseTitle: string;
+  chooseReadingNote: string;
+  chooseLiveNote: string;
+  chooseEmpty: string;
   dashDelete: string;
   dashConfirmDelete: string;
   dashCancel: string;
@@ -290,6 +343,31 @@ export interface TranslationCatalog {
   dashNavRecent: string;
   dashHelp: string;
   dashSettings: string;
+  acctProfile: string;
+  acctSettings: string;
+  acctYourAccount: string;
+  acctName: string;
+  acctNameNote: string;
+  acctEmail: string;
+  acctEmailNote: string;
+  acctJoined: string;
+  acctRole: string;
+  acctSave: string;
+  acctSaved: string;
+  acctActivity: string;
+  acctPassword: string;
+  acctCurrentPassword: string;
+  acctNewPassword: string;
+  acctPasswordNote: string;
+  acctPasswordChanged: string;
+  acctChangePassword: string;
+  acctLanguage: string;
+  acctLanguageNote: string;
+  acctPrivacy: string;
+  acctPrivacyNote: string;
+  acctPrivacyLink: string;
+  acctDanger: string;
+  acctDangerNote: string;
   dashCollapse: string;
   dashClose: string;
   dashMenu: string;
@@ -588,6 +666,19 @@ export const translations: Record<Language, TranslationCatalog> = {
     practNoRates: "Set a price before anyone can consult you.",
     practPendingNote: "Usually within a day or two. We will tell you either way, and you can keep using Nakhatra as normal meanwhile.",
     practSubmitted: "What you submitted",
+    practIntroVideo: "Intro video link",
+    practIntroVideoNote: "A YouTube or Vimeo link, if you have one.",
+    practStatus: "Your listing",
+    applyWho: "Who you are",
+    applyReach: "How people reach you",
+    applyExpertise: "What you practise",
+    applyNext: "What happens next",
+    practCountry: "Country",
+    practYearsSuffix: "years",
+    practPhoneNote: "So a seeker can call you back if a session drops.",
+    practPhoneInvalid: "Enter a phone number of 7 to 15 digits.",
+    practCityPlaceholder: "Search your city",
+    practNamePlaceholder: "As it should appear on your profile",
     practReviewLink: "Review applications",
     practVerified: "Verified",
     practUnverified: "Awaiting review",
@@ -600,6 +691,7 @@ export const translations: Record<Language, TranslationCatalog> = {
     practSaved: "Saved",
     practUnlist: "Take me off the directory",
     practComingSoon: "Coming soon",
+    soonNote: "Consulting a real jyotish is not open yet. The AI astrologer, your charts and Milan all work as normal meanwhile — we will say so here the day this opens.",
     practRegister: "Register as a jyotish",
     practPhoto: "Profile photo",
     practPhotoNote: "A clear photo of your face. JPG, PNG or WebP, up to 4MB.",
@@ -624,6 +716,41 @@ export const translations: Record<Language, TranslationCatalog> = {
     practReviewQueue: "Applications",
     practApprove: "Approve",
     practReject: "Reject",
+    profFollow: "Follow",
+    profFollowing: "Following",
+    profMessage: "Message",
+    profBook: "Book",
+    profAbout: "About",
+    profRates: "Rates",
+    profReviews: "Reviews",
+    profNoReviews: "No reviews yet",
+    profNoReviewsNote: "Ratings appear here after a consultation ends. Nothing is shown before that.",
+    profUnrated: "Not yet rated",
+    profConsultations: "Consultations",
+    profFollowers: "Followers",
+    profReply: "Reply",
+    profReplyPlaceholder: "Reply to this review",
+    profNotFound: "This profile is not available.",
+    profSpeaks: "Speaks",
+    bookTitle: "Book a consultation",
+    bookMedium: "How you want to talk",
+    bookWhen: "When",
+    bookNow: "Start now",
+    bookLater: "Pick a time",
+    bookDate: "Date",
+    bookTime: "Time",
+    bookNote: "Anything they should know first",
+    bookConfirm: "Send request",
+    bookPast: "That time has already passed.",
+    bookUnpriced: "They have not priced this yet.",
+    chatTab: "Messages",
+    chatNoMessages: "No messages yet",
+    chatScheduled: "Scheduled",
+    reviewTitle: "How was it?",
+    reviewNote: "Only people who paid for a consultation can rate it.",
+    reviewPlaceholder: "What went well, what did not",
+    reviewSubmit: "Leave review",
+    reviewThanks: "Thank you — your review is posted.",
     voiceFellBack: "Live voice could not continue, so the astrologer is back to listening turn by turn. You can keep talking or type.",
     notifSavedToVault: "saved to your vault",
     notifConversationUpdated: "conversation updated",
@@ -663,6 +790,10 @@ export const translations: Record<Language, TranslationCatalog> = {
     dashEmptyBody: "Cast your first kundali and it will be waiting here next time you sign in.",
     dashOpen: "Open reading",
     dashOpening: "Recalculating…",
+    chooseTitle: "Whose kundali?",
+    chooseReadingNote: "Pick the chart you want the reading for.",
+    chooseLiveNote: "Pick the chart you want to talk about.",
+    chooseEmpty: "You have no saved kundalis yet.",
     dashDelete: "Delete",
     dashConfirmDelete: "Delete this chart?",
     dashCancel: "Keep it",
@@ -679,6 +810,31 @@ export const translations: Record<Language, TranslationCatalog> = {
     dashNavRecent: "Recent",
     dashHelp: "Help",
     dashSettings: "Settings",
+    acctProfile: "Profile",
+    acctSettings: "Settings",
+    acctYourAccount: "Your account",
+    acctName: "Display name",
+    acctNameNote: "What the app calls you, and what a jyotish sees.",
+    acctEmail: "Email",
+    acctEmailNote: "Your sign-in address. Changing it is not possible from here.",
+    acctJoined: "Joined",
+    acctRole: "Account type",
+    acctSave: "Save changes",
+    acctSaved: "Saved.",
+    acctActivity: "Your library",
+    acctPassword: "Password",
+    acctCurrentPassword: "Current password",
+    acctNewPassword: "New password",
+    acctPasswordNote: "At least 8 characters. Signed in with Google? You have no password to change.",
+    acctPasswordChanged: "Password changed.",
+    acctChangePassword: "Change password",
+    acctLanguage: "Language",
+    acctLanguageNote: "Used for readings, the AI astrologer and the app itself.",
+    acctPrivacy: "Your birth data",
+    acctPrivacyNote: "Birth details are never written to logs, error reports or analytics. A jyotish sees a chart only when you share it, and you can take that back.",
+    acctPrivacyLink: "Read the privacy policy",
+    acctDanger: "Signing out",
+    acctDangerNote: "Signs you out on this device only. Your charts stay saved.",
     dashCollapse: "Collapse sidebar",
     dashClose: "Close",
     dashMenu: "Menu",
@@ -976,6 +1132,19 @@ export const translations: Record<Language, TranslationCatalog> = {
     practNoRates: "कसैले परामर्श लिनुअघि मूल्य राख्नुहोस्।",
     practPendingNote: "सामान्यतया एक-दुई दिनभित्र। जे भए पनि हामी जानकारी दिनेछौं, र त्यसबीच नखत्र सामान्य रूपमै चलाउन सक्नुहुन्छ।",
     practSubmitted: "तपाईंले पठाउनुभएको",
+    practIntroVideo: "परिचय भिडियोको लिङ्क",
+    practIntroVideoNote: "छ भने युट्युब वा भिमियोको लिङ्क।",
+    practStatus: "तपाईंको सूची",
+    applyWho: "तपाईं को हुनुहुन्छ",
+    applyReach: "मानिसहरूले कसरी सम्पर्क गर्ने",
+    applyExpertise: "तपाईं के गर्नुहुन्छ",
+    applyNext: "अब के हुन्छ",
+    practCountry: "देश",
+    practYearsSuffix: "वर्ष",
+    practPhoneNote: "कल छुटेमा सेवाग्राहीले फेरि फोन गर्न सकून् भनेर।",
+    practPhoneInvalid: "७ देखि १५ अङ्कको फोन नम्बर लेख्नुहोस्।",
+    practCityPlaceholder: "आफ्नो सहर खोज्नुहोस्",
+    practNamePlaceholder: "प्रोफाइलमा देखिनुपर्ने नाम",
     practReviewLink: "आवेदन हेर्नुहोस्",
     practVerified: "प्रमाणित",
     practUnverified: "जाँच पर्खाइमा",
@@ -988,6 +1157,7 @@ export const translations: Record<Language, TranslationCatalog> = {
     practSaved: "सुरक्षित भयो",
     practUnlist: "मलाई निर्देशिकाबाट हटाउनुहोस्",
     practComingSoon: "चाँडै आउँदै",
+    soonNote: "वास्तविक ज्योतिषीसँग परामर्श अझै खुलेको छैन। यसबीच एआई ज्योतिषी, तपाईंका कुण्डली र मिलन सामान्य रूपमै चल्छन् — खुलेको दिन यहीँ जानकारी दिनेछौं।",
     practRegister: "ज्योतिषीको रूपमा दर्ता",
     practPhoto: "प्रोफाइल फोटो",
     practPhotoNote: "अनुहार स्पष्ट देखिने फोटो। JPG, PNG वा WebP, ४MB सम्म।",
@@ -1012,6 +1182,41 @@ export const translations: Record<Language, TranslationCatalog> = {
     practReviewQueue: "आवेदनहरू",
     practApprove: "स्वीकृत",
     practReject: "अस्वीकृत",
+    profFollow: "फलो गर्नुहोस्",
+    profFollowing: "फलो गरिएको",
+    profMessage: "सन्देश",
+    profBook: "बुक गर्नुहोस्",
+    profAbout: "परिचय",
+    profRates: "शुल्क",
+    profReviews: "समीक्षा",
+    profNoReviews: "अहिलेसम्म समीक्षा छैन",
+    profNoReviewsNote: "परामर्श सकिएपछि मात्र मूल्याङ्कन यहाँ देखिन्छ। त्योभन्दा अघि केही देखाइँदैन।",
+    profUnrated: "अझै मूल्याङ्कन भएको छैन",
+    profConsultations: "परामर्श",
+    profFollowers: "फलोअर",
+    profReply: "जवाफ",
+    profReplyPlaceholder: "यो समीक्षाको जवाफ दिनुहोस्",
+    profNotFound: "यो प्रोफाइल उपलब्ध छैन।",
+    profSpeaks: "भाषा",
+    bookTitle: "परामर्श बुक गर्नुहोस्",
+    bookMedium: "कसरी कुरा गर्ने",
+    bookWhen: "कहिले",
+    bookNow: "अहिले सुरु गर्नुहोस्",
+    bookLater: "समय छान्नुहोस्",
+    bookDate: "मिति",
+    bookTime: "समय",
+    bookNote: "उहाँले पहिले थाहा पाउनुपर्ने कुरा",
+    bookConfirm: "अनुरोध पठाउनुहोस्",
+    bookPast: "त्यो समय बितिसक्यो।",
+    bookUnpriced: "उहाँले यसको शुल्क तोक्नुभएको छैन।",
+    chatTab: "सन्देशहरू",
+    chatNoMessages: "अहिलेसम्म सन्देश छैन",
+    chatScheduled: "तय भएको",
+    reviewTitle: "कस्तो रह्यो?",
+    reviewNote: "परामर्शको शुल्क तिर्नेले मात्र मूल्याङ्कन गर्न सक्नुहुन्छ।",
+    reviewPlaceholder: "के राम्रो भयो, के भएन",
+    reviewSubmit: "समीक्षा पठाउनुहोस्",
+    reviewThanks: "धन्यवाद — तपाईंको समीक्षा पोस्ट भयो।",
     voiceFellBack: "प्रत्यक्ष आवाज जारी रहन सकेन, त्यसैले ज्योतिषी पालैपालो सुन्ने ढाँचामा फर्किए। तपाईं बोल्न वा लेख्न सक्नुहुन्छ।",
     notifSavedToVault: "तपाईंको संग्रहमा सुरक्षित",
     notifConversationUpdated: "कुराकानी अद्यावधिक भयो",
@@ -1051,6 +1256,10 @@ export const translations: Record<Language, TranslationCatalog> = {
     dashEmptyBody: "पहिलो कुण्डली बनाउनुहोस् — अर्को पटक साइन इन गर्दा यहीँ भेटिनेछ।",
     dashOpen: "राशिफल खोल्नुहोस्",
     dashOpening: "पुनः गणना हुँदै…",
+    chooseTitle: "कसको कुण्डली?",
+    chooseReadingNote: "कुन कुण्डलीको फलादेश चाहनुहुन्छ, छान्नुहोस्।",
+    chooseLiveNote: "कुन कुण्डलीबारे कुरा गर्ने, छान्नुहोस्।",
+    chooseEmpty: "तपाईंसँग सुरक्षित कुण्डली छैन।",
     dashDelete: "मेट्नुहोस्",
     dashConfirmDelete: "यो कुण्डली मेट्ने?",
     dashCancel: "रहन दिनुहोस्",
@@ -1067,6 +1276,31 @@ export const translations: Record<Language, TranslationCatalog> = {
     dashNavRecent: "हालका",
     dashHelp: "सहयोग",
     dashSettings: "सेटिङ",
+    acctProfile: "प्रोफाइल",
+    acctSettings: "सेटिङ",
+    acctYourAccount: "तपाईंको खाता",
+    acctName: "देखिने नाम",
+    acctNameNote: "एपले तपाईंलाई बोलाउने नाम, र ज्योतिषीले देख्ने नाम।",
+    acctEmail: "इमेल",
+    acctEmailNote: "तपाईंको साइन-इन ठेगाना। यहाँबाट बदल्न मिल्दैन।",
+    acctJoined: "सुरु गरेको",
+    acctRole: "खाताको प्रकार",
+    acctSave: "परिवर्तन सुरक्षित गर्नुहोस्",
+    acctSaved: "सुरक्षित भयो।",
+    acctActivity: "तपाईंको संग्रह",
+    acctPassword: "पासवर्ड",
+    acctCurrentPassword: "हालको पासवर्ड",
+    acctNewPassword: "नयाँ पासवर्ड",
+    acctPasswordNote: "कम्तीमा ८ अक्षर। गुगलबाट साइन इन गर्नुभएको हो भने बदल्नुपर्ने पासवर्ड छैन।",
+    acctPasswordChanged: "पासवर्ड बदलियो।",
+    acctChangePassword: "पासवर्ड बदल्नुहोस्",
+    acctLanguage: "भाषा",
+    acctLanguageNote: "फलादेश, एआई ज्योतिषी र एप — सबैमा यही भाषा।",
+    acctPrivacy: "तपाईंको जन्म विवरण",
+    acctPrivacyNote: "जन्म विवरण लग, त्रुटि रिपोर्ट वा एनालिटिक्समा कहिल्यै लेखिँदैन। तपाईंले नदिएसम्म ज्योतिषीले कुण्डली देख्दैनन्, र दिएको फिर्ता लिन सकिन्छ।",
+    acctPrivacyLink: "गोपनीयता नीति पढ्नुहोस्",
+    acctDanger: "साइन आउट",
+    acctDangerNote: "यो यन्त्रबाट मात्र साइन आउट हुन्छ। तपाईंका कुण्डली सुरक्षित रहन्छन्।",
     dashCollapse: "साइडबार खुम्च्याउनुहोस्",
     dashClose: "बन्द गर्नुहोस्",
     dashMenu: "मेनु",
@@ -1364,6 +1598,19 @@ export const translations: Record<Language, TranslationCatalog> = {
     practNoRates: "परामर्श से पहले एक मूल्य निर्धारित करें।",
     practPendingNote: "आमतौर पर एक-दो दिन में। परिणाम चाहे जो हो, हम बताएँगे, और तब तक आप नखत्र सामान्य रूप से चला सकते हैं।",
     practSubmitted: "आपने जो भेजा",
+    practIntroVideo: "परिचय वीडियो लिंक",
+    practIntroVideoNote: "यदि हो तो YouTube या Vimeo लिंक।",
+    practStatus: "आपकी लिस्टिंग",
+    applyWho: "आप कौन हैं",
+    applyReach: "लोग आप तक कैसे पहुँचें",
+    applyExpertise: "आप क्या करते हैं",
+    applyNext: "आगे क्या होगा",
+    practCountry: "देश",
+    practYearsSuffix: "वर्ष",
+    practPhoneNote: "कॉल कटने पर ग्राहक आपको वापस फ़ोन कर सके।",
+    practPhoneInvalid: "7 से 15 अंकों का फ़ोन नंबर लिखें।",
+    practCityPlaceholder: "अपना शहर खोजें",
+    practNamePlaceholder: "जैसा प्रोफ़ाइल पर दिखे",
     practReviewLink: "आवेदन देखें",
     practVerified: "सत्यापित",
     practUnverified: "जाँच प्रतीक्षा में",
@@ -1376,6 +1623,7 @@ export const translations: Record<Language, TranslationCatalog> = {
     practSaved: "सहेजा गया",
     practUnlist: "मुझे निर्देशिका से हटाएँ",
     practComingSoon: "जल्द आ रहा है",
+    soonNote: "असली ज्योतिषी से परामर्श अभी शुरू नहीं हुआ है। तब तक AI ज्योतिषी, आपकी कुंडलियाँ और मिलन सामान्य रूप से चलते रहेंगे — खुलने के दिन यहीं बता देंगे।",
     practRegister: "ज्योतिषी के रूप में पंजीकरण",
     practPhoto: "प्रोफ़ाइल फ़ोटो",
     practPhotoNote: "चेहरा साफ़ दिखने वाली फ़ोटो। JPG, PNG या WebP, 4MB तक।",
@@ -1402,6 +1650,41 @@ export const translations: Record<Language, TranslationCatalog> = {
     practReviewQueue: "आवेदन",
     practApprove: "स्वीकृत करें",
     practReject: "अस्वीकार करें",
+    profFollow: "फ़ॉलो करें",
+    profFollowing: "फ़ॉलो कर रहे हैं",
+    profMessage: "संदेश",
+    profBook: "बुक करें",
+    profAbout: "परिचय",
+    profRates: "शुल्क",
+    profReviews: "समीक्षाएँ",
+    profNoReviews: "अभी तक कोई समीक्षा नहीं",
+    profNoReviewsNote: "परामर्श समाप्त होने के बाद ही यहाँ रेटिंग दिखती है। उससे पहले कुछ नहीं।",
+    profUnrated: "अभी रेटिंग नहीं",
+    profConsultations: "परामर्श",
+    profFollowers: "फ़ॉलोअर",
+    profReply: "उत्तर",
+    profReplyPlaceholder: "इस समीक्षा का उत्तर दें",
+    profNotFound: "यह प्रोफ़ाइल उपलब्ध नहीं है।",
+    profSpeaks: "भाषाएँ",
+    bookTitle: "परामर्श बुक करें",
+    bookMedium: "कैसे बात करेंगे",
+    bookWhen: "कब",
+    bookNow: "अभी शुरू करें",
+    bookLater: "समय चुनें",
+    bookDate: "तारीख़",
+    bookTime: "समय",
+    bookNote: "जो उन्हें पहले जानना चाहिए",
+    bookConfirm: "अनुरोध भेजें",
+    bookPast: "वह समय बीत चुका है।",
+    bookUnpriced: "उन्होंने इसका शुल्क तय नहीं किया है।",
+    chatTab: "संदेश",
+    chatNoMessages: "अभी तक कोई संदेश नहीं",
+    chatScheduled: "निर्धारित",
+    reviewTitle: "कैसा रहा?",
+    reviewNote: "केवल भुगतान करने वाले ही रेटिंग दे सकते हैं।",
+    reviewPlaceholder: "क्या अच्छा रहा, क्या नहीं",
+    reviewSubmit: "समीक्षा भेजें",
+    reviewThanks: "धन्यवाद — आपकी समीक्षा पोस्ट हो गई।",
     voiceFellBack: "लाइव आवाज़ जारी नहीं रह सकी, इसलिए ज्योतिषी बारी-बारी सुनने की विधि पर लौट आए हैं। आप बोल या लिख सकते हैं।",
     notifSavedToVault: "आपके संग्रह में सुरक्षित",
     notifConversationUpdated: "बातचीत अपडेट हुई",
@@ -1441,6 +1724,10 @@ export const translations: Record<Language, TranslationCatalog> = {
     dashEmptyBody: "अपनी पहली कुंडली बनाएँ — अगली बार साइन इन करने पर वह यहीं मिलेगी।",
     dashOpen: "रीडिंग खोलें",
     dashOpening: "पुनः गणना हो रही है…",
+    chooseTitle: "किसकी कुंडली?",
+    chooseReadingNote: "किस कुंडली का फलादेश चाहिए, चुनें।",
+    chooseLiveNote: "किस कुंडली पर बात करनी है, चुनें।",
+    chooseEmpty: "आपके पास कोई सहेजी हुई कुंडली नहीं है।",
     dashDelete: "हटाएँ",
     dashConfirmDelete: "यह कुंडली हटाएँ?",
     dashCancel: "रहने दें",
@@ -1457,6 +1744,31 @@ export const translations: Record<Language, TranslationCatalog> = {
     dashNavRecent: "हाल के",
     dashHelp: "सहायता",
     dashSettings: "सेटिंग्स",
+    acctProfile: "प्रोफ़ाइल",
+    acctSettings: "सेटिंग",
+    acctYourAccount: "आपका खाता",
+    acctName: "प्रदर्शित नाम",
+    acctNameNote: "ऐप आपको इसी नाम से बुलाता है, और ज्योतिषी यही देखते हैं।",
+    acctEmail: "ईमेल",
+    acctEmailNote: "आपका साइन-इन पता। यहाँ से बदला नहीं जा सकता।",
+    acctJoined: "शामिल हुए",
+    acctRole: "खाते का प्रकार",
+    acctSave: "बदलाव सहेजें",
+    acctSaved: "सहेज लिया।",
+    acctActivity: "आपकी लाइब्रेरी",
+    acctPassword: "पासवर्ड",
+    acctCurrentPassword: "मौजूदा पासवर्ड",
+    acctNewPassword: "नया पासवर्ड",
+    acctPasswordNote: "कम से कम 8 अक्षर। Google से साइन इन किया है तो बदलने के लिए पासवर्ड नहीं है।",
+    acctPasswordChanged: "पासवर्ड बदल गया।",
+    acctChangePassword: "पासवर्ड बदलें",
+    acctLanguage: "भाषा",
+    acctLanguageNote: "फलादेश, AI ज्योतिषी और ऐप — सब इसी भाषा में।",
+    acctPrivacy: "आपका जन्म विवरण",
+    acctPrivacyNote: "जन्म विवरण कभी लॉग, त्रुटि रिपोर्ट या एनालिटिक्स में नहीं जाता। जब तक आप साझा न करें ज्योतिषी कुंडली नहीं देखते, और साझा करना वापस भी लिया जा सकता है।",
+    acctPrivacyLink: "गोपनीयता नीति पढ़ें",
+    acctDanger: "साइन आउट",
+    acctDangerNote: "केवल इस डिवाइस से साइन आउट होगा। आपकी कुंडलियाँ सुरक्षित रहेंगी।",
     dashCollapse: "साइडबार छोटा करें",
     dashClose: "बंद करें",
     dashMenu: "मेन्यू",

@@ -330,7 +330,17 @@ def _detail(session: Session, profile: PractitionerProfile) -> PractitionerDetai
     attributes = repository.attributes_for(session, profile.id)
     card = _card(profile, attributes)
     return PractitionerDetail(
-        **card.model_dump(), bio=profile.bio, intro_video_url=profile.intro_video_url
+        **card.model_dump(),
+        bio=profile.bio,
+        intro_video_url=profile.intro_video_url,
+        user_id=profile.user_id,
+        # Only what they actually offer. A booking form that lists a medium
+        # they have not priced sends a request the server refuses.
+        rates=[
+            _rate_out(row)
+            for row in repository.rates_for(session, profile.id)
+            if row.is_active and row.per_minute_minor > 0
+        ],
     )
 
 

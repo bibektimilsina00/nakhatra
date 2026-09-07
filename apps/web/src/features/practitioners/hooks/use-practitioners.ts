@@ -12,6 +12,8 @@ import type {
   DirectoryOut,
   DirectoryQuery,
   PractitionerDetail,
+  PractitionerReview,
+  PractitionerStats,
   ProfileIn,
   ReviewDecision,
 } from "@/features/practitioners/types";
@@ -130,4 +132,52 @@ export function useSetRate() {
 
 export function useUploadPhoto() {
   return useMutation<{ photo_url: string }, Error, File>({ mutationFn: api.uploadPhoto });
+}
+
+export function usePractitionerStats(userId: string | null | undefined) {
+  return useQuery<PractitionerStats, ApiError>({
+    queryKey: ["practitioner-stats", userId],
+    queryFn: () => api.stats(userId as string),
+    enabled: Boolean(userId),
+  });
+}
+
+export function usePractitionerReviews(userId: string | null | undefined) {
+  return useQuery<PractitionerReview[], ApiError>({
+    queryKey: ["practitioner-reviews", userId],
+    queryFn: () => api.reviews(userId as string),
+    enabled: Boolean(userId),
+  });
+}
+
+export function useSetFollow(userId: string) {
+  const queryClient = useQueryClient();
+  return useMutation<PractitionerStats, ApiError, boolean>({
+    mutationFn: (following) => api.setFollow(userId, following),
+    // The response is the new stats, so there is nothing to refetch: the
+    // follower count and the button state both come from it.
+    onSuccess: (stats) => queryClient.setQueryData(["practitioner-stats", userId], stats),
+  });
+}
+
+export function useLeaveReview(consultationId: string, practitionerUserId?: string) {
+  const queryClient = useQueryClient();
+  return useMutation<PractitionerReview, ApiError, { rating: number; body: string }>({
+    mutationFn: (body) => api.leaveReview(consultationId, body),
+    onSuccess: () => {
+      // A new review changes both the list and the average above it.
+      queryClient.invalidateQueries({ queryKey: ["practitioner-reviews", practitionerUserId] });
+      queryClient.invalidateQueries({ queryKey: ["practitioner-stats", practitionerUserId] });
+    },
+  });
+}
+
+export function useReplyToReview(practitionerUserId?: string) {
+  const queryClient = useQueryClient();
+  return useMutation<PractitionerReview, ApiError, { id: string; reply: string }>({
+    mutationFn: ({ id, reply }) => api.replyToReview(id, reply),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["practitioner-reviews", practitionerUserId] });
+    },
+  });
 }

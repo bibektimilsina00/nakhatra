@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { ArrowLeft, Send } from "lucide-react";
+import { ArrowLeft, Send, Star } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 import { AppShell } from "@/features/dashboard/components/app-shell";
@@ -17,6 +18,8 @@ import {
   useSendMessage,
   useWallet,
 } from "@/features/consultations/hooks/use-consultations";
+import { useLeaveReview } from "@/features/practitioners/hooks/use-practitioners";
+import { assetUrl } from "@/lib/api/client";
 import { useTranslation } from "@/lib/i18n/language-context";
 
 /**
@@ -83,8 +86,38 @@ export function ConsultationRoom({ id }: { id: string }) {
           className="mb-5 inline-flex items-center gap-2 text-[12.5px] text-muted transition-colors hover:text-paper"
         >
           <ArrowLeft className="size-4" />
-          {t.consultTitle}
+          {t.chatTab}
         </button>
+
+        {/* Who this is with, and a way back to their profile — a chat window
+            that never names the other person is a text box. */}
+        <div className="mb-4 flex items-center gap-3">
+          {c.counterpart_photo_url ? (
+            // eslint-disable-next-line @next/next/no-img-element -- our own upload route.
+            <img
+              src={assetUrl(c.counterpart_photo_url)}
+              alt=""
+              className="size-10 shrink-0 rounded-full object-cover"
+            />
+          ) : (
+            <span className="grid size-10 shrink-0 place-items-center rounded-full bg-gold/[0.12] text-[13px] font-bold text-gold">
+              {(c.counterpart_name || "?").charAt(0).toUpperCase()}
+            </span>
+          )}
+          <div className="min-w-0">
+            <p className="truncate text-[15px] font-semibold text-paper">
+              {c.counterpart_name || t.dashJyotish}
+            </p>
+            {!isPractitioner && (
+              <Link
+                href={`/practitioners/${c.profile_id}`}
+                className="text-[11.5px] text-gold hover:underline"
+              >
+                {t.profAbout}
+              </Link>
+            )}
+          </div>
+        </div>
 
         <SessionMeter consultation={c} wallet={wallet.data} />
 
@@ -160,6 +193,14 @@ export function ConsultationRoom({ id }: { id: string }) {
           {c.state === "ended" && <span className="text-[13px] text-faint">{t.consultEnded}</span>}
         </div>
 
+        {c.state === "ended" && !isPractitioner && (
+          <ReviewForm
+            consultationId={c.id}
+            practitionerUserId={c.practitioner_user_id}
+            done={c.reviewed}
+          />
+        )}
+
         {act.isError && (
           <p role="alert" className="mt-3 text-[13px] text-rose-300">
             {/* A 402 here means the wallet cannot fund the minimum session. The
@@ -220,5 +261,86 @@ export function ConsultationRoom({ id }: { id: string }) {
         </form>
       </main>
     </AppShell>
+  );
+}
+
+/**
+ * Rate the consultation you just had.
+ *
+ * Offered only to the seeker, only once, and only after it ended — the same
+ * three conditions the server enforces. A form that appears and then 403s is
+ * worse than no form.
+ */
+function ReviewForm({
+  consultationId,
+  practitionerUserId,
+  done,
+}: {
+  consultationId: string;
+  practitionerUserId: string;
+  done: boolean;
+}) {
+  const { t } = useTranslation();
+  const [rating, setRating] = useState(0);
+  const [body, setBody] = useState("");
+  const review = useLeaveReview(consultationId, practitionerUserId);
+
+  if (done || review.isSuccess) {
+    return <p className="mt-4 text-[13px] text-gold2">{t.reviewThanks}</p>;
+  }
+
+  return (
+    <form
+      className="mt-5 rounded-[12px] border border-white/[0.09] bg-card p-4"
+      onSubmit={(event) => {
+        event.preventDefault();
+        if (rating > 0) review.mutate({ rating, body: body.trim() });
+      }}
+    >
+      <p className="text-[14px] font-semibold text-paper">{t.reviewTitle}</p>
+      <p className="mt-1 text-[11.5px] text-faint">{t.reviewNote}</p>
+
+      <div className="mt-3 flex gap-1">
+        {[1, 2, 3, 4, 5].map((star) => (
+          <button
+            key={star}
+            type="button"
+            aria-label={`${star}/5`}
+            aria-pressed={rating === star}
+            onClick={() => setRating(star)}
+            className="p-0.5"
+          >
+            <Star
+              className={`size-6 transition-colors ${
+                star <= rating ? "fill-gold text-gold" : "text-white/20 hover:text-white/40"
+              }`}
+            />
+          </button>
+        ))}
+      </div>
+
+      <textarea
+        rows={2}
+        value={body}
+        onChange={(event) => setBody(event.target.value)}
+        placeholder={t.reviewPlaceholder}
+        maxLength={2000}
+        className="mt-3 w-full resize-none rounded-[8px] border border-white/[0.09] bg-ink px-3 py-2 text-[13px] leading-[1.7] text-paper placeholder-faint focus:border-gold/45 focus:outline-none"
+      />
+
+      {review.isError && (
+        <p role="alert" className="mt-2 text-[12.5px] text-rose-300">
+          {review.error.message}
+        </p>
+      )}
+
+      <button
+        type="submit"
+        disabled={rating === 0 || review.isPending}
+        className="mt-3 rounded-[8px] bg-gold px-4 py-2 text-[13px] font-semibold text-ink disabled:opacity-40"
+      >
+        {t.reviewSubmit}
+      </button>
+    </form>
   );
 }

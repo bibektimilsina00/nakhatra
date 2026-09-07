@@ -4,7 +4,6 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Search, UserRoundSearch } from "lucide-react";
 
-import { useRequestConsultation } from "@/features/consultations/hooks/use-consultations";
 import { useDirectory } from "@/features/practitioners/hooks/use-practitioners";
 import { PractitionerCardView } from "@/features/practitioners/components/practitioner-card";
 import type { DirectoryQuery } from "@/features/practitioners/types";
@@ -27,20 +26,13 @@ export function PractitionerDirectory({ onOpen }: { onOpen?: (id: string) => voi
   const router = useRouter();
   const [query, setQuery] = useState<DirectoryQuery>({ limit: 24, offset: 0 });
   const { data, isPending, isError } = useDirectory(query);
-  const request = useRequestConsultation();
 
-  // Opening a practitioner starts a chat consultation and goes to its room.
-  // No chart is attached here: sharing birth data is a separate, explicit
-  // consent, and consulting somebody is not it.
+  // Opening a card reads the profile. It used to start — and bill — a
+  // consultation on the first click, which is not what tapping somebody's name
+  // means anywhere else.
   const open = (profileId: string) => {
     if (onOpen) return onOpen(profileId);
-    request.mutate(
-      // `opening_message` is optional in the contract but the generated type
-      // marks any defaulted field as required — the same mismatch the vault
-      // save works around. Sending the default is simpler than a cast.
-      { profile_id: profileId, medium: "chat", opening_message: "" },
-      { onSuccess: (consultation) => router.push(`/consultations/${consultation.id}`) },
-    );
+    router.push(`/practitioners/${profileId}`);
   };
 
   // Pressing an active filter clears it, which is what a pressed toggle means.
@@ -98,12 +90,6 @@ export function PractitionerDirectory({ onOpen }: { onOpen?: (id: string) => voi
           </button>
         ))}
       </div>
-
-      {request.isError && (
-        <p role="alert" className="mt-3 text-[13px] text-rose-300">
-          {request.error.message}
-        </p>
-      )}
 
       {isPending ? (
         <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

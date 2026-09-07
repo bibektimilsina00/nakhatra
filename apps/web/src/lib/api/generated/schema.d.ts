@@ -106,6 +106,27 @@ export interface paths {
         delete?: never;
         options?: never;
         head?: never;
+        /** Change your own display name */
+        patch: operations["update_me_v1_auth_me_patch"];
+        trace?: never;
+    };
+    "/v1/auth/password": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Change your password
+         * @description The current password is required as well as the token: a session left open on a borrowed machine should not be enough to lock its owner out.
+         */
+        post: operations["change_password_v1_auth_password_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
         patch?: never;
         trace?: never;
     };
@@ -304,6 +325,43 @@ export interface paths {
         put?: never;
         /** Send */
         post: operations["send_v1_consultations__consultation_id__messages_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/consultations/{consultation_id}/review": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Rate a consultation you had
+         * @description Only the seeker, only once, and only after it ended. Ratings anyone can write are worthless, and a rating on a session that never connected is a review of nothing.
+         */
+        post: operations["review_v1_consultations__consultation_id__review_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/following": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Practitioner user ids this account follows */
+        get: operations["following_v1_following_get"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -571,6 +629,61 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/practitioners/{practitioner_user_id}/follow": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Follow */
+        post: operations["follow_v1_practitioners__practitioner_user_id__follow_post"];
+        /** Unfollow */
+        delete: operations["unfollow_v1_practitioners__practitioner_user_id__follow_delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/practitioners/{practitioner_user_id}/reviews": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Reviews written about a practitioner */
+        get: operations["practitioner_reviews_v1_practitioners__practitioner_user_id__reviews_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/practitioners/{practitioner_user_id}/stats": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Ratings, completed consultations and followers
+         * @description Public: this is what someone reads before deciding to book. `rating_average` is null rather than 0 when nobody has rated yet — a new practitioner is unrated, not terrible.
+         */
+        get: operations["practitioner_stats_v1_practitioners__practitioner_user_id__stats_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/practitioners/{profile_id}": {
         parameters: {
             query?: never;
@@ -639,6 +752,23 @@ export interface paths {
          * @description Server-sent events. Each `section` frame carries one finished section the moment the model closes it, rather than making the reader wait a minute for the whole array; the stream ends with `done` or, if it could not be completed, `error`. `/v1/report` is unchanged and still returns the whole report in one response.
          */
         post: operations["report_stream_v1_report_stream_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/reviews/{review_id}/reply": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Reply to a review of you */
+        post: operations["reply_v1_reviews__review_id__reply_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1251,6 +1381,13 @@ export interface components {
             charged_minor: number;
             /** Connected At */
             connected_at: string | null;
+            /**
+             * Counterpart Name
+             * @default
+             */
+            counterpart_name: string;
+            /** Counterpart Photo Url */
+            counterpart_photo_url?: string | null;
             /** Created At */
             created_at: string;
             /** Currency */
@@ -1259,6 +1396,13 @@ export interface components {
             ended_at: string | null;
             /** Id */
             id: string;
+            /**
+             * Last Message
+             * @default
+             */
+            last_message: string;
+            /** Last Message At */
+            last_message_at?: string | null;
             /**
              * Medium
              * @enum {string}
@@ -1270,6 +1414,13 @@ export interface components {
             profile_id: string;
             /** Rate Per Minute Minor */
             rate_per_minute_minor: number;
+            /**
+             * Reviewed
+             * @default false
+             */
+            reviewed: boolean;
+            /** Scheduled At */
+            scheduled_at: string | null;
             /** Seeker Id */
             seeker_id: string;
             /**
@@ -1277,6 +1428,11 @@ export interface components {
              * @enum {string}
              */
             state: "requested" | "accepted" | "active" | "ended" | "declined" | "cancelled" | "expired";
+            /**
+             * Unread Count
+             * @default 0
+             */
+            unread_count: number;
         };
         /** DashaOut */
         DashaOut: {
@@ -1647,6 +1803,13 @@ export interface components {
              */
             yoga: string;
         };
+        /** PasswordChangeIn */
+        PasswordChangeIn: {
+            /** Current Password */
+            current_password: string;
+            /** New Password */
+            new_password: string;
+        };
         /**
          * PhotoOut
          * @description Where an uploaded photograph now lives.
@@ -1806,14 +1969,41 @@ export interface components {
             practice_type: "astrologer" | "pandit";
             /** Practice Types */
             practice_types: ("astrologer" | "pandit")[];
+            /**
+             * Rates
+             * @default []
+             */
+            rates: components["schemas"]["RateOut"][];
             /** Specialities */
             specialities: string[];
             /** Traditions */
             traditions: string[];
+            /** User Id */
+            user_id: string;
             /** Verified */
             verified: boolean;
             /** Years Experience */
             years_experience: number;
+        };
+        /**
+         * PractitionerStats
+         * @description What a reader needs to judge somebody, and nothing invented.
+         *
+         *     Every figure is counted from rows that exist. A practitioner with no
+         *     consultations has zeroes and a `rating_average` of None — not 4.9, and not
+         *     a hidden section that makes the page look complete.
+         */
+        PractitionerStats: {
+            /** Consultations Completed */
+            consultations_completed: number;
+            /** Follower Count */
+            follower_count: number;
+            /** Is Following */
+            is_following: boolean | null;
+            /** Rating Average */
+            rating_average: number | null;
+            /** Rating Count */
+            rating_count: number;
         };
         /**
          * ProfileIn
@@ -1866,6 +2056,18 @@ export interface components {
              * @default 0
              */
             years_experience: number;
+        };
+        /**
+         * ProfileUpdateIn
+         * @description What a person may change about themselves.
+         *
+         *     Not the email: it is the login identity and the key Google sign-in matches
+         *     on, so changing it is an account-recovery flow rather than a text field.
+         *     Not the role either — an account cannot promote itself.
+         */
+        ProfileUpdateIn: {
+            /** Full Name */
+            full_name: string;
         };
         /**
          * RateIn
@@ -1940,6 +2142,11 @@ export interface components {
             /** Model */
             model?: string | null;
         };
+        /** ReplyIn */
+        ReplyIn: {
+            /** Reply */
+            reply: string;
+        };
         /**
          * ReportReason
          * @description The placement an assertion rests on. Every section shows its working.
@@ -2006,6 +2213,8 @@ export interface components {
             opening_message: string;
             /** Profile Id */
             profile_id: string;
+            /** Scheduled At */
+            scheduled_at?: string | null;
         };
         /** ReviewDecisionIn */
         ReviewDecisionIn: {
@@ -2024,6 +2233,31 @@ export interface components {
              * @default
              */
             reviewer_note: string;
+        };
+        /** ReviewIn */
+        ReviewIn: {
+            /**
+             * Body
+             * @default
+             */
+            body: string;
+            /** Rating */
+            rating: number;
+        };
+        /** ReviewOut */
+        ReviewOut: {
+            /** Author */
+            author: string;
+            /** Body */
+            body: string;
+            /** Created At */
+            created_at: string;
+            /** Id */
+            id: string;
+            /** Rating */
+            rating: number;
+            /** Reply */
+            reply: string;
         };
         /** SavedKundaliIn */
         SavedKundaliIn: {
@@ -2470,6 +2704,76 @@ export interface operations {
             };
         };
     };
+    update_me_v1_auth_me_patch: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ProfileUpdateIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserProfileOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    change_password_v1_auth_password_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PasswordChangeIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserProfileOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     signup_v1_auth_signup_post: {
         parameters: {
             query?: never;
@@ -2890,6 +3194,74 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["MessageOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    review_v1_consultations__consultation_id__review_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path: {
+                consultation_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReviewIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReviewOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    following_v1_following_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string[];
                 };
             };
             /** @description Validation Error */
@@ -3408,6 +3780,138 @@ export interface operations {
             };
         };
     };
+    follow_v1_practitioners__practitioner_user_id__follow_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path: {
+                practitioner_user_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PractitionerStats"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    unfollow_v1_practitioners__practitioner_user_id__follow_delete: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path: {
+                practitioner_user_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PractitionerStats"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    practitioner_reviews_v1_practitioners__practitioner_user_id__reviews_get: {
+        parameters: {
+            query?: {
+                limit?: number;
+            };
+            header?: never;
+            path: {
+                practitioner_user_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReviewOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    practitioner_stats_v1_practitioners__practitioner_user_id__stats_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path: {
+                practitioner_user_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PractitionerStats"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     public_profile_v1_practitioners__profile_id__get: {
         parameters: {
             query?: never;
@@ -3530,6 +4034,43 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reply_v1_reviews__review_id__reply_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path: {
+                review_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReplyIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReviewOut"];
+                };
             };
             /** @description Validation Error */
             422: {

@@ -127,9 +127,22 @@ class PractitionerCard(BaseModel):
     verified: bool
 
 
+class RateOut(BaseModel):
+    medium: Literal["chat", "voice", "video"]
+    per_minute_minor: int
+    currency: str
+    is_active: bool
+
+
 class PractitionerDetail(PractitionerCard):
     bio: str
     intro_video_url: str | None
+    #: The account behind this profile, so the page can follow or message them
+    #: without a second lookup.
+    user_id: str
+    #: What they charge, per medium. Absent mediums are ones they do not offer;
+    #: requesting one is refused server-side, so the page should not offer it.
+    rates: list[RateOut] = []
 
 
 class ProfileIn(BaseModel):
@@ -169,10 +182,3 @@ class RateIn(BaseModel):
     medium: Literal["chat", "voice", "video"]
     per_minute_minor: int = Field(ge=0, le=100_000, description="Minor units per minute")
     is_active: bool = True
-
-
-class RateOut(BaseModel):
-    medium: Literal["chat", "voice", "video"]
-    per_minute_minor: int
-    currency: str
-    is_active: bool

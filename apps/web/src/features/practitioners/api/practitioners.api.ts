@@ -8,6 +8,8 @@ import type {
   DirectoryOut,
   DirectoryQuery,
   PractitionerDetail,
+  PractitionerReview,
+  PractitionerStats,
   ProfileIn,
   ReviewDecision,
 } from "@/features/practitioners/types";
@@ -95,4 +97,45 @@ export async function uploadPhoto(file: File): Promise<{ photo_url: string }> {
     throw new Error(body?.error?.message ?? "That image could not be uploaded.");
   }
   return res.json();
+}
+
+/**
+ * Stats and reviews are keyed on the practitioner's **user** id, not the
+ * profile id — a review belongs to the person, and survives them editing or
+ * republishing the profile.
+ */
+export function stats(userId: string): Promise<PractitionerStats> {
+  return apiFetch(`/v1/practitioners/${encodeURIComponent(userId)}/stats`, {
+    headers: authHeaders(),
+  });
+}
+
+export function reviews(userId: string): Promise<PractitionerReview[]> {
+  return apiFetch(`/v1/practitioners/${encodeURIComponent(userId)}/reviews`);
+}
+
+export function setFollow(userId: string, following: boolean): Promise<PractitionerStats> {
+  return apiFetch(`/v1/practitioners/${encodeURIComponent(userId)}/follow`, {
+    method: following ? "POST" : "DELETE",
+    headers: authHeaders(),
+  });
+}
+
+export function leaveReview(
+  consultationId: string,
+  body: { rating: number; body: string },
+): Promise<PractitionerReview> {
+  return apiFetch(`/v1/consultations/${encodeURIComponent(consultationId)}/review`, {
+    method: "POST",
+    body,
+    headers: authHeaders(),
+  });
+}
+
+export function replyToReview(reviewId: string, reply: string): Promise<PractitionerReview> {
+  return apiFetch(`/v1/reviews/${encodeURIComponent(reviewId)}/reply`, {
+    method: "POST",
+    body: { reply },
+    headers: authHeaders(),
+  });
 }

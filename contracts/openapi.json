@@ -897,6 +897,22 @@
             ],
             "title": "Connected At"
           },
+          "counterpart_name": {
+            "default": "",
+            "title": "Counterpart Name",
+            "type": "string"
+          },
+          "counterpart_photo_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Counterpart Photo Url"
+          },
           "created_at": {
             "title": "Created At",
             "type": "string"
@@ -920,6 +936,22 @@
             "title": "Id",
             "type": "string"
           },
+          "last_message": {
+            "default": "",
+            "title": "Last Message",
+            "type": "string"
+          },
+          "last_message_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Message At"
+          },
           "medium": {
             "enum": [
               "chat",
@@ -941,6 +973,22 @@
             "title": "Rate Per Minute Minor",
             "type": "integer"
           },
+          "reviewed": {
+            "default": false,
+            "title": "Reviewed",
+            "type": "boolean"
+          },
+          "scheduled_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scheduled At"
+          },
           "seeker_id": {
             "title": "Seeker Id",
             "type": "string"
@@ -957,6 +1005,11 @@
             ],
             "title": "State",
             "type": "string"
+          },
+          "unread_count": {
+            "default": 0,
+            "title": "Unread Count",
+            "type": "integer"
           }
         },
         "required": [
@@ -968,6 +1021,7 @@
           "state",
           "rate_per_minute_minor",
           "currency",
+          "scheduled_at",
           "connected_at",
           "ended_at",
           "billed_seconds",
@@ -1880,6 +1934,27 @@
         "title": "PanchangOut",
         "type": "object"
       },
+      "PasswordChangeIn": {
+        "properties": {
+          "current_password": {
+            "minLength": 1,
+            "title": "Current Password",
+            "type": "string"
+          },
+          "new_password": {
+            "maxLength": 100,
+            "minLength": 8,
+            "title": "New Password",
+            "type": "string"
+          }
+        },
+        "required": [
+          "current_password",
+          "new_password"
+        ],
+        "title": "PasswordChangeIn",
+        "type": "object"
+      },
       "PhotoOut": {
         "description": "Where an uploaded photograph now lives.",
         "properties": {
@@ -2226,6 +2301,14 @@
             "title": "Practice Types",
             "type": "array"
           },
+          "rates": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/RateOut"
+            },
+            "title": "Rates",
+            "type": "array"
+          },
           "specialities": {
             "items": {
               "type": "string"
@@ -2239,6 +2322,10 @@
             },
             "title": "Traditions",
             "type": "array"
+          },
+          "user_id": {
+            "title": "User Id",
+            "type": "string"
           },
           "verified": {
             "title": "Verified",
@@ -2264,9 +2351,58 @@
           "specialities",
           "verified",
           "bio",
-          "intro_video_url"
+          "intro_video_url",
+          "user_id"
         ],
         "title": "PractitionerDetail",
+        "type": "object"
+      },
+      "PractitionerStats": {
+        "description": "What a reader needs to judge somebody, and nothing invented.\n\nEvery figure is counted from rows that exist. A practitioner with no\nconsultations has zeroes and a `rating_average` of None \u2014 not 4.9, and not\na hidden section that makes the page look complete.",
+        "properties": {
+          "consultations_completed": {
+            "title": "Consultations Completed",
+            "type": "integer"
+          },
+          "follower_count": {
+            "title": "Follower Count",
+            "type": "integer"
+          },
+          "is_following": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Is Following"
+          },
+          "rating_average": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rating Average"
+          },
+          "rating_count": {
+            "title": "Rating Count",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "rating_average",
+          "rating_count",
+          "consultations_completed",
+          "follower_count",
+          "is_following"
+        ],
+        "title": "PractitionerStats",
         "type": "object"
       },
       "ProfileIn": {
@@ -2376,6 +2512,22 @@
           "display_name"
         ],
         "title": "ProfileIn",
+        "type": "object"
+      },
+      "ProfileUpdateIn": {
+        "description": "What a person may change about themselves.\n\nNot the email: it is the login identity and the key Google sign-in matches\non, so changing it is an account-recovery flow rather than a text field.\nNot the role either \u2014 an account cannot promote itself.",
+        "properties": {
+          "full_name": {
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Full Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "full_name"
+        ],
+        "title": "ProfileUpdateIn",
         "type": "object"
       },
       "RateIn": {
@@ -2537,6 +2689,21 @@
         "title": "RealtimeSessionResponse",
         "type": "object"
       },
+      "ReplyIn": {
+        "properties": {
+          "reply": {
+            "maxLength": 2000,
+            "minLength": 1,
+            "title": "Reply",
+            "type": "string"
+          }
+        },
+        "required": [
+          "reply"
+        ],
+        "title": "ReplyIn",
+        "type": "object"
+      },
       "ReportReason": {
         "description": "The placement an assertion rests on. Every section shows its working.",
         "properties": {
@@ -2692,6 +2859,18 @@
             "minLength": 1,
             "title": "Profile Id",
             "type": "string"
+          },
+          "scheduled_at": {
+            "anyOf": [
+              {
+                "maxLength": 64,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scheduled At"
           }
         },
         "required": [
@@ -2728,6 +2907,65 @@
           "decision"
         ],
         "title": "ReviewDecisionIn",
+        "type": "object"
+      },
+      "ReviewIn": {
+        "properties": {
+          "body": {
+            "default": "",
+            "maxLength": 2000,
+            "title": "Body",
+            "type": "string"
+          },
+          "rating": {
+            "maximum": 5.0,
+            "minimum": 1.0,
+            "title": "Rating",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "rating"
+        ],
+        "title": "ReviewIn",
+        "type": "object"
+      },
+      "ReviewOut": {
+        "properties": {
+          "author": {
+            "title": "Author",
+            "type": "string"
+          },
+          "body": {
+            "title": "Body",
+            "type": "string"
+          },
+          "created_at": {
+            "title": "Created At",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "rating": {
+            "title": "Rating",
+            "type": "integer"
+          },
+          "reply": {
+            "title": "Reply",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "rating",
+          "body",
+          "reply",
+          "author",
+          "created_at"
+        ],
+        "title": "ReviewOut",
         "type": "object"
       },
       "SavedKundaliIn": {
@@ -3569,6 +3807,123 @@
         "tags": [
           "auth"
         ]
+      },
+      "patch": {
+        "operationId": "update_me_v1_auth_me_patch",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProfileUpdateIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserProfileOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Change your own display name",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/v1/auth/password": {
+      "post": {
+        "description": "The current password is required as well as the token: a session left open on a borrowed machine should not be enough to lock its owner out.",
+        "operationId": "change_password_v1_auth_password_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PasswordChangeIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserProfileOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Change your password",
+        "tags": [
+          "auth"
+        ]
       }
     },
     "/v1/auth/signup": {
@@ -4305,6 +4660,128 @@
           }
         },
         "summary": "Send",
+        "tags": [
+          "consultations"
+        ]
+      }
+    },
+    "/v1/consultations/{consultation_id}/review": {
+      "post": {
+        "description": "Only the seeker, only once, and only after it ended. Ratings anyone can write are worthless, and a rating on a session that never connected is a review of nothing.",
+        "operationId": "review_v1_consultations__consultation_id__review_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "consultation_id",
+            "required": true,
+            "schema": {
+              "title": "Consultation Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReviewIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Rate a consultation you had",
+        "tags": [
+          "consultations"
+        ]
+      }
+    },
+    "/v1/following": {
+      "get": {
+        "operationId": "following_v1_following_get",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "title": "Response Following V1 Following Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Practitioner user ids this account follows",
         "tags": [
           "consultations"
         ]
@@ -5221,6 +5698,235 @@
         ]
       }
     },
+    "/v1/practitioners/{practitioner_user_id}/follow": {
+      "delete": {
+        "operationId": "unfollow_v1_practitioners__practitioner_user_id__follow_delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "practitioner_user_id",
+            "required": true,
+            "schema": {
+              "title": "Practitioner User Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PractitionerStats"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Unfollow",
+        "tags": [
+          "consultations"
+        ]
+      },
+      "post": {
+        "operationId": "follow_v1_practitioners__practitioner_user_id__follow_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "practitioner_user_id",
+            "required": true,
+            "schema": {
+              "title": "Practitioner User Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PractitionerStats"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Follow",
+        "tags": [
+          "consultations"
+        ]
+      }
+    },
+    "/v1/practitioners/{practitioner_user_id}/reviews": {
+      "get": {
+        "operationId": "practitioner_reviews_v1_practitioners__practitioner_user_id__reviews_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "practitioner_user_id",
+            "required": true,
+            "schema": {
+              "title": "Practitioner User Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 50,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ReviewOut"
+                  },
+                  "title": "Response Practitioner Reviews V1 Practitioners  Practitioner User Id  Reviews Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Reviews written about a practitioner",
+        "tags": [
+          "consultations"
+        ]
+      }
+    },
+    "/v1/practitioners/{practitioner_user_id}/stats": {
+      "get": {
+        "description": "Public: this is what someone reads before deciding to book. `rating_average` is null rather than 0 when nobody has rated yet \u2014 a new practitioner is unrated, not terrible.",
+        "operationId": "practitioner_stats_v1_practitioners__practitioner_user_id__stats_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "practitioner_user_id",
+            "required": true,
+            "schema": {
+              "title": "Practitioner User Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PractitionerStats"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Ratings, completed consultations and followers",
+        "tags": [
+          "consultations"
+        ]
+      }
+    },
     "/v1/practitioners/{profile_id}": {
       "get": {
         "operationId": "public_profile_v1_practitioners__profile_id__get",
@@ -5432,6 +6138,74 @@
         "summary": "The same report, streamed section by section",
         "tags": [
           "report"
+        ]
+      }
+    },
+    "/v1/reviews/{review_id}/reply": {
+      "post": {
+        "operationId": "reply_v1_reviews__review_id__reply_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "review_id",
+            "required": true,
+            "schema": {
+              "title": "Review Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReplyIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Reply to a review of you",
+        "tags": [
+          "consultations"
         ]
       }
     },

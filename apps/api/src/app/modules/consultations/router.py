@@ -15,14 +15,18 @@ from sqlmodel import Session
 
 from app.core.db import SessionDep, get_engine
 from app.modules.auth.jwt_handler import decode_jwt_token
-from app.modules.auth.router_deps import get_current_user
+from app.modules.auth.router_deps import get_current_user, get_optional_user
 from app.modules.consultations import calls, realtime, service
 from app.modules.consultations.schemas import (
     ConsultationOut,
     GrantOut,
     MessageIn,
     MessageOut,
+    PractitionerStats,
+    ReplyIn,
     RequestIn,
+    ReviewIn,
+    ReviewOut,
 )
 
 #: How long a socket has to send its auth frame before it is closed.
@@ -268,3 +272,95 @@ async def consultation_socket(websocket: WebSocket, consultation_id: str) -> Non
         pass
     finally:
         await realtime.leave(consultation_id, websocket)
+
+
+# --- reviews and follows ---
+
+
+@router.post(
+    "/consultations/{consultation_id}/review",
+    response_model=ReviewOut,
+    summary="Rate a consultation you had",
+    description=(
+        "Only the seeker, only once, and only after it ended. Ratings anyone "
+        "can write are worthless, and a rating on a session that never "
+        "connected is a review of nothing."
+    ),
+)
+def review(
+    consultation_id: str,
+    body: ReviewIn,
+    session: SessionDep,
+    user_id: str = Depends(get_current_user),
+) -> ReviewOut:
+    return service.leave_review(session, consultation_id, user_id, body.rating, body.body)
+
+
+@router.post(
+    "/reviews/{review_id}/reply",
+    response_model=ReviewOut,
+    summary="Reply to a review of you",
+)
+def reply(
+    review_id: str,
+    body: ReplyIn,
+    session: SessionDep,
+    user_id: str = Depends(get_current_user),
+) -> ReviewOut:
+    return service.reply_to_review(session, review_id, user_id, body.reply)
+
+
+@router.post("/practitioners/{practitioner_user_id}/follow", response_model=PractitionerStats)
+def follow(
+    practitioner_user_id: str,
+    session: SessionDep,
+    user_id: str = Depends(get_current_user),
+) -> PractitionerStats:
+    return service.follow(session, user_id, practitioner_user_id)
+
+
+@router.delete("/practitioners/{practitioner_user_id}/follow", response_model=PractitionerStats)
+def unfollow(
+    practitioner_user_id: str,
+    session: SessionDep,
+    user_id: str = Depends(get_current_user),
+) -> PractitionerStats:
+    return service.unfollow(session, user_id, practitioner_user_id)
+
+
+@router.get(
+    "/following",
+    response_model=list[str],
+    summary="Practitioner user ids this account follows",
+)
+def following(session: SessionDep, user_id: str = Depends(get_current_user)) -> list[str]:
+    return service.following_ids(session, user_id)
+
+
+@router.get(
+    "/practitioners/{practitioner_user_id}/stats",
+    response_model=PractitionerStats,
+    summary="Ratings, completed consultations and followers",
+    description=(
+        "Public: this is what someone reads before deciding to book. "
+        "`rating_average` is null rather than 0 when nobody has rated yet — a "
+        "new practitioner is unrated, not terrible."
+    ),
+)
+def practitioner_stats(
+    practitioner_user_id: str,
+    session: SessionDep,
+    viewer_id: str | None = Depends(get_optional_user),
+) -> PractitionerStats:
+    return service.stats_for(session, practitioner_user_id, viewer_id)
+
+
+@router.get(
+    "/practitioners/{practitioner_user_id}/reviews",
+    response_model=list[ReviewOut],
+    summary="Reviews written about a practitioner",
+)
+def practitioner_reviews(
+    practitioner_user_id: str, session: SessionDep, limit: int = 50
+) -> list[ReviewOut]:
+    return service.reviews_of(session, practitioner_user_id, limit)

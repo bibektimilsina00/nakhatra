@@ -26,6 +26,7 @@ from datetime import UTC, datetime
 from sqlmodel import Session, select
 
 from app.core.errors import AppError
+from app.modules.auth.models import User
 from app.modules.billing import service as billing
 from app.modules.consultations import metering, repository
 from app.modules.consultations.models import (
@@ -33,13 +34,17 @@ from app.modules.consultations.models import (
     Consultation,
     ConsultationEvent,
     ConsultationMessage,
+    Follow,
     GrantAccess,
+    Review,
 )
 from app.modules.consultations.schemas import (
     ConsultationOut,
     GrantOut,
     MessageOut,
+    PractitionerStats,
     RequestIn,
+    ReviewOut,
 )
 from app.modules.practitioners.models import PractitionerProfile, RateCard
 
@@ -129,6 +134,7 @@ def request(session: Session, seeker_id: str, body: RequestIn) -> ConsultationOu
         # what was agreed.
         rate_per_minute_minor=rate.per_minute_minor,
         currency=rate.currency,
+        scheduled_at=body.scheduled_at,
         created_at=now,
         updated_at=now,
     )
@@ -382,11 +388,68 @@ def _load(session: Session, consultation_id: str) -> Consultation:
 def get(session: Session, consultation_id: str, user_id: str) -> ConsultationOut:
     consultation = _load(session, consultation_id)
     _party(consultation, user_id)
-    return _out(consultation)
+    out = _out(consultation)
+    # The room shows the counterpart's name in its header and offers the rating
+    # form once — both need the same facts the inbox does.
+    if consultation.seeker_id == user_id:
+        profile = session.get(PractitionerProfile, consultation.profile_id)
+        if profile is not None:
+            out.counterpart_name = profile.display_name
+            out.counterpart_photo_url = profile.photo_url
+    else:
+        out.counterpart_name = _names_by_id(session, {consultation.seeker_id}).get(
+            consultation.seeker_id, ""
+        )
+    out.reviewed = repository.review_for(session, consultation.id) is not None
+    return out
 
 
 def mine(session: Session, user_id: str) -> list[ConsultationOut]:
-    return [_out(c) for c in repository.for_user(session, user_id)]
+    """Everything this account is a party to, shaped as an inbox.
+
+    Names and previews are resolved here in batch rather than by the client
+    fetching each counterpart, which would be one request per row.
+    """
+    rows = repository.for_user(session, user_id)
+    previews = repository.conversation_previews(session, [r.id for r in rows], user_id)
+
+    reviewed = repository.reviewed_ids(session, [r.id for r in rows])
+    profiles = _profiles_by_id(session, {r.profile_id for r in rows})
+    seeker_names = _names_by_id(session, {r.seeker_id for r in rows if r.seeker_id != user_id})
+
+    out: list[ConsultationOut] = []
+    for row in rows:
+        item = _out(row)
+        if row.seeker_id == user_id:
+            profile = profiles.get(row.profile_id)
+            item.counterpart_name = profile.display_name if profile else ""
+            item.counterpart_photo_url = profile.photo_url if profile else None
+        else:
+            item.counterpart_name = seeker_names.get(row.seeker_id, "")
+        body, at, unread = previews.get(row.id, ("", "", 0))
+        item.last_message = body
+        item.last_message_at = at or None
+        item.unread_count = unread
+        item.reviewed = row.id in reviewed
+        out.append(item)
+    return out
+
+
+def _profiles_by_id(session: Session, ids: set[str]) -> dict[str, PractitionerProfile]:
+    if not ids:
+        return {}
+    rows = session.exec(
+        select(PractitionerProfile).where(PractitionerProfile.id.in_(ids))  # type: ignore[attr-defined]
+    ).all()
+    return {row.id: row for row in rows}
+
+
+def _names_by_id(session: Session, ids: set[str]) -> dict[str, str]:
+    if not ids:
+        return {}
+    rows = session.exec(select(User).where(User.id.in_(ids))).all()  # type: ignore[attr-defined]
+    # Display name only. An email address is not a label to put in a list.
+    return {row.id: row.full_name for row in rows}
 
 
 def _out(row: Consultation) -> ConsultationOut:
@@ -399,6 +462,7 @@ def _out(row: Consultation) -> ConsultationOut:
         state=row.state,  # type: ignore[arg-type]
         rate_per_minute_minor=row.rate_per_minute_minor,
         currency=row.currency,
+        scheduled_at=row.scheduled_at,
         connected_at=row.connected_at,
         ended_at=row.ended_at,
         billed_seconds=row.billed_seconds,
@@ -424,4 +488,120 @@ def _grant_out(row: ChartGrant) -> GrantOut:
         practitioner_user_id=row.practitioner_user_id,
         granted_at=row.granted_at,
         revoked_at=row.revoked_at,
+    )
+
+
+# --- reviews ---
+
+
+def leave_review(
+    session: Session, consultation_id: str, seeker_id: str, rating: int, body: str
+) -> ReviewOut:
+    """Rate a consultation you had and paid for.
+
+    Both conditions are checked, and both matter. Ratings that anyone can write
+    are worthless; ratings on a session that never connected are a review of
+    nothing.
+    """
+    consultation = _load(session, consultation_id)
+    if consultation.seeker_id != seeker_id:
+        raise ForbiddenError("Only the seeker can review a consultation.")
+    if consultation.state != "ended":
+        raise ConsultationError("This consultation has not finished.")
+    if repository.review_for(session, consultation_id) is not None:
+        raise ConsultationError("This consultation has already been reviewed.")
+
+    row = Review(
+        id=_id(),
+        consultation_id=consultation_id,
+        practitioner_user_id=consultation.practitioner_user_id,
+        seeker_id=seeker_id,
+        rating=rating,
+        body=body.strip(),
+        created_at=_iso(),
+    )
+    repository.save(session, row)
+    return _review_out(session, row)
+
+
+def reply_to_review(
+    session: Session, review_id: str, practitioner_id: str, reply: str
+) -> ReviewOut:
+    """The practitioner's right of reply.
+
+    A one-sided review system is a complaints box.
+    """
+    row = repository.review(session, review_id)
+    if row is None or row.practitioner_user_id != practitioner_id:
+        raise NotFoundError("No such review.")
+    row.reply = reply.strip()
+    row.replied_at = _iso()
+    repository.save(session, row)
+    return _review_out(session, row)
+
+
+def reviews_of(session: Session, practitioner_user_id: str, limit: int = 20) -> list[ReviewOut]:
+    rows = repository.reviews_of(session, practitioner_user_id, limit)
+    return [_review_out(session, row) for row in rows]
+
+
+def stats_for(
+    session: Session, practitioner_user_id: str, viewer_id: str | None
+) -> PractitionerStats:
+    average, count = repository.rating_summary(session, practitioner_user_id)
+    return PractitionerStats(
+        rating_average=average,
+        rating_count=count,
+        consultations_completed=repository.completed_count(session, practitioner_user_id),
+        follower_count=repository.follower_count(session, practitioner_user_id),
+        is_following=(
+            repository.follow_row(session, viewer_id, practitioner_user_id) is not None
+            if viewer_id
+            else None
+        ),
+    )
+
+
+# --- follows ---
+
+
+def follow(session: Session, follower_id: str, practitioner_user_id: str) -> PractitionerStats:
+    if follower_id == practitioner_user_id:
+        raise ConsultationError("You cannot follow yourself.")
+    if repository.follow_row(session, follower_id, practitioner_user_id) is None:
+        repository.save(
+            session,
+            Follow(
+                id=_id(),
+                follower_id=follower_id,
+                practitioner_user_id=practitioner_user_id,
+                created_at=_iso(),
+            ),
+        )
+    return stats_for(session, practitioner_user_id, follower_id)
+
+
+def unfollow(session: Session, follower_id: str, practitioner_user_id: str) -> PractitionerStats:
+    row = repository.follow_row(session, follower_id, practitioner_user_id)
+    if row is not None:
+        session.delete(row)
+        session.commit()
+    return stats_for(session, practitioner_user_id, follower_id)
+
+
+def following_ids(session: Session, follower_id: str) -> list[str]:
+    return [f.practitioner_user_id for f in repository.following(session, follower_id)]
+
+
+def _review_out(session: Session, row: Review) -> ReviewOut:
+    author = session.exec(select(User).where(User.id == row.seeker_id)).first()
+    return ReviewOut(
+        id=row.id,
+        rating=row.rating,
+        body=row.body,
+        reply=row.reply,
+        # A display name, never an email. A review page should not be a way to
+        # harvest the addresses of everyone who consulted somebody.
+        author=author.full_name if author else "Someone",
+        created_at=row.created_at,
     )
