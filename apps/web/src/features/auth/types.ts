@@ -12,6 +12,8 @@ export type TokenResponse = components["schemas"]["TokenResponse"];
 export type LoginBody = components["schemas"]["UserLoginIn"];
 export type SignupBody = components["schemas"]["UserSignupIn"];
 export type GoogleSignInBody = components["schemas"]["GoogleSignInIn"];
+export type ProfileUpdateBody = components["schemas"]["ProfileUpdateIn"];
+export type PasswordChangeBody = components["schemas"]["PasswordChangeIn"];
 
 // Compile-time proof the request bodies still match the endpoints. A renamed
 // field becomes a build failure instead of a runtime 422.

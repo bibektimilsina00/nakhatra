@@ -6,7 +6,13 @@ import { useEffect, useSyncExternalStore } from "react";
 import * as authApi from "@/features/auth/api/auth.api";
 import type { LoginForm, SignupForm } from "@/features/auth/schema/auth-forms";
 import { useAuthStore } from "@/features/auth/store/auth-store";
-import type { GoogleSignInBody, TokenResponse, UserProfile } from "@/features/auth/types";
+import type {
+  GoogleSignInBody,
+  PasswordChangeBody,
+  ProfileUpdateBody,
+  TokenResponse,
+  UserProfile,
+} from "@/features/auth/types";
 import type { ApiError } from "@/lib/api/errors";
 import { identifyUser, resetUser, trackEvent } from "@/providers/posthog-provider";
 
@@ -135,4 +141,31 @@ export function useSessionSync() {
   }, [query.error, clearSession]);
 
   return { isValidating: query.isLoading };
+}
+
+/**
+ * Change your own display name.
+ *
+ * The store is updated from the response rather than optimistically: the name
+ * shown in the app bar is the one the server accepted, trimmed as it stored it.
+ */
+export function useUpdateProfile() {
+  const setSession = useAuthStore((s) => s.setSession);
+  const token = useAuthStore((s) => s.token);
+  const queryClient = useQueryClient();
+
+  return useMutation<UserProfile, ApiError, ProfileUpdateBody>({
+    mutationFn: authApi.updateProfile,
+    onSuccess: (user) => {
+      if (token) setSession(token, user);
+      queryClient.setQueryData(["auth", "me"], user);
+    },
+  });
+}
+
+/** Change your password. The session survives — the token does not encode it. */
+export function useChangePassword() {
+  return useMutation<UserProfile, ApiError, PasswordChangeBody>({
+    mutationFn: authApi.changePassword,
+  });
 }

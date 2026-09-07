@@ -14,6 +14,8 @@ from app.modules.auth import service
 from app.modules.auth.router_deps import get_current_user
 from app.modules.auth.schemas import (
     GoogleSignInIn,
+    PasswordChangeIn,
+    ProfileUpdateIn,
     TokenResponse,
     UserLoginIn,
     UserProfileOut,
@@ -51,3 +53,33 @@ def me(
     user_id: str = Depends(get_current_user),
 ) -> UserProfileOut:
     return service.get_profile(session, user_id)
+
+
+@router.patch(
+    "/me",
+    response_model=UserProfileOut,
+    summary="Change your own display name",
+)
+def update_me(
+    body: ProfileUpdateIn,
+    session: SessionDep,
+    user_id: str = Depends(get_current_user),
+) -> UserProfileOut:
+    return service.update_profile(session, user_id, body)
+
+
+@router.post(
+    "/password",
+    response_model=UserProfileOut,
+    summary="Change your password",
+    description=(
+        "The current password is required as well as the token: a session left "
+        "open on a borrowed machine should not be enough to lock its owner out."
+    ),
+)
+def change_password(
+    body: PasswordChangeIn,
+    session: SessionDep,
+    user_id: str = Depends(get_current_user),
+) -> UserProfileOut:
+    return service.change_password(session, user_id, body)

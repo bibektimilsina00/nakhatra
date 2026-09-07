@@ -42,6 +42,24 @@ class GoogleSignInIn(BaseModel):
         return self
 
 
+class ProfileUpdateIn(BaseModel):
+    """What a person may change about themselves.
+
+    Not the email: it is the login identity and the key Google sign-in matches
+    on, so changing it is an account-recovery flow rather than a text field.
+    Not the role either — an account cannot promote itself.
+    """
+
+    full_name: str = Field(..., min_length=1, max_length=100)
+
+
+class PasswordChangeIn(BaseModel):
+    #: Proof it is really them. A session token is not enough — a borrowed
+    #: laptop is exactly the case this stops.
+    current_password: str = Field(..., min_length=1)
+    new_password: str = Field(..., min_length=8, max_length=100)
+
+
 class UserProfileOut(BaseModel):
     id: str
     email: str

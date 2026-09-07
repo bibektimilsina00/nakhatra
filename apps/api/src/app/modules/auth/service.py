@@ -20,6 +20,8 @@ from app.modules.auth.jwt_handler import create_jwt_token
 from app.modules.auth.models import User
 from app.modules.auth.schemas import (
     GoogleSignInIn,
+    PasswordChangeIn,
+    ProfileUpdateIn,
     TokenResponse,
     UserLoginIn,
     UserProfileOut,
@@ -121,6 +123,33 @@ def get_profile(session: Session, user_id: str) -> UserProfileOut:
     row = repository.find_by_id(session, user_id)
     if not row:
         raise UserNotFoundError()
+    return _profile(row)
+
+
+def update_profile(session: Session, user_id: str, body: ProfileUpdateIn) -> UserProfileOut:
+    row = repository.find_by_id(session, user_id)
+    if not row:
+        raise UserNotFoundError()
+    row.full_name = body.full_name.strip()
+    session.add(row)
+    session.commit()
+    session.refresh(row)
+    return _profile(row)
+
+
+def change_password(session: Session, user_id: str, body: PasswordChangeIn) -> UserProfileOut:
+    """Replace the password, on proof of the current one.
+
+    An account created through Google has a random hash nobody knows, so this
+    refuses for them — which is correct: there is no password to change, and
+    they sign in the way they always have.
+    """
+    row = repository.find_by_id(session, user_id)
+    if not row:
+        raise UserNotFoundError()
+    if not hashing.verify_password(body.current_password, row.password_hash):
+        raise InvalidCredentialsError()
+    repository.update_password_hash(session, row, hashing.hash_password(body.new_password))
     return _profile(row)
 
 
