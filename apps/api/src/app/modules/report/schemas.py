@@ -38,6 +38,9 @@ class ReportResponse(BaseModel):
         description=(
             "'rule_engine' means the deterministic generator produced this — a "
             "complete report, not a degraded one. Surfaced so the client can tell "
-            "the two apart rather than guess."
+            "the two apart rather than guess. 'llm' covers both a freshly "
+            "generated reading and one replayed from storage; the two are the "
+            "same reading, and the streaming endpoint's `done` frame carries a "
+            "`cached` flag if you need to tell them apart."
         )
     )

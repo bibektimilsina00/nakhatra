@@ -78,9 +78,7 @@ def _context(chart: ChartOut, birth: BirthDetailsIn) -> dict[str, Any]:
     }
 
 
-def generate(
-    chart: ChartOut, birth: BirthDetailsIn, language: str = "en"
-) -> list[ReportSection]:
+def generate(chart: ChartOut, birth: BirthDetailsIn, language: str = "en") -> list[ReportSection]:
     """The seven sections, in the requested language."""
     c = _context(chart, birth)
     lang = language if language in _SECTIONS else "en"
@@ -132,9 +130,18 @@ _SECTIONS: dict[str, list[dict[str, Any]]] = {
                 "Belonging to the {gana} Gana and {nadi} Nadi, your temperament balances high intellect with moral responsibility, allowing you to project calm authority under pressure.",
             ],
             "reasoning": [
-                ("{lagna} Ascendant ({lagna_deg}°)", "Establishes core vitality, personal orientation, and physical demeanor."),
-                ("Moon in {moon_sign} ({nakshatra} Pada {pada})", "Determines internal emotional processing, mental habits, and subconscious drives."),
-                ("{gana} Gana · {tatva} Tatva", "Shapes social interactions, ethical boundaries, and elemental motivation."),
+                (
+                    "{lagna} Ascendant ({lagna_deg}°)",
+                    "Establishes core vitality, personal orientation, and physical demeanor.",
+                ),
+                (
+                    "Moon in {moon_sign} ({nakshatra} Pada {pada})",
+                    "Determines internal emotional processing, mental habits, and subconscious drives.",
+                ),
+                (
+                    "{gana} Gana · {tatva} Tatva",
+                    "Shapes social interactions, ethical boundaries, and elemental motivation.",
+                ),
             ],
         },
         {
@@ -149,8 +156,14 @@ _SECTIONS: dict[str, list[dict[str, Any]]] = {
                 "Cultivating structured routines and emotional detachment during high-stakes decisions will amplify your personal leadership effectiveness.",
             ],
             "reasoning": [
-                ("Ruler of House 1 ({lagna} Lord {h1_lord})", "Provides core willpower, resilience, and personal endurance."),
-                ("Planetary Placements: {planets_70}...", "Distribution of planetary energies across Kendras and Trikonas."),
+                (
+                    "Ruler of House 1 ({lagna} Lord {h1_lord})",
+                    "Provides core willpower, resilience, and personal endurance.",
+                ),
+                (
+                    "Planetary Placements: {planets_70}...",
+                    "Distribution of planetary energies across Kendras and Trikonas.",
+                ),
             ],
         },
         {
@@ -165,8 +178,14 @@ _SECTIONS: dict[str, list[dict[str, Any]]] = {
                 "Significant financial expansion and asset accumulation are highlighted during key Dasha transitions, particularly under {maha}.",
             ],
             "reasoning": [
-                ("10th House in {h10_sign} (Lord: {h10_lord})", "Directly governs professional status, public reputation, and executive ambition."),
-                ("11th House in {h11_sign} (Lord: {h11_lord})", "Influences income gains, professional networks, and recurring revenue streams."),
+                (
+                    "10th House in {h10_sign} (Lord: {h10_lord})",
+                    "Directly governs professional status, public reputation, and executive ambition.",
+                ),
+                (
+                    "11th House in {h11_sign} (Lord: {h11_lord})",
+                    "Influences income gains, professional networks, and recurring revenue streams.",
+                ),
             ],
         },
         {
@@ -181,8 +200,14 @@ _SECTIONS: dict[str, list[dict[str, Any]]] = {
                 "Relationship harmony flourishes when grounded in open communication, mutual respect, and shared long-term goals.",
             ],
             "reasoning": [
-                ("7th House in {h7_sign} (Lord: {h7_lord})", "Shapes partner character traits, marital bond, and relationship longevity."),
-                ("Venus in {venus_sign} (House {venus_house})", "Signifies romantic harmony, affection, and personal marital satisfaction."),
+                (
+                    "7th House in {h7_sign} (Lord: {h7_lord})",
+                    "Shapes partner character traits, marital bond, and relationship longevity.",
+                ),
+                (
+                    "Venus in {venus_sign} (House {venus_house})",
+                    "Signifies romantic harmony, affection, and personal marital satisfaction.",
+                ),
             ],
         },
         {
@@ -196,7 +221,10 @@ _SECTIONS: dict[str, list[dict[str, Any]]] = {
                 "Spiritually, you naturally lean toward introspective practices, meditation, and philosophy over ritualistic routine.",
             ],
             "reasoning": [
-                ("12th House in {h12_sign} (Lord: {h12_lord})", "Governs international affairs, foreign residence, and spiritual liberation (Moksha)."),
+                (
+                    "12th House in {h12_sign} (Lord: {h12_lord})",
+                    "Governs international affairs, foreign residence, and spiritual liberation (Moksha).",
+                ),
             ],
         },
         {
@@ -206,11 +234,16 @@ _SECTIONS: dict[str, list[dict[str, Any]]] = {
             "subtitle": "Vimshottari time lords shaping your current chapter",
             "summary": "Navigating {maha}{arrow}.",
             "content": [
-                "You are currently experiencing **{maha}** " + _with_antar("en") + ", directing focus toward strategic growth and foundational life progress.",
+                "You are currently experiencing **{maha}** "
+                + _with_antar("en")
+                + ", directing focus toward strategic growth and foundational life progress.",
                 "This period favors disciplined execution, expanding key professional skills, and solidifying long-term personal commitments.",
             ],
             "reasoning": [
-                ("{maha} ({maha_start} to {maha_end})", "Primary Vimshottari Mahadasha timeline calculated from your {nakshatra} Moon Nakshatra."),
+                (
+                    "{maha} ({maha_start} to {maha_end})",
+                    "Primary Vimshottari Mahadasha timeline calculated from your {nakshatra} Moon Nakshatra.",
+                ),
             ],
         },
         {
@@ -225,7 +258,10 @@ _SECTIONS: dict[str, list[dict[str, Any]]] = {
                 "🤝 **Charity & Service**: Supporting educational causes or feeding animals on Saturdays brings divine planetary grace.",
             ],
             "reasoning": [
-                ("Ascendant Ruler: {h1_lord}", "Strengthens core vitality, immunity, and overall life success."),
+                (
+                    "Ascendant Ruler: {h1_lord}",
+                    "Strengthens core vitality, immunity, and overall life success.",
+                ),
             ],
         },
     ],
@@ -242,8 +278,14 @@ _SECTIONS: dict[str, list[dict[str, Any]]] = {
                 "{gana} गण र {nadi} नाडीसँग सम्बन्धित भएकाले, तपाइँको स्वभावले उच्च बौद्धिकता र नैतिक जिम्मेवारीलाई सन्तुलनमा राख्छ, जसले दबाबमा पनि शान्त नेतृत्व लिन सहयोग पुर्याउँछ।",
             ],
             "reasoning": [
-                ("{lagna} लग्न ({lagna_deg}°)", "मुख्य जीवन ऊर्जा, व्यक्तिगत दृष्टिकोण र शारीरिक स्वास्थ निर्धारण गर्दछ।"),
-                ("चन्द्रमा {moon_sign} मा ({nakshatra} चरण {pada})", "आन्तरिक भावनात्मक प्रक्रिया र मानसिक बानीहरू निर्धारण गर्दछ।"),
+                (
+                    "{lagna} लग्न ({lagna_deg}°)",
+                    "मुख्य जीवन ऊर्जा, व्यक्तिगत दृष्टिकोण र शारीरिक स्वास्थ निर्धारण गर्दछ।",
+                ),
+                (
+                    "चन्द्रमा {moon_sign} मा ({nakshatra} चरण {pada})",
+                    "आन्तरिक भावनात्मक प्रक्रिया र मानसिक बानीहरू निर्धारण गर्दछ।",
+                ),
                 ("{gana} गण · {tatva} तत्व", "सामाजिक सम्बन्ध र नैतिक सीमाहरूलाई आकार दिन्छ।"),
             ],
         },
@@ -259,7 +301,10 @@ _SECTIONS: dict[str, list[dict[str, Any]]] = {
                 "संरचित दिनचर्या र महत्त्वपूर्ण निर्णयहरूको समयमा भावनात्मक सन्तुलन कायम राख्नाले तपाइँको नेतृत्व क्षमतालाई बढाउँछ।",
             ],
             "reasoning": [
-                ("प्रथम भावको स्वामी ({lagna} स्वामी {h1_lord})", "मुख्य इच्छाशक्ति, सहनशीलता र आत्मबल प्रदान गर्दछ।"),
+                (
+                    "प्रथम भावको स्वामी ({lagna} स्वामी {h1_lord})",
+                    "मुख्य इच्छाशक्ति, सहनशीलता र आत्मबल प्रदान गर्दछ।",
+                ),
                 ("ग्रह स्थिति: {planets_70}...", "केन्द्र र त्रिकोण भावमा ग्रहहरूको ऊर्जा वितरण।"),
             ],
         },
@@ -275,8 +320,14 @@ _SECTIONS: dict[str, list[dict[str, Any]]] = {
                 "मुख्य दशा परिवर्तनको समयमा, विशेष गरी {maha} को अन्तर्गत महत्त्वपूर्ण आर्थिक वृद्धि र सम्पत्ति सञ्चय हुनेछ।",
             ],
             "reasoning": [
-                ("१० औं भाव {h10_sign} (स्वामी: {h10_lord})", "पेशेवर प्रतिष्ठा, सामाजिक सम्मान र करियरको महत्वाकांक्षा निर्देशित गर्दछ।"),
-                ("११ औं भाव {h11_sign} (स्वामी: {h11_lord})", "आम्दानीको लाभ, व्यावसायिक सञ्जाल र नियमित धन प्रवाहलाई असर गर्छ।"),
+                (
+                    "१० औं भाव {h10_sign} (स्वामी: {h10_lord})",
+                    "पेशेवर प्रतिष्ठा, सामाजिक सम्मान र करियरको महत्वाकांक्षा निर्देशित गर्दछ।",
+                ),
+                (
+                    "११ औं भाव {h11_sign} (स्वामी: {h11_lord})",
+                    "आम्दानीको लाभ, व्यावसायिक सञ्जाल र नियमित धन प्रवाहलाई असर गर्छ।",
+                ),
             ],
         },
         {
@@ -291,8 +342,14 @@ _SECTIONS: dict[str, list[dict[str, Any]]] = {
                 "सम्बन्धमा मधुरता खुला संवाद, आपसी सम्मान र साझा दीर्घकालीन लक्ष्यहरूमा आधारित हुँदा मौलाउँछ।",
             ],
             "reasoning": [
-                ("७ औं भाव {h7_sign} (स्वामी: {h7_lord})", "जीवनसाथीको गुण, वैवाहिक सम्बन्ध र दिगोपन निर्धारण गर्दछ।"),
-                ("शुक्र {venus_sign} मा (भाव {venus_house})", "रोमान्टिक सद्भाव, स्नेह र व्यक्तिगत वैवाहिक सन्तुष्टिको प्रतीक हो।"),
+                (
+                    "७ औं भाव {h7_sign} (स्वामी: {h7_lord})",
+                    "जीवनसाथीको गुण, वैवाहिक सम्बन्ध र दिगोपन निर्धारण गर्दछ।",
+                ),
+                (
+                    "शुक्र {venus_sign} मा (भाव {venus_house})",
+                    "रोमान्टिक सद्भाव, स्नेह र व्यक्तिगत वैवाहिक सन्तुष्टिको प्रतीक हो।",
+                ),
             ],
         },
         {
@@ -306,7 +363,10 @@ _SECTIONS: dict[str, list[dict[str, Any]]] = {
                 "आध्यात्मिक रूपमा, तपाइँ परम्परागत कर्मकाण्डभन्दा ध्यान, आत्मचिन्तन र दर्शनतर्फ स्वाभाविक रूपमा आकर्षित हुनुहुन्छ।",
             ],
             "reasoning": [
-                ("१२ औं भाव {h12_sign} (स्वामी: {h12_lord})", "अन्तर्राष्ट्रिय सम्बन्ध, वैदेशिक निवास र आध्यात्मिक मोक्ष निर्देशित गर्दछ।"),
+                (
+                    "१२ औं भाव {h12_sign} (स्वामी: {h12_lord})",
+                    "अन्तर्राष्ट्रिय सम्बन्ध, वैदेशिक निवास र आध्यात्मिक मोक्ष निर्देशित गर्दछ।",
+                ),
             ],
         },
         {
@@ -316,11 +376,16 @@ _SECTIONS: dict[str, list[dict[str, Any]]] = {
             "subtitle": "विंशोत्तरी काल पुरुष जसले तपाइँको वर्तमान अध्याय निर्धारण गर्दैछन्",
             "summary": "{maha}{arrow} को यात्रामा।",
             "content": [
-                "तपाइँ हाल **{maha}** " + _with_antar("ne") + " को प्रभावमा हुनुहुन्छ, जसले तपाइँको ध्यान रणनीतिक प्रगति र जीवनको आधारभूत विकासतर्फ निर्देशित गर्दछ।",
+                "तपाइँ हाल **{maha}** "
+                + _with_antar("ne")
+                + " को प्रभावमा हुनुहुन्छ, जसले तपाइँको ध्यान रणनीतिक प्रगति र जीवनको आधारभूत विकासतर्फ निर्देशित गर्दछ।",
                 "यो अवधिले अनुशासित कार्य, प्रमुख व्यावसायिक कौशलको विस्तार र दीर्घकालीन प्रतिबद्धताहरूलाई सुदृढ बनाउन मद्दत गर्दछ।",
             ],
             "reasoning": [
-                ("{maha} ({maha_start} देखि {maha_end})", "तपाइँको {nakshatra} चन्द्र नक्षत्रबाट गणना गरिएको मुख्य विंशोत्तरी महादशा समयरेखा।"),
+                (
+                    "{maha} ({maha_start} देखि {maha_end})",
+                    "तपाइँको {nakshatra} चन्द्र नक्षत्रबाट गणना गरिएको मुख्य विंशोत्तरी महादशा समयरेखा।",
+                ),
             ],
         },
         {
@@ -335,7 +400,10 @@ _SECTIONS: dict[str, list[dict[str, Any]]] = {
                 "🤝 **दान तथा सेवा**: शनिबार शैक्षिक क्षेत्रमा सहयोग वा जनावरहरूलाई भोजन गराउनाले ग्रहहरूको शुभ फल प्राप्त हुन्छ।",
             ],
             "reasoning": [
-                ("लग्न स्वामी: {h1_lord}", "मुख्य जीवन शक्ति, प्रतिरोधक क्षमता र जीवनको सफलतालाई बलियो बनाउँछ।"),
+                (
+                    "लग्न स्वामी: {h1_lord}",
+                    "मुख्य जीवन शक्ति, प्रतिरोधक क्षमता र जीवनको सफलतालाई बलियो बनाउँछ।",
+                ),
             ],
         },
     ],
@@ -352,8 +420,14 @@ _SECTIONS: dict[str, list[dict[str, Any]]] = {
                 "{gana} गण और {nadi} नाड़ी से संबंधित होने के कारण, आपका स्वभाव उच्च बुद्धिमत्ता और नैतिक जिम्मेदारी को संतुलित करता है, जिससे आप दबाव में भी शांत नेतृत्व प्रदान करते हैं।",
             ],
             "reasoning": [
-                ("{lagna} लग्न ({lagna_deg}°)", "मूल जीवन ऊर्जा, व्यक्तिगत दृष्टिकोण और शारीरिक स्वास्थ्य निर्धारित करता है।"),
-                ("चंद्रमा {moon_sign} में ({nakshatra} चरण {pada})", "आंतरिक भावनात्मक प्रक्रिया और मानसिक आदतों को निर्धारित करता है।"),
+                (
+                    "{lagna} लग्न ({lagna_deg}°)",
+                    "मूल जीवन ऊर्जा, व्यक्तिगत दृष्टिकोण और शारीरिक स्वास्थ्य निर्धारित करता है।",
+                ),
+                (
+                    "चंद्रमा {moon_sign} में ({nakshatra} चरण {pada})",
+                    "आंतरिक भावनात्मक प्रक्रिया और मानसिक आदतों को निर्धारित करता है।",
+                ),
                 ("{gana} गण · {tatva} तत्व", "सामाजिक संबंधों और नैतिक सीमाओं को आकार देता है।"),
             ],
         },
@@ -369,7 +443,10 @@ _SECTIONS: dict[str, list[dict[str, Any]]] = {
                 "संरचित दिनचर्या और महत्वपूर्ण निर्णयों के दौरान भावनात्मक संतुलन बनाए रखने से आपकी नेतृत्व क्षमता में वृद्धि होगी।",
             ],
             "reasoning": [
-                ("प्रथम भाव का स्वामी ({lagna} स्वामी {h1_lord})", "मूल इच्छाशक्ति, सहनशीलता और आत्मबल प्रदान करता है।"),
+                (
+                    "प्रथम भाव का स्वामी ({lagna} स्वामी {h1_lord})",
+                    "मूल इच्छाशक्ति, सहनशीलता और आत्मबल प्रदान करता है।",
+                ),
                 ("ग्रह स्थिति: {planets_70}...", "केंद्र और त्रिकोण भावों में ग्रहों की ऊर्जा वितरण।"),
             ],
         },
@@ -385,8 +462,14 @@ _SECTIONS: dict[str, list[dict[str, Any]]] = {
                 "मुख्य दशा परिवर्तनों के दौरान, विशेष रूप से {maha} के तहत महत्वपूर्ण वित्तीय वृद्धि और संपत्ति संचय होगा।",
             ],
             "reasoning": [
-                ("10वां भाव {h10_sign} (स्वामी: {h10_lord})", "पेशेवर प्रतिष्ठा, सामाजिक सम्मान और करियर की महत्वाकांक्षा निर्देशित करता है।"),
-                ("11वां भाव {h11_sign} (स्वामी: {h11_lord})", "आय के लाभ, पेशेवर नेटवर्क और नियमित धन प्रवाह को प्रभावित करता है।"),
+                (
+                    "10वां भाव {h10_sign} (स्वामी: {h10_lord})",
+                    "पेशेवर प्रतिष्ठा, सामाजिक सम्मान और करियर की महत्वाकांक्षा निर्देशित करता है।",
+                ),
+                (
+                    "11वां भाव {h11_sign} (स्वामी: {h11_lord})",
+                    "आय के लाभ, पेशेवर नेटवर्क और नियमित धन प्रवाह को प्रभावित करता है।",
+                ),
             ],
         },
         {
@@ -401,8 +484,14 @@ _SECTIONS: dict[str, list[dict[str, Any]]] = {
                 "संबंधों में मधुरता खुले संवाद, आपसी सम्मान और साझा दीर्घकालिक लक्ष्यों पर आधारित होने पर फलती-फूलती है।",
             ],
             "reasoning": [
-                ("7वां भाव {h7_sign} (स्वामी: {h7_lord})", "जीवनसाथी के गुण, वैवाहिक संबंध और स्थायित्व निर्धारित करता है।"),
-                ("शुक्र {venus_sign} में (भाव {venus_house})", "रोमांटिक सद्भाव, स्नेह और व्यक्तिगत वैवाहिक संतुष्टि का प्रतीक है।"),
+                (
+                    "7वां भाव {h7_sign} (स्वामी: {h7_lord})",
+                    "जीवनसाथी के गुण, वैवाहिक संबंध और स्थायित्व निर्धारित करता है।",
+                ),
+                (
+                    "शुक्र {venus_sign} में (भाव {venus_house})",
+                    "रोमांटिक सद्भाव, स्नेह और व्यक्तिगत वैवाहिक संतुष्टि का प्रतीक है।",
+                ),
             ],
         },
         {
@@ -416,7 +505,10 @@ _SECTIONS: dict[str, list[dict[str, Any]]] = {
                 "आध्यात्मिक रूप से, आप पारंपरिक कर्मकांड के बजाय ध्यान, आत्मचिंतन और दर्शन की ओर स्वाभाविक रूप से आकर्षित होते हैं।",
             ],
             "reasoning": [
-                ("12वां भाव {h12_sign} (स्वामी: {h12_lord})", "अंतर्राष्ट्रीय मामलों, विदेशी निवास और आध्यात्मिक मोक्ष को निर्देशित करता है।"),
+                (
+                    "12वां भाव {h12_sign} (स्वामी: {h12_lord})",
+                    "अंतर्राष्ट्रीय मामलों, विदेशी निवास और आध्यात्मिक मोक्ष को निर्देशित करता है।",
+                ),
             ],
         },
         {
@@ -426,11 +518,16 @@ _SECTIONS: dict[str, list[dict[str, Any]]] = {
             "subtitle": "विंशोत्तरी समय स्वामी जो आपके वर्तमान अध्याय को आकार दे रहे हैं",
             "summary": "{maha}{arrow} की यात्रा में।",
             "content": [
-                "आप वर्तमान में **{maha}** " + _with_antar("hi") + " के प्रभाव में हैं, जो आपके ध्यान को रणनीतिक प्रगति और जीवन के बुनियादी विकास की ओर निर्देशित करता है।",
+                "आप वर्तमान में **{maha}** "
+                + _with_antar("hi")
+                + " के प्रभाव में हैं, जो आपके ध्यान को रणनीतिक प्रगति और जीवन के बुनियादी विकास की ओर निर्देशित करता है।",
                 "यह अवधि अनुशासित कार्य निष्पादन, प्रमुख पेशेवर कौशलों के विस्तार और दीर्घकालिक प्रतिबद्धताओं को मजबूत करने के लिए अनुकूल है।",
             ],
             "reasoning": [
-                ("{maha} ({maha_start} से {maha_end})", "आपके {nakshatra} चंद्र नक्षत्र से परिकलित मुख्य विंशोत्तरी महादशा समयरेखा।"),
+                (
+                    "{maha} ({maha_start} से {maha_end})",
+                    "आपके {nakshatra} चंद्र नक्षत्र से परिकलित मुख्य विंशोत्तरी महादशा समयरेखा।",
+                ),
             ],
         },
         {
@@ -445,7 +542,10 @@ _SECTIONS: dict[str, list[dict[str, Any]]] = {
                 "🤝 **दान एवं सेवा**: शनिवार को शैक्षणिक कार्यों में सहयोग या पशुओं को भोजन कराने से ग्रहों की कृपा प्राप्त होती है।",
             ],
             "reasoning": [
-                ("लग्न स्वामी: {h1_lord}", "मूल जीवन शक्ति, प्रतिरोधक क्षमता और जीवन की सफलता को मजबूत करता है।"),
+                (
+                    "लग्न स्वामी: {h1_lord}",
+                    "मूल जीवन शक्ति, प्रतिरोधक क्षमता और जीवन की सफलता को मजबूत करता है।",
+                ),
             ],
         },
     ],

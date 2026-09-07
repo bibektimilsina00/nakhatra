@@ -67,6 +67,10 @@ SessionDep = Annotated[Session, Depends(get_session)]
 def create_all() -> None:
     """Build the schema from the models. Tests only — production migrates."""
     import app.modules.auth.models  # noqa: F401
+    import app.modules.billing.models  # noqa: F401
+    import app.modules.consultations.models  # noqa: F401
+    import app.modules.practitioners.models  # noqa: F401
+    import app.modules.report.models  # noqa: F401
     import app.modules.vault.models  # noqa: F401
 
     SQLModel.metadata.create_all(get_engine())
