@@ -10,9 +10,7 @@ from app.modules.kundali.schemas import BirthDetailsIn, ChartOut
 
 # The Realtime and TTS voices OpenAI offers. Anything else is rejected rather
 # than silently swapped, so a typo in a client shows up as an error.
-Voice = Literal[
-    "onyx", "ash", "sage", "coral", "echo", "alloy", "shimmer", "ballad", "verse"
-]
+Voice = Literal["onyx", "ash", "sage", "coral", "echo", "alloy", "shimmer", "ballad", "verse"]
 Language = Literal["en", "ne", "hi"]
 
 

@@ -50,6 +50,13 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  // Keep the document's own language in step with the copy on it. A page of
+  // Nepali under `lang="en"` is read out by a screen reader in an English
+  // voice, and is indexed as English.
+  useEffect(() => {
+    document.documentElement.lang = language;
+  }, [language]);
+
   const value = {
     language,
     setLanguage,

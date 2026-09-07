@@ -3,9 +3,10 @@ import type { Metadata } from "next";
 import { CONTACT_EMAIL, LegalPage } from "@/features/marketing/components/legal-page";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy — Nakhatra",
+  title: "Privacy Policy",
   description:
     "What Nakhatra collects, why, who it is shared with, and how to have it deleted.",
+  alternates: { canonical: "/privacy" },
 };
 
 export default function PrivacyPage() {

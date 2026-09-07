@@ -108,8 +108,10 @@ def test_accepts_legacy_iana_aliases(client: TestClient) -> None:
     Pinned because "tighten the zone validation" looks like an improvement and
     would break real users.
     """
-    for alias, canonical in (("Asia/Katmandu", "Asia/Kathmandu"),
-                             ("Asia/Calcutta", "Asia/Kolkata")):
+    for alias, canonical in (
+        ("Asia/Katmandu", "Asia/Kathmandu"),
+        ("Asia/Calcutta", "Asia/Kolkata"),
+    ):
         aliased = client.post("/v1/kundali", json={**VALID, "tz_name": alias})
         assert aliased.status_code == 200, alias
         canonical_chart = client.post("/v1/kundali", json={**VALID, "tz_name": canonical})

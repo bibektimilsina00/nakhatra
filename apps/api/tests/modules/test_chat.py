@@ -126,9 +126,7 @@ def test_system_prompt_is_cacheable_and_chart_grounded(
 ) -> None:
     fake, seen = _fake_model('{"text": "ok"}')
     monkeypatch.setattr(service, "get_client", lambda: fake)
-    client.post(
-        "/v1/chat", json={"query": "Hi", "chart": chart, "birth": BIRTH}, headers=headers
-    )
+    client.post("/v1/chat", json={"query": "Hi", "chart": chart, "birth": BIRTH}, headers=headers)
 
     static, dynamic = seen["system"]
     assert static["cache_control"] == {"type": "ephemeral"}, "stable prefix must be cached"

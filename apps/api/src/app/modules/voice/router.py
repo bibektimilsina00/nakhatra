@@ -26,9 +26,7 @@ MAX_AUDIO_BYTES = 25 * 1024 * 1024
 
 
 @router.post("/tts", response_model=SpeakResponse, summary="Synthesise speech")
-async def speak(
-    body: SpeakRequest, user_id: str = Depends(get_current_user)
-) -> SpeakResponse:
+async def speak(body: SpeakRequest, user_id: str = Depends(get_current_user)) -> SpeakResponse:
     return await service.speak(body)
 
 
@@ -60,9 +58,7 @@ async def transcribe(
     audio_bytes = await file.read(MAX_AUDIO_BYTES + 1)
     if len(audio_bytes) > MAX_AUDIO_BYTES:
         raise service.VoiceUnavailableError("That recording is too long to transcribe.")
-    return await service.transcribe(
-        audio_bytes, file.filename or "speech.webm", language or None
-    )
+    return await service.transcribe(audio_bytes, file.filename or "speech.webm", language or None)
 
 
 @router.post(

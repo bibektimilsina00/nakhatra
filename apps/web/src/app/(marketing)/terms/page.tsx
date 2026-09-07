@@ -3,9 +3,10 @@ import type { Metadata } from "next";
 import { CONTACT_EMAIL, LegalPage } from "@/features/marketing/components/legal-page";
 
 export const metadata: Metadata = {
-  title: "Terms of Service — Nakhatra",
+  title: "Terms of Service",
   description:
     "The terms you agree to when using Nakhatra, including what the readings are and are not.",
+  alternates: { canonical: "/terms" },
 };
 
 export default function TermsPage() {

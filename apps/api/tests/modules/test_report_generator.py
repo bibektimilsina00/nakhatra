@@ -65,9 +65,9 @@ def test_unknown_language_falls_back_to_english() -> None:
     "value,expected",
     # Verified against `node -e "v.toFixed(2)"`, not assumed.
     [
-        (0.125, "0.13"),   # exact in binary; format() gives 0.12, toFixed gives 0.13
-        (1.005, "1.00"),   # really 1.00499…, so both languages round down
-        (2.675, "2.67"),   # really 2.67499…
+        (0.125, "0.13"),  # exact in binary; format() gives 0.12, toFixed gives 0.13
+        (1.005, "1.00"),  # really 1.00499…, so both languages round down
+        (2.675, "2.67"),  # really 2.67499…
         (27.735, "27.73"),
         (11.5, "11.50"),
         (0.0, "0.00"),

@@ -32,9 +32,7 @@ def create_kundali(session: Session, kundali: SavedKundali) -> SavedKundali:
 
 def delete_kundali(session: Session, kundali_id: str, user_id: str) -> int:
     row = session.exec(
-        select(SavedKundali).where(
-            SavedKundali.id == kundali_id, SavedKundali.user_id == user_id
-        )
+        select(SavedKundali).where(SavedKundali.id == kundali_id, SavedKundali.user_id == user_id)
     ).first()
     if row is None:
         return 0
@@ -58,9 +56,7 @@ def list_sessions(session: Session, user_id: str) -> list[ChatSession]:
 
 def find_session(session: Session, session_id: str, user_id: str) -> ChatSession | None:
     return session.exec(
-        select(ChatSession).where(
-            ChatSession.id == session_id, ChatSession.user_id == user_id
-        )
+        select(ChatSession).where(ChatSession.id == session_id, ChatSession.user_id == user_id)
     ).first()
 
 
