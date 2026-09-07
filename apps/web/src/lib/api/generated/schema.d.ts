@@ -900,6 +900,9 @@ export interface components {
          * ApplicationOut
          * @description What an applicant sees about their own application.
          *
+         *     Carries back everything they submitted, so the waiting page can show the
+         *     profile they made rather than a single line saying it is with a reviewer.
+         *
          *     `reviewer_note` is deliberately absent. It is the reviewer's working
          *     notes — "references did not respond", "second opinion needed" — and
          *     `decision_note` is the message written to be read.
@@ -915,18 +918,28 @@ export interface components {
             decision_note: string;
             /** Full Name */
             full_name: string;
+            /** Headline */
+            headline: string;
             /** Id */
             id: string;
+            /** Languages */
+            languages: string[];
+            /** Photo Url */
+            photo_url: string | null;
             /**
              * Practice Type
              * @enum {string}
              */
             practice_type: "astrologer" | "pandit";
+            /** Practice Types */
+            practice_types: ("astrologer" | "pandit")[];
             /**
              * State
              * @enum {string}
              */
             state: "submitted" | "in_review" | "approved" | "rejected" | "withdrawn";
+            /** Traditions */
+            traditions: string[];
             /** Updated At */
             updated_at: string;
             /** Years Experience */
@@ -949,17 +962,23 @@ export interface components {
             decision_note: string;
             /** Full Name */
             full_name: string;
+            /** Headline */
+            headline: string;
             /** Id */
             id: string;
             /** Languages */
             languages: string[];
             /** Phone */
             phone: string;
+            /** Photo Url */
+            photo_url: string | null;
             /**
              * Practice Type
              * @enum {string}
              */
             practice_type: "astrologer" | "pandit";
+            /** Practice Types */
+            practice_types: ("astrologer" | "pandit")[];
             /** Reviewed At */
             reviewed_at: string | null;
             /** Reviewed By */
@@ -2140,6 +2159,11 @@ export interface components {
             full_name: string;
             /** Id */
             id: string;
+            /**
+             * Role
+             * @default seeker
+             */
+            role: string;
         };
         /** UserSignupIn */
         UserSignupIn: {

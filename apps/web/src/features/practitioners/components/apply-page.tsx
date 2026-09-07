@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import Link from "next/link";
 import { Camera, CheckCircle2, Clock, XCircle } from "lucide-react";
 
 import { AppShell } from "@/features/dashboard/components/app-shell";
@@ -88,7 +89,7 @@ export function ApplyPage() {
           <h1 className="mt-3 text-[26px] font-bold leading-tight text-paper sm:text-[30px]">
             {t.practApplyTitle}
           </h1>
-          <StatusCard state={application.state} note={application.decision_note} />
+          <SubmittedProfile application={application} />
         </main>
       </AppShell>
     );
@@ -276,23 +277,136 @@ export function ApplyPage() {
   );
 }
 
-function StatusCard({ state, note }: { state: string; note: string }) {
+
+/**
+ * What you submitted, while it is being read.
+ *
+ * The page used to be one sentence — "your application is with a reviewer" —
+ * in an otherwise empty screen, which tells you nothing and leaves you unable
+ * to check what you actually sent. Showing the profile back does both jobs:
+ * it fills the page with the thing the page is about, and it lets someone
+ * notice they misspelled their own name.
+ */
+function SubmittedProfile({
+  application,
+}: {
+  application: {
+    state: string;
+    decision_note: string;
+    full_name: string;
+    headline: string;
+    photo_url: string | null;
+    city: string;
+    country: string;
+    years_experience: number;
+    practice_types: string[];
+    languages: string[];
+    traditions: string[];
+    created_at: string;
+  };
+}) {
   const { t } = useTranslation();
+
   const shown = {
-    submitted: { icon: Clock, label: t.practApplyPending, tone: "text-gold" },
-    in_review: { icon: Clock, label: t.practApplyPending, tone: "text-gold" },
-    approved: { icon: CheckCircle2, label: t.practApplyApproved, tone: "text-emerald-400" },
-    rejected: { icon: XCircle, label: t.practApplyRejected, tone: "text-rose-300" },
-  }[state] ?? { icon: Clock, label: t.practApplyPending, tone: "text-gold" };
+    submitted: { icon: Clock, label: t.practApplyPending, tone: "text-gold", ring: "border-gold/30" },
+    in_review: { icon: Clock, label: t.practApplyPending, tone: "text-gold", ring: "border-gold/30" },
+    approved: {
+      icon: CheckCircle2,
+      label: t.practApplyApproved,
+      tone: "text-emerald-400",
+      ring: "border-emerald-400/30",
+    },
+    rejected: {
+      icon: XCircle,
+      label: t.practApplyRejected,
+      tone: "text-rose-300",
+      ring: "border-rose-400/30",
+    },
+  }[application.state] ?? {
+    icon: Clock,
+    label: t.practApplyPending,
+    tone: "text-gold",
+    ring: "border-gold/30",
+  };
   const Icon = shown.icon;
+  const pending = application.state === "submitted" || application.state === "in_review";
+
+  const facets = [
+    ...application.practice_types,
+    ...application.traditions,
+    ...application.languages,
+  ];
 
   return (
-    <div className="mt-8 rounded-[12px] border border-white/[0.09] bg-card p-6">
-      <p className={`flex items-center gap-2.5 text-[14.5px] font-medium ${shown.tone}`}>
-        <Icon className="size-5 shrink-0" />
-        {shown.label}
-      </p>
-      {note && <p className="mt-3 text-[13px] leading-[1.75] text-muted">{note}</p>}
-    </div>
+    <>
+      <div className={`mt-8 flex items-start gap-3 rounded-[12px] border bg-card px-4 py-3.5 ${shown.ring}`}>
+        <Icon className={`mt-0.5 size-5 shrink-0 ${shown.tone}`} />
+        <div className="min-w-0">
+          <p className={`text-[14px] font-medium ${shown.tone}`}>{shown.label}</p>
+          {application.decision_note ? (
+            <p className="mt-1 text-[13px] leading-[1.7] text-muted">{application.decision_note}</p>
+          ) : (
+            pending && (
+              <p className="mt-1 text-[12.5px] leading-[1.7] text-faint">{t.practPendingNote}</p>
+            )
+          )}
+        </div>
+      </div>
+
+      {application.state === "approved" && (
+        <Link
+          href="/practitioners/me"
+          className="mt-4 inline-flex items-center gap-2 rounded-[8px] bg-gold px-4 py-2.5 text-[13.5px] font-bold text-ink transition-colors hover:bg-gold2"
+        >
+          {t.practDesk}
+        </Link>
+      )}
+
+      <section className="mt-8">
+        <h2 className="text-[11px] uppercase tracking-[0.14em] text-faint">{t.practSubmitted}</h2>
+
+        <div className="mt-4 rounded-[12px] border border-white/[0.09] bg-card p-5">
+          <div className="flex items-start gap-4">
+            <span className="grid size-16 shrink-0 place-items-center overflow-hidden rounded-full border border-white/[0.09] bg-ink">
+              {application.photo_url ? (
+                // eslint-disable-next-line @next/next/no-img-element -- served
+                // by our own endpoint; next/image adds a loader for nothing
+                <img src={application.photo_url} alt="" className="size-full object-cover" />
+              ) : (
+                <span className="text-[18px] font-bold text-gold">
+                  {application.full_name.charAt(0).toUpperCase()}
+                </span>
+              )}
+            </span>
+            <div className="min-w-0 flex-1">
+              <p className="text-[16px] font-semibold text-paper">{application.full_name}</p>
+              {application.headline && (
+                <p className="mt-0.5 text-[12.5px] text-muted">{application.headline}</p>
+              )}
+              <p className="mt-1 text-[11.5px] text-faint">
+                {[application.city || application.country,
+                  application.years_experience > 0 &&
+                    `${application.years_experience} ${t.dashYears}`]
+                  .filter(Boolean)
+                  .join(" · ")}
+              </p>
+            </div>
+          </div>
+
+          {facets.length > 0 && (
+            <div className="mt-4 flex flex-wrap gap-1.5 border-t border-white/[0.07] pt-4">
+              {facets.map((tag) => (
+                <span
+                  key={tag}
+                  className="rounded-[6px] border border-white/[0.10] px-2 py-0.5 text-[10.5px] capitalize text-muted"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
+    </>
   );
 }

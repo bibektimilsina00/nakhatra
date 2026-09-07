@@ -183,6 +183,9 @@ export interface TranslationCatalog {
   practLive: string;
   practOffline: string;
   practNoRates: string;
+  practPendingNote: string;
+  practSubmitted: string;
+  practReviewLink: string;
   practRegister: string;
   practPhoto: string;
   practPhotoNote: string;
@@ -546,6 +549,9 @@ export const translations: Record<Language, TranslationCatalog> = {
     practLive: "Listed",
     practOffline: "Not listed",
     practNoRates: "Set a price before anyone can consult you.",
+    practPendingNote: "Usually within a day or two. We will tell you either way, and you can keep using Nakhatra as normal meanwhile.",
+    practSubmitted: "What you submitted",
+    practReviewLink: "Review applications",
     practRegister: "Register as a jyotish",
     practPhoto: "Profile photo",
     practPhotoNote: "A clear photo of your face. JPG, PNG or WebP, up to 4MB.",
@@ -907,6 +913,9 @@ export const translations: Record<Language, TranslationCatalog> = {
     practLive: "सूचीबद्ध",
     practOffline: "सूचीबद्ध छैन",
     practNoRates: "कसैले परामर्श लिनुअघि मूल्य राख्नुहोस्।",
+    practPendingNote: "सामान्यतया एक-दुई दिनभित्र। जे भए पनि हामी जानकारी दिनेछौं, र त्यसबीच नखत्र सामान्य रूपमै चलाउन सक्नुहुन्छ।",
+    practSubmitted: "तपाईंले पठाउनुभएको",
+    practReviewLink: "आवेदन हेर्नुहोस्",
     practRegister: "ज्योतिषीको रूपमा दर्ता",
     practPhoto: "प्रोफाइल फोटो",
     practPhotoNote: "अनुहार स्पष्ट देखिने फोटो। JPG, PNG वा WebP, ४MB सम्म।",
@@ -1268,6 +1277,9 @@ export const translations: Record<Language, TranslationCatalog> = {
     practLive: "सूचीबद्ध",
     practOffline: "सूचीबद्ध नहीं",
     practNoRates: "परामर्श से पहले एक मूल्य निर्धारित करें।",
+    practPendingNote: "आमतौर पर एक-दो दिन में। परिणाम चाहे जो हो, हम बताएँगे, और तब तक आप नखत्र सामान्य रूप से चला सकते हैं।",
+    practSubmitted: "आपने जो भेजा",
+    practReviewLink: "आवेदन देखें",
     practRegister: "ज्योतिषी के रूप में पंजीकरण",
     practPhoto: "प्रोफ़ाइल फ़ोटो",
     practPhotoNote: "चेहरा साफ़ दिखने वाली फ़ोटो। JPG, PNG या WebP, 4MB तक।",

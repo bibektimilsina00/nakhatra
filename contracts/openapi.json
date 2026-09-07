@@ -108,7 +108,7 @@
         "type": "object"
       },
       "ApplicationOut": {
-        "description": "What an applicant sees about their own application.\n\n`reviewer_note` is deliberately absent. It is the reviewer's working\nnotes \u2014 \"references did not respond\", \"second opinion needed\" \u2014 and\n`decision_note` is the message written to be read.",
+        "description": "What an applicant sees about their own application.\n\nCarries back everything they submitted, so the waiting page can show the\nprofile they made rather than a single line saying it is with a reviewer.\n\n`reviewer_note` is deliberately absent. It is the reviewer's working\nnotes \u2014 \"references did not respond\", \"second opinion needed\" \u2014 and\n`decision_note` is the message written to be read.",
         "properties": {
           "city": {
             "title": "City",
@@ -130,9 +130,31 @@
             "title": "Full Name",
             "type": "string"
           },
+          "headline": {
+            "title": "Headline",
+            "type": "string"
+          },
           "id": {
             "title": "Id",
             "type": "string"
+          },
+          "languages": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Languages",
+            "type": "array"
+          },
+          "photo_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Photo Url"
           },
           "practice_type": {
             "enum": [
@@ -141,6 +163,17 @@
             ],
             "title": "Practice Type",
             "type": "string"
+          },
+          "practice_types": {
+            "items": {
+              "enum": [
+                "astrologer",
+                "pandit"
+              ],
+              "type": "string"
+            },
+            "title": "Practice Types",
+            "type": "array"
           },
           "state": {
             "enum": [
@@ -152,6 +185,13 @@
             ],
             "title": "State",
             "type": "string"
+          },
+          "traditions": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Traditions",
+            "type": "array"
           },
           "updated_at": {
             "title": "Updated At",
@@ -165,10 +205,15 @@
         "required": [
           "id",
           "practice_type",
+          "practice_types",
           "full_name",
+          "headline",
+          "photo_url",
           "city",
           "country",
           "years_experience",
+          "languages",
+          "traditions",
           "state",
           "decision_note",
           "created_at",
@@ -204,6 +249,10 @@
             "title": "Full Name",
             "type": "string"
           },
+          "headline": {
+            "title": "Headline",
+            "type": "string"
+          },
           "id": {
             "title": "Id",
             "type": "string"
@@ -219,6 +268,17 @@
             "title": "Phone",
             "type": "string"
           },
+          "photo_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Photo Url"
+          },
           "practice_type": {
             "enum": [
               "astrologer",
@@ -226,6 +286,17 @@
             ],
             "title": "Practice Type",
             "type": "string"
+          },
+          "practice_types": {
+            "items": {
+              "enum": [
+                "astrologer",
+                "pandit"
+              ],
+              "type": "string"
+            },
+            "title": "Practice Types",
+            "type": "array"
           },
           "reviewed_at": {
             "anyOf": [
@@ -291,10 +362,15 @@
         "required": [
           "id",
           "practice_type",
+          "practice_types",
           "full_name",
+          "headline",
+          "photo_url",
           "city",
           "country",
           "years_experience",
+          "languages",
+          "traditions",
           "state",
           "decision_note",
           "created_at",
@@ -303,8 +379,6 @@
           "phone",
           "credentials",
           "sample_reading",
-          "languages",
-          "traditions",
           "reviewer_note",
           "reviewed_by",
           "reviewed_at"
@@ -2946,6 +3020,11 @@
           },
           "id": {
             "title": "Id",
+            "type": "string"
+          },
+          "role": {
+            "default": "seeker",
+            "title": "Role",
             "type": "string"
           }
         },

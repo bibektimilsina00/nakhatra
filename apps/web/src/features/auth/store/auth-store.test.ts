@@ -4,7 +4,7 @@ import { authHeaders, useAuthStore } from "./auth-store";
 const USER = {
   id: "usr_1",
   email: "a@b.c",
-  full_name: "A B",
+  full_name: "A B", role: "seeker",
   created_at: "2026-01-01T00:00:00Z",
 };
 

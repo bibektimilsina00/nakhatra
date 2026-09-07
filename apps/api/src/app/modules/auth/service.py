@@ -128,7 +128,13 @@ def _profile(row: User) -> UserProfileOut:
     """Table row to wire shape. `password_hash` is not in `UserProfileOut`, and
     mapping explicitly is what keeps it that way."""
     return UserProfileOut(
-        id=row.id, email=row.email, full_name=row.full_name, created_at=row.created_at
+        id=row.id,
+        email=row.email,
+        full_name=row.full_name,
+        # NULL on every row written before the column existed, and on any row a
+        # client that predates it writes. Both mean an ordinary user.
+        role=row.role or "seeker",
+        created_at=row.created_at,
     )
 
 

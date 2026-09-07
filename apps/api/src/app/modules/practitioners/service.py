@@ -338,7 +338,15 @@ def _application_out(row: PractitionerApplication) -> ApplicationOut:
     return ApplicationOut(
         id=row.id,
         practice_type=row.practice_type,  # type: ignore[arg-type]
+        # Rows written before practices were a list have none, so the single
+        # type stands in.
+        practice_types=[v for v in row.practices.split(",") if v]  # type: ignore[arg-type]
+        or [row.practice_type],  # type: ignore[list-item]
         full_name=row.full_name,
+        headline=row.headline,
+        photo_url=row.photo_url,
+        languages=[v for v in row.languages.split(",") if v],
+        traditions=[v for v in row.traditions.split(",") if v],
         city=row.city,
         country=row.country,
         years_experience=row.years_experience,
@@ -356,8 +364,6 @@ def _review_out(row: PractitionerApplication) -> ApplicationReviewOut:
         phone=row.phone,
         credentials=row.credentials,
         sample_reading=row.sample_reading,
-        languages=[v for v in row.languages.split(",") if v],
-        traditions=[v for v in row.traditions.split(",") if v],
         reviewer_note=row.reviewer_note,
         reviewed_by=row.reviewed_by,
         reviewed_at=row.reviewed_at,

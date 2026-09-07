@@ -2,7 +2,17 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { Bell, CheckCheck, LogOut, Menu, Search, Settings, Sparkles, UserRound } from "lucide-react";
+import {
+  Bell,
+  CheckCheck,
+  LogOut,
+  Menu,
+  Search,
+  Settings,
+  ShieldCheck,
+  Sparkles,
+  UserRound,
+} from "lucide-react";
 
 import { LanguageMenu } from "@/components/ui/language-menu";
 import { useLogout } from "@/features/auth/hooks/use-auth";
@@ -256,6 +266,20 @@ export function AppNav({
                       ? t.practApplicationStatus
                       : t.practBecome}
                 </Link>
+
+                {/* Offered only to an account that can actually open it. The
+                    route itself is still guarded server-side — hiding a link is
+                    not a permission. */}
+                {user.role === "admin" && (
+                  <Link
+                    href="/admin/practitioners"
+                    onClick={close}
+                    className="flex items-center gap-2.5 rounded-[6px] px-2.5 py-2 text-[13px] text-muted transition-colors hover:bg-white/[0.05] hover:text-paper"
+                  >
+                    <ShieldCheck className="size-3.5" />
+                    {t.practReviewLink}
+                  </Link>
+                )}
 
                 <div className="my-1 h-px bg-white/[0.08]" />
 

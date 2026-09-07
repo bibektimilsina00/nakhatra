@@ -50,6 +50,9 @@ class ApplicationIn(BaseModel):
 class ApplicationOut(BaseModel):
     """What an applicant sees about their own application.
 
+    Carries back everything they submitted, so the waiting page can show the
+    profile they made rather than a single line saying it is with a reviewer.
+
     `reviewer_note` is deliberately absent. It is the reviewer's working
     notes — "references did not respond", "second opinion needed" — and
     `decision_note` is the message written to be read.
@@ -57,10 +60,15 @@ class ApplicationOut(BaseModel):
 
     id: str
     practice_type: PracticeType
+    practice_types: list[PracticeType]
     full_name: str
+    headline: str
+    photo_url: str | None
     city: str
     country: str
     years_experience: int
+    languages: list[str]
+    traditions: list[str]
     state: ApplicationState
     decision_note: str
     created_at: str
@@ -72,10 +80,9 @@ class ApplicationReviewOut(ApplicationOut):
 
     user_id: str
     phone: str
+    #: Retained so nothing already submitted is lost; no longer asked for.
     credentials: str
     sample_reading: str
-    languages: list[str]
-    traditions: list[str]
     reviewer_note: str
     reviewed_by: str | None
     reviewed_at: str | None

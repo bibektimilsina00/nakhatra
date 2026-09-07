@@ -27,16 +27,12 @@ __all__ = ["router", "get_current_user"]
 
 
 @router.post("/signup", response_model=TokenResponse, summary="Create an account")
-def signup(
-    body: UserSignupIn, session: SessionDep
-) -> TokenResponse:
+def signup(body: UserSignupIn, session: SessionDep) -> TokenResponse:
     return service.signup(session, body)
 
 
 @router.post("/login", response_model=TokenResponse, summary="Exchange credentials for a token")
-def login(
-    body: UserLoginIn, session: SessionDep
-) -> TokenResponse:
+def login(body: UserLoginIn, session: SessionDep) -> TokenResponse:
     return service.login(session, body)
 
 

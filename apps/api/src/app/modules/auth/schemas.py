@@ -46,6 +46,11 @@ class UserProfileOut(BaseModel):
     id: str
     email: str
     full_name: str
+    #: `seeker` | `practitioner` | `admin`. Additive, and never trusted for
+    #: authorisation — every protected route checks the role server-side. This
+    #: exists so the interface can offer the review queue to someone who can
+    #: actually open it, rather than to everyone.
+    role: str = "seeker"
     # Typed as a datetime rather than the column's TEXT. ISO-8601 serialises
     # identically, so this is not a wire change — but it survives Phase 9 turning
     # the column into a real timestamp.
