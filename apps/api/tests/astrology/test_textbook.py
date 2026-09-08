@@ -249,11 +249,8 @@ def test_a_1975_nepal_birth_matches_the_kundali_cast_for_it():
         "resolved_by_topocentric"
     ]
     assert chart.panchang.nakshatra_pada == case["expect"]["nakshatra_pada"]
-    assert chart.dasha.birth_lord == "Saturn", "Pushya's lord heads the dasha"
     # The whole avakhada hangs off the nakshatra, so all five of these were
     # wrong before the Moon was made topocentric.
-    got_av = {k: getattr(chart.avakhada, k) for k in case["expect_avakhada"]}
-    assert got_av == case["expect_avakhada"], case["avakhada_quote"]
     frame = {k: v for k, v in case["expect"].items() if not k.startswith("nakshatra")}
     got = {k: getattr(chart.panchang, k) for k in frame}
     assert got == frame, case["source"]
@@ -341,3 +338,59 @@ def test_the_2002_kapilvastu_kundali():
     assert got == case["expect"], case["source"]
     got_av = {k: getattr(chart.avakhada, k) for k in case["expect_avakhada"]}
     assert got_av == case["expect_avakhada"], case["source"]
+
+
+def test_the_moon_convention_is_recorded_and_measured():
+    """The choice between a geocentric and a topocentric Moon, with its score.
+
+    Kept as a test rather than a comment so the numbers stay attached to the
+    decision. If someone reaches for topocentric again, this is what they have
+    to argue with.
+    """
+    case = BOOK["moon_convention"]
+    assert case["decision"] == "geocentric", case["why"]
+
+    from app.astrology_core import ephemeris
+
+    # 2004-08-17 07:40 Parbat: the chart whose five statements pin a 10-arcmin
+    # window, and the tightest evidence in the set.
+    jd = ephemeris.julian_day(datetime(2004, 8, 17, 7, 40), "Asia/Kathmandu")
+    moon = ephemeris.planet_positions(jd)["Moon"].longitude
+    lo, hi = 132.586, 132.748
+    assert abs(moon - lo) * 60 < 15, case["the_2004_chart_pins_it"]
+    assert moon < hi, "a Moon past this window is topocentric, and it is wrong here"
+
+
+def test_boundary_warnings_catch_every_disagreement_with_a_guru():
+    """The honest answer to a Moon we cannot reproduce.
+
+    Each value a guru named differently is flagged here as being within an
+    hour of changing — and in each case he names the value we say is *next*,
+    because his almanac's Moon had already crossed. The 2002 chart flags
+    nothing, and its disagreement is about the recorded birth time rather
+    than about the Moon.
+    """
+    from app.astrology_core import build_chart
+    from app.astrology_core.models import BirthMoment
+
+    case = BOOK["boundary_warnings"]
+    places = {
+        "1975-11-23": ("20:18", 28.2227, 83.6826),
+        "2004-08-17": ("07:40", 28.2227, 83.6826),
+        "2002-01-11": ("19:30", 27.4823, 83.2778),
+    }
+    for day, expected in case["expect"].items():
+        time, lat, lon = places[day]
+        chart = build_chart(
+            BirthMoment(
+                local_datetime=datetime.fromisoformat(f"{day}T{time}"),
+                tz_name="Asia/Kathmandu",
+                latitude=lat,
+                longitude=lon,
+                time_accuracy="exact",
+            )
+        )
+        got = [[w.element, w.current, w.upcoming] for w in chart.panchang.near_boundary]
+        assert got == expected, f"{day}: {case['why']}"
+        for w in chart.panchang.near_boundary:
+            assert 0 < w.minutes <= 60, "a flagged boundary must be within the hour"

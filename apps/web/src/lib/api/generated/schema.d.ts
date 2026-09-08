@@ -1241,6 +1241,35 @@ export interface components {
             /** File */
             file: string;
         };
+        /**
+         * BoundaryWarningOut
+         * @description A panchanga element close to changing.
+         *
+         *     Present because a traditional Nepali almanac's Moon runs 10-20 arcminutes
+         *     ahead of a modern ephemeris, which matters only near a boundary — and
+         *     there it decides the nakshatra, and with it the dasha lord and the name
+         *     syllable. A reading that says "Magha" flatly when Purva Phalguni is nine
+         *     minutes away is claiming more than the arithmetic supports.
+         */
+        BoundaryWarningOut: {
+            /** Current */
+            current: string;
+            /**
+             * Element
+             * @description tithi | karana | nakshatra | yoga
+             */
+            element: string;
+            /**
+             * Minutes
+             * @description Minutes from the birth moment until it changes.
+             */
+            minutes: number;
+            /**
+             * Upcoming
+             * @description What it becomes when it changes.
+             */
+            upcoming: string;
+        };
         /** ChartOut */
         ChartOut: {
             avakhada: components["schemas"]["AvakhadaOut"];
@@ -1787,6 +1816,11 @@ export interface components {
             nakshatra_lord: string;
             /** Nakshatra Pada */
             nakshatra_pada: number;
+            /**
+             * Near Boundary
+             * @description Elements within an hour of changing. Usually empty; when it is not, a traditional panchanga may well name the upcoming value instead.
+             */
+            near_boundary?: components["schemas"]["BoundaryWarningOut"][];
             /**
              * Paksha
              * @description Shukla (waxing) or Krishna (waning)

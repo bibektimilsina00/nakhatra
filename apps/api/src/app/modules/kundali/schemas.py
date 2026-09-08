@@ -129,6 +129,22 @@ class VargaChartOut(BaseModel):
     placements: list[VargaPlacementOut]
 
 
+class BoundaryWarningOut(BaseModel):
+    """A panchanga element close to changing.
+
+    Present because a traditional Nepali almanac's Moon runs 10-20 arcminutes
+    ahead of a modern ephemeris, which matters only near a boundary — and
+    there it decides the nakshatra, and with it the dasha lord and the name
+    syllable. A reading that says "Magha" flatly when Purva Phalguni is nine
+    minutes away is claiming more than the arithmetic supports.
+    """
+
+    element: str = Field(description="tithi | karana | nakshatra | yoga")
+    current: str
+    upcoming: str = Field(description="What it becomes when it changes.")
+    minutes: float = Field(description="Minutes from the birth moment until it changes.")
+
+
 class PanchangOut(BaseModel):
     """The five limbs of the Vedic calendar, plus the day boundary they hang off."""
 
@@ -167,6 +183,11 @@ class PanchangOut(BaseModel):
     samvatsara: str = Field(
         default="",
         description="Name of the year in the sixty-year Jovian cycle, e.g. Vibhava.",
+    )
+    near_boundary: list[BoundaryWarningOut] = Field(
+        default_factory=list,
+        description="Elements within an hour of changing. Usually empty; when it "
+        "is not, a traditional panchanga may well name the upcoming value instead.",
     )
     ascendant_sign: str
     ascendant_lord: str

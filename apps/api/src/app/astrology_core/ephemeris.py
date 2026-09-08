@@ -32,10 +32,7 @@ _SWE_PLANET = {
 _init_lock = threading.Lock()
 _initialised = False
 
-#: `swe.set_topo` writes process-global state that the *next* `calc_ut` reads,
-#: so the pair has to be atomic. Two charts computed concurrently for different
-#: birthplaces would otherwise silently borrow each other's parallax.
-_topo_lock = threading.Lock()
+
 
 
 def _ensure_init() -> None:
@@ -107,41 +104,42 @@ class RawPosition:
     speed: float       # degrees/day, negative = retrograde
 
 
-def planet_positions(
-    jd: float, latitude: float, longitude: float, altitude: float = 0.0
-) -> dict[str, RawPosition]:
-    """Sidereal longitude and speed for all nine grahas, seen from the birthplace.
+def planet_positions(jd: float) -> dict[str, RawPosition]:
+    """Sidereal longitude and speed for all nine grahas.
 
-    **Topocentric, not geocentric.** The Moon is close enough that where the
-    observer stands moves its apparent position by up to 57 arcminutes — more
-    than four padas. Geocentric positions are what most Indian software
-    publishes, but they are the Moon as seen from the centre of the Earth,
-    where nobody was born.
+    **Geocentric.** Positions are as seen from the centre of the Earth, which
+    is what AstroSage, AstroTalk and effectively every other Vedic
+    implementation publishes.
 
-    This was verified the hard way. Two kundalis hand-cast in Parbat disagreed
-    with this engine on the janma nakshatra, and both agree with it once the
-    parallax is applied: the 2004 chart's printed Moon is Leo 13°20' and
-    topocentric gives Leo 13°20', 0.6 arcminutes apart, where geocentric gave
-    12°26'. It also settles that chart's tithi and karana, which were one step
-    behind the guru's, and the 1975 chart's name syllable — हु, from Pushya
-    pada 1, which is the syllable the family actually named the child from.
+    This was briefly topocentric — corrected for the observer's own position,
+    which moves the apparent Moon by up to 57 arcminutes. It looked right on
+    one hand-cast kundali and was wrong. Measured across three of them the two
+    conventions score 16/27 and 17/27: parallax fixes one chart and breaks
+    another, because it is not a constant. It ran +53', +54' and **-36'** on
+    the three, changing sign.
 
-    The correction is applied to every body for consistency, but only the Moon
-    moves perceptibly: solar parallax is under 9 arcseconds and planetary
-    parallax under 30.
+    What those charts actually show is their own Moon running a steady +10 to
+    +20 arcminutes ahead of a modern ephemeris — a traditional almanac's small
+    systematic bias, not a coordinate convention. That is not something to
+    reproduce: it would mean shipping a Moon we know to be wrong in order to
+    agree with an almanac that is also wrong, and it would be fitted to three
+    data points.
+
+    The consequence is honest and unavoidable: on a chart whose Moon sits
+    within ~20 arcminutes of a nakshatra boundary, we and a traditional
+    panchanga will name different nakshatras. `Panchang` carries no warning for
+    that yet; it should.
 
     Ketu is not computed: it is definitionally 180 degrees from Rahu and shares
     its speed. Computing it separately invites the two to disagree.
     """
-    flags = _flags() | swe.FLG_TOPOCTR
+    flags = _flags()
     out: dict[str, RawPosition] = {}
-    with _topo_lock:
-        swe.set_topo(longitude, latitude, altitude)
-        for name, ipl in _SWE_PLANET.items():
-            values, retflag = swe.calc_ut(jd, ipl, flags)
-            if retflag < 0:
-                raise EphemerisError(f"swisseph failed for {name} at jd={jd}: {retflag}")
-            out[name] = RawPosition(longitude=values[0] % 360.0, speed=values[3])
+    for name, ipl in _SWE_PLANET.items():
+        values, retflag = swe.calc_ut(jd, ipl, flags)
+        if retflag < 0:
+            raise EphemerisError(f"swisseph failed for {name} at jd={jd}: {retflag}")
+        out[name] = RawPosition(longitude=values[0] % 360.0, speed=values[3])
 
     rahu = out["Rahu"]
     out["Ketu"] = RawPosition(longitude=(rahu.longitude + 180.0) % 360.0, speed=rahu.speed)

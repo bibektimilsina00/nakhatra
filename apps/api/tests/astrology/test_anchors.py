@@ -40,9 +40,7 @@ def test_ayanamsa_precesses_forward():
 
 
 def test_ketu_is_opposite_rahu():
-    # Positions are topocentric now, so they need an observer. Greenwich will
-    # do — the identity holds from anywhere, which is the point.
-    pos = ephemeris.planet_positions(J2000, latitude=51.48, longitude=0.0)
+    pos = ephemeris.planet_positions(J2000)
     delta = (pos["Ketu"].longitude - pos["Rahu"].longitude) % 360.0
     assert delta == pytest.approx(180.0, abs=1e-9)
 
@@ -74,23 +72,20 @@ def test_vimshottari_totals_120_years():
     assert sum(VIMSHOTTARI_YEARS.values()) == 120
 
 
-def test_the_moon_is_topocentric():
-    """Parallax, the correction that decides one nakshatra in five.
+def test_positions_are_geocentric():
+    """The Moon must not depend on where the observer stands.
 
-    The Moon seen from the ground is up to 57 arcminutes from the Moon seen
-    from the centre of the Earth. Two hand-cast Nepali kundalis disagreed with
-    this engine until it applied this, so a silent revert to geocentric must
-    not pass. Two observers far apart must not see the same Moon.
+    This was topocentric for one commit, on evidence from a single hand-cast
+    kundali. Across three of them the two conventions score 16/27 and 17/27 —
+    parallax is not constant (+53', +54' and -36' on those three), so it fixes
+    one chart and breaks another. `planet_positions` takes no observer for
+    exactly that reason, and this test is here so the choice stays deliberate.
     """
-    kathmandu = ephemeris.planet_positions(J2000, latitude=27.7, longitude=85.3)
-    santiago = ephemeris.planet_positions(J2000, latitude=-33.4, longitude=-70.6)
+    import inspect
 
-    apart = abs(kathmandu["Moon"].longitude - santiago["Moon"].longitude) * 60
-    assert apart > 20, (
-        f"the Moon is only {apart:.1f} arcmin apart from Kathmandu and Santiago — "
-        "that is a geocentric position, and the janma nakshatra will be wrong "
-        "for roughly one chart in five"
+    params = set(inspect.signature(ephemeris.planet_positions).parameters)
+    assert params == {"jd"}, (
+        f"planet_positions grew {sorted(params - {'jd'})} — if that is a "
+        "topocentric correction, read its docstring first: it was tried and "
+        "measured worse against four hand-cast kundalis."
     )
-    # The Sun, by contrast, has 9 arcseconds of parallax: it must barely move.
-    sun_apart = abs(kathmandu["Sun"].longitude - santiago["Sun"].longitude) * 3600
-    assert sun_apart < 30, f'solar parallax should be arcseconds, got {sun_apart:.1f}"'

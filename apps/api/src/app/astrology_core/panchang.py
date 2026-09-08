@@ -20,9 +20,20 @@ from app.astrology_core.nakshatra import nakshatra_at
 # --- tithi -----------------------------------------------------------------
 
 TITHI_NAMES = (
-    "Pratipada", "Dwitiya", "Tritiya", "Chaturthi", "Panchami",
-    "Shashthi", "Saptami", "Ashtami", "Navami", "Dashami",
-    "Ekadashi", "Dwadashi", "Trayodashi", "Chaturdashi",
+    "Pratipada",
+    "Dwitiya",
+    "Tritiya",
+    "Chaturthi",
+    "Panchami",
+    "Shashthi",
+    "Saptami",
+    "Ashtami",
+    "Navami",
+    "Dashami",
+    "Ekadashi",
+    "Dwadashi",
+    "Trayodashi",
+    "Chaturdashi",
 )
 
 # --- karana ----------------------------------------------------------------
@@ -35,11 +46,33 @@ FIXED_TAIL_KARANAS = ("Shakuni", "Chatushpada", "Naga")
 # --- nitya yoga ------------------------------------------------------------
 
 YOGA_NAMES = (
-    "Vishkambha", "Priti", "Ayushman", "Saubhagya", "Shobhana", "Atiganda",
-    "Sukarma", "Dhriti", "Shula", "Ganda", "Vriddhi", "Dhruva",
-    "Vyaghata", "Harshana", "Vajra", "Siddhi", "Vyatipata", "Variyana",
-    "Parigha", "Shiva", "Siddha", "Sadhya", "Shubha", "Shukla",
-    "Brahma", "Indra", "Vaidhriti",
+    "Vishkambha",
+    "Priti",
+    "Ayushman",
+    "Saubhagya",
+    "Shobhana",
+    "Atiganda",
+    "Sukarma",
+    "Dhriti",
+    "Shula",
+    "Ganda",
+    "Vriddhi",
+    "Dhruva",
+    "Vyaghata",
+    "Harshana",
+    "Vajra",
+    "Siddhi",
+    "Vyatipata",
+    "Variyana",
+    "Parigha",
+    "Shiva",
+    "Siddha",
+    "Sadhya",
+    "Shubha",
+    "Shukla",
+    "Brahma",
+    "Indra",
+    "Vaidhriti",
 )
 
 # --- the almanac frame: ayana, ritu, masa, and the era years ---------------
@@ -68,20 +101,36 @@ UTTARAYANA_SIGNS = frozenset({9, 10, 11, 0, 1, 2})  # Capricorn through Gemini
 #: direction from the ayana: 23 Nov 1975 and 3 Nov 1981 both read शरद, which
 #: is the sidereal sign; the tropical sign would make them हेमन्त.
 RITUS = (
-    "Basant", "Basant",     # Aries, Taurus
-    "Grishma", "Grishma",   # Gemini, Cancer
-    "Varsha", "Varsha",     # Leo, Virgo
-    "Sharad", "Sharad",     # Libra, Scorpio
-    "Hemant", "Hemant",     # Sagittarius, Capricorn
-    "Shishir", "Shishir",   # Aquarius, Pisces
+    "Basant",
+    "Basant",  # Aries, Taurus
+    "Grishma",
+    "Grishma",  # Gemini, Cancer
+    "Varsha",
+    "Varsha",  # Leo, Virgo
+    "Sharad",
+    "Sharad",  # Libra, Scorpio
+    "Hemant",
+    "Hemant",  # Sagittarius, Capricorn
+    "Shishir",
+    "Shishir",  # Aquarius, Pisces
 )
 
 #: The solar month, by the sign the Sun occupies. Nepali names, because these
 #: are the Bikram Sambat months a Nepali reader already knows — Baishakh opens
 #: at Mesha Sankranti.
 SOLAR_MASA = (
-    "Baishakh", "Jestha", "Ashar", "Shrawan", "Bhadra", "Ashwin",
-    "Kartik", "Mangsir", "Poush", "Magh", "Falgun", "Chaitra",
+    "Baishakh",
+    "Jestha",
+    "Ashar",
+    "Shrawan",
+    "Bhadra",
+    "Ashwin",
+    "Kartik",
+    "Mangsir",
+    "Poush",
+    "Magh",
+    "Falgun",
+    "Chaitra",
 )
 
 #: The sixty-year Jovian cycle, in order.
@@ -93,16 +142,66 @@ SOLAR_MASA = (
 #: rule from a text: the southern Ugadi reckoning names a different year for
 #: the same date, so do not carry this number into that system.
 SAMVATSARAS = (
-    "Prabhava", "Vibhava", "Shukla", "Pramoda", "Prajapati", "Angirasa",
-    "Shrimukha", "Bhava", "Yuva", "Dhata", "Ishvara", "Bahudhanya",
-    "Pramathi", "Vikrama", "Vrisha", "Chitrabhanu", "Svabhanu", "Tarana",
-    "Parthiva", "Vyaya", "Sarvajit", "Sarvadhari", "Virodhi", "Vikriti",
-    "Khara", "Nandana", "Vijaya", "Jaya", "Manmatha", "Durmukha",
-    "Hevilambi", "Vilambi", "Vikari", "Sharvari", "Plava", "Shubhakrit",
-    "Shobhakrit", "Krodhi", "Vishvavasu", "Parabhava", "Plavanga", "Kilaka",
-    "Saumya", "Sadharana", "Virodhakrit", "Paridhavi", "Pramadicha", "Ananda",
-    "Rakshasa", "Nala", "Pingala", "Kalayukti", "Siddharthi", "Raudra",
-    "Durmati", "Dundubhi", "Rudhirodgari", "Raktakshi", "Krodhana", "Akshaya",
+    "Prabhava",
+    "Vibhava",
+    "Shukla",
+    "Pramoda",
+    "Prajapati",
+    "Angirasa",
+    "Shrimukha",
+    "Bhava",
+    "Yuva",
+    "Dhata",
+    "Ishvara",
+    "Bahudhanya",
+    "Pramathi",
+    "Vikrama",
+    "Vrisha",
+    "Chitrabhanu",
+    "Svabhanu",
+    "Tarana",
+    "Parthiva",
+    "Vyaya",
+    "Sarvajit",
+    "Sarvadhari",
+    "Virodhi",
+    "Vikriti",
+    "Khara",
+    "Nandana",
+    "Vijaya",
+    "Jaya",
+    "Manmatha",
+    "Durmukha",
+    "Hevilambi",
+    "Vilambi",
+    "Vikari",
+    "Sharvari",
+    "Plava",
+    "Shubhakrit",
+    "Shobhakrit",
+    "Krodhi",
+    "Vishvavasu",
+    "Parabhava",
+    "Plavanga",
+    "Kilaka",
+    "Saumya",
+    "Sadharana",
+    "Virodhakrit",
+    "Paridhavi",
+    "Pramadicha",
+    "Ananda",
+    "Rakshasa",
+    "Nala",
+    "Pingala",
+    "Kalayukti",
+    "Siddharthi",
+    "Raudra",
+    "Durmati",
+    "Dundubhi",
+    "Rudhirodgari",
+    "Raktakshi",
+    "Krodhana",
+    "Akshaya",
 )
 SAMVATSARA_OFFSET = 24
 
@@ -120,10 +219,38 @@ VARA_LORDS = ("Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn")
 
 
 @dataclass(frozen=True, slots=True)
+class BoundaryWarning:
+    """A panchanga element close enough to changing that it is not settled.
+
+    Every one of these five is a division of the Moon's motion, so each has a
+    moment when it flips. Four hand-cast kundalis checked against this engine
+    disagreed on exactly three values, and all three sat within 15 arcminutes
+    of such a moment — the traditional almanacs those gurus used run their Moon
+    about a sixth of a degree fast, which is nothing except at a boundary.
+
+    Saying "Magha" flatly when the Moon is nine arcminutes from Purva Phalguni
+    claims more than the arithmetic supports. This is what lets the reading say
+    so instead.
+    """
+
+    element: str  # tithi | nakshatra | yoga | karana
+    current: str
+    upcoming: str
+    minutes: float  # until it changes, at the Moon's speed right now
+
+
+#: How close counts as close. An hour is roughly a third of a degree of Moon
+#: motion, comfortably wider than the ~10-20 arcminute disagreement measured
+#: against those kundalis, so a chart a traditional almanac would name
+#: differently is nearly always flagged.
+BOUNDARY_MINUTES = 60.0
+
+
+@dataclass(frozen=True, slots=True)
 class Panchang:
-    tithi_index: int          # 0-29 across the lunar month
-    tithi_name: str           # e.g. "Chaturdashi"
-    paksha: str               # "Shukla" | "Krishna"
+    tithi_index: int  # 0-29 across the lunar month
+    tithi_name: str  # e.g. "Chaturdashi"
+    paksha: str  # "Shukla" | "Krishna"
     karana: str
     yoga: str
     nakshatra: str
@@ -150,6 +277,8 @@ class Panchang:
     shaka_samvat: int
     #: The name of the year in the sixty-year Jovian cycle.
     samvatsara: str
+    #: Elements within `BOUNDARY_MINUTES` of changing. Usually empty.
+    near_boundary: tuple[BoundaryWarning, ...] = ()
 
 
 def tithi(sun_longitude: float, moon_longitude: float) -> tuple[int, str, str]:
@@ -216,6 +345,62 @@ def solar_year(local_datetime: datetime, sun_sign_index: int, offset: int) -> in
     return year - 1 + offset if before_ingress else year + offset
 
 
+def _boundaries(
+    sun: float, moon: float, sun_speed: float, moon_speed: float
+) -> tuple[BoundaryWarning, ...]:
+    """Which of the four Moon-driven elements are about to change, and when.
+
+    Each divides a different angle at a different rate: the tithi and karana
+    divide the Moon's lead on the Sun, the nakshatra divides the Moon alone,
+    the yoga divides their sum. Advancing the Moon just past each boundary
+    names what comes next, which is cheaper and less error-prone than
+    reimplementing "the one after this" for four different cycles.
+    """
+    if moon_speed <= 0.0:
+        return ()
+
+    # (name, angle now, width, how fast that angle grows, how to name it)
+    elongation = (moon - sun) % 360.0
+    checks = (
+        ("tithi", elongation, 12.0, moon_speed - sun_speed, lambda m: tithi(sun, m)[1]),
+        ("karana", elongation, 6.0, moon_speed - sun_speed, lambda m: karana(sun, m)),
+        (
+            "nakshatra",
+            moon % 360.0,
+            DEGREES_PER_NAKSHATRA,
+            moon_speed,
+            lambda m: nakshatra_at(m).name,
+        ),
+        (
+            "yoga",
+            (moon + sun) % 360.0,
+            DEGREES_PER_NAKSHATRA,
+            moon_speed + sun_speed,
+            lambda m: nitya_yoga(sun, m),
+        ),
+    )
+
+    out: list[BoundaryWarning] = []
+    for name, angle, width, speed, label in checks:
+        if speed <= 0.0:
+            continue
+        remaining = width - (angle % width)
+        minutes = remaining / speed * 1440.0
+        if minutes > BOUNDARY_MINUTES:
+            continue
+        # A hair past the boundary, so `label` reports the next value.
+        just_past = (moon + remaining + 1e-6) % 360.0
+        out.append(
+            BoundaryWarning(
+                element=name,
+                current=label(moon % 360.0),
+                upcoming=label(just_past),
+                minutes=round(minutes, 1),
+            )
+        )
+    return tuple(out)
+
+
 def build_panchang(
     *,
     sun_longitude: float,
@@ -223,7 +408,10 @@ def build_panchang(
     #: Needed to recover the tropical Sun for the ayana.
     ayanamsa: float,
     ascendant_sign_index: int,
-    local_datetime: datetime,
+    #: Degrees per day. Needed only to say how close a boundary is.
+    sun_speed: float = 0.0,
+    moon_speed: float = 0.0,
+    local_datetime: datetime = None,  # type: ignore[assignment]
     sunrise: datetime | None,
     sunset: datetime | None,
 ) -> Panchang:
@@ -259,4 +447,5 @@ def build_panchang(
         vikram_samvat=solar_year(local_datetime, sun_sign_index, VIKRAM_OFFSET),
         shaka_samvat=shaka,
         samvatsara=SAMVATSARAS[(shaka + SAMVATSARA_OFFSET) % 60],
+        near_boundary=_boundaries(sun_longitude, moon_longitude, sun_speed, moon_speed),
     )

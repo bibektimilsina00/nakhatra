@@ -238,8 +238,8 @@
       "vikram_samvat": 2032,
       "shaka_samvat": 1897,
       "samvatsara": "Vibhava",
-      "nakshatra": "Pushya",
-      "nakshatra_pada": 1
+      "nakshatra": "Punarvasu",
+      "nakshatra_pada": 4
     },
     "expect_lagna_sign": "Gemini",
     "expect_moon_sign": "Cancer",
@@ -256,18 +256,10 @@
     },
     "planet_note": "Read off the जन्म लग्न कुण्डली lotus, whose cells are numbered by rashi: 1 Ketu, 3 Mars, 4 Moon+Saturn, 6 Venus, 7 Rahu, 8 Sun+Mercury, 12 Jupiter, the rest empty. All twelve cells agree.",
     "known_divergence": {
-      "resolved_by_topocentric": "Both of the earlier divergences were parallax. Geocentric put the Moon at Cancer 3°05' — 14 arcmin short of Pushya — and gave Punarvasu pada 4, Jupiter dasha, Cat yoni and the syllable Hi. Topocentric gives Cancer 3°58': Pushya pada 1, Saturn dasha, Sheep yoni, and the syllable हु, which is the syllable the family named हुमनाथ from. All four now agree with the guru.",
-      "still_differs": "karana — he has Gara, we have Taitila. Gara belongs to tithi 21 and he names tithi 20, so his own two values do not sit together. Parallax does not move this: the elongation shift is under a degree and Gara needs four."
+      "nakshatra": "He has Pushya pada 1; geocentric gives Punarvasu pada 4. Our Moon is 14 arcmin short of the boundary and his own bhukta (0gh 18p of 58gh 05p) puts his 4 arcmin past it — an 18 arcmin gap, the same small positive offset his 2004 chart shows. Everything downstream follows: dasha lord Jupiter not Saturn, Cat yoni not Sheep, syllable Hi not Hu.",
+      "karana": "He has Gara, which belongs to tithi 21 while he names tithi 20; his own two values do not sit together there."
     },
-    "expect_moon_nakshatra_note": "Topocentric. Geocentric gives Punarvasu pada 4 and is what this engine returned before 0.4.0.",
-    "expect_avakhada": {
-      "yoni": "Sheep",
-      "gana": "Deva",
-      "nadi": "Madhya",
-      "varna": "Brahmin",
-      "name_syllable": "Hu"
-    },
-    "avakhada_quote": "हु काराक्षरस्य अज योनीः मध्य नाडी देव गणः मेष वर्गः विप्र — syllable Hu, Aja (goat/ram) yoni, Madhya nadi, Deva gana, Vipra varna. Every one of these follows from the nakshatra, so all five were wrong before the Moon was made topocentric."
+    "expect_moon_nakshatra_note": "Topocentric. Geocentric gives Punarvasu pada 4 and is what this engine returned before 0.4.0."
   },
   "samvatsara": {
     "source": "Fitted to the two hand-cast kundalis, twenty-nine years apart.",
@@ -334,5 +326,47 @@
     },
     "expect_dasha_lord": "Ketu",
     "still_differs": "tithi and karana. He has Krishna Trayodashi and Vanija; we have Chaturdashi and Vishti. Trayodashi ends at 18:56:35 and his own ishta kaal (29gh 42p) points there, but at 18:56 the nakshatra is Mula pada 1, the Moon's navamsa is Aries and the syllable is Ye — none of which match him, and the syllable is the one the subject was named from. No single moment satisfies both halves of his chart; 19:30 satisfies more of it, and the subject confirms it."
+  },
+  "moon_convention": {
+    "decision": "geocentric",
+    "measured": {
+      "geocentric": "16/27",
+      "topocentric": "17/27",
+      "geocentric_plus_16_arcmin": "24/27"
+    },
+    "why": "Scored on nakshatra, pada, yoga, karana, tithi, Moon navamsa, name syllable, Vimshottari lord and Yogini lord across the 1975, 2004 and 2002 kundalis. Topocentric fixes 1975 and breaks 2004, because parallax is not constant — it ran +52.7', +54.4' and -35.8' on those three, changing sign. What the charts actually show is their Moon running a steady +10 to +20 arcmin ahead of a modern ephemeris: a traditional almanac's systematic bias. Reproducing that would mean shipping a Moon we know to be wrong, fitted to three points.",
+    "the_2004_chart_pins_it": "Magha pada 4, Shukla Dwitiya, Balava, Parigha and a Cancer navamsa are five independent statements and they agree on a 10-arcmin Moon window, Leo 12.59-12.75. Geocentric sits 8.9' from it; topocentric 35.7' past. A Moon of Leo 13°20' — which is what an earlier reading of that chart's graha table claimed — contradicts the same chart's own yoga and pada, so the reading was wrong, not the guru.",
+    "consequence": "On a chart whose Moon falls within ~20 arcmin of a nakshatra boundary we and a traditional panchanga will name different nakshatras. That is inherent, not a bug, and it is worth surfacing to the reader."
+  },
+  "boundary_warnings": {
+    "why": "We cannot reproduce a traditional almanac's Moon, which runs 10-20 arcmin fast. What we can do is say when that is enough to matter. Every disagreement with a guru that stems from the Moon offset lands within an hour of a boundary; the one that does not (2002, a tithi) is a question about the recorded birth time instead.",
+    "expect": {
+      "1975-11-23": [
+        [
+          "nakshatra",
+          "Punarvasu",
+          "Pushya"
+        ]
+      ],
+      "2004-08-17": [
+        [
+          "tithi",
+          "Pratipada",
+          "Dwitiya"
+        ],
+        [
+          "karana",
+          "Bava",
+          "Balava"
+        ],
+        [
+          "yoga",
+          "Parigha",
+          "Shiva"
+        ]
+      ],
+      "2002-01-11": []
+    },
+    "note": "In each flagged case the guru names the *upcoming* value, because his Moon had already crossed. That is the whole disagreement, made visible."
   }
 }

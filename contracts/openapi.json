@@ -561,6 +561,38 @@
         "title": "Body_upload_photo_v1_practitioners_photo_post",
         "type": "object"
       },
+      "BoundaryWarningOut": {
+        "description": "A panchanga element close to changing.\n\nPresent because a traditional Nepali almanac's Moon runs 10-20 arcminutes\nahead of a modern ephemeris, which matters only near a boundary \u2014 and\nthere it decides the nakshatra, and with it the dasha lord and the name\nsyllable. A reading that says \"Magha\" flatly when Purva Phalguni is nine\nminutes away is claiming more than the arithmetic supports.",
+        "properties": {
+          "current": {
+            "title": "Current",
+            "type": "string"
+          },
+          "element": {
+            "description": "tithi | karana | nakshatra | yoga",
+            "title": "Element",
+            "type": "string"
+          },
+          "minutes": {
+            "description": "Minutes from the birth moment until it changes.",
+            "title": "Minutes",
+            "type": "number"
+          },
+          "upcoming": {
+            "description": "What it becomes when it changes.",
+            "title": "Upcoming",
+            "type": "string"
+          }
+        },
+        "required": [
+          "element",
+          "current",
+          "upcoming",
+          "minutes"
+        ],
+        "title": "BoundaryWarningOut",
+        "type": "object"
+      },
       "ChartOut": {
         "properties": {
           "avakhada": {
@@ -1894,6 +1926,14 @@
           "nakshatra_pada": {
             "title": "Nakshatra Pada",
             "type": "integer"
+          },
+          "near_boundary": {
+            "description": "Elements within an hour of changing. Usually empty; when it is not, a traditional panchanga may well name the upcoming value instead.",
+            "items": {
+              "$ref": "#/components/schemas/BoundaryWarningOut"
+            },
+            "title": "Near Boundary",
+            "type": "array"
           },
           "paksha": {
             "description": "Shukla (waxing) or Krishna (waning)",
