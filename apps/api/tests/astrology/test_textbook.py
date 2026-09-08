@@ -267,3 +267,48 @@ def test_samvatsara_fits_both_hand_cast_kundalis():
     case = BOOK["samvatsara"]
     for shaka, name in case["anchors"].items():
         assert SAMVATSARAS[(int(shaka) + SAMVATSARA_OFFSET) % 60] == name, case["caveat"]
+
+
+def test_ayana_is_tropical_and_ritu_is_sidereal():
+    """They use different Suns, and each has a chart that proves it.
+
+    Uttarayana is the solstice — tropical. The ritu follows the solar month —
+    sidereal. Getting either from the other Sun is wrong for about three weeks
+    of every January, and for two months of every autumn.
+    """
+    from app.astrology_core import build_chart
+    from app.astrology_core.models import BirthMoment
+
+    case = BOOK["ayana_is_sayana"]
+    places = {
+        "1975-11-23": ("20:18", 28.2227, 83.6826),
+        "1981-11-03": ("22:56", 28.2074, 83.9056),
+        "2004-08-17": ("07:40", 28.2227, 83.6826),
+        "2002-01-11": ("19:30", 27.5456, 83.0542),
+    }
+    for c in case["cases"]:
+        time, lat, lon = places[c["date"]]
+        chart = build_chart(
+            BirthMoment(
+                local_datetime=datetime.fromisoformat(f"{c['date']}T{time}"),
+                tz_name="Asia/Kathmandu",
+                latitude=lat,
+                longitude=lon,
+                time_accuracy="exact",
+            )
+        )
+        assert chart.panchang.ayana == c["guru"], f"{c['date']}: {case['why']}"
+
+    # And the ritu, which goes the other way.
+    for day, want in (("1975-11-23", "Sharad"), ("1981-11-03", "Sharad"), ("2002-01-11", "Hemant")):
+        time, lat, lon = places[day]
+        chart = build_chart(
+            BirthMoment(
+                local_datetime=datetime.fromisoformat(f"{day}T{time}"),
+                tz_name="Asia/Kathmandu",
+                latitude=lat,
+                longitude=lon,
+                time_accuracy="exact",
+            )
+        )
+        assert chart.panchang.ritu == want, case["ritu_goes_the_other_way"]

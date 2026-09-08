@@ -53,13 +53,20 @@ YOGA_NAMES = (
 #   "The period when the Sun is transiting the signs of Capricorn to Gemini
 #    is known as the period of uttarayana Sun. The period in which the Sun is
 #    transiting the signs of Cancer to Sagittarius is known as dakshinayana."
-
+#
+# Those signs are **sayana** — tropical. Uttarayana is the Sun turning north,
+# which is the solstice, and the solstice is a tropical event: it happens
+# around 22 December, not at Makar Sankranti three weeks later. Reading the
+# rule sidereally puts every birth in that gap on the wrong side of the year.
+# A kundali for 11 January 2002 says उत्तर अयने and is the case that settles
+# it; the other three are Dakshinayana either way and cannot tell them apart.
 UTTARAYANA_SIGNS = frozenset({9, 10, 11, 0, 1, 2})  # Capricorn through Gemini
 
-#: Two solar months to a season, from the same page. The book describes these
-#: against the *sayana* Sun; Nepali practice — and the kundali this was checked
-#: against — ties the ritu to the solar month, which is nirayana. Following the
-#: masa keeps the two consistent, which matters because they are read together.
+#: Two solar months to a season. Unlike the ayana, the ritu follows the
+#: **nirayana** Sun — that is, the solar month, which is what Nepali practice
+#: names it alongside. Two hand-cast kundalis settle this in the other
+#: direction from the ayana: 23 Nov 1975 and 3 Nov 1981 both read शरद, which
+#: is the sidereal sign; the tropical sign would make them हेमन्त.
 RITUS = (
     "Basant", "Basant",     # Aries, Taurus
     "Grishma", "Grishma",   # Gemini, Cancer
@@ -213,6 +220,8 @@ def build_panchang(
     *,
     sun_longitude: float,
     moon_longitude: float,
+    #: Needed to recover the tropical Sun for the ayana.
+    ayanamsa: float,
     ascendant_sign_index: int,
     local_datetime: datetime,
     sunrise: datetime | None,
@@ -222,6 +231,8 @@ def build_panchang(
     nak = nakshatra_at(moon_longitude)
     moon_sign_index = int((moon_longitude % 360.0) // 30.0)
     sun_sign_index = int((sun_longitude % 360.0) // 30.0)
+    # The ayana needs the tropical Sun; everything else here is sidereal.
+    tropical_sign_index = int(((sun_longitude + ayanamsa) % 360.0) // 30.0)
     vara_name, vara_lord = vara(local_datetime, sunrise)
     shaka = solar_year(local_datetime, sun_sign_index, SHAKA_OFFSET)
 
@@ -242,7 +253,7 @@ def build_panchang(
         ascendant_lord=SIGN_LORDS[ascendant_sign_index],
         sunrise=sunrise,
         sunset=sunset,
-        ayana="Uttarayana" if sun_sign_index in UTTARAYANA_SIGNS else "Dakshinayana",
+        ayana="Uttarayana" if tropical_sign_index in UTTARAYANA_SIGNS else "Dakshinayana",
         ritu=RITUS[sun_sign_index],
         masa=SOLAR_MASA[sun_sign_index],
         vikram_samvat=solar_year(local_datetime, sun_sign_index, VIKRAM_OFFSET),

@@ -119,6 +119,7 @@ def build_chart(birth: BirthMoment) -> Chart:
         panchang=build_panchang(
             sun_longitude=sun_longitude,
             moon_longitude=raw["Moon"].longitude,
+            ayanamsa=ayan,
             ascendant_sign_index=lagna_sign,
             local_datetime=birth.local_datetime,
             sunrise=sunrise,

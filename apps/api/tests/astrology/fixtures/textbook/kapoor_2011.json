@@ -276,5 +276,33 @@
       "1926": "Hevilambi"
     },
     "caveat": "Two documents in one tradition, not a rule from a text. The southern Ugadi reckoning names a different year for the same date."
+  },
+  "ayana_is_sayana": {
+    "source": "Four hand-cast Nepali kundalis. Three are Dakshinayana under either reading and cannot discriminate; the 11 Jan 2002 chart reads उत्तर अयने and is the one that settles it.",
+    "why": "Uttarayana is the Sun turning north — the solstice, around 22 December — not Makar Sankranti three weeks later. Read sidereally, every birth in that three-week gap lands on the wrong side of the year.",
+    "cases": [
+      {
+        "date": "1975-11-23",
+        "guru": "Dakshinayana",
+        "discriminates": false
+      },
+      {
+        "date": "1981-11-03",
+        "guru": "Dakshinayana",
+        "discriminates": false
+      },
+      {
+        "date": "2004-08-17",
+        "guru": "Dakshinayana",
+        "discriminates": false
+      },
+      {
+        "date": "2002-01-11",
+        "guru": "Uttarayana",
+        "discriminates": true,
+        "note": "sidereal Sun in Sagittarius (would give Dakshinayana), tropical Sun in Capricorn"
+      }
+    ],
+    "ritu_goes_the_other_way": "The ritu follows the *sidereal* Sun, and two charts prove it: 1975-11-23 and 1981-11-03 both read शरद, which is the sidereal sign; the tropical sign would make them हेमन्त."
   }
 }

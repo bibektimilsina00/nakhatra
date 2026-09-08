@@ -31,7 +31,7 @@
       "time_accuracy": "exact",
       "tz_name": "Asia/Kathmandu"
     },
-    "computed_at": "2026-09-08T17:29:15.846578+00:00",
+    "computed_at": "2026-09-08T17:52:45.425714+00:00",
     "dasha": {
       "balance_years": 5.098096347762304,
       "birth_lord": "Ketu",
@@ -5970,7 +5970,7 @@
     "panchang": {
       "ascendant_lord": "Moon",
       "ascendant_sign": "Cancer",
-      "ayana": "Dakshinayana",
+      "ayana": "Uttarayana",
       "karana": "Vishti",
       "masa": "Poush",
       "moon_sign": "Sagittarius",
@@ -14601,6 +14601,6 @@
     }
   },
   "name": "astrotalk_reference_2002",
-  "verified_against": "AstroTalk (astrotalk.com) free kundli 2026-08 for the geocentric planetary frame; Moon now topocentric per two hand-cast Nepali kundalis (1975 Parbat, 2004 Parbat) \u2014 engine 0.4.0",
+  "verified_against": "AstroTalk (astrotalk.com) free kundli 2026-08 for the geocentric planetary frame; topocentric Moon and sayana ayana per four hand-cast Nepali kundalis (1975/1981/2002/2004) \u2014 engine 0.4.0",
   "why": "Cross-checked against AstroTalk's published kundli for this birth. All nine planetary longitudes match to within one arcsecond (four exactly), the ascendant within five; every sign, nakshatra, house, avastha, panchang and avakhada value agrees, and the D9 navamsa reproduces placement for placement. Mahadasha dates sit one day from their Kundli tab and exactly on their Dasha tab, which disagree with each other \u2014 a rounding convention, not a defect. This is the fixture that makes the engine externally verified rather than merely self-consistent."
 }
