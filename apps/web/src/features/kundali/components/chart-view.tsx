@@ -250,6 +250,13 @@ function Header({
           {chart.ayanamsa_name} {chart.ayanamsa_value.toFixed(4)}° · whole-sign
           houses · engine v{chart.engine_version}
         </p>
+        {/* Naming the system lets a reader square this chart with a jyotish's
+            instead of assuming one of them is broken. Most hand-cast Nepali
+            panchangs follow सूर्य सिद्धान्त, whose Moon runs about a quarter
+            degree ahead of this one. */}
+        {chart.siddhanta && (
+          <p className="mt-0.5 text-xs text-dim">{chart.siddhanta}</p>
+        )}
       </div>
       <button
         onClick={onReset}

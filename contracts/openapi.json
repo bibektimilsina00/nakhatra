@@ -652,6 +652,12 @@
             "title": "Planets",
             "type": "array"
           },
+          "siddhanta": {
+            "default": "",
+            "description": "Which system the positions come from. Drik (\u0926\u0943\u0915\u094d \u0938\u093f\u0926\u094d\u0927\u093e\u0928\u094d\u0924) is modern and observational; most hand-cast Nepali panchangas follow \u0938\u0942\u0930\u094d\u092f \u0938\u093f\u0926\u094d\u0927\u093e\u0928\u094d\u0924, whose Moon runs roughly a quarter degree ahead. That only changes anything near a boundary \u2014 see `panchang.near_boundary`.",
+            "title": "Siddhanta",
+            "type": "string"
+          },
           "tribhagi": {
             "anyOf": [
               {

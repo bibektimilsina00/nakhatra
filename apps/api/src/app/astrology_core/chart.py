@@ -104,6 +104,7 @@ def build_chart(birth: BirthMoment) -> Chart:
         birth=birth,
         julian_day=jd,
         ayanamsa_name=ephemeris.AYANAMSA_NAME,
+        siddhanta=ephemeris.SIDDHANTA,
         ayanamsa_value=ayan,
         lagna_sign_index=lagna_sign,
         lagna_sign=SIGNS[lagna_sign],

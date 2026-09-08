@@ -229,6 +229,13 @@ class ChartOut(BaseModel):
     julian_day: float
     ayanamsa_name: str
     ayanamsa_value: float
+    siddhanta: str = Field(
+        default="",
+        description="Which system the positions come from. Drik (दृक् सिद्धान्त) "
+        "is modern and observational; most hand-cast Nepali panchangas follow "
+        "सूर्य सिद्धान्त, whose Moon runs roughly a quarter degree ahead. That "
+        "only changes anything near a boundary — see `panchang.near_boundary`.",
+    )
     lagna_sign: str
     lagna_sign_index: int
     lagna_degree: float

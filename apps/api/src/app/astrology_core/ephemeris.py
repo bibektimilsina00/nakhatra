@@ -18,6 +18,19 @@ from app.astrology_core.constants import PLANETS
 
 AYANAMSA_NAME = "Lahiri (Chitrapaksha)"
 
+#: Which siddhanta the positions come from.
+#:
+#: दृक् सिद्धान्त — the modern observational system. Positions are Swiss
+#: Ephemeris, matched to where the bodies actually are.
+#:
+#: The other tradition is सूर्य सिद्धान्त, which most hand-cast Nepali
+#: panchangas follow. Its Moon runs about a quarter of a degree ahead of this
+#: one — measured at +18' and +14' against two kundalis cast in Parbat — which
+#: matters only near a boundary, and there it decides the nakshatra. Naming
+#: the system lets a reader square our answer with their jyotish's instead of
+#: assuming one of them is broken.
+SIDDHANTA = "Drik (दृक् सिद्धान्त) — modern observational"
+
 _SWE_PLANET = {
     "Sun": swe.SUN,
     "Moon": swe.MOON,

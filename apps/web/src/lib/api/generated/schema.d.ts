@@ -1301,6 +1301,12 @@ export interface components {
             panchang: components["schemas"]["PanchangOut"];
             /** Planets */
             planets: components["schemas"]["PlanetOut"][];
+            /**
+             * Siddhanta
+             * @description Which system the positions come from. Drik (दृक् सिद्धान्त) is modern and observational; most hand-cast Nepali panchangas follow सूर्य सिद्धान्त, whose Moon runs roughly a quarter degree ahead. That only changes anything near a boundary — see `panchang.near_boundary`.
+             * @default
+             */
+            siddhanta: string;
             /** @description Vimshottari with a third removed — an 80-year cycle. */
             tribhagi?: components["schemas"]["DashaOut"] | null;
             /** Vargas */

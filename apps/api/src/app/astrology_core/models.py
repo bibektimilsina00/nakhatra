@@ -125,6 +125,8 @@ class Chart:
     #: a Chart without them breaks.
     tribhagi: Dasha | None = None
     yogini: Dasha | None = None
+    #: Which siddhanta the positions come from. See `ephemeris.SIDDHANTA`.
+    siddhanta: str = ""
     # Populated in Phase 1. Present now so the shape the AI consumes is stable.
     yogas: tuple[Any, ...] = field(default_factory=tuple)
     doshas: tuple[Any, ...] = field(default_factory=tuple)

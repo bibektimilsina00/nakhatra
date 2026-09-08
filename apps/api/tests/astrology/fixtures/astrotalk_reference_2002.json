@@ -31,7 +31,7 @@
       "time_accuracy": "exact",
       "tz_name": "Asia/Kathmandu"
     },
-    "computed_at": "2026-09-08T18:18:05.280002+00:00",
+    "computed_at": "2026-09-08T18:26:13.620756+00:00",
     "dasha": {
       "balance_years": 4.7808782655386315,
       "birth_lord": "Ketu",
@@ -6202,6 +6202,7 @@
         "speed": -0.05299201508701708
       }
     ],
+    "siddhanta": "Drik (\u0926\u0943\u0915\u094d \u0938\u093f\u0926\u094d\u0927\u093e\u0928\u094d\u0924) \u2014 modern observational",
     "tribhagi": {
       "balance_years": 3.187252177025754,
       "birth_lord": "Ketu",
@@ -14602,6 +14603,6 @@
     }
   },
   "name": "astrotalk_reference_2002",
-  "verified_against": "TWO independent references. (1) AstroTalk (astrotalk.com) free kundli, 2026-08. (2) A kundali hand-cast for this same birth by a Nepali guru, birth time confirmed by the subject \u2014 20 of 22 values agree. Engine 0.5.0, geocentric Moon, with boundary warnings.",
+  "verified_against": "TWO independent references. (1) AstroTalk (astrotalk.com) free kundli, 2026-08. (2) A kundali hand-cast for this birth by a Nepali guru, time confirmed by the subject \u2014 20 of 22 agree. Engine 0.5.0, Drik siddhanta, geocentric Moon.",
   "why": "The best-verified fixture in the set: an independent implementation and a hand-cast kundali agree on it, and the subject confirmed the birth time. Its two remaining divergences from the guru are recorded in fixtures/textbook/kapoor_2011.json under hand_cast_kundali_2002."
 }
