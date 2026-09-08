@@ -312,3 +312,32 @@ def test_ayana_is_tropical_and_ritu_is_sidereal():
             )
         )
         assert chart.panchang.ritu == want, case["ritu_goes_the_other_way"]
+
+
+def test_the_2002_kapilvastu_kundali():
+    """A birth whose time the subject confirmed — the strongest provenance here.
+
+    Fifteen of seventeen values agree with the guru, including the syllable यो
+    that the subject was named from. The two that do not are recorded on the
+    fixture with the reason.
+    """
+    from app.astrology_core import build_chart
+    from app.astrology_core.models import BirthMoment
+
+    case = BOOK["hand_cast_kundali_2002"]
+    b = case["birth"]
+    chart = build_chart(
+        BirthMoment(
+            local_datetime=datetime.fromisoformat(f"{b['date']}T{b['time']}"),
+            tz_name=b["tz_name"],
+            latitude=b["latitude"],
+            longitude=b["longitude"],
+            time_accuracy="exact",
+        )
+    )
+    assert chart.lagna_sign == case["expect_lagna_sign"], case["source"]
+    assert chart.dasha.birth_lord == case["expect_dasha_lord"]
+    got = {k: getattr(chart.panchang, k) for k in case["expect"]}
+    assert got == case["expect"], case["source"]
+    got_av = {k: getattr(chart.avakhada, k) for k in case["expect_avakhada"]}
+    assert got_av == case["expect_avakhada"], case["source"]

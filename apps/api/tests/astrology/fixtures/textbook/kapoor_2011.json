@@ -304,5 +304,35 @@
       }
     ],
     "ritu_goes_the_other_way": "The ritu follows the *sidereal* Sun, and two charts prove it: 1975-11-23 and 1981-11-03 both read शरद, which is the sidereal sign; the tropical sign would make them हेमन्त."
+  },
+  "hand_cast_kundali_2002": {
+    "source": "Kundali hand-cast for a birth at Kapilvastu, Lumbini. Birth time confirmed by the subject.",
+    "birth": {
+      "date": "2002-01-11",
+      "time": "19:30",
+      "tz_name": "Asia/Kathmandu",
+      "latitude": 27.4823,
+      "longitude": 83.2778
+    },
+    "expect": {
+      "ayana": "Uttarayana",
+      "ritu": "Hemant",
+      "masa": "Poush",
+      "yoga": "Dhruva",
+      "vikram_samvat": 2058,
+      "shaka_samvat": 1923,
+      "samvatsara": "Jaya",
+      "nakshatra": "Mula",
+      "nakshatra_pada": 2
+    },
+    "expect_lagna_sign": "Cancer",
+    "expect_avakhada": {
+      "yoni": "Dog",
+      "gana": "Rakshasa",
+      "nadi": "Adi",
+      "name_syllable": "Yo"
+    },
+    "expect_dasha_lord": "Ketu",
+    "still_differs": "tithi and karana. He has Krishna Trayodashi and Vanija; we have Chaturdashi and Vishti. Trayodashi ends at 18:56:35 and his own ishta kaal (29gh 42p) points there, but at 18:56 the nakshatra is Mula pada 1, the Moon's navamsa is Aries and the syllable is Ye — none of which match him, and the syllable is the one the subject was named from. No single moment satisfies both halves of his chart; 19:30 satisfies more of it, and the subject confirms it."
   }
 }
