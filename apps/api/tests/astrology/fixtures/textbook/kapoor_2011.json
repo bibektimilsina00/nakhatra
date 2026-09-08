@@ -339,11 +339,13 @@
     "decision": "surya",
     "measured": {
       "drik": "29/42",
-      "surya": "39/42"
+      "surya": "39/42",
+      "note": "scored against the hand-cast charts, not against any software"
     },
     "why": "सूर्य सिद्धान्त is the system Nepali kundalis are cast from, and it is not a fudge: the Sun and Moon come from revolutions in a Mahayuga and a manda epicycle, exactly as the text states. Against Swiss Ephemeris over 1970-2010 its Moon has an RMS of 1.43 degrees and its Sun 0.335 — which is the accuracy Surya Siddhanta is known to have, and the evidence that the implementation is right rather than tuned. It is worse astronomy and better astrology.",
     "history": "Two wrong turns preceded this. A topocentric Moon was tried, on evidence from a single chart, and scored 17/27 against geocentric's 16 — parallax is not constant (+53', +54', -36' on three charts) so it fixed one and broke another. A constant +16 arcmin offset scored well and was rejected: fitted to three points and astronomically meaningless. Surya Siddhanta explains the same offset from first principles.",
-    "still_open": "The five star-planets stay drik in both modes. A Surya Siddhanta Mars needs the shighra correction, is a degree or two out, and never changes a rashi — nothing to gain, accuracy to lose. Everything that actually differs is a function of the Sun and Moon alone."
+    "still_open": "The five star-planets stay drik in both modes. A Surya Siddhanta Mars needs the shighra correction, is a degree or two out, and never changes a rashi — nothing to gain, accuracy to lose. Everything that actually differs is a function of the Sun and Moon alone.",
+    "reference_policy": "AstroSage and AstroTalk are no longer used as references. They compute drik, and Nepali kundalis are cast in सूर्य सिद्धान्त; agreeing with them says nothing about whether a jyotish in Nepal would agree. The references for this engine are the four hand-cast kundalis in this file."
   },
   "boundary_warnings": {
     "why": "Under सूर्य सिद्धान्त the charts no longer sit on the wrong side of these boundaries, so nothing is flagged. The mechanism stays: it is what surfaces a chart whose panchanga a different almanac would name differently.",

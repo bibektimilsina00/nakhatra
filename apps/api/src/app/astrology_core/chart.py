@@ -43,9 +43,11 @@ def build_chart(birth: BirthMoment, siddhanta: str = "surya") -> Chart:
     where the modern ephemeris scores 29, and reproduces one of them exactly.
 
     "drik" gives the modern ephemeris instead. It is the better astronomy — the
-    Surya Siddhanta Moon is about 1.4 degrees out — and it is what AstroSage
-    and AstroTalk publish, so it is the right choice for comparing against
-    those. It is not what a jyotish in Kathmandu would write.
+    Surya Siddhanta Moon is about 1.4 degrees out — and it is kept as a
+    diagnostic: when a chart looks wrong, computing it both ways separates "the
+    two siddhantas disagree here" from "we have a bug". It is not a second
+    product mode, and Indian software agreeing with it proves nothing about
+    whether a jyotish in Nepal would.
     """
     jd = ephemeris.julian_day(birth.local_datetime, birth.tz_name)
     ayan = ephemeris.ayanamsa(jd)

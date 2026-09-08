@@ -9,6 +9,23 @@ without that check produces a regression test that faithfully locks in a bug.
 That is why `verified_against` exists and why `verify_chart.py --write` refuses
 to run without it.
 
+### What counts as independent, here
+
+A **kundali cast by hand by a Nepali jyotish**. Nothing else really does.
+
+AstroSage and AstroTalk compute **drik**; Nepali kundalis are cast in **सूर्य
+सिद्धान्त**, and the two put the Moon about fifteen arcminutes apart — enough
+to name a different nakshatra, and with it a different dasha lord and a
+different naming syllable. So agreeing with Indian software tells you nothing
+about whether a jyotish in Kathmandu would agree, which is the only question
+this product has to answer. `nepal_hand_cast_2002` was verified against
+AstroTalk once; it is now verified against the guru's chart for the same
+birth, which is a stronger reference for a weaker-looking reason.
+
+Each fixture declares its `siddhanta` and is built and frozen in that one,
+whatever the engine default is. Verify a fixture in the system it was
+confirmed in.
+
 ## Verifying one
 
 ```bash
