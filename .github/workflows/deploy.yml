@@ -189,6 +189,17 @@ jobs:
             echo "Starting docker compose stack..."
             docker compose up -d || docker-compose up -d
 
+            # 8. Bring the schema up to date.
+            #
+            # Nothing else does this: `create_all` is for tests, and the image
+            # does not migrate on boot. Without it a release that adds a table
+            # deploys green and then 500s on the first request that touches it.
+            # Runs after `up -d` so the database is accepting connections, and
+            # is idempotent — an already-current schema is a no-op.
+            echo "Applying database migrations..."
+            docker compose exec -T nakhatra_api alembic upgrade head \
+              || docker-compose exec -T nakhatra_api alembic upgrade head
+
             # 6a. Restore the pre-rename database into the renamed one, once.
             if [ -n "$PENDING" ] && [ -s "$PENDING" ]; then
               echo "Waiting for nakhatra_postgres before restoring..."
