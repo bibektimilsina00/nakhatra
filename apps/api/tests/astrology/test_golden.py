@@ -75,11 +75,20 @@ def test_phase0_complete(fixtures):
     if unverified:
         lines.append(f"  frozen but unverified ({len(unverified)}): {', '.join(unverified)}")
     lines.append(
-        "\nFor each one:\n"
+        "\nWhich of the two a fixture needs depends on what it is.\n"
+        "\nA real birth — confirm it against a kundali cast by hand. Indian\n"
+        "software computes drik and will disagree with a Nepali chart for a\n"
+        "reason that is not a bug. See fixtures/README.md.\n"
+        "\nA synthetic probe — high_latitude, the timezone pairs, and the rest\n"
+        "are invented dates, not births, so no hand-cast chart exists for them\n"
+        "or can. Those are confirmed by tests/astrology/independent.py, which\n"
+        "recomputes the offset, Julian Day and ascendant from the IANA database\n"
+        "and Meeus without touching the engine. If a new probe is failing here,\n"
+        "it needs its expected block written, not a new kind of proof.\n"
+        "\nEither way:\n"
         "  1. make chart FIXTURE=<name>\n"
-        "  2. compare against Jagannatha Hora / AstroSage / an astrologer,\n"
-        "     with Lahiri ayanamsa + whole-sign houses + mean node\n"
+        "  2. confirm it by whichever of the two applies\n"
         "  3. uv run python scripts/verify_chart.py --fixture <name> --write \\\n"
-        '       --verified-against "<tool and version>"\n'
+        '       --verified-against "<what confirmed it, and what it did not>"\n'
     )
     pytest.fail("\n".join(lines))

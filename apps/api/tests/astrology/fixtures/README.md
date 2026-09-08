@@ -26,6 +26,36 @@ Each fixture declares its `siddhanta` and is built and frozen in that one,
 whatever the engine default is. Verify a fixture in the system it was
 confirmed in.
 
+### The other kind, for the charts nobody will ever cast
+
+That rule is right for a real birth and impossible for the rest of these
+files. `high_latitude` is Reykjavik at 64N, `india_pre_ist` is a 1900 birth
+predating IST, `india_wartime_dst` is 1942 — and `nepal_pre_1986` and
+`nepal_post_1986` are the *same date and time* in two eras, which is the whole
+point of them. None is a real birth. They are synthetic probes, each written
+to exercise one path, and no jyotish will ever cast one. Demanding a hand-cast
+kundali for them is demanding a reference that cannot exist, which leaves the
+Phase 0 gate permanently red for a reason unrelated to whether the engine
+works.
+
+So they are confirmed the other way available: computed a second time by
+`tests/astrology/independent.py`, which shares no code with the engine. It
+takes the UTC offset from the IANA database via `zoneinfo`, the Julian Day
+from Meeus ch. 7, and the ascendant from spherical trigonometry via ch. 12 and
+22 — never calling `swe.houses_ex`. `test_independent.py` holds every fixture
+to it on every run, and the two agree within a quarter of an arcminute.
+
+Be exact about what that buys. It confirms the **frame**: the instant, the
+meridian, the rising degree — which is the part that fails silently, since a
+historical offset taken from memory rotates the whole chart while every
+derived value stays perfectly self-consistent. It does **not** confirm
+planetary longitudes; reproducing those means reimplementing an ephemeris,
+which this project deliberately does not do. Those rest on `test_invariants.py`
+and on the hand-cast graha sphuta table in `test_textbook.py`.
+
+A fixture's `verified_against` says which of the two it got, and a synthetic
+probe says so in as many words. Do not quietly promote one to the other.
+
 ## Verifying one
 
 ```bash
