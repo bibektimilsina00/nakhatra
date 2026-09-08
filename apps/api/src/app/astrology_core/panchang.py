@@ -42,6 +42,47 @@ YOGA_NAMES = (
     "Brahma", "Indra", "Vaidhriti",
 )
 
+# --- the almanac frame: ayana, ritu, masa, and the era years ---------------
+#
+# Every traditional Nepali kundali opens with these, and they are what a
+# sankalpa is spoken from. All of them are the Sun's *sidereal* sign — which
+# is why they belong here and not in a calendar library: Bhadra begins when
+# the Sun enters sidereal Leo, not on a fixed date.
+#
+# Kapoor, "Astronomy and Mathematical Astrology", 8th edn, p.80:
+#   "The period when the Sun is transiting the signs of Capricorn to Gemini
+#    is known as the period of uttarayana Sun. The period in which the Sun is
+#    transiting the signs of Cancer to Sagittarius is known as dakshinayana."
+
+UTTARAYANA_SIGNS = frozenset({9, 10, 11, 0, 1, 2})  # Capricorn through Gemini
+
+#: Two solar months to a season, from the same page. The book describes these
+#: against the *sayana* Sun; Nepali practice — and the kundali this was checked
+#: against — ties the ritu to the solar month, which is nirayana. Following the
+#: masa keeps the two consistent, which matters because they are read together.
+RITUS = (
+    "Basant", "Basant",     # Aries, Taurus
+    "Grishma", "Grishma",   # Gemini, Cancer
+    "Varsha", "Varsha",     # Leo, Virgo
+    "Sharad", "Sharad",     # Libra, Scorpio
+    "Hemant", "Hemant",     # Sagittarius, Capricorn
+    "Shishir", "Shishir",   # Aquarius, Pisces
+)
+
+#: The solar month, by the sign the Sun occupies. Nepali names, because these
+#: are the Bikram Sambat months a Nepali reader already knows — Baishakh opens
+#: at Mesha Sankranti.
+SOLAR_MASA = (
+    "Baishakh", "Jestha", "Ashar", "Shrawan", "Bhadra", "Ashwin",
+    "Kartik", "Mangsir", "Poush", "Magh", "Falgun", "Chaitra",
+)
+
+#: Offsets from the Christian era for the solar reckonings, both counted from
+#: the Sun's ingress into sidereal Aries (Kapoor p.79, "Other Eras").
+VIKRAM_OFFSET = 57
+SHAKA_OFFSET = -78
+
+
 # --- vara ------------------------------------------------------------------
 # The Vedic day begins at sunrise, not midnight — a birth at 2am belongs to the
 # previous weekday. `vara` below accounts for that.
@@ -67,6 +108,17 @@ class Panchang:
     ascendant_lord: str
     sunrise: datetime | None  # local time at the birthplace
     sunset: datetime | None
+    #: "Uttarayana" | "Dakshinayana" — the Sun's half of the year.
+    ayana: str
+    #: One of six seasons, two solar months each.
+    ritu: str
+    #: The solar month, by the Sun's sidereal sign. Bhadra when it is in Leo.
+    masa: str
+    #: Bikram Sambat and Shalivahana Shaka years for the solar reckoning.
+    #: Both change at Mesha Sankranti, not on 1 January, so they are derived
+    #: from the Sun rather than from the calendar year.
+    vikram_samvat: int
+    shaka_samvat: int
 
 
 def tithi(sun_longitude: float, moon_longitude: float) -> tuple[int, str, str]:
@@ -115,6 +167,24 @@ def vara(local_datetime: datetime, sunrise: datetime | None) -> tuple[str, str]:
     return VARA_NAMES[index], VARA_LORDS[index]
 
 
+def solar_year(local_datetime: datetime, sun_sign_index: int, offset: int) -> int:
+    """A samvat year, counted from the Sun's ingress into sidereal Aries.
+
+    Before that ingress — the Sun still in Pisces, roughly January to mid-April
+    — the calendar year has rolled over but the samvat has not, so it is one
+    behind what a bare `year + offset` would give.
+    """
+    year = local_datetime.year
+    # Capricorn, Aquarius and Pisces only ever hold the Sun between January
+    # and mid-April, so they are always before the ingress. Sagittarius spans
+    # the new year, so it needs the month to disambiguate December from
+    # January.
+    before_ingress = sun_sign_index in (9, 10, 11) or (
+        sun_sign_index == 8 and local_datetime.month == 1
+    )
+    return year - 1 + offset if before_ingress else year + offset
+
+
 def build_panchang(
     *,
     sun_longitude: float,
@@ -127,6 +197,7 @@ def build_panchang(
     index, name, paksha = tithi(sun_longitude, moon_longitude)
     nak = nakshatra_at(moon_longitude)
     moon_sign_index = int((moon_longitude % 360.0) // 30.0)
+    sun_sign_index = int((sun_longitude % 360.0) // 30.0)
     vara_name, vara_lord = vara(local_datetime, sunrise)
 
     return Panchang(
@@ -146,4 +217,9 @@ def build_panchang(
         ascendant_lord=SIGN_LORDS[ascendant_sign_index],
         sunrise=sunrise,
         sunset=sunset,
+        ayana="Uttarayana" if sun_sign_index in UTTARAYANA_SIGNS else "Dakshinayana",
+        ritu=RITUS[sun_sign_index],
+        masa=SOLAR_MASA[sun_sign_index],
+        vikram_samvat=solar_year(local_datetime, sun_sign_index, VIKRAM_OFFSET),
+        shaka_samvat=solar_year(local_datetime, sun_sign_index, SHAKA_OFFSET),
     )

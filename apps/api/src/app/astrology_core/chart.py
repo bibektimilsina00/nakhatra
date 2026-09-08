@@ -26,11 +26,12 @@ from app.astrology_core.constants import (
     SIGNS,
     SPECIAL_ASPECTS,
 )
-from app.astrology_core.dasha import build_dasha
+from app.astrology_core.dasha import build_dasha, build_tribhagi
 from app.astrology_core.models import BirthMoment, Chart, Dignity, House, Planet
 from app.astrology_core.nakshatra import nakshatra_at
 from app.astrology_core.panchang import build_panchang
 from app.astrology_core.varga import build_all_vargas
+from app.astrology_core.yogini import build_yogini
 
 
 def build_chart(birth: BirthMoment) -> Chart:
@@ -113,6 +114,8 @@ def build_chart(birth: BirthMoment) -> Chart:
             asc, {p.name: raw[p.name].longitude for p in planets}
         ),
         dasha=build_dasha(raw["Moon"].longitude, birth.local_datetime),
+        tribhagi=build_tribhagi(raw["Moon"].longitude, birth.local_datetime),
+        yogini=build_yogini(raw["Moon"].longitude, birth.local_datetime),
         panchang=build_panchang(
             sun_longitude=sun_longitude,
             moon_longitude=raw["Moon"].longitude,

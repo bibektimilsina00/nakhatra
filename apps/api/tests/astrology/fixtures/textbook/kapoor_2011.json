@@ -153,5 +153,67 @@
       }
     ],
     "subperiod_note": "The book's shortcuts (antar in months = AxB/10, pratyantar in days = AxBxC/40) assume 30-day months, so a printed duration can sit a day either side of a real calendar span containing a leap day. One day of tolerance; anything larger is a bug, not a convention."
+  },
+  "sankalpa": {
+    "page": 80,
+    "quote": "The period when the Sun is transiting the signs of Capricorn to Gemini is known as the period of uttarayana Sun. The period in which the Sun is transiting the signs of Cancer to Sagittarius is known as dakshinayana Sun. ... Cancer and Leo: Varsha or rainy season. [p.79] Vikrami (Solar) +57 years, Shaka -78 years, both beginning at solar ingress in nirayana Aries.",
+    "cross_checked_against": "A kundali hand-cast in Parbat, Nepal for 17 Aug 2004 07:40, which states दक्षिण अयने, वर्षा ऋतौ, भाद्र मासे, सम्वत् २०६१, शक १९२६.",
+    "birth": {
+      "date": "2004-08-17",
+      "time": "07:40",
+      "tz_name": "Asia/Kathmandu",
+      "latitude": 28.22266,
+      "longitude": 83.6826
+    },
+    "expect": {
+      "ayana": "Dakshinayana",
+      "ritu": "Varsha",
+      "masa": "Bhadra",
+      "vikram_samvat": 2061,
+      "shaka_samvat": 1926
+    }
+  },
+  "tribhagi": {
+    "source": "The त्रिभागी महादशा table printed on the same hand-cast kundali.",
+    "note": "Vimshottari with a third removed. Every period below is read from the printed table; they cumulate to 80, which is 120 x 2/3 and is what the table's last cell states.",
+    "expect_years": {
+      "Ketu": 4.6667,
+      "Venus": 13.3333,
+      "Sun": 4.0,
+      "Moon": 6.6667,
+      "Mars": 4.6667,
+      "Rahu": 12.0,
+      "Jupiter": 10.6667,
+      "Saturn": 12.6667,
+      "Mercury": 11.3333
+    },
+    "expect_total": 80.0
+  },
+  "yogini": {
+    "source": "The योगिनी महादशा table printed on the same hand-cast kundali.",
+    "quote": "Header भ उ सि सं म पि धा भ्रा over 5 6 7 8 1 2 3 4, cumulating 5 11 18 26 27 29 32 36.",
+    "birth_nakshatra_number": 10,
+    "note": "Magha is the tenth nakshatra and (10 + 3) mod 8 = 5, so she begins in the fifth yogini, Bhadrika — which is what the printed table starts with.",
+    "expect_sequence": [
+      "Bhadrika",
+      "Ulka",
+      "Siddha",
+      "Sankata",
+      "Mangala",
+      "Pingala",
+      "Dhanya",
+      "Bhramari"
+    ],
+    "expect_years": [
+      5,
+      6,
+      7,
+      8,
+      1,
+      2,
+      3,
+      4
+    ],
+    "expect_total": 36
   }
 }

@@ -158,3 +158,62 @@ def test_dasha_subperiod_lengths_match_the_book(case):
         f"  engine: {actual} days, book: {case['expect_days']} — off by {off_by}\n"
         f"  {BOOK['vimshottari']['subperiod_note']}"
     )
+
+
+# --- the almanac frame, and the two extra dasha schemes ---
+#
+# These come from the same book plus one hand-cast kundali, and the fixture
+# records which. A guru's chart is not an implementation to diff against, but
+# a printed value on it is still a value somebody stood behind.
+
+
+def test_sankalpa_fields_match():
+    """Ayana, ritu, masa and the two era years.
+
+    All four are the Sun's sidereal sign, which is why they cannot come from a
+    date library: Bhadra begins when the Sun enters Leo, not on a fixed day.
+    """
+    from app.astrology_core import build_chart
+    from app.astrology_core.models import BirthMoment
+
+    case = BOOK["sankalpa"]
+    b = case["birth"]
+    chart = build_chart(
+        BirthMoment(
+            local_datetime=datetime.fromisoformat(f"{b['date']}T{b['time']}"),
+            tz_name=b["tz_name"],
+            latitude=b["latitude"],
+            longitude=b["longitude"],
+            time_accuracy="exact",
+        )
+    )
+    got = {k: getattr(chart.panchang, k) for k in case["expect"]}
+    assert got == case["expect"], (
+        f"Kapoor p.{case['page']} + {case['cross_checked_against']}\n  got {got}"
+    )
+
+
+def test_tribhagi_is_vimshottari_less_a_third():
+    from app.astrology_core.constants import VIMSHOTTARI_YEARS
+    from app.astrology_core.dasha import TRIBHAGI_SCALE
+
+    case = BOOK["tribhagi"]
+    scaled = {lord: years * TRIBHAGI_SCALE for lord, years in VIMSHOTTARI_YEARS.items()}
+    got = {lord: round(years, 4) for lord, years in scaled.items()}
+    assert got == case["expect_years"], case["source"]
+    # Summed before rounding: nine values each rounded to 4dp add up to 80.0001,
+    # which would be a test failing on its own arithmetic rather than on ours.
+    assert sum(scaled.values()) == case["expect_total"], case["note"]
+
+
+def test_yogini_starts_where_the_printed_table_starts():
+    from app.astrology_core.yogini import CYCLE_YEARS, YOGINIS, build_yogini
+
+    case = BOOK["yogini"]
+    # Magha spans 120deg-133deg20'; a longitude inside it gives nakshatra 10.
+    tree = build_yogini(132.4373, datetime(2004, 8, 17, 7, 40))
+    years = dict((name, y) for name, y, _ in YOGINIS)
+
+    assert [p.lord for p in tree.periods[:8]] == case["expect_sequence"], case["quote"]
+    assert [years[p.lord] for p in tree.periods[:8]] == case["expect_years"], case["note"]
+    assert case["expect_total"] == CYCLE_YEARS

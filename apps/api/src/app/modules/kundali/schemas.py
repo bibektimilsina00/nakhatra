@@ -147,6 +147,23 @@ class PanchangOut(BaseModel):
     vara_lord: str
     moon_sign: str
     moon_sign_lord: str
+    ayana: str = Field(
+        default="",
+        description="Uttarayana or Dakshinayana — the Sun's half of the year, "
+        "by its sidereal sign.",
+    )
+    ritu: str = Field(default="", description="Season: two solar months to each of six.")
+    masa: str = Field(
+        default="",
+        description="Solar month by the Sun's sidereal sign — Bhadra when it is "
+        "in Leo. These are the Bikram Sambat month names.",
+    )
+    vikram_samvat: int = Field(
+        default=0,
+        description="Bikram Sambat year. Rolls at Mesha Sankranti in mid-April, "
+        "not on 1 January.",
+    )
+    shaka_samvat: int = Field(default=0, description="Shalivahana Shaka year.")
     ascendant_sign: str
     ascendant_lord: str
     sunrise: datetime | None = Field(
@@ -193,6 +210,18 @@ class ChartOut(BaseModel):
     planets: list[PlanetOut]
     houses: list[HouseOut]
     dasha: DashaOut
+    #: Two further timing schemes over the same janma nakshatra, read beside
+    #: vimshottari rather than instead of it. Defaulted rather than required,
+    #: so an older client that does not know about them is unaffected.
+    tribhagi: DashaOut | None = Field(
+        default=None,
+        description="Vimshottari with a third removed — an 80-year cycle.",
+    )
+    yogini: DashaOut | None = Field(
+        default=None,
+        description="The eight yoginis over 36 years. `birth_lord` and each "
+        "period's `lord` name a yogini, not a graha.",
+    )
     panchang: PanchangOut
     avakhada: AvakhadaOut
     vargas: list[VargaChartOut]

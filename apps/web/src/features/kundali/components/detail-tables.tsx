@@ -91,6 +91,19 @@ export function PanchangPanel({ panchang }: { panchang: Panchang }) {
       title="Panchang"
       note="The five limbs of the Vedic day, computed from the Sun and Moon at birth."
     >
+      {/* The almanac frame a Nepali kundali opens with. All of it is the Sun's
+          sidereal sign — Bhadra begins when the Sun enters Leo, so it cannot
+          come from a calendar. Rendered only when present, because a chart
+          computed before these existed does not carry them. */}
+      {panchang.masa && (
+        <p className="mb-4 border-l-2 border-gold/40 pl-3 text-[12.5px] leading-relaxed text-muted">
+          {panchang.masa} · {panchang.paksha} {panchang.tithi_name} · {panchang.vara}
+          <span className="mt-0.5 block text-dim">
+            {panchang.ayana} · {panchang.ritu} ritu · Vikram Samvat{" "}
+            {panchang.vikram_samvat} · Shaka {panchang.shaka_samvat}
+          </span>
+        </p>
+      )}
       <DetailList
         rows={[
           ["Tithi", `${panchang.paksha} ${panchang.tithi_name}`],
@@ -103,6 +116,13 @@ export function PanchangPanel({ panchang }: { panchang: Panchang }) {
           ["Ascendant", `${panchang.ascendant_sign} · ${panchang.ascendant_lord}`],
           ["Sunrise", clock(panchang.sunrise)],
           ["Sunset", clock(panchang.sunset)],
+          ...(panchang.masa
+            ? ([
+                ["Masa (solar)", panchang.masa],
+                ["Ritu", panchang.ritu],
+                ["Ayana", panchang.ayana],
+              ] as [string, string][])
+            : []),
         ]}
       />
       <p className="mt-4 text-xs leading-relaxed text-dim">

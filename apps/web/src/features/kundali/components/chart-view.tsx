@@ -121,6 +121,29 @@ export function ChartView({
 
       <DashaTimeline periods={chart.dasha.periods} now={now} />
 
+      {/* Two further schemes over the same janma nakshatra, read beside
+          vimshottari rather than instead of it. Rendered only when the chart
+          carries them, so an older cached chart still displays. */}
+      {chart.tribhagi && (
+        <DashaTimeline
+          periods={chart.tribhagi.periods}
+          now={now}
+          id="tribhagi"
+          title="Tribhagi Dasha"
+          note="Vimshottari with a third taken off every period — the same lords in the same order over 80 years instead of 120, so it moves faster and is read for closer timing."
+        />
+      )}
+
+      {chart.yogini && (
+        <DashaTimeline
+          periods={chart.yogini.periods}
+          now={now}
+          id="yogini"
+          title="Yogini Dasha"
+          note="Eight yoginis over 36 years, starting from the janma nakshatra. The periods are simply one through eight years, so the whole cycle repeats three times in a long life."
+        />
+      )}
+
       <VargaGrid vargas={chart.vargas} />
 
       {d1 && <Missing />}
@@ -165,6 +188,8 @@ function Jump() {
     ["basic", "Birth & Panchang"],
     ["planets", "Planetary Positions"],
     ["dasha", "Vimshottari Dasha"],
+    ["tribhagi", "Tribhagi"],
+    ["yogini", "Yogini"],
     ["divisional-charts", "Divisional Charts"],
   ] as const;
   return (
@@ -190,8 +215,8 @@ function Missing() {
       <h3 className="font-display text-lg text-fg">Not built yet</h3>
       <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted">
         Ashtakvarga, KP (its own ayanamsa, Placidus cusps and sub-lords), Bhav
-        Chalit, Shadbala, Bhavbala and Yogini dasha are still to come. Each is a
-        separate calculation system with its own tables, and a wrong table
+        Chalit, Shadbala, Bhavbala and the Ghata Chakra are still to come. Each
+        is a separate calculation system with its own tables, and a wrong table
         produces numbers that look entirely plausible — so they are being built
         and verified one at a time rather than guessed at.
       </p>
@@ -372,7 +397,19 @@ const SIGN_LORDS = [
   "Venus", "Mars", "Jupiter", "Saturn", "Saturn", "Jupiter",
 ];
 
-function DashaTimeline({ periods, now }: { periods: DashaPeriod[]; now: number }) {
+function DashaTimeline({
+  periods,
+  now,
+  id = "dasha",
+  title = "Vimshottari Dasha",
+  note = "A 120-year cycle keyed to the Moon's nakshatra. Bar widths are the real durations — Venus runs 20 years, the Sun 6.",
+}: {
+  periods: DashaPeriod[];
+  now: number;
+  id?: string;
+  title?: string;
+  note?: string;
+}) {
   const { visible, hidden, expanded, toggle } = useReveal(periods, 4);
   const start = new Date(periods[0].start).getTime();
   const end = new Date(periods[periods.length - 1].end).getTime();
@@ -380,9 +417,9 @@ function DashaTimeline({ periods, now }: { periods: DashaPeriod[]; now: number }
 
   return (
     <Section
-      id="dasha"
-      title="Vimshottari Dasha"
-      note="A 120-year cycle keyed to the Moon's nakshatra. Bar widths are the real durations — Venus runs 20 years, the Sun 6."
+      id={id}
+      title={title}
+      note={note}
     >
       <div className="mb-6 flex h-12 overflow-hidden rounded-lg border border-line">
         {periods.map((p) => {

@@ -1272,8 +1272,12 @@ export interface components {
             panchang: components["schemas"]["PanchangOut"];
             /** Planets */
             planets: components["schemas"]["PlanetOut"][];
+            /** @description Vimshottari with a third removed — an 80-year cycle. */
+            tribhagi?: components["schemas"]["DashaOut"] | null;
             /** Vargas */
             vargas: components["schemas"]["VargaChartOut"][];
+            /** @description The eight yoginis over 36 years. `birth_lord` and each period's `lord` name a yogini, not a graha. */
+            yogini?: components["schemas"]["DashaOut"] | null;
         };
         /** ChatMessageIn */
         ChatMessageIn: {
@@ -1759,8 +1763,20 @@ export interface components {
             ascendant_lord: string;
             /** Ascendant Sign */
             ascendant_sign: string;
+            /**
+             * Ayana
+             * @description Uttarayana or Dakshinayana — the Sun's half of the year, by its sidereal sign.
+             * @default
+             */
+            ayana: string;
             /** Karana */
             karana: string;
+            /**
+             * Masa
+             * @description Solar month by the Sun's sidereal sign — Bhadra when it is in Leo. These are the Bikram Sambat month names.
+             * @default
+             */
+            masa: string;
             /** Moon Sign */
             moon_sign: string;
             /** Moon Sign Lord */
@@ -1776,6 +1792,18 @@ export interface components {
              * @description Shukla (waxing) or Krishna (waning)
              */
             paksha: string;
+            /**
+             * Ritu
+             * @description Season: two solar months to each of six.
+             * @default
+             */
+            ritu: string;
+            /**
+             * Shaka Samvat
+             * @description Shalivahana Shaka year.
+             * @default 0
+             */
+            shaka_samvat: number;
             /**
              * Sunrise
              * @description Local time. Null above the polar circles, where the Sun may neither rise nor set — a valid chart, not an error.
@@ -1797,6 +1825,12 @@ export interface components {
             vara: string;
             /** Vara Lord */
             vara_lord: string;
+            /**
+             * Vikram Samvat
+             * @description Bikram Sambat year. Rolls at Mesha Sankranti in mid-April, not on 1 January.
+             * @default 0
+             */
+            vikram_samvat: number;
             /**
              * Yoga
              * @description Nitya yoga — from Sun + Moon longitude

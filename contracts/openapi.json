@@ -620,12 +620,34 @@
             "title": "Planets",
             "type": "array"
           },
+          "tribhagi": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DashaOut"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Vimshottari with a third removed \u2014 an 80-year cycle."
+          },
           "vargas": {
             "items": {
               "$ref": "#/components/schemas/VargaChartOut"
             },
             "title": "Vargas",
             "type": "array"
+          },
+          "yogini": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DashaOut"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The eight yoginis over 36 years. `birth_lord` and each period's `lord` name a yogini, not a graha."
           }
         },
         "required": [
@@ -1837,8 +1859,20 @@
             "title": "Ascendant Sign",
             "type": "string"
           },
+          "ayana": {
+            "default": "",
+            "description": "Uttarayana or Dakshinayana \u2014 the Sun's half of the year, by its sidereal sign.",
+            "title": "Ayana",
+            "type": "string"
+          },
           "karana": {
             "title": "Karana",
+            "type": "string"
+          },
+          "masa": {
+            "default": "",
+            "description": "Solar month by the Sun's sidereal sign \u2014 Bhadra when it is in Leo. These are the Bikram Sambat month names.",
+            "title": "Masa",
             "type": "string"
           },
           "moon_sign": {
@@ -1865,6 +1899,18 @@
             "description": "Shukla (waxing) or Krishna (waning)",
             "title": "Paksha",
             "type": "string"
+          },
+          "ritu": {
+            "default": "",
+            "description": "Season: two solar months to each of six.",
+            "title": "Ritu",
+            "type": "string"
+          },
+          "shaka_samvat": {
+            "default": 0,
+            "description": "Shalivahana Shaka year.",
+            "title": "Shaka Samvat",
+            "type": "integer"
           },
           "sunrise": {
             "anyOf": [
@@ -1908,6 +1954,12 @@
           "vara_lord": {
             "title": "Vara Lord",
             "type": "string"
+          },
+          "vikram_samvat": {
+            "default": 0,
+            "description": "Bikram Sambat year. Rolls at Mesha Sankranti in mid-April, not on 1 January.",
+            "title": "Vikram Samvat",
+            "type": "integer"
           },
           "yoga": {
             "description": "Nitya yoga \u2014 from Sun + Moon longitude",

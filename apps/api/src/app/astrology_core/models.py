@@ -120,6 +120,11 @@ class Chart:
     panchang: Any
     avakhada: Any
     vargas: tuple[Any, ...] = field(default_factory=tuple)
+    #: The same janma nakshatra run through two further schemes, read beside
+    #: vimshottari rather than instead of it. Optional so nothing that builds
+    #: a Chart without them breaks.
+    tribhagi: Dasha | None = None
+    yogini: Dasha | None = None
     # Populated in Phase 1. Present now so the shape the AI consumes is stable.
     yogas: tuple[Any, ...] = field(default_factory=tuple)
     doshas: tuple[Any, ...] = field(default_factory=tuple)
