@@ -6,6 +6,7 @@ BirthMoment: no database, no network, no clock beyond the `computed_at` stamp.
 
 from __future__ import annotations
 
+from dataclasses import replace
 from datetime import UTC, datetime
 
 from app.astrology_core import ephemeris
@@ -27,8 +28,9 @@ from app.astrology_core.constants import (
     SPECIAL_ASPECTS,
 )
 from app.astrology_core.dasha import build_dasha, build_tribhagi
-from app.astrology_core.models import BirthMoment, Chart, Dignity, House, Planet
+from app.astrology_core.models import BirthMoment, Chart, Dasha, Dignity, House, Planet
 from app.astrology_core.nakshatra import nakshatra_at
+from app.astrology_core.nakshatra import transit as nakshatra_transit
 from app.astrology_core.panchang import build_panchang
 from app.astrology_core.varga import build_all_vargas
 from app.astrology_core.yogini import build_yogini
@@ -54,6 +56,21 @@ def build_chart(birth: BirthMoment, siddhanta: str = "surya") -> Chart:
     raw = ephemeris.planet_positions(jd)
     # Surya Siddhanta replaces the two luminaries; the star-planets stay drik.
     raw.update(ephemeris.luminaries(jd, siddhanta))
+
+    # भुक्त and भभोग: how much of the janma nakshatra had passed, in time
+    # rather than in arc, because that is what a panchanga tabulates and what
+    # the dasha balance is computed from.
+    def moon_at(when: datetime) -> float:
+        moment = ephemeris.julian_day(when, birth.tz_name)
+        switched = ephemeris.luminaries(moment, siddhanta)
+        if "Moon" in switched:
+            return switched["Moon"].longitude
+        return ephemeris.planet_positions(moment)["Moon"].longitude
+
+    entered, leaves = nakshatra_transit(moon_at, birth.local_datetime)
+    bhukta = (birth.local_datetime - entered).total_seconds() / GHATI_SECONDS
+    bhabhoga = (leaves - entered).total_seconds() / GHATI_SECONDS
+    elapsed = bhukta / bhabhoga if bhabhoga else 0.0
 
     asc = ephemeris.ascendant(jd, birth.latitude, birth.longitude)
     lagna_sign = int(asc // DEGREES_PER_SIGN)
@@ -130,9 +147,18 @@ def build_chart(birth: BirthMoment, siddhanta: str = "surya") -> Chart:
         vargas=build_all_vargas(
             asc, {p.name: raw[p.name].longitude for p in planets}
         ),
-        dasha=build_dasha(raw["Moon"].longitude, birth.local_datetime),
-        tribhagi=build_tribhagi(raw["Moon"].longitude, birth.local_datetime),
-        yogini=build_yogini(raw["Moon"].longitude, birth.local_datetime),
+        dasha=_with_transit(
+            build_dasha(raw["Moon"].longitude, birth.local_datetime, elapsed=elapsed),
+            bhukta, bhabhoga,
+        ),
+        tribhagi=_with_transit(
+            build_tribhagi(raw["Moon"].longitude, birth.local_datetime, elapsed=elapsed),
+            bhukta, bhabhoga,
+        ),
+        yogini=_with_transit(
+            build_yogini(raw["Moon"].longitude, birth.local_datetime, elapsed=elapsed),
+            bhukta, bhabhoga,
+        ),
         panchang=build_panchang(
             sun_longitude=sun_longitude,
             moon_longitude=raw["Moon"].longitude,
@@ -220,3 +246,12 @@ def aspected_houses(name: str, house: int) -> tuple[int, ...]:
     """
     counts = (7, *SPECIAL_ASPECTS.get(name, ()))
     return tuple(sorted(((house - 1 + c - 1) % 12) + 1 for c in counts))
+
+
+#: A ghati is a sixtieth of a day.
+GHATI_SECONDS = 24 * 60 * 60 / 60
+
+
+def _with_transit(tree: Dasha, bhukta: float, bhabhoga: float) -> Dasha:
+    """Attach the two figures a kundali prints beside the balance."""
+    return replace(tree, bhukta_ghati=round(bhukta, 3), bhabhoga_ghati=round(bhabhoga, 3))

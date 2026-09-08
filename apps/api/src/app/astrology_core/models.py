@@ -87,6 +87,12 @@ class Dasha:
     birth_lord: str
     balance_years: float
     periods: tuple[DashaPeriod, ...] = ()
+    #: भुक्त and भभोग in ghatis — how much of the janma nakshatra had passed at
+    #: birth, and how long it takes to cross. Every Nepali kundali prints these
+    #: two, and the balance above is their ratio, so they are what a reader
+    #: checks us against.
+    bhukta_ghati: float = 0.0
+    bhabhoga_ghati: float = 0.0
 
     def active_at(self, when: date) -> tuple[DashaPeriod, ...]:
         """Chain from mahadasha down to the deepest period covering `when`."""

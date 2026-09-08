@@ -120,6 +120,10 @@ export function ChartView({
       <PlanetTable planets={chart.planets} onPickHouse={setHouse} />
 
       <DashaTimeline periods={chart.dasha.periods} now={now} />
+      <Bhukta
+        bhukta={chart.dasha.bhukta_ghati ?? 0}
+        bhabhoga={chart.dasha.bhabhoga_ghati ?? 0}
+      />
 
       {/* Two further schemes over the same janma nakshatra, read beside
           vimshottari rather than instead of it. Rendered only when the chart
@@ -301,6 +305,19 @@ function HousePanel({ chart, house }: { chart: Chart; house: number | null }) {
         )}
       </div>
     </Card>
+  );
+}
+
+/** भुक्त / भभोग — the two figures a kundali prints beside the balance, so a
+ *  reader can check our dasha against their jyotish's in the same units. */
+function Bhukta({ bhukta, bhabhoga }: { bhukta: number; bhabhoga: number }) {
+  if (!bhabhoga) return null;
+  return (
+    <p className="mt-2 text-xs text-dim">
+      भुक्त {bhukta.toFixed(2)} ghati of भभोग {bhabhoga.toFixed(2)} —{" "}
+      {((bhukta / bhabhoga) * 100).toFixed(1)}% of the janma nakshatra had
+      passed at birth, which is what sets the balance.
+    </p>
   );
 }
 

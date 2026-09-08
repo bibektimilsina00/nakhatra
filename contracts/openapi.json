@@ -1107,6 +1107,18 @@
             "title": "Balance Years",
             "type": "number"
           },
+          "bhabhoga_ghati": {
+            "default": 0.0,
+            "description": "\u092d\u092d\u094b\u0917 \u2014 ghatis the Moon takes to cross the whole nakshatra. The balance is the lord's years times (1 - bhukta/bhabhoga).",
+            "title": "Bhabhoga Ghati",
+            "type": "number"
+          },
+          "bhukta_ghati": {
+            "default": 0.0,
+            "description": "\u092d\u0941\u0915\u094d\u0924 \u2014 ghatis of the janma nakshatra already elapsed at birth. Every Nepali kundali prints this beside the balance.",
+            "title": "Bhukta Ghati",
+            "type": "number"
+          },
           "birth_lord": {
             "title": "Birth Lord",
             "type": "string"

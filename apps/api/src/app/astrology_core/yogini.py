@@ -48,16 +48,25 @@ def starting_index(nakshatra_number: int) -> int:
     return (nakshatra_number + 2) % 8
 
 
-def build_yogini(moon_longitude: float, birth: datetime, cycles: int = 3) -> Dasha:
+def build_yogini(
+    moon_longitude: float,
+    birth: datetime,
+    cycles: int = 3,
+    elapsed: float | None = None,
+) -> Dasha:
     """The yogini tree. Three cycles covers 108 years, so a whole life.
 
     Sub-periods divide a mahadasha in the same eight-fold order beginning with
     itself, each in proportion to its own years — the same shape vimshottari
     uses, against 36 rather than 120.
+
+    `elapsed` is the fraction of the janma nakshatra already passed, measured
+    in time as a panchanga measures it. Omitted, it falls back to the arc.
     """
     position = nakshatra_at(moon_longitude)
     start = starting_index(position.index + 1)
-    elapsed = elapsed_fraction(moon_longitude)
+    if elapsed is None:
+        elapsed = elapsed_fraction(moon_longitude)
 
     first_name, first_years, _ = YOGINIS[start]
     balance_years = first_years * (1.0 - elapsed)

@@ -86,6 +86,7 @@ def build_dasha(
     birth: datetime,
     cycles: int = 1,
     scale: float = 1.0,
+    elapsed: float | None = None,
 ) -> Dasha:
     """Full vimshottari tree.
 
@@ -100,10 +101,18 @@ def build_dasha(
     `scale` multiplies every period. 1.0 is vimshottari; `TRIBHAGI_SCALE`
     gives the 80-year tribhagi, which is the same scheme run faster and is
     read alongside it rather than instead of it.
+
+    `elapsed` is how much of the janma nakshatra had passed at birth. A
+    panchanga measures that in *time* — भुक्त over भभोग, in ghatis — because
+    that is what it tabulates, and the Moon does not cross a nakshatra at a
+    constant speed. Passing it in keeps this module free of the ephemeris.
+    Left out, it falls back to the fraction of the arc, which is what Kapoor's
+    worked example uses and is within a hundredth of a percent here.
     """
     lord = nakshatra_at(moon_longitude).lord
     total_years = float(VIMSHOTTARI_YEARS[lord]) * scale
-    elapsed = elapsed_fraction(moon_longitude)
+    if elapsed is None:
+        elapsed = elapsed_fraction(moon_longitude)
     balance_years = total_years * (1.0 - elapsed)
 
     # The mahadasha running at birth started before it; only the balance is lived.
@@ -129,6 +138,8 @@ def build_dasha(
     return Dasha(birth_lord=lord, balance_years=balance_years, periods=tuple(periods))
 
 
-def build_tribhagi(moon_longitude: float, birth: datetime, cycles: int = 1) -> Dasha:
+def build_tribhagi(
+    moon_longitude: float, birth: datetime, cycles: int = 1, elapsed: float | None = None
+) -> Dasha:
     """The 80-year tribhagi, keyed to the same janma nakshatra."""
-    return build_dasha(moon_longitude, birth, cycles, scale=TRIBHAGI_SCALE)
+    return build_dasha(moon_longitude, birth, cycles, scale=TRIBHAGI_SCALE, elapsed=elapsed)

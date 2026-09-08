@@ -1484,6 +1484,18 @@ export interface components {
         DashaOut: {
             /** Balance Years */
             balance_years: number;
+            /**
+             * Bhabhoga Ghati
+             * @description भभोग — ghatis the Moon takes to cross the whole nakshatra. The balance is the lord's years times (1 - bhukta/bhabhoga).
+             * @default 0
+             */
+            bhabhoga_ghati: number;
+            /**
+             * Bhukta Ghati
+             * @description भुक्त — ghatis of the janma nakshatra already elapsed at birth. Every Nepali kundali prints this beside the balance.
+             * @default 0
+             */
+            bhukta_ghati: number;
             /** Birth Lord */
             birth_lord: string;
             /** Periods */

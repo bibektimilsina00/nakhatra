@@ -98,6 +98,8 @@ def _dasha(tree: Dasha | None, depth: int) -> DashaOut | None:
     return DashaOut(
         birth_lord=tree.birth_lord,
         balance_years=tree.balance_years,
+        bhukta_ghati=tree.bhukta_ghati,
+        bhabhoga_ghati=tree.bhabhoga_ghati,
         periods=[_period(p, depth) for p in tree.periods],
     )
 

@@ -122,6 +122,16 @@ class DashaOut(BaseModel):
     birth_lord: str
     balance_years: float
     periods: list[DashaPeriodOut]
+    bhukta_ghati: float = Field(
+        default=0.0,
+        description="भुक्त — ghatis of the janma nakshatra already elapsed at "
+        "birth. Every Nepali kundali prints this beside the balance.",
+    )
+    bhabhoga_ghati: float = Field(
+        default=0.0,
+        description="भभोग — ghatis the Moon takes to cross the whole nakshatra. "
+        "The balance is the lord's years times (1 - bhukta/bhabhoga).",
+    )
 
 
 class VargaPlacementOut(BaseModel):

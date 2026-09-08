@@ -355,5 +355,23 @@
       "2002-01-11": []
     },
     "note": "In each flagged case the guru names the *upcoming* value, because his Moon had already crossed. That is the whole disagreement, made visible."
+  },
+  "dasha_balance": {
+    "method": "time, not arc",
+    "why": "A panchanga states भुक्त and भभोग in ghatis and takes the balance as their ratio. That is a ratio of time, and the Moon does not cross a nakshatra at a constant speed, so it is not the fraction of the arc. Kapoor's worked example (p.118) uses arc and the two agree to a hundredth of a percent there, but the time figure is the one a guru writes down and the one a reader can check us against — so the chart now prints both.",
+    "expect": [
+      {
+        "chart": "1975-11-23 20:18 Parbat",
+        "guru_bhabhoga_ghati": 58.08,
+        "tolerance_ghati": 0.5,
+        "note": "Our bhabhoga is the strong check: it measures how fast our Moon crosses a nakshatra, independent of where it started."
+      },
+      {
+        "chart": "2002-01-11 19:30 Kapilvastu",
+        "guru_bhabhoga_ghati": 61.23,
+        "tolerance_ghati": 0.5
+      }
+    ],
+    "residual": "The balance itself is still about 40 days from each guru's, because our Moon sits 5 to 12 arcminutes from theirs — their bija corrections against ours. Fitting the apogee to close it improved those two numbers by a third and made the ephemeris worse against observation, so it was rejected. The gap is now visible in the bhukta figure rather than hidden in a date."
   }
 }

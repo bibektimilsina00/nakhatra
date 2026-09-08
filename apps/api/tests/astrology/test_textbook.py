@@ -383,3 +383,40 @@ def test_the_moon_convention_is_recorded_and_measured():
         "the modern ephemeris used to miss this chart's tithi and karana — if "
         "it now matches, something about the comparison has changed"
     )
+
+
+def test_the_nakshatra_transit_matches_the_gurus_bhabhoga():
+    """भभोग — how long the Moon takes to cross the janma nakshatra.
+
+    The stronger of the two figures a kundali prints, because it measures our
+    Moon's *speed* rather than its phase, and it is what says the Surya
+    Siddhanta implementation tracks theirs. The bhukta, and so the balance,
+    still differs by a few arcminutes' worth; that is recorded as a residual
+    rather than fitted away.
+    """
+    from app.astrology_core import build_chart
+    from app.astrology_core.models import BirthMoment
+
+    case = BOOK["dasha_balance"]
+    births = {
+        "1975-11-23 20:18 Parbat": (datetime(1975, 11, 23, 20, 18), 28.2227, 83.6826),
+        "2002-01-11 19:30 Kapilvastu": (datetime(2002, 1, 11, 19, 30), 27.4823, 83.2778),
+    }
+    for expected in case["expect"]:
+        when, lat, lon = births[expected["chart"]]
+        chart = build_chart(
+            BirthMoment(
+                local_datetime=when,
+                tz_name="Asia/Kathmandu",
+                latitude=lat,
+                longitude=lon,
+                time_accuracy="exact",
+            )
+        )
+        off = abs(chart.dasha.bhabhoga_ghati - expected["guru_bhabhoga_ghati"])
+        assert off <= expected["tolerance_ghati"], (
+            f"{expected['chart']}: bhabhoga {chart.dasha.bhabhoga_ghati:.2f} vs the "
+            f"guru's {expected['guru_bhabhoga_ghati']} — {case['why']}"
+        )
+        # And it must actually be populated, not left at the default.
+        assert chart.dasha.bhukta_ghati > 0
