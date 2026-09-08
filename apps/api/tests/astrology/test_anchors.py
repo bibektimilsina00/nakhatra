@@ -36,7 +36,7 @@ def test_lahiri_ayanamsa_at_j2000():
 
 def test_ayanamsa_precesses_forward():
     per_century = ephemeris.ayanamsa(J2000 + 36525) - ephemeris.ayanamsa(J2000)
-    assert per_century == pytest.approx(1.4, abs=0.1)   # ~50.3 arcsec/yr
+    assert per_century == pytest.approx(1.4, abs=0.1)  # ~50.3 arcsec/yr
 
 
 def test_ketu_is_opposite_rahu():
@@ -51,7 +51,7 @@ def test_nakshatra_boundaries():
     assert nakshatra_at(DEGREES_PER_NAKSHATRA - 1e-9).pada == 4
     assert nakshatra_at(DEGREES_PER_NAKSHATRA).name == "Bharani"
     assert nakshatra_at(359.999999).name == "Revati"
-    assert nakshatra_at(360.0).name == "Ashwini"     # wraps, never index 27
+    assert nakshatra_at(360.0).name == "Ashwini"  # wraps, never index 27
 
 
 def test_nakshatra_lords_follow_vimshottari_order():

@@ -77,6 +77,28 @@ SOLAR_MASA = (
     "Kartik", "Mangsir", "Poush", "Magh", "Falgun", "Chaitra",
 )
 
+#: The sixty-year Jovian cycle, in order.
+#:
+#: The offset is fitted to two hand-cast Nepali kundalis twenty-nine years
+#: apart — Shaka 1897 reads विभव and Shaka 1926 reads हेमलम्ब (Hevilambi),
+#: the 2nd and 31st names. Two anchors that far apart rule out a skip between
+#: them, but this is a fit to two documents in one tradition rather than a
+#: rule from a text: the southern Ugadi reckoning names a different year for
+#: the same date, so do not carry this number into that system.
+SAMVATSARAS = (
+    "Prabhava", "Vibhava", "Shukla", "Pramoda", "Prajapati", "Angirasa",
+    "Shrimukha", "Bhava", "Yuva", "Dhata", "Ishvara", "Bahudhanya",
+    "Pramathi", "Vikrama", "Vrisha", "Chitrabhanu", "Svabhanu", "Tarana",
+    "Parthiva", "Vyaya", "Sarvajit", "Sarvadhari", "Virodhi", "Vikriti",
+    "Khara", "Nandana", "Vijaya", "Jaya", "Manmatha", "Durmukha",
+    "Hevilambi", "Vilambi", "Vikari", "Sharvari", "Plava", "Shubhakrit",
+    "Shobhakrit", "Krodhi", "Vishvavasu", "Parabhava", "Plavanga", "Kilaka",
+    "Saumya", "Sadharana", "Virodhakrit", "Paridhavi", "Pramadicha", "Ananda",
+    "Rakshasa", "Nala", "Pingala", "Kalayukti", "Siddharthi", "Raudra",
+    "Durmati", "Dundubhi", "Rudhirodgari", "Raktakshi", "Krodhana", "Akshaya",
+)
+SAMVATSARA_OFFSET = 24
+
 #: Offsets from the Christian era for the solar reckonings, both counted from
 #: the Sun's ingress into sidereal Aries (Kapoor p.79, "Other Eras").
 VIKRAM_OFFSET = 57
@@ -119,6 +141,8 @@ class Panchang:
     #: from the Sun rather than from the calendar year.
     vikram_samvat: int
     shaka_samvat: int
+    #: The name of the year in the sixty-year Jovian cycle.
+    samvatsara: str
 
 
 def tithi(sun_longitude: float, moon_longitude: float) -> tuple[int, str, str]:
@@ -199,6 +223,7 @@ def build_panchang(
     moon_sign_index = int((moon_longitude % 360.0) // 30.0)
     sun_sign_index = int((sun_longitude % 360.0) // 30.0)
     vara_name, vara_lord = vara(local_datetime, sunrise)
+    shaka = solar_year(local_datetime, sun_sign_index, SHAKA_OFFSET)
 
     return Panchang(
         tithi_index=index,
@@ -221,5 +246,6 @@ def build_panchang(
         ritu=RITUS[sun_sign_index],
         masa=SOLAR_MASA[sun_sign_index],
         vikram_samvat=solar_year(local_datetime, sun_sign_index, VIKRAM_OFFSET),
-        shaka_samvat=solar_year(local_datetime, sun_sign_index, SHAKA_OFFSET),
+        shaka_samvat=shaka,
+        samvatsara=SAMVATSARAS[(shaka + SAMVATSARA_OFFSET) % 60],
     )

@@ -217,3 +217,41 @@ def test_yogini_starts_where_the_printed_table_starts():
     assert [p.lord for p in tree.periods[:8]] == case["expect_sequence"], case["quote"]
     assert [years[p.lord] for p in tree.periods[:8]] == case["expect_years"], case["note"]
     assert case["expect_total"] == CYCLE_YEARS
+
+
+def test_a_1975_nepal_birth_matches_the_kundali_cast_for_it():
+    """The timezone case rule 5 exists for, against a chart cast by hand.
+
+    Kathmandu ran +5:30 until 1986. At +5:45 this birth is 15 minutes out —
+    roughly 3.75 degrees of ascendant — so the lagna agreeing at all is the
+    test. Every planet's sign and the whole almanac frame agree too; the two
+    that do not are recorded in the fixture with the reason.
+    """
+    from app.astrology_core import build_chart
+    from app.astrology_core.models import BirthMoment
+
+    case = BOOK["hand_cast_kundali_1975"]
+    b = case["birth"]
+    chart = build_chart(
+        BirthMoment(
+            local_datetime=datetime.fromisoformat(f"{b['date']}T{b['time']}"),
+            tz_name=b["tz_name"],
+            latitude=b["latitude"],
+            longitude=b["longitude"],
+            time_accuracy="exact",
+        )
+    )
+
+    assert chart.lagna_sign == case["expect_lagna_sign"], case["source"]
+    got = {k: getattr(chart.panchang, k) for k in case["expect"]}
+    assert got == case["expect"], case["source"]
+    signs = {p.name: p.sign for p in chart.planets}
+    assert signs == case["expect_planet_signs"], case["planet_note"]
+
+
+def test_samvatsara_fits_both_hand_cast_kundalis():
+    from app.astrology_core.panchang import SAMVATSARA_OFFSET, SAMVATSARAS
+
+    case = BOOK["samvatsara"]
+    for shaka, name in case["anchors"].items():
+        assert SAMVATSARAS[(int(shaka) + SAMVATSARA_OFFSET) % 60] == name, case["caveat"]

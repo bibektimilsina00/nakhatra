@@ -1799,6 +1799,12 @@ export interface components {
              */
             ritu: string;
             /**
+             * Samvatsara
+             * @description Name of the year in the sixty-year Jovian cycle, e.g. Vibhava.
+             * @default
+             */
+            samvatsara: string;
+            /**
              * Shaka Samvat
              * @description Shalivahana Shaka year.
              * @default 0

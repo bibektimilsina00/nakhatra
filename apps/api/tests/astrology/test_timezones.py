@@ -21,16 +21,31 @@ def offset(local: str, tz: str) -> timedelta:
 @pytest.mark.parametrize(
     ("local", "tz", "expected", "why"),
     [
-        ("1910-06-15T08:30", "Asia/Kathmandu", timedelta(hours=5, minutes=41, seconds=16),
-         "Nepal ran local mean time until 1920"),
-        ("1975-06-15T08:30", "Asia/Kathmandu", timedelta(hours=5, minutes=30),
-         "Nepal was +5:30 until 1986"),
-        ("1995-06-15T08:30", "Asia/Kathmandu", timedelta(hours=5, minutes=45),
-         "Nepal moved to +5:45 in 1986"),
-        ("1942-09-01T06:00", "Asia/Kolkata", timedelta(hours=6, minutes=30),
-         "India ran wartime +6:30 from Sep 1942"),
-        ("1990-06-15T12:00", "Asia/Kolkata", timedelta(hours=5, minutes=30),
-         "modern IST"),
+        (
+            "1910-06-15T08:30",
+            "Asia/Kathmandu",
+            timedelta(hours=5, minutes=41, seconds=16),
+            "Nepal ran local mean time until 1920",
+        ),
+        (
+            "1975-06-15T08:30",
+            "Asia/Kathmandu",
+            timedelta(hours=5, minutes=30),
+            "Nepal was +5:30 until 1986",
+        ),
+        (
+            "1995-06-15T08:30",
+            "Asia/Kathmandu",
+            timedelta(hours=5, minutes=45),
+            "Nepal moved to +5:45 in 1986",
+        ),
+        (
+            "1942-09-01T06:00",
+            "Asia/Kolkata",
+            timedelta(hours=6, minutes=30),
+            "India ran wartime +6:30 from Sep 1942",
+        ),
+        ("1990-06-15T12:00", "Asia/Kolkata", timedelta(hours=5, minutes=30), "modern IST"),
     ],
 )
 def test_historical_offsets(local, tz, expected, why):

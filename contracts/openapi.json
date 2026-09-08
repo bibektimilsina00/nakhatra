@@ -1906,6 +1906,12 @@
             "title": "Ritu",
             "type": "string"
           },
+          "samvatsara": {
+            "default": "",
+            "description": "Name of the year in the sixty-year Jovian cycle, e.g. Vibhava.",
+            "title": "Samvatsara",
+            "type": "string"
+          },
           "shaka_samvat": {
             "default": 0,
             "description": "Shalivahana Shaka year.",

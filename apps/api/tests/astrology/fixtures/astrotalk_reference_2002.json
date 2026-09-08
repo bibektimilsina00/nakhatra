@@ -31,7 +31,7 @@
       "time_accuracy": "exact",
       "tz_name": "Asia/Kathmandu"
     },
-    "computed_at": "2026-09-08T17:01:04.268852+00:00",
+    "computed_at": "2026-09-08T17:14:03.716546+00:00",
     "dasha": {
       "balance_years": 4.7808782655386315,
       "birth_lord": "Ketu",
@@ -5980,6 +5980,7 @@
       "nakshatra_pada": 2,
       "paksha": "Krishna",
       "ritu": "Hemant",
+      "samvatsara": "Jaya",
       "shaka_samvat": 1923,
       "sunrise": "2002-01-11T07:03:24.399347+05:45",
       "sunset": "2002-01-11T17:36:08.444444+05:45",
@@ -14600,6 +14601,6 @@
     }
   },
   "name": "astrotalk_reference_2002",
-  "verified_against": "AstroTalk (astrotalk.com) free kundli \u2014 planetary positions, D9 navamsa, panchang, avakhada and avastha tables, 2026-08; additive sankalpa/tribhagi/yogini fields from Kapoor 8th edn pp.79-80 and nepali-date-converter, 2026-09",
+  "verified_against": "AstroTalk (astrotalk.com) free kundli 2026-08; sankalpa/tribhagi/yogini/samvatsara fields from Kapoor 8th edn pp.79-80 and two hand-cast Nepali kundalis (1975, 2004), 2026-09",
   "why": "Cross-checked against AstroTalk's published kundli for this birth. All nine planetary longitudes match to within one arcsecond (four exactly), the ascendant within five; every sign, nakshatra, house, avastha, panchang and avakhada value agrees, and the D9 navamsa reproduces placement for placement. Mahadasha dates sit one day from their Kundli tab and exactly on their Dasha tab, which disagree with each other \u2014 a rounding convention, not a defect. This is the fixture that makes the engine externally verified rather than merely self-consistent."
 }

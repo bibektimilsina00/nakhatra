@@ -164,6 +164,10 @@ class PanchangOut(BaseModel):
         "not on 1 January.",
     )
     shaka_samvat: int = Field(default=0, description="Shalivahana Shaka year.")
+    samvatsara: str = Field(
+        default="",
+        description="Name of the year in the sixty-year Jovian cycle, e.g. Vibhava.",
+    )
     ascendant_sign: str
     ascendant_lord: str
     sunrise: datetime | None = Field(

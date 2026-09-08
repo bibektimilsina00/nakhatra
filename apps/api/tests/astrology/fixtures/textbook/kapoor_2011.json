@@ -215,5 +215,54 @@
       4
     ],
     "expect_total": 36
+  },
+  "hand_cast_kundali_1975": {
+    "source": "Kundali hand-cast by Dharmadatta Timilsina, Deupur-9, Parbat, for a birth at Deupur-7 Lukepani, Parbat, Nepal.",
+    "why_this_one": "23 November 1975 in Nepal is the case rule 5 exists for: Kathmandu ran +5:30 until 1986, not +5:45. Computing it at +5:45 puts the birth 15 minutes out, which is about 3.75 degrees of ascendant.",
+    "birth": {
+      "date": "1975-11-23",
+      "time": "20:18",
+      "tz_name": "Asia/Kathmandu",
+      "latitude": 28.22266,
+      "longitude": 83.6826
+    },
+    "expect": {
+      "vara": "Sunday",
+      "ayana": "Dakshinayana",
+      "ritu": "Sharad",
+      "masa": "Mangsir",
+      "paksha": "Krishna",
+      "tithi_name": "Panchami",
+      "yoga": "Shukla",
+      "vikram_samvat": 2032,
+      "shaka_samvat": 1897,
+      "samvatsara": "Vibhava"
+    },
+    "expect_lagna_sign": "Gemini",
+    "expect_moon_sign": "Cancer",
+    "expect_planet_signs": {
+      "Sun": "Scorpio",
+      "Moon": "Cancer",
+      "Mars": "Gemini",
+      "Mercury": "Scorpio",
+      "Jupiter": "Pisces",
+      "Venus": "Virgo",
+      "Saturn": "Cancer",
+      "Rahu": "Libra",
+      "Ketu": "Aries"
+    },
+    "planet_note": "Read off the जन्म लग्न कुण्डली lotus, whose cells are numbered by rashi: 1 Ketu, 3 Mars, 4 Moon+Saturn, 6 Venus, 7 Rahu, 8 Sun+Mercury, 12 Jupiter, the rest empty. All twelve cells agree.",
+    "known_divergence": {
+      "nakshatra": "The guru has Pushya pada 1; we have Punarvasu pada 4. Our Moon is 14 arcmin short of the boundary, and his own figures say his Moon had been in Pushya for 18 palas — 7 minutes. The two Moons are about half a degree apart, which is ordinary between a traditional siddhanta and a modern ephemeris, but here it lands on a boundary and changes the dasha lord from Jupiter to Saturn.",
+      "karana": "He has Gara, we have Taitila. Gara belongs to tithi 21 and he names tithi 20, so his own two values do not sit together; ours do."
+    }
+  },
+  "samvatsara": {
+    "source": "Fitted to the two hand-cast kundalis, twenty-nine years apart.",
+    "anchors": {
+      "1897": "Vibhava",
+      "1926": "Hevilambi"
+    },
+    "caveat": "Two documents in one tradition, not a rule from a text. The southern Ugadi reckoning names a different year for the same date."
   }
 }

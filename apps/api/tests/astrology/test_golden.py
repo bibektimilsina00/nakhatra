@@ -25,8 +25,7 @@ def _strip(d: dict) -> dict:
 def test_reproduces_expected(fixture):
     if fixture["expected"] is None:
         pytest.skip(
-            f"{fixture['name']} has no expected values yet — "
-            f"see tests/astrology/fixtures/README.md"
+            f"{fixture['name']} has no expected values yet — see tests/astrology/fixtures/README.md"
         )
     actual = _strip(build_chart(birth_of(fixture)).to_dict())
     expected = _strip(fixture["expected"])
@@ -45,7 +44,7 @@ def test_reproduces_expected(fixture):
         f"(verified against {fixture['verified_against']}).\n"
         + "\n".join(diffs[:10])
         + "\n\nIf this change is intended: bump ENGINE_VERSION, re-verify against a "
-          "reference tool, and re-write the fixture with --verified-against."
+        "reference tool, and re-write the fixture with --verified-against."
     )
 
 
@@ -65,8 +64,7 @@ def test_phase0_complete(fixtures):
     """
     unpopulated = [f["name"] for f in fixtures if f["expected"] is None]
     unverified = [
-        f["name"] for f in fixtures
-        if f["expected"] is not None and not f.get("verified_against")
+        f["name"] for f in fixtures if f["expected"] is not None and not f.get("verified_against")
     ]
     if not unpopulated and not unverified:
         return

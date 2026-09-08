@@ -101,6 +101,7 @@ export function PanchangPanel({ panchang }: { panchang: Panchang }) {
           <span className="mt-0.5 block text-dim">
             {panchang.ayana} · {panchang.ritu} ritu · Vikram Samvat{" "}
             {panchang.vikram_samvat} · Shaka {panchang.shaka_samvat}
+            {panchang.samvatsara ? ` · ${panchang.samvatsara} samvatsara` : ""}
           </span>
         </p>
       )}
