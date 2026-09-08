@@ -39,3 +39,26 @@ each with `make chart`, then add the fixture:
 | Known Kaal Sarp chart | Node-span logic (Phase 1) | All seven grahas between Rahu and Ketu |
 | Known *partial* Kaal Sarp | The partial branch (Phase 1) | Exactly one graha outside the span |
 | Mangal dosha with cancellation | Cancellation rules (Phase 1) | Mars in 1/2/4/7/8/12 *and* in Aries, Scorpio, or Capricorn |
+
+## `textbook/` — a different kind of check
+
+`textbook/kapoor_2011.json` is not a chart. It holds the worked examples
+printed in Deepak Kapoor's *Astronomy and Mathematical Astrology* (8th English
+edition, ISBN 81-901047-3-X), the Bharatiya Vidya Bhawan course text, and
+`test_textbook.py` runs them against the derived quantities: nakshatra, tithi,
+karana, yoga, the Vimshottari balance and its dates.
+
+Two reasons it is kept apart from the chart fixtures.
+
+**It does not need verifying.** These values were set in type by a published
+author before this repository existed, and the fixture cites the page each one
+is on. That is the independent implementation the files above are still
+waiting for — which is why the `verified_against` gate does not apply here, and
+why the `*.json` glob is deliberately not recursive.
+
+**It does not rest on the ephemeris.** Every example takes a longitude and
+returns a derived value, so a failure here is our arithmetic and nothing else.
+A chart fixture that breaks could be either.
+
+Nothing goes in this file that the page does not state. One example gives a
+nakshatra and its lord and no pada, so no pada is asserted for it.

@@ -1,0 +1,157 @@
+{
+  "source": {
+    "title": "Astronomy and Mathematical Astrology",
+    "author": "Deepak Kapoor",
+    "edition": "Eighth Edition (English), July 2011",
+    "isbn": "81-901047-3-X",
+    "publisher": "Vinita Kapoor, Delhi",
+    "note": "Institute of Astrology, Bharatiya Vidya Bhawan. Every value below is printed in the book as a worked example; page numbers are the book's own, not the PDF's.",
+    "numbering": "Nakshatra and tithi numbers and names come from the book's own tables (nakshatra table pp.83-85, tithi table p.172), not only from the sentence quoted on each example."
+  },
+  "ayanamsa": {
+    "page": 56,
+    "quote": "By adding the yearly rate of precession of 50\".29 per year to the corrected value of 23 degrees 15 minutes as on 21st March 1956, we get the present ayanamsha of 24 degrees 00 minutes 56 seconds as on 1st January 2011.",
+    "instant_utc": "2011-01-01T00:00:00",
+    "expect": "24°00'56\"",
+    "tolerance_arcmin": 1.0,
+    "why_not_exact": "The book extrapolates in a straight line from the 1956 committee value; Swiss Ephemeris uses the refined Lahiri series. The two differ by ~17\", far below a pada. The tolerance is one arcminute, which is still tight enough that switching to Raman (~1.2 deg away), Fagan-Bradley (~50') or KP (~6') would fail."
+  },
+  "nakshatra": [
+    {
+      "page": 173,
+      "quote": "Hence Moon is in 18th nakshatra which is Jyeshtha in the 4th pada or part.",
+      "longitude": "236°43'",
+      "expect": {
+        "number": 18,
+        "name": "Jyeshtha",
+        "pada": 4
+      }
+    },
+    {
+      "page": 117,
+      "quote": "Consider Moon at 3°23°42' at birth in the Cancer sign... janma nakshatra is Ashlesha 3rd pada.",
+      "as_printed": "3s 23°42'",
+      "longitude": "113°42'",
+      "expect": {
+        "number": 9,
+        "name": "Ashlesha",
+        "pada": 3
+      }
+    },
+    {
+      "page": 118,
+      "quote": "Moon in nakshatra - Purva Phalguni. (The extent of P.Phalguni nakshatra is 4-13-20 to 4-26-40)",
+      "as_printed": "4s 17°32'",
+      "longitude": "137°32'",
+      "expect": {
+        "number": 11,
+        "name": "Purva Phalguni"
+      },
+      "expect_note": "The book prints the nakshatra and its lord here, not the pada. Nothing in this file is asserted that the page does not state."
+    }
+  ],
+  "tithi": [
+    {
+      "page": 172,
+      "quote": "This means that 4 tithis have passed and the 5th tithi is running.",
+      "as_printed": "Moon 2s 23°43', Sun 1s 0°3'",
+      "moon": "83°43'",
+      "sun": "30°03'",
+      "expect": {
+        "number": 5,
+        "name": "Panchami",
+        "paksha": "Shukla"
+      }
+    }
+  ],
+  "karana": [
+    {
+      "page": 174,
+      "quote": "8 Karana have passed and the 9th Karana is running, or the first karna of 5th tithi is running.",
+      "moon": "83°43'",
+      "sun": "30°03'",
+      "expect": {
+        "number": 9,
+        "name": "Bava"
+      },
+      "numbering": "Position 1 of the 60-karana cycle is the fixed Kintughna; positions 2-57 are the seven movable karanas repeating eight times; 58-60 are Shakuni, Chatushpad, Naga. Position 9 is therefore the first movable, Bava."
+    }
+  ],
+  "yoga": [
+    {
+      "page": 174,
+      "quote": "Thus 23 yogas have elapsed and 24th yoga called Shukla is running.",
+      "as_printed": "Sun 4s 23°34', Moon 5s 16°12'",
+      "sun": "143°34'",
+      "moon": "166°12'",
+      "expect": {
+        "number": 24,
+        "name": "Shukla"
+      }
+    }
+  ],
+  "vimshottari": {
+    "balance": {
+      "page": 118,
+      "quote": "Dasha balance at birth = 13.7 years. Converting into years, months and days we get, Balance of Venus dasha as 13 years, 8 months, 12 days.",
+      "moon": "137°32'",
+      "expect": {
+        "lord": "Venus",
+        "years": 13.7
+      }
+    },
+    "succession": {
+      "page": 123,
+      "quote": "Add date of birth of native 54-1-15; Venus upto 67-9-27; Sun upto 73-9-27; Moon upto 83-9-27; Mars upto 90-9-27... the present running dasha is of Rahu which has started on 27-9-1990 and will continue upto 27-9-2008.",
+      "birth_date": "1954-01-15",
+      "moon": "137°32'",
+      "expect": [
+        {
+          "lord": "Venus",
+          "ends": "1967-09-27"
+        },
+        {
+          "lord": "Sun",
+          "ends": "1973-09-27"
+        },
+        {
+          "lord": "Moon",
+          "ends": "1983-09-27"
+        },
+        {
+          "lord": "Mars",
+          "ends": "1990-09-27"
+        },
+        {
+          "lord": "Rahu",
+          "ends": "2008-09-27"
+        }
+      ],
+      "why_this_matters": "The book converts the fractional year to months and days at 30 days to the month, then adds the whole y-m-d to the birth date as calendar units. This engine multiplies by a fixed 365.25-day year. The two land on the same day, which is the point of pinning it: a change to DAYS_PER_YEAR would move these dates off the printed ones."
+    },
+    "subperiods": [
+      {
+        "page": 121,
+        "quote": "Rahu/Mars = 1y 0m 18d",
+        "path": [
+          "Rahu",
+          "Mars"
+        ],
+        "expect_days": 383,
+        "tolerance_days": 1
+      },
+      {
+        "page": 122,
+        "quote": "Moon/Rahu/Venus = 10 x 18 x 20 / 40 = 90 days or 3 months",
+        "path": [
+          "Moon",
+          "Rahu",
+          "Venus"
+        ],
+        "expect_days": 90,
+        "tolerance_days": 1
+      }
+    ],
+    "subperiod_note": "The book's shortcuts (antar in months = AxB/10, pratyantar in days = AxBxC/40) assume 30-day months, so a printed duration can sit a day either side of a real calendar span containing a leap day. One day of tolerance; anything larger is a bug, not a convention."
+  }
+}

@@ -43,3 +43,7 @@ image.png
 # Generated speech, written at runtime by modules/voice/cache.py. Regenerated
 # on demand and keyed by a hash of the text, so it is a cache and not an asset.
 apps/api/src/data/
+
+# Reference texts. Read for verification, not ours to redistribute —
+# tests/astrology/fixtures/textbook/ cites them by page instead.
+*Astronomy and Mathematical Astrology*.pdf
