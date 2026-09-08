@@ -546,6 +546,14 @@
     "excluded": {
       "Mercury": "The table places Mercury at Cancer 29°55'52\", about 12.7° behind where it was, and marks it मार्गी (direct). Mercury was retrograde on 17 August 2004, six days from inferior conjunction — the position the table gives is roughly where Mercury reached at that conjunction. Both the longitude and the direction are the guru's, and this is recorded rather than matched. Surya Siddhanta does not rescue it either: it gives Leo 4°11', still 4.3° away."
     },
-    "note_on_the_sun": "Our Surya Siddhanta Sun is 0.47° from this table where a drik Sun would be 0.08°. That tension is real and is left standing: the Sun's siddhanta was settled on the panchanga — tithi, nakshatra, yoga, karana, masa, samvatsara across four charts — which is far more evidence than one degree cell, and changing it to close 0.4° here would break those."
+    "note_on_the_sun": "Our Surya Siddhanta Sun is 0.47° from this table where a drik Sun would be 0.08°. That tension is real and is left standing: the Sun's siddhanta was settled on the panchanga — tithi, nakshatra, yoga, karana, masa, samvatsara across four charts — which is far more evidence than one degree cell, and changing it to close 0.4° here would break those.",
+    "sankalpa_navamsa": {
+      "quote": "सिंह लग्नोदये कर्क नवमांशे सिंह राशिगते चान्द्रमसि",
+      "reads": "Leo rising, [the Moon] in the Cancer navamsa, the Moon being in the sign Leo.",
+      "why": "The varga cases check the sixteen division rules in isolation. This checks the other half — build_varga, which maps the lagna through the same division and counts houses from it. That assembly had nothing behind it, and this line of the sankalpa is the only outside statement of a divisional placement we hold for any of the four charts.",
+      "expect_lagna": "Leo",
+      "expect_moon_sign": "Leo",
+      "expect_moon_navamsa": "Cancer"
+    }
   }
 }

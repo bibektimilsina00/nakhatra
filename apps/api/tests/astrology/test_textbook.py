@@ -520,3 +520,76 @@ def test_mercury_is_the_one_the_guru_got_wrong():
     case = BOOK["hand_cast_graha_sphuta_2004"]
     assert set(case["excluded"]) == {"Mercury"}
     assert "Mercury" not in {g["name"] for g in case["grahas"]}
+
+
+def test_the_navamsa_matches_the_sankalpa():
+    """build_varga, against the one divisional placement a guru wrote down.
+
+    `लग्नोदये … नवमांशे … राशिगते` names three things in order: the rising sign,
+    the Moon's navamsa, and the Moon's rasi. The middle one is the only
+    outside check we have on the assembly — mapping the lagna through a
+    division and counting houses from it — as opposed to the division rules,
+    which the Kapoor cases cover.
+    """
+    from app.astrology_core.chart import build_chart
+    from app.astrology_core.models import BirthMoment
+
+    case = BOOK["hand_cast_graha_sphuta_2004"]
+    claim = case["sankalpa_navamsa"]
+    chart = build_chart(
+        BirthMoment(
+            local_datetime=datetime.fromisoformat(
+                f"{case['birth']['date']}T{case['birth']['time']}"
+            ),
+            tz_name=case["birth"]["tz_name"],
+            latitude=case["birth"]["latitude"],
+            longitude=case["birth"]["longitude"],
+            time_accuracy="exact",
+        )
+    )
+
+    moon = next(p for p in chart.planets if p.name == "Moon")
+    navamsa = next(v for v in chart.vargas if v.code == "D9")
+    moon_d9 = next(p for p in navamsa.placements if p.planet == "Moon")
+
+    assert chart.lagna_sign == claim["expect_lagna"]
+    assert moon.sign == claim["expect_moon_sign"]
+    assert moon_d9.sign == claim["expect_moon_navamsa"], (
+        f"The Moon's navamsa is {moon_d9.sign}, but the sankalpa reads "
+        f"{claim['quote']} — {claim['reads']}"
+    )
+
+
+def test_every_varga_counts_its_houses_from_its_own_lagna():
+    """A divisional chart is a chart: its lagna is its first house.
+
+    Cheap to get wrong by counting from the rasi lagna instead of the varga's
+    own, which leaves all sixteen charts drawn with plausible but shifted
+    houses.
+    """
+    from app.astrology_core.chart import build_chart
+    from app.astrology_core.models import BirthMoment
+
+    case = BOOK["hand_cast_graha_sphuta_2004"]
+    chart = build_chart(
+        BirthMoment(
+            local_datetime=datetime.fromisoformat(
+                f"{case['birth']['date']}T{case['birth']['time']}"
+            ),
+            tz_name=case["birth"]["tz_name"],
+            latitude=case["birth"]["latitude"],
+            longitude=case["birth"]["longitude"],
+            time_accuracy="exact",
+        )
+    )
+
+    assert len(chart.vargas) == 16
+    for varga_chart in chart.vargas:
+        for placement in varga_chart.placements:
+            assert 1 <= placement.house <= 12
+            expected = ((placement.sign_index - varga_chart.lagna_sign_index) % 12) + 1
+            assert placement.house == expected, (
+                f"{varga_chart.code}: {placement.planet} in {placement.sign} is "
+                f"house {placement.house}, but {varga_chart.lagna_sign} rises in "
+                f"that chart, which makes it house {expected}."
+            )
