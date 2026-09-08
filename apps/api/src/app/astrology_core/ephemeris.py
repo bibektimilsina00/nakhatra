@@ -32,6 +32,11 @@ _SWE_PLANET = {
 _init_lock = threading.Lock()
 _initialised = False
 
+#: `swe.set_topo` writes process-global state that the *next* `calc_ut` reads,
+#: so the pair has to be atomic. Two charts computed concurrently for different
+#: birthplaces would otherwise silently borrow each other's parallax.
+_topo_lock = threading.Lock()
+
 
 def _ensure_init() -> None:
     """Idempotent global setup. swisseph keeps process-global state, so this
@@ -102,19 +107,41 @@ class RawPosition:
     speed: float       # degrees/day, negative = retrograde
 
 
-def planet_positions(jd: float) -> dict[str, RawPosition]:
-    """Sidereal longitude and speed for all nine grahas.
+def planet_positions(
+    jd: float, latitude: float, longitude: float, altitude: float = 0.0
+) -> dict[str, RawPosition]:
+    """Sidereal longitude and speed for all nine grahas, seen from the birthplace.
+
+    **Topocentric, not geocentric.** The Moon is close enough that where the
+    observer stands moves its apparent position by up to 57 arcminutes — more
+    than four padas. Geocentric positions are what most Indian software
+    publishes, but they are the Moon as seen from the centre of the Earth,
+    where nobody was born.
+
+    This was verified the hard way. Two kundalis hand-cast in Parbat disagreed
+    with this engine on the janma nakshatra, and both agree with it once the
+    parallax is applied: the 2004 chart's printed Moon is Leo 13°20' and
+    topocentric gives Leo 13°20', 0.6 arcminutes apart, where geocentric gave
+    12°26'. It also settles that chart's tithi and karana, which were one step
+    behind the guru's, and the 1975 chart's name syllable — हु, from Pushya
+    pada 1, which is the syllable the family actually named the child from.
+
+    The correction is applied to every body for consistency, but only the Moon
+    moves perceptibly: solar parallax is under 9 arcseconds and planetary
+    parallax under 30.
 
     Ketu is not computed: it is definitionally 180 degrees from Rahu and shares
     its speed. Computing it separately invites the two to disagree.
     """
-    flags = _flags()
+    flags = _flags() | swe.FLG_TOPOCTR
     out: dict[str, RawPosition] = {}
-    for name, ipl in _SWE_PLANET.items():
-        values, retflag = swe.calc_ut(jd, ipl, flags)
-        if retflag < 0:
-            raise EphemerisError(f"swisseph failed for {name} at jd={jd}: {retflag}")
-        out[name] = RawPosition(longitude=values[0] % 360.0, speed=values[3])
+    with _topo_lock:
+        swe.set_topo(longitude, latitude, altitude)
+        for name, ipl in _SWE_PLANET.items():
+            values, retflag = swe.calc_ut(jd, ipl, flags)
+            if retflag < 0:
+                raise EphemerisError(f"swisseph failed for {name} at jd={jd}: {retflag}")
+            out[name] = RawPosition(longitude=values[0] % 360.0, speed=values[3])
 
     rahu = out["Rahu"]
     out["Ketu"] = RawPosition(longitude=(rahu.longitude + 180.0) % 360.0, speed=rahu.speed)

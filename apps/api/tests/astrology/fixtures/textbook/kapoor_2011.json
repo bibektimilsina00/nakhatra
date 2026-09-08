@@ -171,7 +171,8 @@
       "masa": "Bhadra",
       "vikram_samvat": 2061,
       "shaka_samvat": 1926
-    }
+    },
+    "expect_moon_note": "The 2004 chart's Moon lands 0.6 arcmin past the Magha boundary under topocentric — his printed 13°20' rounds to the boundary itself, so which nakshatra it falls in is decided by under a minute of recorded birth time. Not asserted here, because neither answer is defensible over the other."
   },
   "tribhagi": {
     "source": "The त्रिभागी महादशा table printed on the same hand-cast kundali.",
@@ -236,7 +237,9 @@
       "yoga": "Shukla",
       "vikram_samvat": 2032,
       "shaka_samvat": 1897,
-      "samvatsara": "Vibhava"
+      "samvatsara": "Vibhava",
+      "nakshatra": "Pushya",
+      "nakshatra_pada": 1
     },
     "expect_lagna_sign": "Gemini",
     "expect_moon_sign": "Cancer",
@@ -253,9 +256,18 @@
     },
     "planet_note": "Read off the जन्म लग्न कुण्डली lotus, whose cells are numbered by rashi: 1 Ketu, 3 Mars, 4 Moon+Saturn, 6 Venus, 7 Rahu, 8 Sun+Mercury, 12 Jupiter, the rest empty. All twelve cells agree.",
     "known_divergence": {
-      "nakshatra": "The guru has Pushya pada 1; we have Punarvasu pada 4. Our Moon is 14 arcmin short of the boundary, and his own figures say his Moon had been in Pushya for 18 palas — 7 minutes. The two Moons are about half a degree apart, which is ordinary between a traditional siddhanta and a modern ephemeris, but here it lands on a boundary and changes the dasha lord from Jupiter to Saturn.",
-      "karana": "He has Gara, we have Taitila. Gara belongs to tithi 21 and he names tithi 20, so his own two values do not sit together; ours do."
-    }
+      "resolved_by_topocentric": "Both of the earlier divergences were parallax. Geocentric put the Moon at Cancer 3°05' — 14 arcmin short of Pushya — and gave Punarvasu pada 4, Jupiter dasha, Cat yoni and the syllable Hi. Topocentric gives Cancer 3°58': Pushya pada 1, Saturn dasha, Sheep yoni, and the syllable हु, which is the syllable the family named हुमनाथ from. All four now agree with the guru.",
+      "still_differs": "karana — he has Gara, we have Taitila. Gara belongs to tithi 21 and he names tithi 20, so his own two values do not sit together. Parallax does not move this: the elongation shift is under a degree and Gara needs four."
+    },
+    "expect_moon_nakshatra_note": "Topocentric. Geocentric gives Punarvasu pada 4 and is what this engine returned before 0.4.0.",
+    "expect_avakhada": {
+      "yoni": "Sheep",
+      "gana": "Deva",
+      "nadi": "Madhya",
+      "varna": "Brahmin",
+      "name_syllable": "Hu"
+    },
+    "avakhada_quote": "हु काराक्षरस्य अज योनीः मध्य नाडी देव गणः मेष वर्गः विप्र — syllable Hu, Aja (goat/ram) yoni, Madhya nadi, Deva gana, Vipra varna. Every one of these follows from the nakshatra, so all five were wrong before the Moon was made topocentric."
   },
   "samvatsara": {
     "source": "Fitted to the two hand-cast kundalis, twenty-nine years apart.",

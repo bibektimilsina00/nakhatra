@@ -37,7 +37,7 @@ from app.astrology_core.yogini import build_yogini
 def build_chart(birth: BirthMoment) -> Chart:
     jd = ephemeris.julian_day(birth.local_datetime, birth.tz_name)
     ayan = ephemeris.ayanamsa(jd)
-    raw = ephemeris.planet_positions(jd)
+    raw = ephemeris.planet_positions(jd, birth.latitude, birth.longitude)
 
     asc = ephemeris.ascendant(jd, birth.latitude, birth.longitude)
     lagna_sign = int(asc // DEGREES_PER_SIGN)

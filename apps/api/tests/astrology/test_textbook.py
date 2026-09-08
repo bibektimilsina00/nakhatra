@@ -243,8 +243,20 @@ def test_a_1975_nepal_birth_matches_the_kundali_cast_for_it():
     )
 
     assert chart.lagna_sign == case["expect_lagna_sign"], case["source"]
-    got = {k: getattr(chart.panchang, k) for k in case["expect"]}
-    assert got == case["expect"], case["source"]
+    # The nakshatra is the value two jyotishes said we had wrong; it is right
+    # only because the Moon is topocentric.
+    assert chart.panchang.nakshatra == case["expect"]["nakshatra"], case["known_divergence"][
+        "resolved_by_topocentric"
+    ]
+    assert chart.panchang.nakshatra_pada == case["expect"]["nakshatra_pada"]
+    assert chart.dasha.birth_lord == "Saturn", "Pushya's lord heads the dasha"
+    # The whole avakhada hangs off the nakshatra, so all five of these were
+    # wrong before the Moon was made topocentric.
+    got_av = {k: getattr(chart.avakhada, k) for k in case["expect_avakhada"]}
+    assert got_av == case["expect_avakhada"], case["avakhada_quote"]
+    frame = {k: v for k, v in case["expect"].items() if not k.startswith("nakshatra")}
+    got = {k: getattr(chart.panchang, k) for k in frame}
+    assert got == frame, case["source"]
     signs = {p.name: p.sign for p in chart.planets}
     assert signs == case["expect_planet_signs"], case["planet_note"]
 

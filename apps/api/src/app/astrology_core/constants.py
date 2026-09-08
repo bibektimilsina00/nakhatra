@@ -12,7 +12,11 @@ from typing import Final
 
 # Bump on ANY change to this file or to a calculation rule. Cached charts with
 # an older version are recomputed, never migrated in place.
-ENGINE_VERSION: Final = "0.3.0"
+#: 0.4.0 — the Moon (and every other body) is now topocentric rather than
+#: geocentric. Parallax moves the Moon by up to 57 arcminutes, so this changes
+#: the nakshatra on roughly one chart in five, and with it the dasha lord, the
+#: yoni and the name syllable. Every golden fixture was re-verified.
+ENGINE_VERSION: Final = "0.4.0"
 
 DEGREES_PER_SIGN: Final = 30.0
 DEGREES_PER_NAKSHATRA: Final = 360.0 / 27.0      # 13°20'
