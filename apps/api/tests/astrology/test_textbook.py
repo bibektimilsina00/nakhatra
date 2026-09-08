@@ -26,7 +26,7 @@ from pathlib import Path
 
 import pytest
 
-from app.astrology_core import dasha, ephemeris, nakshatra, panchang
+from app.astrology_core import constants, dasha, ephemeris, nakshatra, panchang
 
 BOOK = json.loads(
     (Path(__file__).parent / "fixtures" / "textbook" / "kapoor_2011.json").read_text()
@@ -420,3 +420,103 @@ def test_the_nakshatra_transit_matches_the_gurus_bhabhoga():
         )
         # And it must actually be populated, not left at the default.
         assert chart.dasha.bhukta_ghati > 0
+
+
+# --- divisional charts ---
+
+
+SIGN_INDEX = {name: i for i, name in enumerate(constants.SIGNS)}
+
+
+@pytest.mark.parametrize(
+    "case",
+    BOOK["vargas"]["cases"],
+    ids=lambda c: f"{c['varga']}-{c['body'].replace(' ', '_')}",
+)
+def test_varga_matches_the_books_worked_example(case):
+    """Each divisional rule, against the example the book works through.
+
+    The starting sign is what varies between vargas — from the sign itself, or
+    the 7th, or Aries/Leo/Sagittarius by the sign's nature — and getting it
+    wrong still yields a chart that reads as plausible. These are the only
+    values that catch it.
+    """
+    from app.astrology_core import varga
+
+    longitude = SIGN_INDEX[case["sign"]] * 30 + deg(case["degrees"])
+    actual = constants.SIGNS[varga._MAPPERS[case["varga"]](longitude)]
+
+    assert actual == case["expect"], (
+        f"{case['varga']} ({case['name']}): {case['body']} at {case['sign']} "
+        f"{case['degrees']} lands in {actual}, but Kapoor p.{case['page']} "
+        f"works it to {case['expect']}. Rule: {case['rule']}"
+    )
+
+
+def test_every_shipped_varga_is_covered_or_named():
+    """A varga with no worked example behind it should be a deliberate choice."""
+    from app.astrology_core import varga
+
+    covered = {c["varga"] for c in BOOK["vargas"]["cases"]}
+    shipped = {v.code for v in varga.VARGAS}
+    unverified = shipped - covered - {"D1"}  # D1 is the rasi itself
+
+    assert unverified == {"D16", "D27", "D30", "D40", "D45"}, (
+        "The set of vargas with no textbook example has changed. Kapoor gives a "
+        f"worked example for {sorted(covered)} but only states the rule for "
+        f"{sorted(unverified)}; if you have found an example for one of those, "
+        "add it to the fixture and shrink this set."
+    )
+
+
+# --- planet degrees, against a practitioner's own table ---
+
+
+def test_planet_degrees_match_the_hand_cast_graha_sphuta():
+    """Every graha's sign and degree, against an arcsecond table cast by hand.
+
+    This is the only check that a star-planet's longitude is right rather than
+    merely plausible, and so it is also what the divisional charts rest on: a
+    varga rule verified against the textbook is still worthless if the
+    longitude fed into it is a degree out, because D9 divides a sign into
+    3°20' and D60 into half a degree.
+    """
+    from app.astrology_core.chart import build_chart
+    from app.astrology_core.models import BirthMoment
+
+    case = BOOK["hand_cast_graha_sphuta_2004"]
+    chart = build_chart(
+        BirthMoment(
+            local_datetime=datetime.fromisoformat(
+                f"{case['birth']['date']}T{case['birth']['time']}"
+            ),
+            tz_name=case["birth"]["tz_name"],
+            latitude=case["birth"]["latitude"],
+            longitude=case["birth"]["longitude"],
+            time_accuracy="exact",
+        )
+    )
+
+    assert chart.lagna_sign == case["expect_lagna_sign"]
+
+    ours = {p.name: p for p in chart.planets}
+    for expected in case["grahas"]:
+        planet = ours[expected["name"]]
+        assert planet.sign == expected["sign"], (
+            f"{expected['name']} is in {planet.sign}, but the guru's table has it "
+            f"in {expected['sign']}. A wrong rashi is not a rounding difference — "
+            f"see {case['what_it_settles']}"
+        )
+        off = abs(planet.degree_in_sign - deg(expected["degrees"]))
+        assert off <= case["tolerance_degrees"], (
+            f"{expected['name']} at {expected['sign']} "
+            f"{planet.degree_in_sign:.4f}° is {off:.2f}° from the table's "
+            f"{expected['degrees']}, over the {case['tolerance_degrees']}° allowed."
+        )
+
+
+def test_mercury_is_the_one_the_guru_got_wrong():
+    """Guard the exclusion, so it stays a recorded finding and not a silent skip."""
+    case = BOOK["hand_cast_graha_sphuta_2004"]
+    assert set(case["excluded"]) == {"Mercury"}
+    assert "Mercury" not in {g["name"] for g in case["grahas"]}

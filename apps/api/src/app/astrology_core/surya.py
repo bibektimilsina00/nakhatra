@@ -21,11 +21,25 @@ How it works, in the text's own terms:
              is given in degrees and interpolated across the quadrants
 
 There is no shighra (conjunction) correction here because neither the Sun nor
-the Moon takes one — that term is for the five star-planets. Those are still
-drik: a Surya Siddhanta Mars is a degree or two out, which is worse than the
-modern one and changes nothing about a rashi, so there is nothing to gain and
-accuracy to lose. Everything that actually differs — tithi, nakshatra, yoga,
-karana, the dasha, the avakhada — is a function of these two bodies alone.
+the Moon takes one — that term is for the five star-planets. Those are
+deliberately left drik, and that was measured rather than assumed. Surya
+Siddhanta star-planets were implemented in full (manda and shighra, the
+four-step process of II.43-45) and checked against the two hand-cast graha
+sphuta tables we can read to the arcsecond. They lose:
+
+  Venus and Mars   Surya Siddhanta is nearer — Venus by 26 arcseconds against
+                   the 2004 table, which is a striking match
+  Jupiter          Surya Siddhanta puts it in Virgo; the guru writes Leo
+  Mars (2002)      Surya Siddhanta puts it in Aquarius; the guru writes Pisces
+  Saturn           5.3 degrees out, its documented weak point
+
+A wrong rashi is a worse error than any number of arcminutes, and drik gets
+every star-planet sign right in both charts and their degrees to about a
+degree. So the split is not a compromise: the Sun and Moon are Surya
+Siddhanta because the panchanga is reckoned from them and it matches across
+all four charts, and the star-planets are drik because that is what the
+practitioners' own tables agree with. The test named for the graha sphuta
+table holds the second half of that in place.
 """
 
 from __future__ import annotations

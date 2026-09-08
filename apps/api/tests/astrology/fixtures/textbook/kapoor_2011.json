@@ -373,5 +373,179 @@
       }
     ],
     "residual": "The balance itself is still about 40 days from each guru's, because our Moon sits 5 to 12 arcminutes from theirs — their bija corrections against ours. Fitting the apogee to close it improved those two numbers by a third and made the ephemeris worse against observation, so it was rejected. The gap is now visible in the bhukta figure rather than hidden in a date."
+  },
+  "vargas": {
+    "source": "Chapter XII, Divisional Charts (pp. 143-157). Each case is the book's own worked example: the body, the longitude the page states, and the divisional sign it arrives at.",
+    "why": "A varga rule is easy to implement plausibly and wrongly. The starting sign differs per varga and, within a varga, by whether the sign is odd/even or movable/fixed/dual — and a wrong starting sign still produces a chart that looks entirely reasonable. Only the book's own answers catch it.",
+    "note_on_d60": "The page computes D60 by hand as 'multiply the degrees by two, ignore the minutes': that resolves only 30 distinct shashtiamsas, not 60, so it is a hand-calculation shortcut rather than the rule. We use floor(2 x degrees), which agrees with the book's example (13°23', minutes under 30) and keeps all 60 divisions.",
+    "cases": [
+      {
+        "varga": "D2",
+        "name": "Hora",
+        "body": "Venus",
+        "sign": "Libra",
+        "degrees": "14°13'",
+        "expect": "Leo",
+        "page": 146,
+        "rule": "Odd signs: first half Leo, second half Cancer. Even signs reversed."
+      },
+      {
+        "varga": "D3",
+        "name": "Drekkana",
+        "body": "Saturn",
+        "sign": "Leo",
+        "degrees": "13°45'",
+        "expect": "Sagittarius",
+        "page": 147,
+        "rule": "1st third the sign itself, 2nd the 5th from it, 3rd the 9th."
+      },
+      {
+        "varga": "D4",
+        "name": "Chaturthamsa",
+        "body": "Ketu",
+        "sign": "Pisces",
+        "degrees": "14°13'",
+        "expect": "Gemini",
+        "page": 148,
+        "rule": "The sign itself, then the 4th, 7th, 10th from it."
+      },
+      {
+        "varga": "D7",
+        "name": "Saptamsa",
+        "body": "Sun",
+        "sign": "Scorpio",
+        "degrees": "23°58'",
+        "expect": "Libra",
+        "page": 149,
+        "rule": "Odd signs count from the sign itself; even signs from the 7th.",
+        "quote": "Assume Sun posited in Scorpio sign in the birth chart at 23°58' in the 6th division. As it is placed in an even sign the counting shall start from 7th from the sign i.e. from Taurus and 6th division will fall in Libra."
+      },
+      {
+        "varga": "D9",
+        "name": "Navamsa",
+        "body": "Rahu",
+        "sign": "Aquarius",
+        "degrees": "24°02'",
+        "expect": "Taurus",
+        "page": 151,
+        "rule": "Movable signs from themselves, fixed from the 9th, dual from the 5th. Rahu falls in the 8th navamsa."
+      },
+      {
+        "varga": "D9",
+        "name": "Navamsa",
+        "body": "Moon",
+        "sign": "Cancer",
+        "degrees": "22°12'",
+        "expect": "Capricorn",
+        "page": 151,
+        "rule": "The Moon falls in the 7th navamsa of a movable sign."
+      },
+      {
+        "varga": "D10",
+        "name": "Dasamsa",
+        "body": "Jupiter",
+        "sign": "Pisces",
+        "degrees": "5°45'",
+        "expect": "Sagittarius",
+        "page": 152,
+        "rule": "Odd signs count from the sign itself; even signs from the 9th. Jupiter falls in the 2nd division of an even sign."
+      },
+      {
+        "varga": "D12",
+        "name": "Dwadasamsa",
+        "body": "a planet",
+        "sign": "Aries",
+        "degrees": "12°34'",
+        "expect": "Virgo",
+        "page": 153,
+        "rule": "Twelve parts of 2°30', counted from the sign itself."
+      },
+      {
+        "varga": "D20",
+        "name": "Vimsamsa",
+        "body": "Jupiter",
+        "sign": "Libra",
+        "degrees": "11°56'",
+        "expect": "Scorpio",
+        "page": 155,
+        "rule": "Movable from Aries, fixed from Sagittarius, dual from Leo. Jupiter falls in the 8th division of a movable sign."
+      },
+      {
+        "varga": "D24",
+        "name": "Siddhamsa",
+        "body": "Rahu",
+        "sign": "Taurus",
+        "degrees": "3°43'",
+        "expect": "Virgo",
+        "page": 156,
+        "rule": "Odd signs from Leo, even from Cancer. Rahu falls in the 3rd division, counted from Cancer."
+      },
+      {
+        "varga": "D60",
+        "name": "Shashtiamsa",
+        "body": "Jupiter",
+        "sign": "Gemini",
+        "degrees": "13°23'",
+        "expect": "Leo",
+        "page": 157,
+        "rule": "Sixty parts of 0°30', counted from the sign itself.",
+        "quote": "Assume Jupiter in Gemini at 13°23'. Multiply by two and we get 26°46'. Ignore the minutes and divide the degrees by 12."
+      }
+    ]
+  },
+  "hand_cast_graha_sphuta_2004": {
+    "source": "The ग्रहाणां स्पष्टाः table of a kundali hand-cast in Deupur, Parbat, for a birth at Deupur-7 Lukepani, Parbat, Nepal. The table gives each graha to the विकला (arcsecond).",
+    "why": "Until now nothing tested a planet's degree. The panchanga fixtures pin the Sun and Moon, and the varga cases pin the division rules — but the five star-planets, and therefore every divisional chart built from them, rested on nothing. This is the only ground truth we have for them: a practitioner's own arcsecond-level table.",
+    "what_it_settles": "Whether the star-planets should come from Surya Siddhanta, as the Sun and Moon do. They should not. Against this table a Surya Siddhanta Jupiter lands in Virgo where the guru writes Leo, and against the 2002 chart a Surya Siddhanta Mars lands in Aquarius where the guru writes Pisces — each a wrong rashi, which is a worse error than any number of arcminutes. Drik reproduces every star-planet sign in both charts and their degrees to about a degree. The Sun and Moon keep Surya Siddhanta because that is what the tithi, nakshatra, yoga, karana and masa are reckoned from, and those match across all four charts.",
+    "birth": {
+      "date": "2004-08-17",
+      "time": "07:40",
+      "tz_name": "Asia/Kathmandu",
+      "latitude": 28.22266,
+      "longitude": 83.6826
+    },
+    "expect_lagna_sign": "Leo",
+    "tolerance_degrees": 1.5,
+    "grahas": [
+      {
+        "name": "Sun",
+        "sign": "Leo",
+        "degrees": "0°30'13\""
+      },
+      {
+        "name": "Mars",
+        "sign": "Leo",
+        "degrees": "9°43'28\""
+      },
+      {
+        "name": "Jupiter",
+        "sign": "Leo",
+        "degrees": "28°51'46\""
+      },
+      {
+        "name": "Venus",
+        "sign": "Gemini",
+        "degrees": "15°14'04\""
+      },
+      {
+        "name": "Saturn",
+        "sign": "Gemini",
+        "degrees": "28°51'51\""
+      },
+      {
+        "name": "Rahu",
+        "sign": "Aries",
+        "degrees": "11°32'26\""
+      },
+      {
+        "name": "Ketu",
+        "sign": "Libra",
+        "degrees": "11°32'26\""
+      }
+    ],
+    "excluded": {
+      "Mercury": "The table places Mercury at Cancer 29°55'52\", about 12.7° behind where it was, and marks it मार्गी (direct). Mercury was retrograde on 17 August 2004, six days from inferior conjunction — the position the table gives is roughly where Mercury reached at that conjunction. Both the longitude and the direction are the guru's, and this is recorded rather than matched. Surya Siddhanta does not rescue it either: it gives Leo 4°11', still 4.3° away."
+    },
+    "note_on_the_sun": "Our Surya Siddhanta Sun is 0.47° from this table where a drik Sun would be 0.08°. That tension is real and is left standing: the Sun's siddhanta was settled on the panchanga — tithi, nakshatra, yoga, karana, masa, samvatsara across four charts — which is far more evidence than one degree cell, and changing it to close 0.4° here would break those."
   }
 }
