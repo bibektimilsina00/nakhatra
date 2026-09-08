@@ -489,6 +489,16 @@
             "title": "Place Label",
             "type": "string"
           },
+          "siddhanta": {
+            "default": "surya",
+            "description": "Which system computes the Sun and Moon, and therefore the panchang, the dashas and the avakhada. `surya` is \u0938\u0942\u0930\u094d\u092f \u0938\u093f\u0926\u094d\u0927\u093e\u0928\u094d\u0924, what a Nepali kundali is cast from, and the default. `drik` is the modern ephemeris \u2014 better astronomy, and what AstroSage and AstroTalk publish, so use it to compare against those. The five star-planets are drik either way.",
+            "enum": [
+              "surya",
+              "drik"
+            ],
+            "title": "Siddhanta",
+            "type": "string"
+          },
           "time": {
             "examples": [
               "08:30"

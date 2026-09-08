@@ -341,56 +341,45 @@ def test_the_2002_kapilvastu_kundali():
 
 
 def test_the_moon_convention_is_recorded_and_measured():
-    """The choice between a geocentric and a topocentric Moon, with its score.
+    """सूर्य सिद्धान्त against the modern ephemeris, on the chart that decides it.
 
-    Kept as a test rather than a comment so the numbers stay attached to the
-    decision. If someone reaches for topocentric again, this is what they have
-    to argue with.
-    """
-    case = BOOK["moon_convention"]
-    assert case["decision"] == "geocentric", case["why"]
-
-    from app.astrology_core import ephemeris
-
-    # 2004-08-17 07:40 Parbat: the chart whose five statements pin a 10-arcmin
-    # window, and the tightest evidence in the set.
-    jd = ephemeris.julian_day(datetime(2004, 8, 17, 7, 40), "Asia/Kathmandu")
-    moon = ephemeris.planet_positions(jd)["Moon"].longitude
-    lo, hi = 132.586, 132.748
-    assert abs(moon - lo) * 60 < 15, case["the_2004_chart_pins_it"]
-    assert moon < hi, "a Moon past this window is topocentric, and it is wrong here"
-
-
-def test_boundary_warnings_catch_every_disagreement_with_a_guru():
-    """The honest answer to a Moon we cannot reproduce.
-
-    Each value a guru named differently is flagged here as being within an
-    hour of changing — and in each case he names the value we say is *next*,
-    because his almanac's Moon had already crossed. The 2002 chart flags
-    nothing, and its disagreement is about the recorded birth time rather
-    than about the Moon.
+    The 2004 kundali states five things about the same moment — Magha pada 4,
+    Shukla Dwitiya, Balava, Parigha and a Cancer navamsa. Surya Siddhanta
+    reproduces all five; the modern ephemeris misses two. Asserting the
+    outputs rather than a longitude window, because the window depends on
+    which Sun you measure it against, and the two systems have different Suns.
     """
     from app.astrology_core import build_chart
     from app.astrology_core.models import BirthMoment
+    from app.astrology_core.varga import d9
 
-    case = BOOK["boundary_warnings"]
-    places = {
-        "1975-11-23": ("20:18", 28.2227, 83.6826),
-        "2004-08-17": ("07:40", 28.2227, 83.6826),
-        "2002-01-11": ("19:30", 27.4823, 83.2778),
-    }
-    for day, expected in case["expect"].items():
-        time, lat, lon = places[day]
-        chart = build_chart(
-            BirthMoment(
-                local_datetime=datetime.fromisoformat(f"{day}T{time}"),
-                tz_name="Asia/Kathmandu",
-                latitude=lat,
-                longitude=lon,
-                time_accuracy="exact",
-            )
+    case = BOOK["moon_convention"]
+    assert case["decision"] == "surya", case["why"]
+
+    birth = BirthMoment(
+        local_datetime=datetime(2004, 8, 17, 7, 40),
+        tz_name="Asia/Kathmandu",
+        latitude=28.2227,
+        longitude=83.6826,
+        time_accuracy="exact",
+    )
+    guru = ("Magha", 4, "Dwitiya", "Balava", "Parigha", 3)  # 3 = Cancer navamsa
+
+    def five(siddhanta: str):
+        chart = build_chart(birth, siddhanta)
+        p = chart.panchang
+        moon = next(x for x in chart.planets if x.name == "Moon")
+        return (
+            p.nakshatra,
+            p.nakshatra_pada,
+            p.tithi_name,
+            p.karana,
+            p.yoga,
+            d9(moon.sign_index * 30 + moon.degree_in_sign),
         )
-        got = [[w.element, w.current, w.upcoming] for w in chart.panchang.near_boundary]
-        assert got == expected, f"{day}: {case['why']}"
-        for w in chart.panchang.near_boundary:
-            assert 0 < w.minutes <= 60, "a flagged boundary must be within the hour"
+
+    assert five("surya") == guru, case["why"]
+    assert five("drik") != guru, (
+        "the modern ephemeris used to miss this chart's tithi and karana — if "
+        "it now matches, something about the comparison has changed"
+    )

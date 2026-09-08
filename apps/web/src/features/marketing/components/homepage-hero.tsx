@@ -87,6 +87,8 @@ export function HomepageHero() {
     }
 
     const birthDetails: BirthDetailsIn = {
+      // सूर्य सिद्धान्त — the system a Nepali kundali is cast from.
+      siddhanta: "surya",
       name: name.trim(),
       date: formattedDate,
       time: formattedTime,

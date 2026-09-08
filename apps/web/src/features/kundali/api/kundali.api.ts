@@ -2,8 +2,20 @@ import { ApiError } from "@/lib/api/errors";
 import type { BirthDetailsForm } from "@/features/kundali/schema/birth-details";
 import type { BirthDetailsIn, Chart, Place } from "@/features/kundali/types";
 
+/**
+ * सूर्य सिद्धान्त, the system a Nepali kundali is cast from. Stated rather
+ * than left to the server's default so the choice is visible here: it decides
+ * the panchang, the dashas and the avakhada, and switching it silently would
+ * change every chart the app has ever shown.
+ *
+ * `drik` is the modern ephemeris — better astronomy, and what AstroSage and
+ * AstroTalk publish, so it is the one to send when comparing against those.
+ */
+const SIDDHANTA = "surya" as const;
+
 export function toRequestBody(form: BirthDetailsForm, place: Place): BirthDetailsIn {
   return {
+    siddhanta: SIDDHANTA,
     name: form.name.trim(),
     date: form.date,
     time: form.time,

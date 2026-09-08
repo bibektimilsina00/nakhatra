@@ -126,7 +126,9 @@ def main() -> int:
     else:
         ap.error("give --fixture NAME, or all of --date --time --tz --lat --lon")
 
-    chart = build_chart(birth)
+    # A fixture is verified against a specific system; keep printing and
+    # freezing in that one, whatever the product default is.
+    chart = build_chart(birth, fixture.get("siddhanta", "drik"))
     print(json.dumps(chart.to_dict(), indent=2, sort_keys=True) if args.json else render(chart))
 
     if args.write:

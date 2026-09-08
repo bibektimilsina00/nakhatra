@@ -1209,6 +1209,13 @@ export interface components {
             /** Place Label */
             place_label: string;
             /**
+             * Siddhanta
+             * @description Which system computes the Sun and Moon, and therefore the panchang, the dashas and the avakhada. `surya` is सूर्य सिद्धान्त, what a Nepali kundali is cast from, and the default. `drik` is the modern ephemeris — better astronomy, and what AstroSage and AstroTalk publish, so use it to compare against those. The five star-planets are drik either way.
+             * @default surya
+             * @enum {string}
+             */
+            siddhanta: "surya" | "drik";
+            /**
              * Time
              * @example 08:30
              */

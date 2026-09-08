@@ -302,6 +302,7 @@ export function ReadingDashboard() {
     longitude: 0,
     place_label: "",
     time_accuracy: "exact",
+    siddhanta: "surya",
   });
 
   const [activeChart, setActiveChart] = useState<Chart | null>(null);

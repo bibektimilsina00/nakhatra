@@ -31,7 +31,7 @@
       "time_accuracy": "exact",
       "tz_name": "Asia/Kathmandu"
     },
-    "computed_at": "2026-09-08T18:26:13.620756+00:00",
+    "computed_at": "2026-09-08T18:40:09.473935+00:00",
     "dasha": {
       "balance_years": 4.7808782655386315,
       "birth_lord": "Ketu",
@@ -5862,7 +5862,7 @@
       ]
     },
     "doshas": [],
-    "engine_version": "0.5.0",
+    "engine_version": "0.6.0",
     "houses": [
       {
         "lord": "Moon",
@@ -14603,6 +14603,7 @@
     }
   },
   "name": "astrotalk_reference_2002",
-  "verified_against": "TWO independent references. (1) AstroTalk (astrotalk.com) free kundli, 2026-08. (2) A kundali hand-cast for this birth by a Nepali guru, time confirmed by the subject \u2014 20 of 22 agree. Engine 0.5.0, Drik siddhanta, geocentric Moon.",
-  "why": "The best-verified fixture in the set: an independent implementation and a hand-cast kundali agree on it, and the subject confirmed the birth time. Its two remaining divergences from the guru are recorded in fixtures/textbook/kapoor_2011.json under hand_cast_kundali_2002."
+  "siddhanta": "drik",
+  "verified_against": "AstroTalk (astrotalk.com) free kundli, 2026-08, under the drik siddhanta this fixture pins. The same birth is also checked against a hand-cast Nepali kundali under \u0938\u0942\u0930\u094d\u092f \u0938\u093f\u0926\u094d\u0927\u093e\u0928\u094d\u0924 in fixtures/textbook. Engine 0.6.0.",
+  "why": "Pinned to drik because that is what AstroTalk computes, and this fixture's expected values were read off AstroTalk. The product default is \u0938\u0942\u0930\u094d\u092f \u0938\u093f\u0926\u094d\u0927\u093e\u0928\u094d\u0924; this fixture deliberately checks the other engine so both stay exercised. The same birth appears in fixtures/textbook/kapoor_2011.json as hand_cast_kundali_2002, checked against a guru's chart under \u0938\u0942\u0930\u094d\u092f."
 }

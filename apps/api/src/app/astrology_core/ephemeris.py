@@ -14,6 +14,7 @@ from zoneinfo import ZoneInfo
 
 import swisseph as swe
 
+from app.astrology_core import surya
 from app.astrology_core.constants import PLANETS
 
 AYANAMSA_NAME = "Lahiri (Chitrapaksha)"
@@ -29,7 +30,11 @@ AYANAMSA_NAME = "Lahiri (Chitrapaksha)"
 #: matters only near a boundary, and there it decides the nakshatra. Naming
 #: the system lets a reader square our answer with their jyotish's instead of
 #: assuming one of them is broken.
-SIDDHANTA = "Drik (दृक् सिद्धान्त) — modern observational"
+SIDDHANTA_NAMES = {
+    "drik": "Drik (दृक् सिद्धान्त) — modern observational",
+    "surya": "Surya Siddhanta (सूर्य सिद्धान्त) — traditional panchanga",
+}
+SIDDHANTA = SIDDHANTA_NAMES["drik"]
 
 _SWE_PLANET = {
     "Sun": swe.SUN,
@@ -229,3 +234,30 @@ def _from_julian_day(jd: float) -> datetime:
 class EphemerisError(RuntimeError):
     """swisseph returned an error. Never swallow this — a wrong chart that looks
     right is worse than no chart."""
+
+
+def luminaries(jd: float, siddhanta: str) -> dict[str, RawPosition]:
+    """The Sun and Moon by the chosen system.
+
+    Only these two differ in practice. The tithi, nakshatra, yoga, karana, the
+    vimshottari dasha and the whole avakhada are functions of the Sun and Moon
+    alone, and a Surya Siddhanta Mars is a degree out — worse than the modern
+    one, and never enough to change a rashi. So the star-planets stay drik in
+    both modes and only these are switched.
+    """
+    if siddhanta not in SIDDHANTA_NAMES:
+        raise ValueError(
+            f"unknown siddhanta {siddhanta!r}; expected one of {sorted(SIDDHANTA_NAMES)}"
+        )
+    if siddhanta == "drik":
+        return {}
+    return {
+        "Sun": RawPosition(
+            longitude=surya.sun_longitude(jd),
+            speed=surya.daily_motion(jd, surya.sun_longitude),
+        ),
+        "Moon": RawPosition(
+            longitude=surya.moon_longitude(jd),
+            speed=surya.daily_motion(jd, surya.moon_longitude),
+        ),
+    }

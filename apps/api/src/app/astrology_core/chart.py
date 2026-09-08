@@ -34,10 +34,24 @@ from app.astrology_core.varga import build_all_vargas
 from app.astrology_core.yogini import build_yogini
 
 
-def build_chart(birth: BirthMoment) -> Chart:
+def build_chart(birth: BirthMoment, siddhanta: str = "surya") -> Chart:
+    """Cast a chart.
+
+    `siddhanta` picks which system the Sun and Moon come from, and defaults to
+    सूर्य सिद्धान्त because that is what a Nepali kundali is written in. Against
+    charts hand-cast in Parbat and Kaski it scores 39 of 42 checked values
+    where the modern ephemeris scores 29, and reproduces one of them exactly.
+
+    "drik" gives the modern ephemeris instead. It is the better astronomy — the
+    Surya Siddhanta Moon is about 1.4 degrees out — and it is what AstroSage
+    and AstroTalk publish, so it is the right choice for comparing against
+    those. It is not what a jyotish in Kathmandu would write.
+    """
     jd = ephemeris.julian_day(birth.local_datetime, birth.tz_name)
     ayan = ephemeris.ayanamsa(jd)
     raw = ephemeris.planet_positions(jd)
+    # Surya Siddhanta replaces the two luminaries; the star-planets stay drik.
+    raw.update(ephemeris.luminaries(jd, siddhanta))
 
     asc = ephemeris.ascendant(jd, birth.latitude, birth.longitude)
     lagna_sign = int(asc // DEGREES_PER_SIGN)
@@ -104,7 +118,7 @@ def build_chart(birth: BirthMoment) -> Chart:
         birth=birth,
         julian_day=jd,
         ayanamsa_name=ephemeris.AYANAMSA_NAME,
-        siddhanta=ephemeris.SIDDHANTA,
+        siddhanta=ephemeris.SIDDHANTA_NAMES[siddhanta],
         ayanamsa_value=ayan,
         lagna_sign_index=lagna_sign,
         lagna_sign=SIGNS[lagna_sign],

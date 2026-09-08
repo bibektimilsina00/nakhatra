@@ -34,6 +34,21 @@ class BirthDetailsIn(BaseModel):
             ),
         ),
     ]
+    siddhanta: Annotated[
+        Literal["surya", "drik"],
+        Field(
+            default="surya",
+            description=(
+                "Which system computes the Sun and Moon, and therefore the "
+                "panchang, the dashas and the avakhada. `surya` is सूर्य "
+                "सिद्धान्त, what a Nepali kundali is cast from, and the "
+                "default. `drik` is the modern ephemeris — better astronomy, "
+                "and what AstroSage and AstroTalk publish, so use it to "
+                "compare against those. The five star-planets are drik either "
+                "way."
+            ),
+        ),
+    ] = "surya"
     latitude: Annotated[float, Field(ge=-90, le=90)]
     longitude: Annotated[float, Field(ge=-180, le=180, description="East positive")]
     place_label: Annotated[str, Field(min_length=1, max_length=200)]

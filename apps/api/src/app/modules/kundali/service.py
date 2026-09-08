@@ -31,7 +31,7 @@ MAX_DASHA_DEPTH = 3
 
 
 def generate_chart(details: BirthDetailsIn, dasha_depth: int = DEFAULT_DASHA_DEPTH) -> ChartOut:
-    chart = build_chart(_birth_moment(details))
+    chart = build_chart(_birth_moment(details), details.siddhanta)
     return _to_schema(chart, dasha_depth=dasha_depth)
 
 

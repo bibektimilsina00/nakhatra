@@ -12,7 +12,7 @@ import pytest
 
 from app.astrology_core import build_chart
 
-from .conftest import birth_of
+from .conftest import birth_of, siddhanta_of
 
 # Fields that legitimately differ between runs or between environments.
 VOLATILE = {"computed_at"}
@@ -27,7 +27,7 @@ def test_reproduces_expected(fixture):
         pytest.skip(
             f"{fixture['name']} has no expected values yet — see tests/astrology/fixtures/README.md"
         )
-    actual = _strip(build_chart(birth_of(fixture)).to_dict())
+    actual = _strip(build_chart(birth_of(fixture), siddhanta_of(fixture)).to_dict())
     expected = _strip(fixture["expected"])
 
     if actual == expected:
