@@ -8,7 +8,9 @@ import { ReportSectionCard } from "@/features/report/components/report-section-c
 import { SectionIcon } from "@/features/report/components/section-icon";
 import { useRouter } from "next/navigation";
 import { exportElementToPdf } from "@/lib/utils/pdf-exporter";
+import { DashaChakra } from "@/features/kundali/components/dasha-chakra";
 import { NorthIndianChart } from "@/features/kundali/components/north-indian-chart";
+import { PatroHead } from "@/features/kundali/components/patro-head";
 import { SouthIndianChart } from "@/features/kundali/components/south-indian-chart";
 import { loadKundaliFromStorage } from "@/features/kundali/store/kundali-store";
 import type { Chart, BirthDetailsIn } from "@/features/kundali/types";
@@ -175,7 +177,6 @@ export function ReadingDashboard() {
   const today = useToday();
   const [chartStyle, setChartStyle] = useState<"north" | "south">("north");
   const [chartType, setChartType] = useState<"D1" | "D9">("D1");
-  const [activeDashaTab, setActiveDashaTab] = useState<"vimshottari" | "yogini" | "tribhagi">("vimshottari");
   const [selectedHouse, setSelectedHouse] = useState<number | null>(10);
   const [isPlaying, setIsPlaying] = useState(false);
   const [playbackSpeed, setPlaybackSpeed] = useState<"1x" | "1.2x" | "1.5x">("1x");
@@ -410,6 +411,7 @@ export function ReadingDashboard() {
   // with a hardcoded "Rahu ➔ Jupiter" when the chart had none at all, which is
   // a sentence about a chart nobody owns.
   const running = currentDasha(activeChart, today);
+  const todayMs = today ? new Date(today).getTime() : 0;
   const currentDashaText = running.maha
     ? `${getPlanetName(running.maha.lord, language)} ${t.mahadashaLabel}` +
       (running.antar ? ` ➔ ${getPlanetName(running.antar.lord, language)} ${t.antardashaLabel}` : "")
@@ -460,6 +462,15 @@ export function ReadingDashboard() {
           source={undefined}
           onRetry={report.retry}
         />
+
+        {/* The head of the janma patrika — invocation, mangala shlokas and the
+            sankalpa with this chart's values in the blanks — full width, the
+            way the scroll itself opens. Collapsed by default here: this page
+            is for the reading, and the scroll unrolls on request. */}
+        <div className="mb-8">
+          <PatroHead chart={activeChart} birth={activeBirth} collapsible />
+        </div>
+
         <div className="grid gap-8 lg:grid-cols-[460px_minmax(0,1fr)] xl:grid-cols-[500px_minmax(0,1fr)] lg:items-start">
           
           {/* LEFT COLUMN (Wider layout) - Fixed/Sticky on Scroll with Dual Charts */}
@@ -800,81 +811,32 @@ export function ReadingDashboard() {
                 </span>
               </div>
 
-              {/* Dasha Type Switcher */}
-              <div className="flex rounded-[8px] border border-white/10 bg-[#090A10] p-1 text-[10px]">
-                <button
-                  onClick={() => setActiveDashaTab("vimshottari")}
-                  className={`flex-1 rounded-[6px] py-1 font-bold transition ${
-                    activeDashaTab === "vimshottari" ? "bg-[#E5A93C] text-[#090A10]" : "text-[#94A3B8]"
-                  }`}
-                >
-                  Vimshottari
-                </button>
-                <button
-                  onClick={() => setActiveDashaTab("yogini")}
-                  className={`flex-1 rounded-[6px] py-1 font-bold transition ${
-                    activeDashaTab === "yogini" ? "bg-[#E5A93C] text-[#090A10]" : "text-[#94A3B8]"
-                  }`}
-                >
-                  Yogini
-                </button>
-                <button
-                  onClick={() => setActiveDashaTab("tribhagi")}
-                  className={`flex-1 rounded-[6px] py-1 font-bold transition ${
-                    activeDashaTab === "tribhagi" ? "bg-[#E5A93C] text-[#090A10]" : "text-[#94A3B8]"
-                  }`}
-                >
-                  Tribhagi
-                </button>
+              {/* The three schemes as महादशाचक्रम् tables — the layout a
+                  hand-written patro uses, one column per lord with years and
+                  end date, the running period inked. These replaced a tabbed
+                  widget whose dates were hardcoded specimens shown to every
+                  user regardless of their chart. */}
+              <div className="space-y-3">
+                <DashaChakra
+                  periods={activeChart.dasha.periods}
+                  now={todayMs}
+                  scheme="vimshottari"
+                />
+                {activeChart.tribhagi && (
+                  <DashaChakra
+                    periods={activeChart.tribhagi.periods}
+                    now={todayMs}
+                    scheme="tribhagi"
+                  />
+                )}
+                {activeChart.yogini && (
+                  <DashaChakra
+                    periods={activeChart.yogini.periods}
+                    now={todayMs}
+                    scheme="yogini"
+                  />
+                )}
               </div>
-
-              {/* Tab 1: Vimshottari Dasha */}
-              {activeDashaTab === "vimshottari" && (
-                <div className="space-y-3 text-[11px]">
-                  <div className="rounded-[8px] border border-[#E5A93C]/30 bg-[#090A10] p-2.5 space-y-1">
-                    <div className="flex justify-between font-bold text-[#F3C766]">
-                      <span>{getPlanetName("Venus", language)} ({language === "en" ? "Shukra" : "शुक्र"}) {language === "en" ? "Mahadasha" : "महादशा"}</span>
-                      <span>{toLocalizedDigit("2063/07/04 – 2083/07/04", language)} BS</span>
-                    </div>
-                    <div className="flex justify-between text-[#F8FAFC]">
-                      <span>{getPlanetName("Ketu", language)} {language === "en" ? "Antardasha" : "अन्तर्दशा"}:</span>
-                      <span>{toLocalizedDigit("2082/05/05 – 2083/07/04", language)} BS</span>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Tab 2: Yogini Dasha */}
-              {activeDashaTab === "yogini" && (
-                <div className="space-y-3 text-[11px]">
-                  <div className="rounded-[8px] border border-[#E5A93C]/30 bg-[#090A10] p-2.5 space-y-1">
-                    <div className="flex justify-between font-bold text-[#F3C766]">
-                      <span>Dhanya {language === "en" ? "Mahadasha" : "महादशा"}</span>
-                      <span>{toLocalizedDigit("2080/11/18 – 2083/11/17", language)} BS</span>
-                    </div>
-                    <div className="flex justify-between text-[#F8FAFC]">
-                      <span>Sankata {language === "en" ? "Antardasha" : "अन्तर्दशा"}:</span>
-                      <span>{toLocalizedDigit("2082/12/17 – 2083/08/14", language)} BS</span>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Tab 3: Tribhagi Dasha */}
-              {activeDashaTab === "tribhagi" && (
-                <div className="space-y-3 text-[11px]">
-                  <div className="rounded-[8px] border border-[#E5A93C]/30 bg-[#090A10] p-2.5 space-y-1">
-                    <div className="flex justify-between font-bold text-[#F3C766]">
-                      <span>{getPlanetName("Moon", language)} ({language === "en" ? "Chandra" : "चन्द्र"}) {language === "en" ? "Mahadasha" : "महादशा"}</span>
-                      <span>{toLocalizedDigit("2079/04/03 – 2085/12/06", language)} BS</span>
-                    </div>
-                    <div className="flex justify-between text-[#F8FAFC]">
-                      <span>{getPlanetName("Saturn", language)} ({language === "en" ? "Shani" : "शनि"}) {language === "en" ? "Antardasha" : "अन्तर्दशा"}:</span>
-                      <span>{toLocalizedDigit("2082/02/05 – 2083/02/25", language)} BS</span>
-                    </div>
-                  </div>
-                </div>
-              )}
             </div>
 
           </aside>

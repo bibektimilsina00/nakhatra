@@ -37,19 +37,49 @@ import type { BirthDetailsIn, Chart } from "@/features/kundali/types";
  * patro leaves for the guru's pen — gotra and the parents' names — stay
  * dotted blanks, because inventing them would be worse than leaving them.
  */
-export function PatroHead({ chart, birth }: { chart: Chart; birth: BirthDetailsIn }) {
+export function PatroHead({
+  chart,
+  birth,
+  collapsible = false,
+}: {
+  chart: Chart;
+  birth: BirthDetailsIn;
+  /** Fold the scroll behind its invocation line, closed by default — for
+   *  pages where the reading, not the document, is the point. */
+  collapsible?: boolean;
+}) {
   const { language } = useTranslation();
+  const body = isSanskrit(language) ? (
+    <SanskritPatro chart={chart} birth={birth} />
+  ) : (
+    <EnglishPatro chart={chart} birth={birth} />
+  );
+  const frame =
+    "overflow-hidden rounded-lg border-4 border-double border-red-800/70 bg-[#f7efdc] text-[#1a3a1a] shadow-sm dark:border-red-900/80";
+
+  if (!collapsible) {
+    return (
+      <section aria-label="Janma patrika" className={`${frame} px-6 py-8 sm:px-10`}>
+        {body}
+      </section>
+    );
+  }
+
   return (
-    <section
-      aria-label="Janma patrika"
-      className="overflow-hidden rounded-lg border-4 border-double border-red-800/70 bg-[#f7efdc] px-6 py-8 text-[#1a3a1a] shadow-sm sm:px-10 dark:border-red-900/80"
-    >
-      {isSanskrit(language) ? (
-        <SanskritPatro chart={chart} birth={birth} />
-      ) : (
-        <EnglishPatro chart={chart} birth={birth} />
-      )}
-    </section>
+    <details className={`group ${frame}`}>
+      <summary className="flex cursor-pointer items-center justify-between px-6 py-3 font-serif marker:content-none sm:px-8 [&::-webkit-details-marker]:hidden">
+        <span className="text-lg font-bold tracking-wide text-red-800">
+          ॥ श्रीगणेशाय नमः ॥{" "}
+          <span className="text-sm font-semibold text-red-900/70">
+            {isSanskrit(language) ? "जन्मपत्रिका" : "Janma Patrika"}
+          </span>
+        </span>
+        <span className="text-xs text-red-900/60 transition group-open:rotate-180">
+          ▼
+        </span>
+      </summary>
+      <div className="border-t border-red-800/30 px-6 py-6 sm:px-10">{body}</div>
+    </details>
   );
 }
 
