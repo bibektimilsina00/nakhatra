@@ -265,7 +265,10 @@ async def create_realtime_session(req: RealtimeSessionRequest) -> RealtimeSessio
                         "interrupt_response": False,
                     },
                 },
-                "output": {"voice": req.voice, "speed": 1.0},
+                # onyx is a TTS-only voice — the Realtime API rejects it, and that
+                # rejection is exactly how "live voice" silently became the slow
+                # whisper pipeline. cedar is its deep-male counterpart there.
+                "output": {"voice": {"onyx": "cedar"}.get(req.voice, req.voice), "speed": 1.0},
             },
         }
 
