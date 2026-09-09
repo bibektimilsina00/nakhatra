@@ -2,33 +2,30 @@
 
 import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Compass, Eye, EyeOff, Sparkles } from "lucide-react";
+import { ArrowLeft, Eye, EyeOff, Sparkles } from "lucide-react";
 
 import { AppShell } from "@/features/dashboard/components/app-shell";
+import { BirthSky3D, PLANET_COLORS } from "@/features/kundali/components/birth-sky-3d";
 import { loadKundaliFromStorage } from "@/features/kundali/store/kundali-store";
 import type { BirthDetailsIn, Chart, Planet } from "@/features/kundali/types";
 import { useTranslation } from "@/lib/i18n/language-context";
 import {
   getNakshatraName,
-  getPlanetAbbrev,
   getPlanetName,
   getSignName,
   toLocalizedDigit,
 } from "@/lib/i18n/vedic-translations";
 
 /**
- * The sky at the moment of birth, as one interactive wheel.
+ * The sky at the moment of birth — a three.js scene sharing the landing
+ * page's engine, but geocentric: the Earth at the centre, because a kundali
+ * describes the sky as seen from the birthplace.
  *
- * Every position is the engine's: a planet sits at sign_index * 30 +
- * degree_in_sign of sidereal longitude, the lagna at its own degree, the
+ * Every position is the engine's: a graha sits at sign_index * 30 +
+ * degree_in_sign of sidereal longitude, the lagna beam at its own degree, the
  * aspect lines come from the engine's aspects_houses, and the Moon's phase is
  * the tithi. Nothing here computes astrology — it only draws what the chart
  * already says.
- *
- * Default orientation is the traditional one: the lagna on the eastern
- * horizon at the left, the zodiac running anticlockwise, so the wheel reads
- * like a round horoscope. A toggle puts 0° Aries at the top instead for
- * reading raw longitudes.
  */
 // The hydration-safe "am I on the client yet" flag: the server snapshot says
 // no, the client snapshot says yes, so the first client render matches the
@@ -48,7 +45,6 @@ export function BirthSky() {
   const [selected, setSelected] = useState<string | null>("Moon");
   const [showNakshatras, setShowNakshatras] = useState(true);
   const [showAspects, setShowAspects] = useState(true);
-  const [lagnaEast, setLagnaEast] = useState(true);
 
   useEffect(() => {
     // No kundali chosen — ask, rather than drawing somebody else's sky.
@@ -59,7 +55,6 @@ export function BirthSky() {
   const { chart, birth } = stored;
   const sk = language !== "en";
 
-  const lagnaLon = chart.lagna_sign_index * 30 + chart.lagna_degree;
   const selectedPlanet = chart.planets.find((p) => p.name === selected) ?? null;
 
   return (
@@ -99,28 +94,18 @@ export function BirthSky() {
               onClick={() => setShowAspects((v) => !v)}
               label={sk ? "दृष्टि" : "Aspects"}
             />
-            <button
-              onClick={() => setLagnaEast((v) => !v)}
-              className="flex items-center gap-1.5 rounded-[8px] border border-white/10 bg-[#161B2B] px-2.5 py-1.5 text-[#94A3B8] transition hover:border-[#E5A93C]/40 hover:text-[#F3C766]"
-              title={sk ? "अभिमुखीकरण" : "Orientation"}
-            >
-              <Compass className="size-3.5" />
-              {lagnaEast ? (sk ? "लग्न पूर्वमा" : "Lagna east") : (sk ? "मेष माथि" : "Aries top")}
-            </button>
           </div>
         </div>
 
         <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-start">
           {/* The wheel */}
           <div className="relative overflow-hidden rounded-[12px] border border-white/10 bg-[#090A10] p-2 sm:p-6">
-            <SkyWheel
+            <BirthSky3D
               chart={chart}
-              lagnaLon={lagnaLon}
-              lagnaEast={lagnaEast}
-              showNakshatras={showNakshatras}
-              showAspects={showAspects}
               selected={selected}
               onSelect={(name) => setSelected((s) => (s === name ? null : name))}
+              showNakshatras={showNakshatras}
+              showAspects={showAspects}
             />
             {/* Planet legend chips */}
             <div className="mt-2 flex flex-wrap justify-center gap-1.5 pb-2">
@@ -165,292 +150,7 @@ export function BirthSky() {
   );
 }
 
-/* ---------------------------------------------------------------- wheel */
-
-const PLANET_COLORS: Record<string, string> = {
-  Sun: "#FFB347",
-  Moon: "#E8ECF4",
-  Mars: "#FF6B5A",
-  Mercury: "#7ED957",
-  Jupiter: "#F3C766",
-  Venus: "#F7C8E0",
-  Saturn: "#7A9CC6",
-  Rahu: "#8B7BC7",
-  Ketu: "#C77B58",
-};
-
-const SIGN_GLYPHS = ["♈", "♉", "♊", "♋", "♌", "♍", "♎", "♏", "♐", "♑", "♒", "♓"];
-
-function SkyWheel({
-  chart,
-  lagnaLon,
-  lagnaEast,
-  showNakshatras,
-  showAspects,
-  selected,
-  onSelect,
-}: {
-  chart: Chart;
-  lagnaLon: number;
-  lagnaEast: boolean;
-  showNakshatras: boolean;
-  showAspects: boolean;
-  selected: string | null;
-  onSelect: (name: string) => void;
-}) {
-  const { language } = useTranslation();
-  const C = 250; // centre
-  const n = (x: number | string) => toLocalizedDigit(x, language);
-
-  /** Sidereal longitude → SVG point. Lagna-east: the ascendant degree sits on
-   *  the left horizon and the zodiac runs anticlockwise; Aries-top: 0° Aries
-   *  at twelve o'clock. Pure trigonometry on engine longitudes. */
-  const pt = (lon: number, r: number): [number, number] => {
-    const a = lagnaEast ? 180 + (lon - lagnaLon) : 90 + lon;
-    const rad = (a * Math.PI) / 180;
-    return [C + r * Math.cos(rad), C - r * Math.sin(rad)];
-  };
-
-  // Stagger planets that share a neighbourhood so none overlap: walk them in
-  // longitude order and push each near-neighbour one shelf inward.
-  const placed = useMemo(() => {
-    const lon = (p: Planet) => p.sign_index * 30 + p.degree_in_sign;
-    const ordered = [...chart.planets].sort((a, b) => lon(a) - lon(b));
-    const shelves: { p: Planet; lon: number; shelf: number }[] = [];
-    for (const p of ordered) {
-      const l = lon(p);
-      const clash = shelves.filter(
-        (s) => Math.min(Math.abs(s.lon - l), 360 - Math.abs(s.lon - l)) < 9,
-      );
-      shelves.push({ p, lon: l, shelf: clash.length });
-    }
-    return shelves;
-  }, [chart.planets]);
-
-  // A fixed starfield: seeded, so every render of the same chart draws the
-  // same sky and hydration never disagrees.
-  const stars = useMemo(() => {
-    const out: { x: number; y: number; r: number; o: number; d: number }[] = [];
-    let seed = Math.floor((chart.julian_day % 1) * 1e6) + 7;
-    for (let i = 0; i < 90; i++) {
-      const draws: number[] = [];
-      for (let k = 0; k < 5; k++) {
-        seed = (seed * 1103515245 + 12345) % 2147483648;
-        draws.push(seed / 2147483648);
-      }
-      out.push({
-        x: draws[0] * 500,
-        y: draws[1] * 500,
-        r: 0.4 + draws[2] * 1.1,
-        o: 0.15 + draws[3] * 0.5,
-        d: 2 + draws[4] * 4,
-      });
-    }
-    return out;
-  }, [chart.julian_day]);
-
-  const selectedP = chart.planets.find((p) => p.name === selected);
-
-  return (
-    <svg viewBox="0 0 500 500" className="mx-auto block w-full max-w-[720px]">
-      <style>{`@keyframes bs-twinkle { 0%,100%{opacity:.15} 50%{opacity:.7} }`}</style>
-
-      {/* starfield */}
-      {stars.map((s, i) => (
-        <circle
-          key={i}
-          cx={s.x}
-          cy={s.y}
-          r={s.r}
-          fill="#F8FAFC"
-          opacity={s.o}
-          style={{ animation: `bs-twinkle ${s.d}s ease-in-out infinite` }}
-        />
-      ))}
-
-      {/* zodiac ring */}
-      {Array.from({ length: 12 }, (_, i) => {
-        const isLagnaSign = i === chart.lagna_sign_index;
-        return (
-          <g key={i}>
-            <path
-              d={wedge(C, i * 30, (i + 1) * 30, 196, 232, pt)}
-              fill={isLagnaSign ? "#E5A93C" : i % 2 ? "#161B2B" : "#0E1220"}
-              fillOpacity={isLagnaSign ? 0.12 : 0.75}
-              stroke="#E5A93C"
-              strokeOpacity="0.25"
-              strokeWidth="0.6"
-            />
-            <WheelLabel
-              at={pt(i * 30 + 15, 214)}
-              main={`${SIGN_GLYPHS[i]}`}
-              sub={getSignName(
-                ["Aries","Taurus","Gemini","Cancer","Leo","Virgo","Libra","Scorpio","Sagittarius","Capricorn","Aquarius","Pisces"][i],
-                language,
-              )}
-            />
-          </g>
-        );
-      })}
-
-      {/* nakshatra ring */}
-      {showNakshatras &&
-        Array.from({ length: 27 }, (_, i) => {
-          const start = i * (360 / 27);
-          return (
-            <g key={i}>
-              <path
-                d={wedge(C, start, start + 360 / 27, 180, 194, pt)}
-                fill={i % 2 ? "#161B2B" : "#0E1220"}
-                fillOpacity="0.5"
-                stroke="#7A9CC6"
-                strokeOpacity="0.18"
-                strokeWidth="0.4"
-              />
-              {/* pada ticks */}
-              {[1, 2, 3].map((q) => {
-                const [x1, y1] = pt(start + (q * 360) / 108, 180);
-                const [x2, y2] = pt(start + (q * 360) / 108, 184);
-                return (
-                  <line key={q} x1={x1} y1={y1} x2={x2} y2={y2} stroke="#7A9CC6" strokeOpacity="0.25" strokeWidth="0.4" />
-                );
-              })}
-            </g>
-          );
-        })}
-
-      {/* whole-sign house spokes + numbers */}
-      {Array.from({ length: 12 }, (_, i) => {
-        const cusp = (chart.lagna_sign_index + i) * 30;
-        const [x1, y1] = pt(cusp, 60);
-        const [x2, y2] = pt(cusp, 180);
-        return (
-          <g key={i}>
-            <line x1={x1} y1={y1} x2={x2} y2={y2} stroke="#E5A93C" strokeOpacity="0.12" strokeWidth="0.6" />
-            <text
-              {...textAt(pt(cusp + 15, 72))}
-              fontSize="9"
-              fill="#94A3B8"
-              opacity="0.7"
-            >
-              {n(i + 1)}
-            </text>
-          </g>
-        );
-      })}
-
-      {/* aspect lines for the selected planet, from the engine's houses */}
-      {showAspects &&
-        selectedP?.aspects_houses?.map((h: number) => {
-          const targetLon = ((chart.lagna_sign_index + h - 1) % 12) * 30 + 15;
-          const from = pt(selectedP.sign_index * 30 + selectedP.degree_in_sign, 150);
-          const to = pt(targetLon, 150);
-          return (
-            <line
-              key={h}
-              x1={from[0]}
-              y1={from[1]}
-              x2={to[0]}
-              y2={to[1]}
-              stroke={PLANET_COLORS[selectedP.name] ?? "#E5A93C"}
-              strokeOpacity="0.35"
-              strokeWidth="0.8"
-              strokeDasharray="3 3"
-            />
-          );
-        })}
-
-      {/* lagna marker */}
-      <g>
-        {(() => {
-          const [x1, y1] = pt(lagnaLon, 150);
-          const [x2, y2] = pt(lagnaLon, 236);
-          return (
-            <line x1={x1} y1={y1} x2={x2} y2={y2} stroke="#F3C766" strokeWidth="1.4" strokeOpacity="0.9" />
-          );
-        })()}
-        <text {...textAt(pt(lagnaLon, 244))} fontSize="10" fontWeight="bold" fill="#F3C766">
-          {language === "en" ? "Asc" : "ल"}
-        </text>
-      </g>
-
-      {/* planets */}
-      {placed.map(({ p, lon, shelf }) => {
-        const r = 150 - shelf * 26;
-        const [x, y] = pt(lon, r);
-        const on = selected === p.name;
-        const color = PLANET_COLORS[p.name] ?? "#F8FAFC";
-        return (
-          <g
-            key={p.name}
-            onClick={() => onSelect(p.name)}
-            className="cursor-pointer"
-            opacity={selected && !on ? 0.55 : 1}
-          >
-            {/* degree tick on the rim */}
-            {(() => {
-              const [tx1, ty1] = pt(lon, 192);
-              const [tx2, ty2] = pt(lon, 196);
-              return <line x1={tx1} y1={ty1} x2={tx2} y2={ty2} stroke={color} strokeWidth="1.2" />;
-            })()}
-            {on && <circle cx={x} cy={y} r="15" fill={color} opacity="0.18" />}
-            {p.combust && <circle cx={x} cy={y} r="12" fill="#FFB347" opacity="0.15" />}
-            <circle cx={x} cy={y} r="9" fill="#0E1220" stroke={color} strokeWidth={on ? 2 : 1.2} />
-            <text x={x} y={y + 3} textAnchor="middle" fontSize="8" fontWeight="bold" fill={color}>
-              {getPlanetAbbrev(p.name, language)}
-            </text>
-            {p.retrograde && (
-              <text x={x + 10} y={y - 7} fontSize="7" fill="#E5A93C">
-                ℞
-              </text>
-            )}
-            <text x={x} y={y + 18} textAnchor="middle" fontSize="6.5" fill="#94A3B8">
-              {n(Math.floor(p.degree_in_sign))}°
-            </text>
-          </g>
-        );
-      })}
-
-      {/* centre: the Moon at its phase */}
-      <MoonPhase cx={C} cy={C} r={26} tithiIndex={chart.panchang.tithi_index} />
-    </svg>
-  );
-}
-
-function WheelLabel({ at, main, sub }: { at: [number, number]; main: string; sub: string }) {
-  return (
-    <g>
-      <text x={at[0]} y={at[1]} textAnchor="middle" fontSize="11" fill="#E5A93C" opacity="0.9">
-        {main}
-      </text>
-      <text x={at[0]} y={at[1] + 10} textAnchor="middle" fontSize="6.5" fill="#94A3B8">
-        {sub}
-      </text>
-    </g>
-  );
-}
-
-function textAt([x, y]: [number, number]) {
-  return { x, y, textAnchor: "middle" as const };
-}
-
-/** An annular wedge between two longitudes. */
-function wedge(
-  C: number,
-  lonA: number,
-  lonB: number,
-  rIn: number,
-  rOut: number,
-  pt: (lon: number, r: number) => [number, number],
-): string {
-  const [ax, ay] = pt(lonA, rOut);
-  const [bx, by] = pt(lonB, rOut);
-  const [cx2, cy2] = pt(lonB, rIn);
-  const [dx, dy] = pt(lonA, rIn);
-  const large = lonB - lonA > 180 ? 1 : 0;
-  // sweep flags account for the anticlockwise zodiac
-  return `M${ax} ${ay} A${rOut} ${rOut} 0 ${large} 0 ${bx} ${by} L${cx2} ${cy2} A${rIn} ${rIn} 0 ${large} 1 ${dx} ${dy} Z`;
-}
+/* ------------------------------------------------------------ moon phase */
 
 /**
  * The Moon lit as the tithi says it was. Waxing tithis (Shukla 1-15) grow the
