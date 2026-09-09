@@ -65,7 +65,6 @@ export function LiveModeWorkspace() {
   const [teleprompterText, setTeleprompterText] = useState("");
   const [teleprompterBasis, setTeleprompterBasis] = useState("");
   const [showChartDrawer, setShowChartDrawer] = useState(false);
-  const [showTranscriptDrawer, setShowTranscriptDrawer] = useState(false);
   const [showDebugPanel, setShowDebugPanel] = useState(false);
   const [isMicMuted, setIsMicMuted] = useState(false);
   const [micPermissionError, setMicPermissionError] = useState<string | null>(null);
@@ -950,9 +949,24 @@ onClick={() => setupMicAnalyzer()}
                 </div>
 
                 {/* Response Text Content Body - STRETCHES FULL HEIGHT */}
-                <div className="flex-1 overflow-y-auto pr-1 space-y-3 min-h-[260px] max-h-[calc(100vh-280px)]">
-                  {teleprompterText ? (
-                    <MarkdownRenderer content={teleprompterText} />
+                <div
+                  ref={chatScrollRef}
+                  className="flex-1 overflow-y-auto pr-1 space-y-3 min-h-[260px] max-h-[calc(100vh-280px)]"
+                >
+                  {messages.length > 0 ? (
+                    messages.map((m) => (
+                      <div
+                        key={m.id}
+                        className={`rounded-[10px] p-3 text-xs ${
+                          m.sender === "user"
+                            ? "ml-4 bg-acc/15 border border-acc/30"
+                            : "mr-2 bg-inset/60 border border-brd"
+                        }`}
+                      >
+                        <MarkdownRenderer content={m.text} isUser={m.sender === "user"} />
+                        <span className="mt-1 block text-[9px] opacity-60">{m.timestamp}</span>
+                      </div>
+                    ))
                   ) : (
                     <div className="h-full flex flex-col items-center justify-center text-center p-6 space-y-2 text-mut/60">
                       <span className="text-3xl">🪔</span>
@@ -965,12 +979,7 @@ onClick={() => setupMicAnalyzer()}
                 {/* Session Summary & Transcript Button Footer */}
                 <div className="border-t border-brd pt-3 flex items-center justify-between text-[10px] text-mut shrink-0">
                   <span>{t.messagesCount}: <strong className="text-fg">{messages.length}</strong></span>
-                  <button
-                    onClick={() => setShowTranscriptDrawer(true)}
-                    className="text-acc font-semibold hover:underline flex items-center gap-1"
-                  >
-                    <span>📜</span> {t.viewTranscript}
-                  </button>
+
                 </div>
               </div>
             </div>
@@ -1143,7 +1152,13 @@ onClick={() => setupMicAnalyzer()}
                   {/* Mute / Unmute Button */}
                   <button
                     type="button"
-                    onClick={() => setIsMicMuted(!isMicMuted)}
+                    onClick={() => {
+                      const next = !isMicMuted;
+                      setIsMicMuted(next);
+                      // the state was only ever cosmetic — the session's
+                      // microphone track is what actually goes quiet
+                      webrtcClientRef.current?.setMuted(next);
+                    }}
                     className={`flex items-center gap-1.5 px-3 py-1.5 rounded-[8px] text-xs font-semibold transition cursor-pointer ${
                       isMicMuted ? "bg-red-500/20 text-red-400 border border-red-500/40" : "text-fg hover:bg-fg/5 border border-brd"
                     }`}
@@ -1174,17 +1189,6 @@ onClick={() => setupMicAnalyzer()}
                     <span className="text-[11px]">{t.interrupt}</span>
                   </button>
 
-                  {/* Transcript Drawer Button */}
-                  <button
-                    type="button"
-                    onClick={() => setShowTranscriptDrawer(!showTranscriptDrawer)}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-[8px] text-xs font-semibold transition cursor-pointer ${
-                      showTranscriptDrawer ? "bg-acc/20 text-acc2 border border-acc/40" : "text-fg hover:bg-fg/5 border border-brd"
-                    }`}
-                  >
-                    <FileText className="size-3.5 text-acc" />
-                    <span className="text-[11px]">{t.transcript}</span>
-                  </button>
 
                   {/* Exit Consultation Button */}
                   <button
@@ -1276,37 +1280,6 @@ onClick={() => setupMicAnalyzer()}
             </div>
           )}
 
-          {/* Collapsible Chat Transcript Drawer */}
-          {showTranscriptDrawer && (
-            <div className="absolute inset-x-6 top-16 bottom-24 rounded-[8px] border border-brd bg-panel/95 backdrop-blur-2xl p-6 shadow-2xl z-30 flex flex-col animate-fade-in">
-              <div className="flex items-center justify-between border-b border-brd pb-3 mb-3">
-                <h4 className="font-serif text-xs font-bold text-fg">
-                  Live Consultation History ({messages.length} messages)
-                </h4>
-                <button
-                  onClick={() => setShowTranscriptDrawer(false)}
-                  className="text-xs font-semibold text-acc hover:underline"
-                >
-                  ✕ {t.closeTranscriptDrawer}
-                </button>
-              </div>
-              <div className="flex-1 overflow-y-auto space-y-3 pr-2">
-                {messages.map((m) => (
-                  <div
-                    key={m.id}
-                    className={`p-3.5 rounded-[12px] text-xs ${
-                      m.sender === "user"
-                        ? "bg-gradient-to-r from-acc to-acc2 text-onacc font-semibold ml-auto max-w-[80%]"
-                        : "bg-inset text-fg border border-brd max-w-[85%]"
-                    }`}
-                  >
-                    <MarkdownRenderer content={m.text} isUser={m.sender === "user"} />
-                    <span className="block mt-1 text-[9px] opacity-70">{m.timestamp}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
         </div>
       ) : (
         /* =================================================================== */

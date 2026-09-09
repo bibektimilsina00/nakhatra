@@ -110,7 +110,7 @@ export function CustomVoiceSelector({
 
       {/* Custom Dropdown Panel */}
       {isOpen && (
-        <div className="absolute right-0 top-full mt-2 z-50 w-72 sm:w-80 rounded-[8px] border border-acc/30 bg-panel p-2 shadow-2xl backdrop-blur-xl animate-in fade-in zoom-in-95 duration-150">
+        <div className="absolute right-0 bottom-full mb-2 z-50 max-h-[70vh] w-72 overflow-y-auto sm:w-80 rounded-[8px] border border-acc/30 bg-panel p-2 shadow-2xl backdrop-blur-xl animate-in fade-in zoom-in-95 duration-150">
           {/* Dropdown Header */}
           <div className="flex items-center justify-between border-b border-brd px-2.5 pb-2 pt-1">
             <div className="flex items-center gap-1.5">

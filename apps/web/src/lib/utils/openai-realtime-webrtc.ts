@@ -325,6 +325,11 @@ export class OpenAIRealtimeWebRTCClient {
     if (tracks.length) this.callbacks.onMicEnabledChange?.(on);
   }
 
+  /** Mute or unmute the caller's microphone for the live session. */
+  public setMuted(muted: boolean) {
+    this.setMicEnabled(!muted);
+  }
+
   /**
    * Take the turn. Stops the astrologer and reopens the microphone.
    *
@@ -334,6 +339,10 @@ export class OpenAIRealtimeWebRTCClient {
   public takeTurn() {
     if (this.assistantIsSpeaking) {
       this.send({ type: "response.cancel" });
+      // Generation stops server-side, but audio already streamed keeps
+      // playing out of the peer connection unless the buffer is cleared —
+      // this is why the stop button "did nothing" for a few more sentences.
+      this.send({ type: "output_audio_buffer.clear" });
       this.assistantIsSpeaking = false;
       this.currentAssistantTranscript = "";
       this.callbacks.onDebugLog?.("WEBRTC_USER_TOOK_TURN", "Stopped the astrologer");
