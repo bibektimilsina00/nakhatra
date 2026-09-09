@@ -24,13 +24,48 @@ export function SouthIndianChart({
   chart,
   onSelectHouse,
   selectedHouse,
+  theme = "dark",
 }: {
   chart: Chart;
   onSelectHouse?: (house: number) => void;
   selectedHouse?: number | null;
+  /** "dark" is the app's sky; "patro" is parchment and a guru's two inks. */
+  theme?: "dark" | "patro";
 }) {
   const { language } = useTranslation();
   const [hoveredHouse, setHoveredHouse] = useState<number | null>(null);
+  const patro = theme === "patro";
+  const T = patro
+    ? {
+        wrap: "bg-[#f7efdc]",
+        cellActive: "border-[#9B1C1C] bg-[#ecd9b0]",
+        cell: "border-red-800/30 bg-[#f3e8cd] hover:border-red-800/60",
+        lagnaText: "text-[#9B1C1C]",
+        signText: "text-[#4a3a22]",
+        houseText: "text-[#7a6033]",
+        planet: "text-[#1a3a1a]",
+        exalted: "bg-[#9B1C1C]/10 text-[#9B1C1C]",
+        retro: "text-[#9B1C1C]",
+        center: "border-red-800/40 bg-[#f3e8cd]",
+        centerTitle: "text-[#26221b]",
+        centerAsc: "text-[#9B1C1C]",
+        centerSub: "text-[#7a6033]",
+      }
+    : {
+        wrap: "bg-[#090A10]",
+        cellActive: "border-[#E5A93C] bg-[#1E2640]",
+        cell: "border-white/15 bg-[#121626] hover:border-white/30",
+        lagnaText: "text-[#F3C766]",
+        signText: "text-[#E2E8F0]",
+        houseText: "text-[#CBD5E1]",
+        planet: "text-[#FFFFFF]",
+        exalted: "bg-[#E5A93C]/30 text-[#FDE68A]",
+        retro: "text-[#E5A93C]",
+        center: "border-white/15 bg-[#161B2B]",
+        centerTitle: "text-[#FFFFFF]",
+        centerAsc: "text-[#F3C766]",
+        centerSub: "text-[#E2E8F0]",
+      };
 
   // Map planets by sign_index
   const planetsBySign = new Map<number, typeof chart.planets>();
@@ -56,7 +91,7 @@ export function SouthIndianChart({
   const housePrefix = language === "en" ? "H" : "भाव ";
 
   return (
-    <div className="w-full max-w-[500px] rounded-[8px] bg-[#090A10] select-none">
+    <div className={`w-full max-w-[500px] rounded-[8px] select-none ${T.wrap}`}>
       <div className="grid grid-cols-4 grid-rows-4 gap-1 aspect-square">
         {SIGN_GRID.map((cell) => {
           const houseNum = getHouseNumber(cell.signIndex);
@@ -73,17 +108,15 @@ export function SouthIndianChart({
               onMouseLeave={() => setHoveredHouse(null)}
               onClick={() => onSelectHouse?.(houseNum)}
               className={`relative cursor-pointer rounded-[6px] border p-2 flex flex-col justify-between transition-all ${
-                isActive
-                  ? "border-[#E5A93C] bg-[#1E2640]"
-                  : "border-white/15 bg-[#121626] hover:border-white/30"
+                isActive ? T.cellActive : T.cell
               }`}
             >
               {/* Header inside sign box */}
               <div className="flex items-center justify-between text-xs font-bold">
-                <span className={isLagna ? "text-[#F3C766]" : "text-[#E2E8F0]"}>
+                <span className={isLagna ? T.lagnaText : T.signText}>
                   {localizedSign} {isLagna && (language === "en" ? "★ Asc" : "★ लग्न")}
                 </span>
-                <span className="text-[#CBD5E1] font-mono text-[10px]">
+                <span className={`font-mono text-[10px] ${T.houseText}`}>
                   {housePrefix}{toLocalizedDigit(houseNum, language)}
                 </span>
               </div>
@@ -94,12 +127,12 @@ export function SouthIndianChart({
                   <span
                     key={p.name}
                     className={`rounded px-1 text-[11px] font-extrabold ${
-                      p.dignity === "exalted" ? "bg-[#E5A93C]/30 text-[#FDE68A]" : "text-[#FFFFFF]"
+                      p.dignity === "exalted" ? T.exalted : T.planet
                     }`}
                   >
                     {getPlanetAbbrev(p.name, language)}
                     {p.retrograde && (
-                      <span className="text-[#E5A93C] text-[10px] ml-0.5 font-bold">
+                      <span className={`text-[10px] ml-0.5 font-bold ${T.retro}`}>
                         {language === "en" ? "℞" : " (व)"}
                       </span>
                     )}
@@ -111,12 +144,12 @@ export function SouthIndianChart({
         })}
 
         {/* Center Space of South Indian Chart Grid */}
-        <div className="col-start-2 col-end-4 row-start-2 row-end-4 rounded-[6px] border border-white/15 bg-[#161B2B] p-4 flex flex-col items-center justify-center text-center space-y-1">
-          <span className="font-serif text-sm font-bold text-[#FFFFFF]">{centerTitle}</span>
-          <span className="text-xs font-bold text-[#F3C766]">
+        <div className={`col-start-2 col-end-4 row-start-2 row-end-4 rounded-[6px] border p-4 flex flex-col items-center justify-center text-center space-y-1 ${T.center}`}>
+          <span className={`font-serif text-sm font-bold ${T.centerTitle}`}>{centerTitle}</span>
+          <span className={`text-xs font-bold ${T.centerAsc}`}>
             {language === "en" ? "Ascendant" : "लग्न"}: {getSignName(chart.lagna_sign, language)}
           </span>
-          <span className="text-[11px] text-[#E2E8F0]">
+          <span className={`text-[11px] ${T.centerSub}`}>
             {language === "ne"
               ? "स्थिर राशि · घडीको दिशा"
               : language === "hi"
