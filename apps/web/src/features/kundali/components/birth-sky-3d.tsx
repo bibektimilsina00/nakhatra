@@ -498,7 +498,7 @@ export function BirthSky3D({
     /* ── bloom ───────────────────────────────────────────────────── */
     const composer = new EffectComposer(renderer);
     composer.addPass(new RenderPass(scene, camera));
-    composer.addPass(new UnrealBloomPass(new THREE.Vector2(1, 1), 0.5, 0.4, 0.85));
+    composer.addPass(new UnrealBloomPass(new THREE.Vector2(1, 1), 0.42, 0.4, 0.85));
 
     /* ── drag-orbit camera around a movable focus ─────────────────────
        Why the landing page's planets look rich and a fixed wide shot does
