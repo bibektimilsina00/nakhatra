@@ -19,6 +19,7 @@ import {
   dev,
 } from "@/lib/i18n/patro-sanskrit";
 import {
+  canonicalNakshatra,
   getAvastha,
   getDignity,
   getNakshatraName,
@@ -407,8 +408,7 @@ function NakshatraCard({ name, janma }: { name: string; janma: string }) {
     );
     return `${signName} ${n(Math.floor(within))}°${n(String(m).padStart(2, "0"))}'`;
   };
-  // the engine spells a few of these differently (Mula/Moola)
-  const isJanma = janma.replace("oo", "u") === name.replace("oo", "u");
+  const isJanma = canonicalNakshatra(janma) === canonicalNakshatra(name);
 
   return (
     <div className="rounded-[8px] border border-brd bg-panel p-4">

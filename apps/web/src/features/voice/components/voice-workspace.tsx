@@ -1312,6 +1312,37 @@ onClick={() => setupMicAnalyzer()}
           {/* LEFT COLUMN (38% width) - Interactive Kundali Reference & Seeker Context */}
           <aside className="h-full min-h-0 space-y-4 overflow-y-auto border-r border-brd bg-inset p-5">
             
+            {/* The door to live voice, where a new visitor will actually see
+                it — the footer's bare headphone icon explained nothing. */}
+            <button
+              type="button"
+              onClick={() => toggleLiveVoiceMode(true)}
+              className="group flex w-full cursor-pointer items-center gap-3.5 rounded-[12px] bg-acc p-4 text-left text-onacc shadow-lg transition hover:bg-acc2 active:scale-[0.99]"
+            >
+              <span className="relative grid size-11 shrink-0 place-items-center rounded-full bg-onacc/15">
+                <Headphones className="size-5 transition-transform group-hover:scale-110" />
+                <span className="absolute -right-0.5 -top-0.5 size-2.5 animate-ping rounded-full bg-onacc/70" />
+                <span className="absolute -right-0.5 -top-0.5 size-2.5 rounded-full bg-onacc" />
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block text-[13.5px] font-bold leading-tight">
+                  {selectedLanguage === "ne"
+                    ? "प्रत्यक्ष एआई ज्योतिषीसँग बोल्नुहोस्"
+                    : selectedLanguage === "hi"
+                      ? "लाइव एआई ज्योतिषी से बात करें"
+                      : "Talk Live with the AI Astrologer"}
+                </span>
+                <span className="mt-0.5 block text-[11px] font-medium opacity-80">
+                  {selectedLanguage === "ne"
+                    ? "आवाजमै प्रश्न सोध्नुहोस् — तुरुन्तै जवाफ सुन्नुहोस्"
+                    : selectedLanguage === "hi"
+                      ? "आवाज़ में पूछें — तुरंत जवाब सुनें"
+                      : "Ask by voice, hear the answer instantly"}
+                </span>
+              </span>
+              <ArrowLeft className="size-4 shrink-0 rotate-180 opacity-70 transition-transform group-hover:translate-x-0.5" />
+            </button>
+
             {/* Seeker Profile & D1 Chart Reference Card */}
             <div className="space-y-4 rounded-[12px] border border-brd bg-panel p-5">
               <div className="flex items-center justify-between border-b border-brd pb-3">
