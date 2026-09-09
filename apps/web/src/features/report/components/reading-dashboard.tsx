@@ -619,114 +619,7 @@ export function ReadingDashboard() {
 
             </div>
 
-            {/* 2. Avakhada Chakra Panel */}
-            <div className="rounded-[8px] border border-red-800/30 bg-[#f7efdc] p-4 space-y-3">
-              <div className="flex items-center justify-between border-b border-red-800/30 pb-2">
-                <h3 className="font-serif text-xs font-bold uppercase tracking-wider text-[#26221b] flex items-center gap-1.5">
-                  <Sparkles className="size-3.5 text-[#9B1C1C]" /> {t.avakhadaTitle}
-                </h3>
-              </div>
-
-              {/* Highlighted Current Dasha Banner in Left Panel */}
-              <div className="flex items-center justify-between rounded-[8px] border border-red-800/40 bg-[#efe3c8] px-3 py-2 text-xs font-semibold text-[#9B1C1C]">
-                <div className="flex items-center gap-1.5">
-                  <Clock className="size-3.5 text-[#9B1C1C]" />
-                  <span>{t.currentDasha}:</span>
-                </div>
-                <span className="font-bold text-[#26221b]">{currentDashaText}</span>
-              </div>
-
-              <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-xs">
-                <div className="flex justify-between border-b border-brd pb-1">
-                  <span className="text-[#4a3a22]">{t.moonSignLabel}</span>
-                  <span className="font-bold text-[#26221b]">{getSignName(activeChart.avakhada?.sign || "Sagittarius", language)}</span>
-                </div>
-                <div className="flex justify-between border-b border-brd pb-1">
-                  <span className="text-[#4a3a22]">{t.nakshatraLabel}</span>
-                  <span className="font-bold text-[#9B1C1C]">{getNakshatraName(activeChart.avakhada?.nakshatra || "Moola", language)}</span>
-                </div>
-                <div className="flex justify-between border-b border-brd pb-1">
-                  <span className="text-[#4a3a22]">{t.nakshatraPadaLabel}</span>
-                  <span className="font-bold text-[#26221b]">
-                    {language === "en" ? "Pada " : "चरण "}{toLocalizedDigit(activeChart.avakhada?.charan || 2, language)}
-                  </span>
-                </div>
-                <div className="flex justify-between border-b border-brd pb-1">
-                  <span className="text-[#4a3a22]">{t.nameSyllableLabel}</span>
-                  <span className="font-bold text-[#9B1C1C]">{activeChart.avakhada?.name_syllable || "Yo"}</span>
-                </div>
-                <div className="flex justify-between border-b border-brd pb-1">
-                  <span className="text-[#4a3a22]">{t.ganaLabel}</span>
-                  <span className="font-bold text-[#26221b]">{getAvakhadaTerm(activeChart.avakhada?.gana || "Rakshasa", language)}</span>
-                </div>
-                <div className="flex justify-between border-b border-brd pb-1">
-                  <span className="text-[#4a3a22]">{t.nadiLabel}</span>
-                  <span className="font-bold text-[#26221b]">{getAvakhadaTerm(activeChart.avakhada?.nadi || "Adi", language)}</span>
-                </div>
-                <div className="flex justify-between border-b border-brd pb-1">
-                  <span className="text-[#4a3a22]">{t.yoniLabel}</span>
-                  <span className="font-bold text-[#26221b]">{getAvakhadaTerm(activeChart.avakhada?.yoni || "Rat", language)}</span>
-                </div>
-                <div className="flex justify-between border-b border-brd pb-1">
-                  <span className="text-[#4a3a22]">{t.varnaElementLabel}</span>
-                  <span className="font-bold text-[#26221b]">
-                    {getAvakhadaTerm(activeChart.avakhada?.varna || "Kshatriya", language)} · {getAvakhadaTerm(activeChart.avakhada?.tatva || "Fire", language)}
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            {/* 3. Auspicious & Inauspicious Elements */}
-            {(() => {
-              const aus = getLocalizedAuspiciousElements(activeChart.lagna_sign, language);
-              return (
-                <div className="rounded-[8px] border border-red-800/30 bg-[#f7efdc] p-4 space-y-3">
-                  <h3 className="font-serif text-xs font-bold uppercase tracking-wider text-[#26221b] flex items-center gap-1.5 border-b border-red-800/30 pb-2">
-                    <Gem className="size-3.5 text-[#9B1C1C]" /> {t.auspiciousTitle}
-                  </h3>
-
-                  <div className="space-y-2.5 text-xs">
-                    <div>
-                      <span className="font-bold text-[#10B981] flex items-center gap-1">
-                        {t.luckyColors}
-                      </span>
-                      <p className="text-[#26221b] mt-0.5 leading-relaxed">
-                        {aus.luckyColors}
-                      </p>
-                    </div>
-
-                    <div>
-                      <span className="font-bold text-[#EF4444] flex items-center gap-1">
-                        {t.unluckyColors}
-                      </span>
-                      <p className="text-[#4a3a22] mt-0.5 leading-relaxed">
-                        {aus.unluckyColors}
-                      </p>
-                    </div>
-
-                    <div className="border-t border-brd pt-2">
-                      <span className="font-bold text-[#10B981] flex items-center gap-1">
-                        {t.luckyGemstones}
-                      </span>
-                      <p className="text-[#9B1C1C] mt-0.5 leading-relaxed">
-                        {aus.luckyGemstones}
-                      </p>
-                    </div>
-
-                    <div>
-                      <span className="font-bold text-[#EF4444] flex items-center gap-1">
-                        {t.unluckyGemstones}
-                      </span>
-                      <p className="text-[#4a3a22] mt-0.5 leading-relaxed">
-                        {aus.unluckyGemstones}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              );
-            })()}
-
-            {/* 4. Planetary Positions & Longitudes */}
+            {/* 2. Planetary Positions & Longitudes */}
             <div className="rounded-[8px] border border-red-800/30 bg-[#f7efdc] p-4 space-y-3">
               <div className="flex items-center justify-between border-b border-red-800/30 pb-2">
                 <h3 className="font-serif text-xs font-bold uppercase tracking-wider text-[#26221b] flex items-center gap-1.5">
@@ -783,7 +676,7 @@ export function ReadingDashboard() {
               </div>
             </div>
 
-            {/* 5. Active Dasha Systems & Predictions */}
+            {/* 3. Active Dasha Systems & Predictions */}
             <div className="rounded-[8px] border border-red-800/30 bg-[#f7efdc] p-4 space-y-3">
               <div className="flex items-center justify-between border-b border-red-800/30 pb-2">
                 <h3 className="font-serif text-xs font-bold uppercase tracking-wider text-[#26221b] flex items-center gap-1.5">
@@ -821,6 +714,113 @@ export function ReadingDashboard() {
                 )}
               </div>
             </div>
+
+            {/* 4. Avakhada Chakra Panel */}
+            <div className="rounded-[8px] border border-red-800/30 bg-[#f7efdc] p-4 space-y-3">
+              <div className="flex items-center justify-between border-b border-red-800/30 pb-2">
+                <h3 className="font-serif text-xs font-bold uppercase tracking-wider text-[#26221b] flex items-center gap-1.5">
+                  <Sparkles className="size-3.5 text-[#9B1C1C]" /> {t.avakhadaTitle}
+                </h3>
+              </div>
+
+              {/* Highlighted Current Dasha Banner in Left Panel */}
+              <div className="flex items-center justify-between rounded-[8px] border border-red-800/40 bg-[#efe3c8] px-3 py-2 text-xs font-semibold text-[#9B1C1C]">
+                <div className="flex items-center gap-1.5">
+                  <Clock className="size-3.5 text-[#9B1C1C]" />
+                  <span>{t.currentDasha}:</span>
+                </div>
+                <span className="font-bold text-[#26221b]">{currentDashaText}</span>
+              </div>
+
+              <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-xs">
+                <div className="flex justify-between border-b border-brd pb-1">
+                  <span className="text-[#4a3a22]">{t.moonSignLabel}</span>
+                  <span className="font-bold text-[#26221b]">{getSignName(activeChart.avakhada?.sign || "Sagittarius", language)}</span>
+                </div>
+                <div className="flex justify-between border-b border-brd pb-1">
+                  <span className="text-[#4a3a22]">{t.nakshatraLabel}</span>
+                  <span className="font-bold text-[#9B1C1C]">{getNakshatraName(activeChart.avakhada?.nakshatra || "Moola", language)}</span>
+                </div>
+                <div className="flex justify-between border-b border-brd pb-1">
+                  <span className="text-[#4a3a22]">{t.nakshatraPadaLabel}</span>
+                  <span className="font-bold text-[#26221b]">
+                    {language === "en" ? "Pada " : "चरण "}{toLocalizedDigit(activeChart.avakhada?.charan || 2, language)}
+                  </span>
+                </div>
+                <div className="flex justify-between border-b border-brd pb-1">
+                  <span className="text-[#4a3a22]">{t.nameSyllableLabel}</span>
+                  <span className="font-bold text-[#9B1C1C]">{activeChart.avakhada?.name_syllable || "Yo"}</span>
+                </div>
+                <div className="flex justify-between border-b border-brd pb-1">
+                  <span className="text-[#4a3a22]">{t.ganaLabel}</span>
+                  <span className="font-bold text-[#26221b]">{getAvakhadaTerm(activeChart.avakhada?.gana || "Rakshasa", language)}</span>
+                </div>
+                <div className="flex justify-between border-b border-brd pb-1">
+                  <span className="text-[#4a3a22]">{t.nadiLabel}</span>
+                  <span className="font-bold text-[#26221b]">{getAvakhadaTerm(activeChart.avakhada?.nadi || "Adi", language)}</span>
+                </div>
+                <div className="flex justify-between border-b border-brd pb-1">
+                  <span className="text-[#4a3a22]">{t.yoniLabel}</span>
+                  <span className="font-bold text-[#26221b]">{getAvakhadaTerm(activeChart.avakhada?.yoni || "Rat", language)}</span>
+                </div>
+                <div className="flex justify-between border-b border-brd pb-1">
+                  <span className="text-[#4a3a22]">{t.varnaElementLabel}</span>
+                  <span className="font-bold text-[#26221b]">
+                    {getAvakhadaTerm(activeChart.avakhada?.varna || "Kshatriya", language)} · {getAvakhadaTerm(activeChart.avakhada?.tatva || "Fire", language)}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* 5. Auspicious & Inauspicious Elements */}
+            {(() => {
+              const aus = getLocalizedAuspiciousElements(activeChart.lagna_sign, language);
+              return (
+                <div className="rounded-[8px] border border-red-800/30 bg-[#f7efdc] p-4 space-y-3">
+                  <h3 className="font-serif text-xs font-bold uppercase tracking-wider text-[#26221b] flex items-center gap-1.5 border-b border-red-800/30 pb-2">
+                    <Gem className="size-3.5 text-[#9B1C1C]" /> {t.auspiciousTitle}
+                  </h3>
+
+                  <div className="space-y-2.5 text-xs">
+                    <div>
+                      <span className="font-bold text-[#10B981] flex items-center gap-1">
+                        {t.luckyColors}
+                      </span>
+                      <p className="text-[#26221b] mt-0.5 leading-relaxed">
+                        {aus.luckyColors}
+                      </p>
+                    </div>
+
+                    <div>
+                      <span className="font-bold text-[#EF4444] flex items-center gap-1">
+                        {t.unluckyColors}
+                      </span>
+                      <p className="text-[#4a3a22] mt-0.5 leading-relaxed">
+                        {aus.unluckyColors}
+                      </p>
+                    </div>
+
+                    <div className="border-t border-brd pt-2">
+                      <span className="font-bold text-[#10B981] flex items-center gap-1">
+                        {t.luckyGemstones}
+                      </span>
+                      <p className="text-[#9B1C1C] mt-0.5 leading-relaxed">
+                        {aus.luckyGemstones}
+                      </p>
+                    </div>
+
+                    <div>
+                      <span className="font-bold text-[#EF4444] flex items-center gap-1">
+                        {t.unluckyGemstones}
+                      </span>
+                      <p className="text-[#4a3a22] mt-0.5 leading-relaxed">
+                        {aus.unluckyGemstones}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              );
+            })()}
 
           </aside>
 
