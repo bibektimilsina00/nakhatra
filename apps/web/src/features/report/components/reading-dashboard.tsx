@@ -463,14 +463,6 @@ export function ReadingDashboard() {
           onRetry={report.retry}
         />
 
-        {/* The head of the janma patrika — invocation, mangala shlokas and the
-            sankalpa with this chart's values in the blanks — full width, the
-            way the scroll itself opens. Collapsed by default here: this page
-            is for the reading, and the scroll unrolls on request. */}
-        <div className="mb-8">
-          <PatroHead chart={activeChart} birth={activeBirth} collapsible />
-        </div>
-
         <div className="grid gap-8 lg:grid-cols-[460px_minmax(0,1fr)] xl:grid-cols-[500px_minmax(0,1fr)] lg:items-start">
           
           {/* LEFT COLUMN (Wider layout) - Fixed/Sticky on Scroll with Dual Charts */}
@@ -843,6 +835,12 @@ export function ReadingDashboard() {
 
           {/* RIGHT COLUMN (65% width) - Deep Narrative & Audio */}
           <div className="space-y-6">
+
+            {/* The head of the janma patrika — invocation, mangala shlokas and
+                the sankalpa with this chart's values in the blanks. It sits
+                with the reading, panelled like the widgets opposite, collapsed
+                behind its invocation line until asked to unroll. */}
+            <PatroHead chart={activeChart} birth={activeBirth} collapsible />
 
             {/* Hero Audio Player Bar (Sticky beneath top nav) */}
             <div className="sticky top-[57px] z-30 rounded-[8px] border border-white/10 bg-[#161B2B] p-4 space-y-3 shadow-xl backdrop-blur-md">
