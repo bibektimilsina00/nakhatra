@@ -269,12 +269,22 @@ function Header({
           <p className="mt-0.5 text-xs text-dim">{chart.siddhanta}</p>
         )}
       </div>
-      <button
-        onClick={onReset}
-        className="mx-auto rounded-full border border-line px-5 py-2 text-sm text-muted transition hover:border-accent-strong/50 hover:text-fg sm:mx-0"
-      >
-        New chart
-      </button>
+      <div className="mx-auto flex items-center gap-2 sm:mx-0">
+        {/* The chart is in sessionStorage by the time this renders, which is
+            what the /sky page reads. */}
+        <a
+          href="/sky"
+          className="rounded-full border border-accent-strong/40 px-5 py-2 text-sm text-accent-ink transition hover:border-accent-strong hover:text-fg"
+        >
+          ✦ Birth sky
+        </a>
+        <button
+          onClick={onReset}
+          className="rounded-full border border-line px-5 py-2 text-sm text-muted transition hover:border-accent-strong/50 hover:text-fg"
+        >
+          New chart
+        </button>
+      </div>
     </header>
   );
 }

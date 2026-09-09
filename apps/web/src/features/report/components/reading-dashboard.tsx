@@ -729,12 +729,21 @@ export function ReadingDashboard() {
                 <h3 className="font-serif text-xs font-bold uppercase tracking-wider text-[#F8FAFC] flex items-center gap-1.5">
                   <Orbit className="size-3.5 text-[#E5A93C]" /> {t.planetaryPositionsTitle}
                 </h3>
-                <button
-                  onClick={() => setShowFullPlanets(!showFullPlanets)}
-                  className="text-[10px] font-bold text-[#E5A93C] hover:underline"
-                >
-                  {showFullPlanets ? t.compactLabel : t.fullDetailsLabel}
-                </button>
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => router.push("/sky")}
+                    className="flex items-center gap-1 rounded-[6px] border border-[#E5A93C]/40 bg-[#090A10] px-2 py-1 text-[10px] font-bold text-[#F3C766] transition hover:bg-[#E5A93C] hover:text-[#090A10]"
+                  >
+                    <Sparkles className="size-3" />
+                    {language === "en" ? "Birth Sky" : "जन्म आकाश"}
+                  </button>
+                  <button
+                    onClick={() => setShowFullPlanets(!showFullPlanets)}
+                    className="text-[10px] font-bold text-[#E5A93C] hover:underline"
+                  >
+                    {showFullPlanets ? t.compactLabel : t.fullDetailsLabel}
+                  </button>
+                </div>
               </div>
 
               <div className="overflow-x-auto">
