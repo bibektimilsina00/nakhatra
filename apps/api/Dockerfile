@@ -42,6 +42,28 @@ RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --frozen --no-dev
 
 
+# ── the place index ─────────────────────────────────────────────────────
+#
+# GeoNames-derived, ~136MB, and gitignored precisely because a script can
+# regenerate it. That is why production shipped without it: /v1/places 503'd
+# with "place index not found", and the client quietly fell back to its
+# handful of hardcoded cities, so birthplace search worked everywhere except
+# the deployed site.
+#
+# Its own stage, and the script is the only thing copied in, so the layer
+# cache turns on that file alone — the ~30MB of GeoNames dumps are fetched
+# again only when the builder itself changes. Pure stdlib, no venv needed.
+FROM python:3.12-slim AS places
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /build
+COPY apps/api/scripts/build_places.py ./scripts/build_places.py
+RUN python scripts/build_places.py && test -s data/places.sqlite3
+
+
 FROM python:3.12-slim AS runtime
 
 # libpq5 is the runtime half of libpq-dev; the compilers are not carried over.
@@ -54,6 +76,11 @@ WORKDIR /app
 
 COPY --from=builder /opt/venv /opt/venv
 COPY --from=builder /app /app
+
+# The search index, built above. Placed before the chown so the runtime user
+# owns it — the repository writes a trigram index into this file the first
+# time it opens one built without it.
+COPY --from=places /build/data/places.sqlite3 /app/data/places.sqlite3
 
 ENV PATH="/opt/venv/bin:$PATH" \
     PYTHONPATH=/app/src \
