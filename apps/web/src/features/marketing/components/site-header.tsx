@@ -173,48 +173,33 @@ export function SiteHeader() {
               </div>
             </div>
 
+            <span title="Coming soon" className="cursor-default rounded-[6px] px-3 py-2 text-[13.5px] text-faint">{nav.rasifal} <span className={`ml-1 rounded-[3px] border border-white/12 px-1 py-px font-mono text-[9px] ${badge}`}>{nav.soon}</span></span>
+
+            <Link href="/consultations" className="rounded-[6px] px-3 py-2 text-[13.5px] text-muted transition-colors hover:text-paper">{nav.consultation}</Link>
+
             <div className="navmenu relative">
-              <button type="button" className="navbtn flex items-center gap-1.5 rounded-[6px] px-3 py-2 text-[13.5px] text-muted transition-colors hover:text-paper" aria-expanded="false" aria-haspopup="true">{nav.learn} <svg className="navchev size-3 transition-transform" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><path d="M3 4.5 6 7.5l3-3"/></svg></button>
+              <button type="button" className="navbtn flex items-center gap-1.5 rounded-[6px] px-3 py-2 text-[13.5px] text-muted transition-colors hover:text-paper" aria-expanded="false" aria-haspopup="true">{nav.kundali} <svg className="navchev size-3 transition-transform" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><path d="M3 4.5 6 7.5l3-3"/></svg></button>
               <div className="navpanel absolute left-0 top-full pt-3">
-                <div className="w-[560px] rounded-[8px] border border-white/12 bg-[#0B0E18]/95 p-2 shadow-2xl shadow-black/50 backdrop-blur-xl">
-                  <div className="grid grid-cols-2 gap-0.5"><span title="Coming soon" className="group/i flex gap-3 rounded-[6px] p-2.5 transition-colors hover:bg-white/[0.05] cursor-default opacity-70">
-                  <span className="mt-px shrink-0 text-faint transition-colors group-hover/i:text-gold"><svg className="size-[17px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 4.5h14v15H5z"/><path d="M8 9h8M8 12.5h8M8 16h5"/></svg></span>
-                  <span className="min-w-0">
-                    <span className="flex items-center text-[13.5px] font-medium text-paper">{nav.blog}</span>
-                    <span className="mt-0.5 block text-[12px] leading-[1.55] text-faint">{menu.learnNote}</span>
-                  </span>
-                </span><span title="Coming soon" className="group/i flex gap-3 rounded-[6px] p-2.5 transition-colors hover:bg-white/[0.05] cursor-default opacity-70">
-                  <span className="mt-px shrink-0 text-faint transition-colors group-hover/i:text-gold"><svg className="size-[17px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.2v5l3 1.8"/></svg></span>
-                  <span className="min-w-0">
-                    <span className="flex items-center text-[13.5px] font-medium text-paper">{menu.learn[2].title}</span>
-                    <span className="mt-0.5 block text-[12px] leading-[1.55] text-faint">{menu.learn[2].body}</span>
-                  </span>
-                </span><span title="Coming soon" className="group/i flex gap-3 rounded-[6px] p-2.5 transition-colors hover:bg-white/[0.05] cursor-default opacity-70">
-                  <span className="mt-px shrink-0 text-faint transition-colors group-hover/i:text-gold"><svg className="size-[17px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M11.5 3.5H20V12l-8.4 8.4a1.5 1.5 0 0 1-2.1 0l-6.4-6.4a1.5 1.5 0 0 1 0-2.1L11.5 3.5Z"/><circle cx="16" cy="8" r="1.2" fill="currentColor" stroke="none"/></svg></span>
-                  <span className="min-w-0">
-                    <span className="flex items-center text-[13.5px] font-medium text-paper">{menu.learn[3].title}</span>
-                    <span className="mt-0.5 block text-[12px] leading-[1.55] text-faint">{menu.learn[3].body}</span>
-                  </span>
-                </span><a href="#how" className="group/i flex gap-3 rounded-[6px] p-2.5 transition-colors hover:bg-white/[0.05]">
-                  <span className="mt-px shrink-0 text-faint transition-colors group-hover/i:text-gold"><svg className="size-[17px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M4 17.5 9 12l3.5 3.5L20 7"/><path d="M15.5 7H20v4.5"/></svg></span>
-                  <span className="min-w-0">
-                    <span className="flex items-center text-[13.5px] font-medium text-paper">{menu.learn[0].title}</span>
-                    <span className="mt-0.5 block text-[12px] leading-[1.55] text-faint">{menu.learn[0].body}</span>
-                  </span>
-                </a><a href="#accuracy" className="group/i flex gap-3 rounded-[6px] p-2.5 transition-colors hover:bg-white/[0.05]">
-                  <span className="mt-px shrink-0 text-faint transition-colors group-hover/i:text-gold"><svg className="size-[17px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17"/><path d="M12 3.5c2.3 2.5 3.5 5.3 3.5 8.5S14.3 18 12 20.5C9.7 18 8.5 15.2 8.5 12S9.7 6 12 3.5Z"/></svg></span>
-                  <span className="min-w-0">
-                    <span className="flex items-center text-[13.5px] font-medium text-paper">{menu.learn[1].title}</span>
-                    <span className="mt-0.5 block text-[12px] leading-[1.55] text-faint">{menu.learn[1].body}</span>
-                  </span>
-                </a></div>
+                <div className="w-[340px] rounded-[8px] border border-white/12 bg-[#0B0E18]/95 p-2 shadow-2xl shadow-black/50 backdrop-blur-xl">
+                  <a href="/kundali" className="group/i flex gap-3 rounded-[6px] p-2.5 transition-colors hover:bg-white/[0.05]">
+                    <span className="mt-px shrink-0 text-faint transition-colors group-hover/i:text-gold"><svg className="size-[17px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3.5" y="3.5" width="17" height="17" rx="1.5"/><path d="M12 3.5 20.5 12 12 20.5 3.5 12Z"/></svg></span>
+                    <span className="min-w-0">
+                      <span className="flex items-center text-[13.5px] font-medium text-paper">{nav.kundaliCreateTitle}</span>
+                      <span className="mt-0.5 block text-[12px] leading-[1.55] text-faint">{nav.kundaliCreateBody}</span>
+                    </span>
+                  </a>
+                  <a href="/milan" className="group/i flex gap-3 rounded-[6px] p-2.5 transition-colors hover:bg-white/[0.05]">
+                    <span className="mt-px shrink-0 text-faint transition-colors group-hover/i:text-gold"><svg className="size-[17px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20s-7-4.2-7-9a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 4.8-7 9-7 9Z"/></svg></span>
+                    <span className="min-w-0">
+                      <span className="flex items-center text-[13.5px] font-medium text-paper">{nav.kundaliMatchTitle}</span>
+                      <span className="mt-0.5 block text-[12px] leading-[1.55] text-faint">{nav.kundaliMatchBody}</span>
+                    </span>
+                  </a>
                 </div>
               </div>
             </div>
 
-            <span className="cursor-default rounded-[6px] px-3 py-2 text-[13.5px] text-faint" title="Coming soon">{nav.pricing} <span className={`ml-1 rounded-[3px] border border-white/12 px-1 py-px font-mono text-[9px] ${badge}`}>{nav.soon}</span></span>
-            <span className="cursor-default rounded-[6px] px-3 py-2 text-[13.5px] text-faint" title="Coming soon">{nav.blog} <span className={`ml-1 rounded-[3px] border border-white/12 px-1 py-px font-mono text-[9px] ${badge}`}>{nav.soon}</span></span>
-            <a href="#astrologers" className="flex items-center gap-2 rounded-[6px] px-3 py-2 text-[13.5px] text-muted transition-colors hover:text-paper">{nav.forAstrologers}</a>
+            <span title="Coming soon" className="cursor-default rounded-[6px] px-3 py-2 text-[13.5px] text-faint">{nav.patro} <span className={`ml-1 rounded-[3px] border border-white/12 px-1 py-px font-mono text-[9px] ${badge}`}>{nav.soon}</span></span>
           </nav>
           </div>
 
@@ -279,40 +264,23 @@ export function SiteHeader() {
                     <span className="flex items-center text-[13.5px] font-medium text-paper">{menu.features[4].title}<span className={`ml-2 rounded-[3px] border border-gold/35 px-1 py-px font-mono text-[8px] font-bold text-gold ${badge}`}>{nav.soon}</span></span>
                     <span className="mt-0.5 block text-[12px] leading-[1.55] text-faint">{menu.features[4].body}</span>
                   </span>
-                </a><span title="Coming soon" className="group/i flex gap-3 rounded-[6px] p-2.5 transition-colors hover:bg-white/[0.05] cursor-default opacity-70">
-                  <span className="mt-px shrink-0 text-faint transition-colors group-hover/i:text-gold"><svg className="size-[17px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 4.5h14v15H5z"/><path d="M8 9h8M8 12.5h8M8 16h5"/></svg></span>
+                </a><a href="/kundali" className="group/i flex gap-3 rounded-[6px] p-2.5 transition-colors hover:bg-white/[0.05]">
+                  <span className="mt-px shrink-0 text-faint transition-colors group-hover/i:text-gold"><svg className="size-[17px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3.5" y="3.5" width="17" height="17" rx="1.5"/><path d="M12 3.5 20.5 12 12 20.5 3.5 12Z"/></svg></span>
                   <span className="min-w-0">
-                    <span className="flex items-center text-[13.5px] font-medium text-paper">{nav.blog}</span>
-                    <span className="mt-0.5 block text-[12px] leading-[1.55] text-faint">{menu.learnNote}</span>
+                    <span className="flex items-center text-[13.5px] font-medium text-paper">{nav.kundaliCreateTitle}</span>
+                    <span className="mt-0.5 block text-[12px] leading-[1.55] text-faint">{nav.kundaliCreateBody}</span>
                   </span>
-                </span><span title="Coming soon" className="group/i flex gap-3 rounded-[6px] p-2.5 transition-colors hover:bg-white/[0.05] cursor-default opacity-70">
-                  <span className="mt-px shrink-0 text-faint transition-colors group-hover/i:text-gold"><svg className="size-[17px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.2v5l3 1.8"/></svg></span>
+                </a><a href="/milan" className="group/i flex gap-3 rounded-[6px] p-2.5 transition-colors hover:bg-white/[0.05]">
+                  <span className="mt-px shrink-0 text-faint transition-colors group-hover/i:text-gold"><svg className="size-[17px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20s-7-4.2-7-9a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 4.8-7 9-7 9Z"/></svg></span>
                   <span className="min-w-0">
-                    <span className="flex items-center text-[13.5px] font-medium text-paper">{menu.learn[2].title}</span>
-                    <span className="mt-0.5 block text-[12px] leading-[1.55] text-faint">{menu.learn[2].body}</span>
-                  </span>
-                </span><span title="Coming soon" className="group/i flex gap-3 rounded-[6px] p-2.5 transition-colors hover:bg-white/[0.05] cursor-default opacity-70">
-                  <span className="mt-px shrink-0 text-faint transition-colors group-hover/i:text-gold"><svg className="size-[17px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M11.5 3.5H20V12l-8.4 8.4a1.5 1.5 0 0 1-2.1 0l-6.4-6.4a1.5 1.5 0 0 1 0-2.1L11.5 3.5Z"/><circle cx="16" cy="8" r="1.2" fill="currentColor" stroke="none"/></svg></span>
-                  <span className="min-w-0">
-                    <span className="flex items-center text-[13.5px] font-medium text-paper">{menu.learn[3].title}</span>
-                    <span className="mt-0.5 block text-[12px] leading-[1.55] text-faint">{menu.learn[3].body}</span>
-                  </span>
-                </span><a href="#how" className="group/i flex gap-3 rounded-[6px] p-2.5 transition-colors hover:bg-white/[0.05]">
-                  <span className="mt-px shrink-0 text-faint transition-colors group-hover/i:text-gold"><svg className="size-[17px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M4 17.5 9 12l3.5 3.5L20 7"/><path d="M15.5 7H20v4.5"/></svg></span>
-                  <span className="min-w-0">
-                    <span className="flex items-center text-[13.5px] font-medium text-paper">{menu.learn[0].title}</span>
-                    <span className="mt-0.5 block text-[12px] leading-[1.55] text-faint">{menu.learn[0].body}</span>
-                  </span>
-                </a><a href="#accuracy" className="group/i flex gap-3 rounded-[6px] p-2.5 transition-colors hover:bg-white/[0.05]">
-                  <span className="mt-px shrink-0 text-faint transition-colors group-hover/i:text-gold"><svg className="size-[17px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17"/><path d="M12 3.5c2.3 2.5 3.5 5.3 3.5 8.5S14.3 18 12 20.5C9.7 18 8.5 15.2 8.5 12S9.7 6 12 3.5Z"/></svg></span>
-                  <span className="min-w-0">
-                    <span className="flex items-center text-[13.5px] font-medium text-paper">{menu.learn[1].title}</span>
-                    <span className="mt-0.5 block text-[12px] leading-[1.55] text-faint">{menu.learn[1].body}</span>
+                    <span className="flex items-center text-[13.5px] font-medium text-paper">{nav.kundaliMatchTitle}</span>
+                    <span className="mt-0.5 block text-[12px] leading-[1.55] text-faint">{nav.kundaliMatchBody}</span>
                   </span>
                 </a></div>
             <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-white/[0.08] pt-4 text-[13.5px]">
-              <span className="cursor-default text-faint" title="Coming soon">{nav.pricing} <span className={`ml-1 rounded-[3px] border border-white/12 px-1 py-px font-mono text-[9px] ${badge}`}>{nav.soon}</span></span>
-              <a href="#astrologers" className="text-muted transition-colors hover:text-paper">{nav.forAstrologers}</a>
+              <span className="cursor-default text-faint" title="Coming soon">{nav.rasifal} <span className={`ml-1 rounded-[3px] border border-white/12 px-1 py-px font-mono text-[9px] ${badge}`}>{nav.soon}</span></span>
+              <span className="cursor-default text-faint" title="Coming soon">{nav.patro} <span className={`ml-1 rounded-[3px] border border-white/12 px-1 py-px font-mono text-[9px] ${badge}`}>{nav.soon}</span></span>
+              <Link href="/consultations" className="text-muted transition-colors hover:text-paper">{nav.consultation}</Link>
               <Link href="/login" className="text-muted transition-colors hover:text-paper">
           {nav.signIn}
         </Link>

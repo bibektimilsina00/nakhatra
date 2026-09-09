@@ -40,6 +40,14 @@ export interface MarketingCopy {
     pricing: string;
     blog: string;
     forAstrologers: string;
+    rasifal: string;
+    consultation: string;
+    kundali: string;
+    patro: string;
+    kundaliCreateTitle: string;
+    kundaliCreateBody: string;
+    kundaliMatchTitle: string;
+    kundaliMatchBody: string;
     signIn: string;
     startFree: string;
     soon: string;
@@ -263,6 +271,14 @@ const en: MarketingCopy = {
     pricing: "Pricing",
     blog: "Blog",
     forAstrologers: "For astrologers",
+    rasifal: "Rasifal",
+    consultation: "Consultation",
+    kundali: "Kundali",
+    patro: "Patro",
+    kundaliCreateTitle: "Create kundali",
+    kundaliCreateBody: "Your janma patrika, cast the way a Nepali guru casts it.",
+    kundaliMatchTitle: "Kundali milan",
+    kundaliMatchBody: "Two charts against the 36 gunas, dosha checks included.",
     signIn: "Sign in",
     startFree: "Start free",
     soon: "Soon",
