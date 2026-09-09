@@ -147,6 +147,16 @@ export interface TranslationCatalog {
   mahadashaLabel: string;
   antardashaLabel: string;
   noActiveDasha: string;
+  dashaOverviewTitle: string;
+  dashaOverviewWhatIs: string;
+  dashaOverviewWhatIsDesc: string;
+  dashaOverviewYourCurrent: string;
+  dashaOverviewMainPeriod: string;
+  dashaOverviewSubPeriod: string;
+  dashaOverviewDuration: string;
+  dashaOverviewToLabel: string;
+  dashaOverviewNoPeriod: string;
+  dashaOverviewYears: string;
   vimshottariLabel: string;
   askAnythingHint: string;
   consultReconnecting: string;
@@ -616,6 +626,16 @@ export const translations: Record<Language, TranslationCatalog> = {
     mahadashaLabel: "Mahadasha",
     antardashaLabel: "Antardasha",
     noActiveDasha: "No active dasha for today",
+    dashaOverviewTitle: "Your Dasha — Life's Current Chapter",
+    dashaOverviewWhatIs: "What is Dasha?",
+    dashaOverviewWhatIsDesc: "In Vedic astrology, your life is divided into planetary periods called Dashas. Each planet rules a chapter of your life, influencing your health, career, relationships, and luck. Think of it as a cosmic season — just like seasons change, your Dasha shifts the theme of your life.",
+    dashaOverviewYourCurrent: "Your Current Period",
+    dashaOverviewMainPeriod: "Main Period (Mahadasha)",
+    dashaOverviewSubPeriod: "Sub-Period (Antardasha)",
+    dashaOverviewDuration: "Duration",
+    dashaOverviewToLabel: "to",
+    dashaOverviewNoPeriod: "No active sub-period",
+    dashaOverviewYears: "years",
     vimshottariLabel: "Vimshottari",
     askAnythingHint: "Ask anything about your chart — career, marriage, timing, or remedies. Every answer is read from the placements on the left.",
     consultReconnecting: "Reconnecting — updates may be slower than usual.",
@@ -1083,6 +1103,16 @@ export const translations: Record<Language, TranslationCatalog> = {
     mahadashaLabel: "महादशा",
     antardashaLabel: "अन्तरदशा",
     noActiveDasha: "आजका लागि कुनै सक्रिय दशा छैन",
+    dashaOverviewTitle: "तपाईंको दशा — जीवनको हालको अध्याय",
+    dashaOverviewWhatIs: "दशा भनेको के हो?",
+    dashaOverviewWhatIsDesc: "वैदिक ज्योतिषमा, तपाईंको जीवन ग्रहीय अवधिहरूमा विभाजित हुन्छ जसलाई दशा भनिन्छ। प्रत्येक ग्रहले तपाईंको जीवनको एक अध्याय चलाउँछ, तपाईंको स्वास्थ्य, क्यारियर, सम्बन्ध र भाग्यलाई प्रभावित गर्छ। यसलाई ऋतु जस्तै सोच्नुहोस् — जसरी ऋतु बदलिन्छ, तपाईंको दशाले तपाईंको जीवनको विषय बदल्छ।",
+    dashaOverviewYourCurrent: "तपाईंको हालको अवधि",
+    dashaOverviewMainPeriod: "मुख्य अवधि (महादशा)",
+    dashaOverviewSubPeriod: "उप-अवधि (अन्तर्दशा)",
+    dashaOverviewDuration: "अवधि",
+    dashaOverviewToLabel: "देखि",
+    dashaOverviewNoPeriod: "कुनै सक्रिय उप-अवधि छैन",
+    dashaOverviewYears: "वर्ष",
     vimshottariLabel: "विंशोत्तरी",
     askAnythingHint: "आफ्नो कुण्डलीबारे जे पनि सोध्नुहोस् — करियर, विवाह, समय वा उपाय। हरेक उत्तर बायाँका ग्रह स्थितिबाट नै आउँछ।",
     consultReconnecting: "पुनः जडान हुँदै — अपडेट अलि ढिलो आउन सक्छ।",
@@ -1550,6 +1580,16 @@ export const translations: Record<Language, TranslationCatalog> = {
     mahadashaLabel: "महादशा",
     antardashaLabel: "अंतर्दशा",
     noActiveDasha: "आज के लिए कोई सक्रिय दशा नहीं",
+    dashaOverviewTitle: "आपकी दशा — जीवन का वर्तमान अध्याय",
+    dashaOverviewWhatIs: "दशा क्या है?",
+    dashaOverviewWhatIsDesc: "वैदिक ज्योतिष में, आपका जीवन ग्रहीय अवधियों में विभाजित होता है जिन्हें दशा कहते हैं। प्रत्येक ग्रह आपके जीवन के एक अध्याय को संचालित करता है, आपके स्वास्थ्य, करियर, रिश्तों और भाग्य को प्रभावित करता है। इसे ऋतु की तरह सोचें — जैसे ऋतुएँ बदलती हैं, आपकी दशा आपके जीवन का विषय बदल देती है।",
+    dashaOverviewYourCurrent: "आपकी वर्तमान अवधि",
+    dashaOverviewMainPeriod: "मुख्य अवधि (महादशा)",
+    dashaOverviewSubPeriod: "उप-अवधि (अंतर्दशा)",
+    dashaOverviewDuration: "अवधि",
+    dashaOverviewToLabel: "से",
+    dashaOverviewNoPeriod: "कोई सक्रिय उप-अवधि नहीं",
+    dashaOverviewYears: "वर्ष",
     vimshottariLabel: "विंशोत्तरी",
     askAnythingHint: "अपनी कुंडली के बारे में कुछ भी पूछें — करियर, विवाह, समय या उपाय। हर उत्तर बाईं ओर की ग्रह स्थितियों से ही आता है।",
     consultReconnecting: "पुनः कनेक्ट हो रहा है — अपडेट थोड़े धीमे आ सकते हैं।",
