@@ -1069,8 +1069,6 @@ onClick={() => setupMicAnalyzer()}
                     onClick={() => {
                       if (voiceState === "speaking") {
                         handleInterrupt();
-                      } else if (interimTranscript.trim()) {
-                        handleSend(interimTranscript);
                       } else if (!webrtcClientRef.current) {
                         activeSessionRef.current = true;
                         updateVoiceState("listening");
@@ -1136,19 +1134,6 @@ onClick={() => setupMicAnalyzer()}
                   {voiceState === "speaking" ? t.tapToInterrupt : t.tapToStartVoice}
                 </p>
 
-                {interimTranscript && (
-                  <div className="z-20 flex w-full max-w-xl shrink-0 animate-fade-in items-center gap-2">
-                    <p className="flex-1 truncate rounded-[8px] border border-brd bg-panel px-4 py-2 text-center text-xs italic text-mid">
-                      &ldquo;{interimTranscript}&rdquo;
-                    </p>
-                    <button
-                      onClick={() => handleSend(interimTranscript)}
-                      className="shrink-0 rounded-[8px] bg-acc px-4 py-2 text-xs font-bold text-onacc transition hover:bg-acc2"
-                    >
-                      {t.sendNow}
-                    </button>
-                  </div>
-                )}
 
                 {micPermissionError && (
                   <div className="w-full max-w-md shrink-0 rounded-[8px] border border-red-500/30 bg-red-500/10 px-4 py-2 text-center text-[11px] text-red-400">
