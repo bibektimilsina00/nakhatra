@@ -198,12 +198,24 @@ export function LiveModeWorkspace() {
     setDebugLogs((prev) => [{ time, event, detail }, ...prev.slice(0, 49)]);
   };
 
+  // The transcript survives a refresh the same way the chart does: in
+  // sessionStorage, keyed by the birth so another kundali never inherits
+  // this one's conversation.
+  const transcriptKey = (b: BirthDetailsIn) =>
+    `nakhatra_chat:${b.name}|${b.date}|${b.time}`;
+
   // Load active chart
   useEffect(() => {
     const stored = loadKundaliFromStorage();
     if (stored) {
       setActiveBirth(stored.birth);
       setActiveChart(stored.chart);
+      try {
+        const saved = sessionStorage.getItem(transcriptKey(stored.birth));
+        if (saved) setMessages(JSON.parse(saved));
+      } catch {
+        // a corrupt transcript just means starting fresh
+      }
     } else {
       // Nothing chosen. This used to POST the placeholder birth — an empty
       // name at 1900-01-01, latitude 0 — and talk about the chart that came
@@ -396,6 +408,15 @@ export function LiveModeWorkspace() {
       addDebugLog("SESSION_INIT", `Dynamic greeting built for ${activeBirth.name} (${getSignName(activeChart.lagna_sign, selectedLanguageRef.current)} Ascendant)`);
     }
   }, [activeChart, activeBirth, messages.length, selectedLanguage]);
+
+  useEffect(() => {
+    if (!activeBirth.name || messages.length === 0) return;
+    try {
+      sessionStorage.setItem(transcriptKey(activeBirth), JSON.stringify(messages.slice(-60)));
+    } catch {
+      // storage full or private mode — the chat just won't survive a refresh
+    }
+  }, [messages, activeBirth]);
 
   // Send message query function
   const handleSend = async (textToSend?: string) => {
