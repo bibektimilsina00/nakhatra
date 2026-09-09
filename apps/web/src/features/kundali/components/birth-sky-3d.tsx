@@ -104,10 +104,13 @@ const ORBIT_RATE: Record<string, number> = {
   Venus: 0.0013,
   Sun: 0.001,
   Mars: 0.0006,
-  Jupiter: 0.00025,
-  Saturn: 0.00012,
-  Rahu: -0.00008,
-  Ketu: -0.00008,
+  Jupiter: 0.00028,
+  // The tail of the ladder is lifted into visibility: at the true scale the
+  // nodes (18.6y) and Saturn (29y) would be still to the eye and read as
+  // broken. Order is preserved — the nodes outpace Saturn, and backwards.
+  Saturn: 0.00018,
+  Rahu: -0.00032,
+  Ketu: -0.00032,
 };
 
 const RING_IN = 196;
@@ -126,6 +129,7 @@ export function BirthSky3D({
   globalInteract = false,
   subtleRing = false,
   avoidSelector,
+  planetLabels = true,
 }: {
   chart: Chart;
   selected: string | null;
@@ -152,6 +156,8 @@ export function BirthSky3D({
    *  or glyph whose projection lands inside one is hidden, so the ring's
    *  labels never fight the page's own copy. */
   avoidSelector?: string;
+  /** Off in the hero: the planets speak for themselves as a backdrop. */
+  planetLabels?: boolean;
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const chipRef = useRef<HTMLDivElement>(null);
@@ -863,7 +869,7 @@ export function BirthSky3D({
         rebuildAspects(aspRef.current ? sel : null);
       }
       const g = sel ? grahas.find((x) => x.name === sel) : null;
-      for (const x of grahas) x.label.visible = x.name !== sel;
+      for (const x of grahas) x.label.visible = planetLabels && x.name !== sel;
       halo.visible = !!g && dist > (g?.r ?? 1) * 14;
       if (g) {
         g.mesh.getWorldPosition(halo.position);
