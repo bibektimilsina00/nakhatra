@@ -643,6 +643,12 @@ export function ReadingDashboard() {
                       <th className="pb-1">{t.thSign}</th>
                       <th className="pb-1">{t.thHouse}</th>
                       <th className="pb-1">{t.thDegree}</th>
+                      {showFullPlanets && (
+                        <>
+                          <th className="pb-1">{language === "en" ? "Nakshatra" : "नक्षत्र"}</th>
+                          <th className="pb-1">{language === "en" ? "State" : "स्थिति"}</th>
+                        </>
+                      )}
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-brd">
@@ -651,6 +657,12 @@ export function ReadingDashboard() {
                       <td className="py-1">{getSignName(activeChart.lagna_sign, language)}</td>
                       <td className="py-1 text-[#26221b]">{language === "en" ? "H1" : "भाव १"}</td>
                       <td className="py-1 text-[#9B1C1C] font-mono">{fmtDeg(activeChart.lagna_degree, language)}</td>
+                      {showFullPlanets && (
+                        <>
+                          <td className="py-1 text-[#7a6033]">—</td>
+                          <td className="py-1 text-[#7a6033]">—</td>
+                        </>
+                      )}
                     </tr>
                     {activeChart.planets.map((p) => (
                       <tr key={p.name} className="hover:bg-fg/5">
@@ -662,6 +674,15 @@ export function ReadingDashboard() {
                           {language === "en" ? "H" : "भाव "}{toLocalizedDigit(p.house, language)}
                         </td>
                         <td className="py-1 text-[#9B1C1C] font-mono">{fmtDeg(p.degree_in_sign, language)}</td>
+                        {showFullPlanets && (
+                          <>
+                            <td className="py-1 text-[#7a6033]">
+                              {getNakshatraName(p.nakshatra.name, language)}
+                              <span className="text-[#b8a173]"> · {toLocalizedDigit(p.nakshatra.pada, language)}</span>
+                            </td>
+                            <td className="py-1 text-[#7a6033]">{p.dignity ?? p.avastha ?? "—"}</td>
+                          </>
+                        )}
                       </tr>
                     ))}
                   </tbody>
@@ -819,6 +840,43 @@ export function ReadingDashboard() {
 
           {/* RIGHT COLUMN (65% width) - Deep Narrative & Audio */}
           <div className="space-y-6">
+
+            {/* Birth Sky preview — the real scene, stilled; the whole card
+                opens the full sky. Always night, whatever the theme: it is
+                the sky. */}
+            <button
+              type="button"
+              onClick={() => router.push("/sky")}
+              aria-label={language === "en" ? "Open the Birth Sky" : "जन्म आकाश खोल्नुहोस्"}
+              className="group relative block h-[300px] w-full overflow-hidden rounded-[8px] border border-brd bg-[#090A10] text-left"
+            >
+              <div className="pointer-events-none absolute inset-0">
+                <BirthSky3D
+                  chart={activeChart}
+                  selected={null}
+                  onSelect={() => {}}
+                  showNakshatras={false}
+                  showAspects={false}
+                  hint={false}
+                  className="absolute inset-0 h-full w-full"
+                />
+              </div>
+              <div className="pointer-events-none absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 bg-gradient-to-t from-black/75 via-black/30 to-transparent px-4 pb-3 pt-10">
+                <span className="min-w-0">
+                  <span className="block font-serif text-[13.5px] font-bold text-[#F8FAFC]">
+                    {language === "en" ? "The Sky at Birth" : "जन्मकालीन आकाश"}
+                  </span>
+                  <span className="mt-0.5 block truncate text-[11px] text-[#94A3B8]">
+                    {language === "en"
+                      ? "Every graha at its true degree — open to explore in 3D"
+                      : "हरेक ग्रह आफ्नै वास्तविक अंशमा — 3D मा घुमाएर हेर्नुहोस्"}
+                  </span>
+                </span>
+                <span className="flex size-8 shrink-0 items-center justify-center rounded-[8px] border border-white/20 bg-[#0B0E18]/80 text-[#F3C766] transition group-hover:border-[#E5A93C] group-hover:bg-[#E5A93C] group-hover:text-[#090A10]">
+                  <Maximize2 className="size-4" />
+                </span>
+              </div>
+            </button>
 
             {/* Hero Audio Player Bar (Sticky beneath top nav) */}
             <div className="sticky top-[57px] z-30 rounded-[8px] border border-brd bg-panel p-4 space-y-3 shadow-xl backdrop-blur-md">
@@ -1017,43 +1075,6 @@ export function ReadingDashboard() {
                 </div>
               </div>
             )}
-
-            {/* Birth Sky preview — the real scene, stilled; the whole card
-                opens the full sky. Always night, whatever the theme: it is
-                the sky. */}
-            <button
-              type="button"
-              onClick={() => router.push("/sky")}
-              aria-label={language === "en" ? "Open the Birth Sky" : "जन्म आकाश खोल्नुहोस्"}
-              className="group relative block h-[300px] w-full overflow-hidden rounded-[8px] border border-brd bg-[#090A10] text-left"
-            >
-              <div className="pointer-events-none absolute inset-0">
-                <BirthSky3D
-                  chart={activeChart}
-                  selected={null}
-                  onSelect={() => {}}
-                  showNakshatras={false}
-                  showAspects={false}
-                  hint={false}
-                  className="absolute inset-0 h-full w-full"
-                />
-              </div>
-              <div className="pointer-events-none absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 bg-gradient-to-t from-black/75 via-black/30 to-transparent px-4 pb-3 pt-10">
-                <span className="min-w-0">
-                  <span className="block font-serif text-[13.5px] font-bold text-[#F8FAFC]">
-                    {language === "en" ? "The Sky at Birth" : "जन्मकालीन आकाश"}
-                  </span>
-                  <span className="mt-0.5 block truncate text-[11px] text-[#94A3B8]">
-                    {language === "en"
-                      ? "Every graha at its true degree — open to explore in 3D"
-                      : "हरेक ग्रह आफ्नै वास्तविक अंशमा — 3D मा घुमाएर हेर्नुहोस्"}
-                  </span>
-                </span>
-                <span className="flex size-8 shrink-0 items-center justify-center rounded-[8px] border border-white/20 bg-[#0B0E18]/80 text-[#F3C766] transition group-hover:border-[#E5A93C] group-hover:bg-[#E5A93C] group-hover:text-[#090A10]">
-                  <Maximize2 className="size-4" />
-                </span>
-              </div>
-            </button>
 
             {/* 2. Category Navigation Pills */}
             <div className="flex gap-2 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
