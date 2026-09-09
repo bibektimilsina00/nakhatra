@@ -31,7 +31,7 @@
       "time_accuracy": "exact",
       "tz_name": "Asia/Kathmandu"
     },
-    "computed_at": "2026-09-09T05:29:43.012080+00:00",
+    "computed_at": "2026-09-09T06:38:10.762640+00:00",
     "dasha": {
       "balance_years": 4.901588474407934,
       "bhabhoga_ghati": 61.07,
@@ -5864,7 +5864,7 @@
       ]
     },
     "doshas": [],
-    "engine_version": "0.6.1",
+    "engine_version": "0.7.0",
     "houses": [
       {
         "lord": "Moon",
@@ -14610,6 +14610,6 @@
   },
   "name": "nepal_hand_cast_2002",
   "siddhanta": "surya",
-  "verified_against": "A kundali hand-cast by a Nepali guru for this birth, with the birth time confirmed by its subject. Under \u0938\u0942\u0930\u094d\u092f \u0938\u093f\u0926\u094d\u0927\u093e\u0928\u094d\u0924 20 of the 22 values that kundali states agree: the lagna, the Moon's rashi and navamsa, Mula pada 2, the Ketu dasha, Dhruva yoga, Poush/Hemant/Uttarayana, Samvat 2058, Shaka 1923, Jaya samvatsara, Dog yoni, Rakshasa gana, Adi nadi, and the syllable \u092f\u094b that the subject was named from. It differs on tithi and karana, and that guru's own ishta kaal points at a birth 34 minutes earlier than the one his subject confirms, so his panchang was computed for a different moment. Engine 0.6.1: the Moon's manda epicycle was corrected from 31.6 to 31\u00b040' \u2014 the value Surya Siddhanta II.34-38 actually states, the Sun's having been transcribed correctly all along. It moves this Moon 38 arcseconds and not one of the values above.",
+  "verified_against": "A kundali hand-cast by a Nepali guru for this birth, with the birth time confirmed by its subject. Under \u0938\u0942\u0930\u094d\u092f \u0938\u093f\u0926\u094d\u0927\u093e\u0928\u094d\u0924 20 of the 22 values that kundali states agree: the lagna, the Moon's rashi and navamsa, Mula pada 2, the Ketu dasha, Dhruva yoga, Poush/Hemant/Uttarayana, Samvat 2058, Shaka 1923, Jaya samvatsara, Dog yoni, Rakshasa gana, Adi nadi, and the syllable \u092f\u094b that the subject was named from. It differs on tithi and karana, and that guru's own ishta kaal points at a birth 34 minutes earlier than the one his subject confirms, so his panchang was computed for a different moment. Engine 0.6.1: the Moon's manda epicycle was corrected from 31.6 to 31\u00b040' \u2014 the value Surya Siddhanta II.34-38 actually states, the Sun's having been transcribed correctly all along. It moves this Moon 38 arcseconds and not one of the values above. Engine 0.7.0: the samvatsara now follows Jupiter (surya.barhaspatya_year) instead of a fixed offset from the Shaka year. Nothing else in this chart moved.",
   "why": "A real Nepali birth with a real Nepali kundali to check it against, which is the only reference that means anything for this product. It replaces a verification against AstroTalk: Indian software computes drik, so agreeing with it says nothing about whether a kundali cast in Nepal would agree.\n\nScope of the verification: the guru's document states about twenty of the values in this snapshot. The rest \u2014 every varga placement, every dasha date \u2014 is frozen as a regression net, not independently confirmed. A failure here means something changed; only the stated values mean something changed that a jyotish would notice."
 }

@@ -31,7 +31,7 @@
       "time_accuracy": "exact",
       "tz_name": "Atlantic/Reykjavik"
     },
-    "computed_at": "2026-09-09T05:30:07.414343+00:00",
+    "computed_at": "2026-09-09T06:38:10.034658+00:00",
     "dasha": {
       "balance_years": 17.159399077957964,
       "bhabhoga_ghati": 57.389,
@@ -5864,7 +5864,7 @@
       ]
     },
     "doshas": [],
-    "engine_version": "0.6.1",
+    "engine_version": "0.7.0",
     "houses": [
       {
         "lord": "Venus",
@@ -14610,6 +14610,6 @@
     }
   },
   "name": "high_latitude",
-  "verified_against": "Independent reimplementation (tests/astrology/independent.py): UTC offset from the IANA database via zoneinfo, Julian Day per Meeus ch.7, ascendant by spherical trigonometry per Meeus ch.12/22 \u2014 agreeing within 0.25 arcmin and 0.01s. This fixture is a synthetic probe, not a real birth, so no hand-cast kundali exists for it or can; what it asserts is Atlantic/Reykjavik at +00:00 and 64N, and that is what was independently confirmed. Planetary longitudes are not independently confirmed here \u2014 they rest on test_invariants.py and the hand-cast graha sphuta table in test_textbook.py. Re-frozen unchanged at engine 0.6.1: the Moon epicycle correction is inside Surya Siddhanta and this fixture is drik, so every value here is byte-identical to 0.6.0 and only the version stamp moved.",
+  "verified_against": "Independent reimplementation (tests/astrology/independent.py): UTC offset from the IANA database via zoneinfo, Julian Day per Meeus ch.7, ascendant by spherical trigonometry per Meeus ch.12/22 \u2014 agreeing within 0.25 arcmin and 0.01s. This fixture is a synthetic probe, not a real birth, so no hand-cast kundali exists for it or can; what it asserts is Atlantic/Reykjavik at +00:00 and 64N, and that is what was independently confirmed. Planetary longitudes are not independently confirmed here \u2014 they rest on test_invariants.py and the hand-cast graha sphuta table in test_textbook.py. Re-frozen unchanged at engine 0.6.1: the Moon epicycle correction is inside Surya Siddhanta and this fixture is drik, so every value here is byte-identical to 0.6.0 and only the version stamp moved. Engine 0.7.0: the samvatsara now follows Jupiter (surya.barhaspatya_year) instead of a fixed offset from the Shaka year. Nothing else in this chart moved.",
   "why": "64N. Ascendant behaves badly near the poles in some house systems."
 }

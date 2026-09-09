@@ -270,12 +270,24 @@
     "avakhada_quote": "हु काराक्षरस्य अज योनीः मध्य नाडी देव गणः विप्र वर्णः — every one follows from the nakshatra, and all five are right under सूर्य सिद्धान्त."
   },
   "samvatsara": {
-    "source": "Fitted to the two hand-cast kundalis, twenty-nine years apart.",
-    "anchors": {
-      "1897": "Vibhava",
-      "1926": "Hevilambi"
-    },
-    "caveat": "Two documents in one tradition, not a rule from a text. The southern Ugadi reckoning names a different year for the same date."
+    "source": "Three kundalis hand-cast in Parbat, in three different parts of the year.",
+    "rule": "The sixty-year cycle is Jupiter's. One samvatsara is one sign of Jupiter's mean motion, about 361.02 days — four days short of a solar year. So it is computed from Jupiter in surya.barhaspatya_year, not offset from the Shaka year.",
+    "why_not_an_offset": "A fixed offset from the Shaka year was used until 0.7.0 and fitted all of these charts, because the two reckonings only separate by a whole samvatsara every eighty-five years and these births span twenty-nine. Measured against Jupiter, that offset's lead runs 11 in 1900, 13 in 2004, 15 by 2200 — so it named the wrong year for births before about 1960 and after about 2085 while looking perfect on the charts it was fitted to. The phase constant that replaces it is anchored on the same charts but does not decay: it is the same number in any era.",
+    "anchors": [
+      {
+        "birth": "1975-11-23 20:18",
+        "expect": "Vibhava"
+      },
+      {
+        "birth": "2002-01-11 19:30",
+        "expect": "Jaya"
+      },
+      {
+        "birth": "2004-08-17 07:40",
+        "expect": "Hevilambi"
+      }
+    ],
+    "caveat": "Three documents in one tradition. The southern Ugadi reckoning, which ties the cycle to the solar year instead, names a different samvatsara for the same date — Shaka 1946 is Krodhi there and Pingala here."
   },
   "ayana_is_sayana": {
     "source": "Four hand-cast Nepali kundalis. Three are Dakshinayana under either reading and cannot discriminate; the 11 Jan 2002 chart reads उत्तर अयने and is the one that settles it.",

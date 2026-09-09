@@ -54,6 +54,14 @@ CIVIL_DAYS: Final = 1_577_917_828
 MOON_REVOLUTIONS: Final = 57_753_336        # sidereal month, 27.32167 days
 SUN_REVOLUTIONS: Final = 4_320_000          # one per year, by definition
 MOON_APOGEE_REVOLUTIONS: Final = 488_203    # mandocca, 8.85-year cycle
+JUPITER_REVOLUTIONS: Final = 364_220        # 11.86 years — the samvatsara cycle
+
+#: Which samvatsara name Jupiter-year zero carries. The cycle of sixty is a
+#: naming convention, so its phase has to be anchored on something; this is
+#: anchored on three kundalis hand-cast in Parbat, which agree on it. Unlike a
+#: fixed offset from the Shaka year, a phase does not decay — it is the same
+#: number in 1900 and in 2200.
+BARHASPATYA_PHASE: Final = 25
 
 #: Julian Day of the Kali epoch — midnight at Ujjain, 18 February 3102 BCE.
 KALI_EPOCH_JD: Final = 588_465.5
@@ -107,6 +115,23 @@ def moon_longitude(jd: float) -> float:
 def sun_longitude(jd: float) -> float:
     """Sidereal longitude of the Sun, by Surya Siddhanta."""
     return _manda(_mean(SUN_REVOLUTIONS, ahargana(jd)), SUN_APOGEE, SUN_EPICYCLE)
+
+
+def barhaspatya_year(jd: float) -> int:
+    """Elapsed Barhaspatya (Jupiter) years since the Kali epoch.
+
+    The sixty-year samvatsara cycle is Jupiter's, not the Sun's: one
+    samvatsara is one sign of Jupiter's mean motion, about 361.02 days. That
+    is four days short of a solar year, so the two reckonings separate by a
+    whole samvatsara roughly every eighty-five years — the kshaya, the
+    expunged year.
+
+    This is why the samvatsara cannot be a fixed offset from the Shaka year.
+    An offset fitted in one era reads correctly for a few decades either side
+    and then silently names the wrong year: measured against this function,
+    a fixed offset drifts from a lead of 11 in 1900 to 15 by 2200.
+    """
+    return math.floor((JUPITER_REVOLUTIONS * ahargana(jd) / CIVIL_DAYS) * 12.0)
 
 
 def daily_motion(jd: float, longitude_of) -> float:

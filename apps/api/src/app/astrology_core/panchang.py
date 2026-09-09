@@ -16,6 +16,7 @@ from datetime import datetime, timedelta
 
 from app.astrology_core.constants import DEGREES_PER_NAKSHATRA, SIGN_LORDS, SIGNS
 from app.astrology_core.nakshatra import nakshatra_at
+from app.astrology_core.surya import BARHASPATYA_PHASE, barhaspatya_year
 
 # --- tithi -----------------------------------------------------------------
 
@@ -203,7 +204,13 @@ SAMVATSARAS = (
     "Krodhana",
     "Akshaya",
 )
-SAMVATSARA_OFFSET = 24
+#: The samvatsara is Jupiter's cycle, not the Sun's, so it is computed from
+#: Jupiter's mean motion in `surya.barhaspatya_year` rather than offset from
+#: the Shaka year. A fixed offset was used here until 0.7.0 and was wrong in
+#: a way two hand-cast charts twenty-nine years apart could not reveal: the
+#: two reckonings drift a whole samvatsara every eighty-five years, so the
+#: fitted constant read correctly around 2000 and named the wrong year for
+#: births before about 1960 or after about 2085.
 
 #: Offsets from the Christian era for the solar reckonings, both counted from
 #: the Sun's ingress into sidereal Aries (Kapoor p.79, "Other Eras").
@@ -412,6 +419,8 @@ def build_panchang(
     sun_speed: float = 0.0,
     moon_speed: float = 0.0,
     local_datetime: datetime = None,  # type: ignore[assignment]
+    #: Needed for the samvatsara, which follows Jupiter rather than the Sun.
+    julian_day: float,
     sunrise: datetime | None,
     sunset: datetime | None,
 ) -> Panchang:
@@ -446,6 +455,6 @@ def build_panchang(
         masa=SOLAR_MASA[sun_sign_index],
         vikram_samvat=solar_year(local_datetime, sun_sign_index, VIKRAM_OFFSET),
         shaka_samvat=shaka,
-        samvatsara=SAMVATSARAS[(shaka + SAMVATSARA_OFFSET) % 60],
+        samvatsara=SAMVATSARAS[(barhaspatya_year(julian_day) + BARHASPATYA_PHASE) % 60],
         near_boundary=_boundaries(sun_longitude, moon_longitude, sun_speed, moon_speed),
     )

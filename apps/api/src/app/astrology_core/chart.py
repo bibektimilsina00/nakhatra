@@ -167,6 +167,7 @@ def build_chart(birth: BirthMoment, siddhanta: str = "surya") -> Chart:
             sun_speed=raw["Sun"].speed,
             moon_speed=raw["Moon"].speed,
             local_datetime=birth.local_datetime,
+            julian_day=jd,
             sunrise=sunrise,
             sunset=sunset,
         ),

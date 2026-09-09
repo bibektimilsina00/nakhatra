@@ -258,12 +258,64 @@ def test_a_1975_nepal_birth_matches_the_kundali_cast_for_it():
     assert signs == case["expect_planet_signs"], case["planet_note"]
 
 
-def test_samvatsara_fits_both_hand_cast_kundalis():
-    from app.astrology_core.panchang import SAMVATSARA_OFFSET, SAMVATSARAS
+def test_samvatsara_follows_jupiter_not_the_shaka_year():
+    """All three hand-cast charts, and the reason it is not an offset.
+
+    A fixed offset from the Shaka year fits every chart here, which is exactly
+    why it survived: the solar and Barhaspatya reckonings drift apart by one
+    samvatsara every eighty-five years, and these births span twenty-nine. The
+    charts cannot tell the two rules apart. What tells them apart is that one
+    of them stops being true.
+    """
+    from app.astrology_core import build_chart
+    from app.astrology_core.models import BirthMoment
 
     case = BOOK["samvatsara"]
-    for shaka, name in case["anchors"].items():
-        assert SAMVATSARAS[(int(shaka) + SAMVATSARA_OFFSET) % 60] == name, case["caveat"]
+    places = {
+        "1975-11-23 20:18": (28.2227, 83.6826),
+        "2002-01-11 19:30": (27.4823, 83.2778),
+        "2004-08-17 07:40": (28.2227, 83.6826),
+    }
+    for anchor in case["anchors"]:
+        lat, lon = places[anchor["birth"]]
+        chart = build_chart(
+            BirthMoment(
+                local_datetime=datetime.fromisoformat(anchor["birth"].replace(" ", "T")),
+                tz_name="Asia/Kathmandu",
+                latitude=lat,
+                longitude=lon,
+                time_accuracy="exact",
+            )
+        )
+        assert chart.panchang.samvatsara == anchor["expect"], (
+            f"{anchor['birth']}: got {chart.panchang.samvatsara}, the guru wrote "
+            f"{anchor['expect']}. {case['caveat']}"
+        )
+
+
+def test_a_fixed_shaka_offset_cannot_be_the_samvatsara_rule():
+    """The guard on the bug this replaced.
+
+    If someone reintroduces a constant offset from the Shaka year, it will fit
+    the three anchors above and still be wrong. What catches it is that the
+    offset a fixed rule would need is not the same number in every era.
+    """
+    from app.astrology_core.constants import SIGNS  # noqa: F401  (import sanity)
+    from app.astrology_core.ephemeris import julian_day
+    from app.astrology_core.surya import BARHASPATYA_PHASE, barhaspatya_year
+
+    leads = set()
+    for year in (1900, 2004, 2200):
+        jd = julian_day(datetime(year, 6, 15, 12, 0), "Asia/Kathmandu")
+        barhaspatya = (barhaspatya_year(jd) + BARHASPATYA_PHASE) % 60
+        solar = (year - 78) % 60
+        leads.add((barhaspatya - solar) % 60)
+
+    assert len(leads) > 1, (
+        "Jupiter and the solar year would have to keep step for a fixed offset "
+        f"to work, and they do not: the required offset takes values {sorted(leads)} "
+        "across 1900-2200. " + BOOK["samvatsara"]["why_not_an_offset"]
+    )
 
 
 def test_ayana_is_tropical_and_ritu_is_sidereal():
