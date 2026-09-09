@@ -123,6 +123,7 @@ export function BirthSky3D({
   className = "relative h-[76vh] min-h-[500px] w-full overflow-hidden rounded-[12px]",
   wheelZoom = true,
   animateOrbits = false,
+  globalInteract = false,
 }: {
   chart: Chart;
   selected: string | null;
@@ -139,6 +140,10 @@ export function BirthSky3D({
    *  the nodes creeping retrograde. Never for a birth chart, whose positions
    *  are the whole point. */
   animateOrbits?: boolean;
+  /** Bind drag and pick to the window instead of the canvas — for the hero,
+   *  where copy overlays the sky and the old scene dragged from anywhere.
+   *  Links, buttons and inputs are excluded so the page stays usable. */
+  globalInteract?: boolean;
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const chipRef = useRef<HTMLDivElement>(null);
@@ -611,15 +616,18 @@ export function BirthSky3D({
     }
     scene.add(nakGroup);
 
-    /* ── the lagna beam ──────────────────────────────────────────── */
+    /* ── the lagna beam (on its own pivot: the ascendant is the fastest
+       mover in a real sky, so the animated hero sweeps it) ──────────── */
+    const ascPivot = new THREE.Group();
+    scene.add(ascPivot);
     const beam = new THREE.Line(
       new THREE.BufferGeometry().setFromPoints([at(lagnaLon, 14), at(lagnaLon, RING_OUT + 24)]),
       new THREE.LineBasicMaterial({ color: 0xf3c766, transparent: true, opacity: 0.9 }),
     );
-    scene.add(beam);
+    ascPivot.add(beam);
     const ascLabel = makeLabel(language === "en" ? "Asc" : "लग्न", "#F3C766", 36);
     ascLabel.position.copy(at(lagnaLon, RING_OUT + 30, 6));
-    scene.add(ascLabel);
+    ascPivot.add(ascLabel);
 
     /* ── selection halo + aspect lines, driven from refs per frame ── */
     const halo = new THREE.Mesh(
@@ -663,6 +671,11 @@ export function BirthSky3D({
     composer.addPass(new RenderPass(scene, camera));
     composer.addPass(new UnrealBloomPass(new THREE.Vector2(1, 1), 0.42, 0.4, 0.85));
 
+    const uiTarget = (e: Event) =>
+      globalInteract &&
+      !!(e.target as HTMLElement | null)?.closest?.("a, button, input, textarea, select, [role=button]");
+    const interactTarget: Window | HTMLElement = globalInteract ? window : canvas;
+
     /* ── drag-orbit camera around a movable focus ─────────────────────
        Why the landing page's planets look rich and a fixed wide shot does
        not: there Jupiter fills real screen area; from a 460-unit overview
@@ -685,17 +698,24 @@ export function BirthSky3D({
     canvas.addEventListener("wheel", wheel, { passive: false });
     cleanup.push(() => canvas.removeEventListener("wheel", wheel));
 
-    on(canvas, "pointerdown", (e) => {
-      if (e.button !== 0) return;
+    on(interactTarget, "pointerdown", (e) => {
+      if (e.button !== 0 || uiTarget(e)) return;
       dragging = true; dragged = false;
       lastX = e.clientX; lastY = e.clientY;
       vAz = vPol = 0;
       canvas.style.cursor = "grabbing";
-      canvas.setPointerCapture(e.pointerId);
+      if (globalInteract) {
+        // a drag that starts on the headline must swing the sky, not select it
+        document.body.style.userSelect = "none";
+      } else {
+        canvas.setPointerCapture(e.pointerId);
+      }
     });
-    on(canvas, "pointermove", (e) => {
+    on(interactTarget, "pointermove", (e) => {
       if (!dragging) {
-        canvas.style.cursor = pickAt(e.clientX, e.clientY) ? "pointer" : "grab";
+        if (!uiTarget(e)) {
+          canvas.style.cursor = pickAt(e.clientX, e.clientY) ? "pointer" : "grab";
+        }
         return;
       }
       const dx = e.clientX - lastX, dy = e.clientY - lastY;
@@ -704,9 +724,10 @@ export function BirthSky3D({
       vAz = -dx * 0.005; vPol = -dy * 0.005;
       az += vAz; pol = clampPol(pol + vPol);
     });
-    on(canvas, "pointerup", () => {
+    on(interactTarget, "pointerup", () => {
       dragging = false;
       canvas.style.cursor = "grab";
+      if (globalInteract) document.body.style.userSelect = "";
       setTimeout(() => { dragged = false; }, 0);
     });
 
@@ -731,8 +752,8 @@ export function BirthSky3D({
       return best;
     }
 
-    on(canvas, "click", (e) => {
-      if (dragged) return;
+    on(interactTarget, "click", (e) => {
+      if (dragged || uiTarget(e)) return;
       const hit = pickAt(e.clientX, e.clientY);
       if (hit) onSelectRef.current(hit.name);
       else if (selRef.current) onSelectRef.current(selRef.current); // toggle off
@@ -770,6 +791,7 @@ export function BirthSky3D({
         for (const g of grahas) g.mesh.rotateY(g.name === "Sun" ? 0.0008 : 0.003);
         if (orbitsRef.current) {
           for (const g of grahas) g.pivot.rotation.y += ORBIT_RATE[g.name] ?? 0;
+          ascPivot.rotation.y += 0.0011; // the whole zodiac rises in a day
         }
         // the shadow planets breathe — slow, out of phase with each other
         const t = performance.now() * 0.0012;

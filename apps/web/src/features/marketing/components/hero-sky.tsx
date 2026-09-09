@@ -63,6 +63,7 @@ export function HeroSky() {
       showAspects={false}
       wheelZoom={false}
       animateOrbits
+      globalInteract
       className="absolute inset-0 h-full w-full overflow-hidden"
     />
   );
