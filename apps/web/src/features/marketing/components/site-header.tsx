@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 
 import { useSession } from "@/features/auth/hooks/use-auth";
 import { LANGUAGES, LanguageMenu } from "@/components/ui/language-menu";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { useLatinTracking, useMarketing, useTranslation } from "@/lib/i18n/language-context";
 
 /** The same three languages as plain text — for the mobile panel, where a
@@ -204,6 +205,7 @@ export function SiteHeader() {
           </div>
 
           <div className="flex items-center gap-2.5 text-[13.5px]">
+            <ThemeToggle />
             <div className="hidden xl:block"><LanguageMenu /></div>
             {user ? (
         <Link href="/dashboard" className="hidden text-muted transition-colors hover:text-paper sm:inline">
@@ -284,7 +286,7 @@ export function SiteHeader() {
               <Link href="/login" className="text-muted transition-colors hover:text-paper">
           {nav.signIn}
         </Link>
-              <LangStrip className="ml-auto font-mono text-[11px]" />
+              <span className="ml-auto flex items-center gap-3"><ThemeToggle /><LangStrip className="font-mono text-[11px]" /></span>
             </div>
           </nav>
         </div>
