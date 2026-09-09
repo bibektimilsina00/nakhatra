@@ -29,7 +29,7 @@ export function Hero() {
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-ink to-transparent" />
 
       <div className="relative mx-auto grid min-h-screen max-w-[1360px] items-center gap-16 px-8 pb-28 pt-28 lg:grid-cols-[1fr_auto]">
-        <div className="max-w-2xl">
+        <div className="max-w-2xl" data-sky-avoid>
           <h1 className="font-disp text-[8.5vw] font-bold leading-[1.02] tracking-[-0.02em] text-paper sm:text-[52px]">
             {m.titleA}<br />
             <span className="text-gold2">{m.titleB}</span>
@@ -47,7 +47,7 @@ export function Hero() {
         </div>
 
         {/* D1 and D9, the pair a Jyotishi always reads together */}
-        <div className="hidden lg:block lg:justify-self-end">
+        <div className="hidden lg:block lg:justify-self-end" data-sky-avoid>
           <div className="grid w-[196px] gap-5">
             {sky && (
               <>

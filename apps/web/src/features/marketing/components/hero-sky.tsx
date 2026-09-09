@@ -64,6 +64,8 @@ export function HeroSky() {
       wheelZoom={false}
       animateOrbits
       globalInteract
+      subtleRing
+      avoidSelector="[data-sky-avoid]"
       className="absolute inset-0 h-full w-full overflow-hidden"
     />
   );

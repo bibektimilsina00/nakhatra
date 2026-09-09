@@ -124,6 +124,8 @@ export function BirthSky3D({
   wheelZoom = true,
   animateOrbits = false,
   globalInteract = false,
+  subtleRing = false,
+  avoidSelector,
 }: {
   chart: Chart;
   selected: string | null;
@@ -144,6 +146,12 @@ export function BirthSky3D({
    *  where copy overlays the sky and the old scene dragged from anywhere.
    *  Links, buttons and inputs are excluded so the page stays usable. */
   globalInteract?: boolean;
+  /** Fainter zodiac band, for embeds where the sky is a backdrop. */
+  subtleRing?: boolean;
+  /** Elements matching this selector claim their screen space: a sign name
+   *  or glyph whose projection lands inside one is hidden, so the ring's
+   *  labels never fight the page's own copy. */
+  avoidSelector?: string;
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const chipRef = useRef<HTMLDivElement>(null);
@@ -461,6 +469,8 @@ export function BirthSky3D({
     }
 
     /* ── the zodiac ring ─────────────────────────────────────────── */
+    const ringMats: (THREE.Material & { opacity: number })[] = [];
+    const signMarks: THREE.Sprite[] = [];
     const flat = (obj: THREE.Object3D) => { obj.rotation.x = Math.PI / 2; scene.add(obj); };
     const circle = (r: number, opacity: number, color = 0xe5a93c) => {
       const c = new THREE.LineLoop(
@@ -469,6 +479,7 @@ export function BirthSky3D({
         ),
         new THREE.LineBasicMaterial({ color, transparent: true, opacity }),
       );
+      ringMats.push(c.material as THREE.LineBasicMaterial);
       flat(c);
       return c;
     };
@@ -496,6 +507,7 @@ export function BirthSky3D({
       );
       glow.rotation.x = -Math.PI / 2;
       glow.position.y = -0.5;
+      ringMats.push(glow.material as THREE.MeshBasicMaterial);
       scene.add(glow);
     }
 
@@ -514,12 +526,14 @@ export function BirthSky3D({
         }),
       );
       sector.rotation.x = -Math.PI / 2;
+      ringMats.push(sector.material as THREE.MeshBasicMaterial);
       scene.add(sector);
 
       const spoke = new THREE.Line(
         new THREE.BufferGeometry().setFromPoints([at(i * 30, RING_IN), at(i * 30, RING_OUT)]),
         new THREE.LineBasicMaterial({ color: 0xe5a93c, transparent: true, opacity: 0.3 }),
       );
+      ringMats.push(spoke.material as THREE.LineBasicMaterial);
       scene.add(spoke);
 
       const label = makeLabel(
@@ -528,16 +542,24 @@ export function BirthSky3D({
       );
       label.position.copy(at(i * 30 + 15, (RING_IN + RING_OUT) / 2, 4));
       scene.add(label);
+      signMarks.push(label);
 
       const glyph = makeLabel(SIGN_GLYPHS[i], isLagnaSign ? "#F3C766" : "#E5C77A", 52);
       glyph.position.copy(at(i * 30 + 15, (RING_IN + RING_OUT) / 2, 14));
       scene.add(glyph);
+      signMarks.push(glyph);
 
       // whole-sign house number just inside the ring
       const houseNo = ((i - chart.lagna_sign_index + 12) % 12) + 1;
       const num = makeLabel(toLocalizedDigit(houseNo, language), "#8a7a55", 30);
       num.position.copy(at(i * 30 + 15, RING_IN - 14, 1));
       scene.add(num);
+      signMarks.push(num);
+    }
+
+    if (subtleRing) {
+      for (const m of ringMats) m.opacity *= 0.45;
+      for (const sp of signMarks) sp.material.opacity = 0.6;
     }
 
     /* ── nakshatra ring (toggleable) ─────────────────────────────── */
@@ -782,6 +804,9 @@ export function BirthSky3D({
 
     let raf = 0;
     let lastSel: string | null = null;
+    let frame = 0;
+    let avoidRects: DOMRect[] = [];
+    const _lp = new THREE.Vector3();
     function animate() {
       raf = requestAnimationFrame(animate);
       resize();
@@ -855,6 +880,29 @@ export function BirthSky3D({
         chip.textContent = grahaChip(g.name);
       } else {
         panel.style.opacity = "0";
+      }
+
+      // sign names step aside for the page's own copy
+      if (avoidSelector) {
+        if (frame % 15 === 0) {
+          avoidRects = [...document.querySelectorAll(avoidSelector)].map((el) =>
+            el.getBoundingClientRect(),
+          );
+        }
+        frame++;
+        const b = canvas.getBoundingClientRect();
+        const PAD = 10;
+        for (const sp of signMarks) {
+          sp.getWorldPosition(_lp).project(camera);
+          if (_lp.z > 1) { sp.visible = false; continue; }
+          const sx = b.left + ((_lp.x + 1) / 2) * b.width;
+          const sy = b.top + ((1 - _lp.y) / 2) * b.height;
+          sp.visible = !avoidRects.some(
+            (r) =>
+              sx > r.left - PAD && sx < r.right + PAD &&
+              sy > r.top - PAD && sy < r.bottom + PAD,
+          );
+        }
       }
 
       composer.render();
