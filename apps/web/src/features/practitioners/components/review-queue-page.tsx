@@ -27,8 +27,8 @@ export function ReviewQueuePage() {
   return (
     <AppShell>
       <main className="mx-auto w-full max-w-[900px] px-5 pb-24 pt-10 sm:px-8">
-        <span className={`text-[11px] text-gold ${eyebrow}`}>Admin</span>
-        <h1 className="mt-3 text-[26px] font-bold leading-tight text-paper sm:text-[30px]">
+        <span className={`text-[11px] text-acc ${eyebrow}`}>Admin</span>
+        <h1 className="mt-3 text-[26px] font-bold leading-tight text-fg sm:text-[30px]">
           {t.practReviewQueue}
         </h1>
 
@@ -41,8 +41,8 @@ export function ReviewQueuePage() {
               aria-pressed={state === value}
               className={`rounded-[6px] border px-2.5 py-1 text-[11.5px] transition-colors ${
                 state === value
-                  ? "border-gold/50 bg-gold/[0.09] text-gold2"
-                  : "border-white/[0.10] text-muted hover:border-white/25 hover:text-paper"
+                  ? "border-acc/50 bg-acc/[0.09] text-acc2"
+                  : "border-white/[0.10] text-mut hover:border-brd2 hover:text-fg"
               }`}
             >
               {value.replace("_", " ")}
@@ -51,7 +51,7 @@ export function ReviewQueuePage() {
         </div>
 
         {queue.isError ? (
-          <p className="mt-8 text-[13.5px] text-faint">
+          <p className="mt-8 text-[13.5px] text-dim">
             This account cannot review applications.
           </p>
         ) : queue.isPending ? (
@@ -59,7 +59,7 @@ export function ReviewQueuePage() {
             {[0, 1].map((row) => (
               <div
                 key={row}
-                className="h-[120px] animate-pulse rounded-[12px] border border-white/[0.07] bg-card"
+                className="h-[120px] animate-pulse rounded-[12px] border border-white/[0.07] bg-panel"
               />
             ))}
           </div>
@@ -71,10 +71,10 @@ export function ReviewQueuePage() {
           </ul>
         ) : (
           <div className="mt-6 rounded-[12px] border border-dashed border-white/[0.14] px-6 py-12 text-center">
-            <span className="mx-auto grid size-11 place-items-center rounded-full border border-white/[0.10] text-gold">
+            <span className="mx-auto grid size-11 place-items-center rounded-full border border-white/[0.10] text-acc">
               <ShieldQuestion className="size-5" />
             </span>
-            <p className="mt-3 text-[13.5px] text-muted">Nothing in this queue.</p>
+            <p className="mt-3 text-[13.5px] text-mut">Nothing in this queue.</p>
           </div>
         )}
       </main>
@@ -89,29 +89,29 @@ function ApplicationRow({ application }: { application: ApplicationReview }) {
   const decided = application.state === "approved" || application.state === "rejected";
 
   return (
-    <li className="rounded-[12px] border border-white/[0.09] bg-card p-5">
+    <li className="rounded-[12px] border border-white/[0.09] bg-panel p-5">
       <div className="flex flex-wrap items-baseline justify-between gap-3">
         <div className="min-w-0">
-          <p className="text-[15px] font-semibold text-paper">{application.full_name}</p>
-          <p className="mt-0.5 text-[12px] text-faint">
+          <p className="text-[15px] font-semibold text-fg">{application.full_name}</p>
+          <p className="mt-0.5 text-[12px] text-dim">
             {application.practice_type} · {application.city || application.country} ·{" "}
             {application.years_experience} {t.dashYears} ·{" "}
             {(application.languages ?? []).join(", ") || "—"}
           </p>
         </div>
-        <span className="rounded-[6px] border border-white/[0.10] px-2 py-0.5 text-[10.5px] uppercase text-muted">
+        <span className="rounded-[6px] border border-white/[0.10] px-2 py-0.5 text-[10.5px] uppercase text-mut">
           {application.state.replace("_", " ")}
         </span>
       </div>
 
       {application.credentials && (
-        <p className="mt-3 text-[13px] leading-[1.7] text-muted">{application.credentials}</p>
+        <p className="mt-3 text-[13px] leading-[1.7] text-mut">{application.credentials}</p>
       )}
 
       {application.sample_reading && (
         <details className="mt-3">
-          <summary className="cursor-pointer text-[12.5px] text-gold">Sample reading</summary>
-          <p className="mt-2 whitespace-pre-wrap text-[13px] leading-[1.75] text-muted">
+          <summary className="cursor-pointer text-[12.5px] text-acc">Sample reading</summary>
+          <p className="mt-2 whitespace-pre-wrap text-[13px] leading-[1.75] text-mut">
             {application.sample_reading}
           </p>
         </details>
@@ -123,7 +123,7 @@ function ApplicationRow({ application }: { application: ApplicationReview }) {
             value={note}
             onChange={(event) => setNote(event.target.value)}
             placeholder="Note to the applicant"
-            className="min-w-0 flex-1 rounded-[8px] border border-white/[0.09] bg-ink px-3 py-2 text-[12.5px] text-paper placeholder-faint focus:border-gold/45 focus:outline-none"
+            className="min-w-0 flex-1 rounded-[8px] border border-white/[0.09] bg-app px-3 py-2 text-[12.5px] text-fg placeholder-faint focus:border-acc/45 focus:outline-none"
           />
           <button
             type="button"
@@ -134,7 +134,7 @@ function ApplicationRow({ application }: { application: ApplicationReview }) {
                 decision: { decision: "approve", decision_note: note, reviewer_note: "" },
               })
             }
-            className="inline-flex items-center gap-1.5 rounded-[8px] bg-gold px-3.5 py-2 text-[12.5px] font-bold text-ink transition-colors hover:bg-gold2 disabled:opacity-40"
+            className="inline-flex items-center gap-1.5 rounded-[8px] bg-acc px-3.5 py-2 text-[12.5px] font-bold text-ink transition-colors hover:bg-acc2 disabled:opacity-40"
           >
             <Check className="size-3.5" />
             {t.practApprove}
@@ -148,7 +148,7 @@ function ApplicationRow({ application }: { application: ApplicationReview }) {
                 decision: { decision: "reject", decision_note: note, reviewer_note: "" },
               })
             }
-            className="inline-flex items-center gap-1.5 rounded-[8px] border border-white/12 px-3.5 py-2 text-[12.5px] text-muted transition-colors hover:border-rose-400/40 hover:text-rose-300 disabled:opacity-40"
+            className="inline-flex items-center gap-1.5 rounded-[8px] border border-white/12 px-3.5 py-2 text-[12.5px] text-mut transition-colors hover:border-rose-400/40 hover:text-rose-300 disabled:opacity-40"
           >
             <X className="size-3.5" />
             {t.practReject}
@@ -157,7 +157,7 @@ function ApplicationRow({ application }: { application: ApplicationReview }) {
       )}
 
       {application.decision_note && decided && (
-        <p className="mt-3 border-t border-white/[0.07] pt-3 text-[12.5px] text-faint">
+        <p className="mt-3 border-t border-white/[0.07] pt-3 text-[12.5px] text-dim">
           {application.decision_note}
         </p>
       )}

@@ -851,9 +851,9 @@ export function LiveModeWorkspace() {
     return (
       <AppShell sidebar={false} fill>
         <div className="flex flex-1 flex-col items-center justify-center space-y-4 text-center">
-          <div className="size-12 animate-spin rounded-full border-4 border-[#E5A93C] border-t-transparent" />
-          <p className="text-sm font-bold text-[#F8FAFC]">{t.connectingToDesk}</p>
-          <p className="text-xs text-[#94A3B8]">{t.calculatingEphemeris}</p>
+          <div className="size-12 animate-spin rounded-full border-4 border-acc border-t-transparent" />
+          <p className="text-sm font-bold text-fg">{t.connectingToDesk}</p>
+          <p className="text-xs text-mut">{t.calculatingEphemeris}</p>
         </div>
       </AppShell>
     );
@@ -905,7 +905,7 @@ export function LiveModeWorkspace() {
               router.back();
             }}
             aria-label={t.readingBack}
-            className="grid size-9 shrink-0 place-items-center rounded-[8px] border border-white/10 text-[#94A3B8] transition-colors hover:border-white/25 hover:text-[#F8FAFC]"
+            className="grid size-9 shrink-0 place-items-center rounded-[8px] border border-brd text-mut transition-colors hover:border-brd2 hover:text-fg"
           >
             <ArrowLeft className="size-4" />
           </button>
@@ -919,24 +919,24 @@ export function LiveModeWorkspace() {
             }}
             trigger={
               <span className="min-w-0">
-                <span className="block truncate text-[14px] font-bold text-[#F8FAFC]">
+                <span className="block truncate text-[14px] font-bold text-fg">
                   {t.brandName} Live AI
                 </span>
-                <span className="block truncate text-[11px] text-[#94A3B8]">{activeBirth.name}</span>
+                <span className="block truncate text-[11px] text-mut">{activeBirth.name}</span>
               </span>
             }
           />
         </div>
       }
     >
-    <div className="flex min-h-0 flex-1 flex-col overflow-hidden bg-[#090A10] text-[#94A3B8] font-sans selection:bg-[#E5A93C]/30 selection:text-[#F3C766]">
+    <div className="flex min-h-0 flex-1 flex-col overflow-hidden bg-inset text-mut font-sans selection:bg-acc/30 selection:text-acc2">
 
       {/* =================================================================== */}
       {/* REAL-TIME AUDIO TELEMETRY & RECORDING DEBUG PANEL                  */}
       {/* =================================================================== */}
       {showDebugPanel && (
         <div className="border-b border-amber-500/30 bg-[#0D0F19] p-5 z-40 text-xs font-mono space-y-4 shadow-2xl animate-fade-in">
-          <div className="flex items-center justify-between border-b border-white/10 pb-3">
+          <div className="flex items-center justify-between border-b border-brd pb-3">
             <div className="flex items-center gap-2">
               <span className="text-amber-400 font-bold text-sm">🐛 Live Audio Recording &amp; Voice Telemetry Console</span>
               <span className={`rounded-[8px] border px-2 py-0.5 text-[10px] font-bold ${isWebRTCActive ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/40" : "bg-cyan-500/20 text-cyan-300 border-cyan-500/40"}`}>
@@ -945,7 +945,7 @@ export function LiveModeWorkspace() {
             </div>
             <button
               onClick={() => setShowDebugPanel(false)}
-              className="text-xs text-[#94A3B8] hover:text-white"
+              className="text-xs text-mut hover:text-white"
             >
               ✕ Close Panel
             </button>
@@ -953,9 +953,9 @@ export function LiveModeWorkspace() {
 
           <div className="grid gap-4 md:grid-cols-5 text-[11px]">
             {/* Box 1: Hardware Mic State */}
-            <div className="rounded-[8px] border border-white/10 bg-[#161B2B] p-3 space-y-1.5">
-              <span className="text-[#94A3B8] block text-[10px] uppercase font-semibold">🎙️ Mic Hardware Status</span>
-              <p className="font-bold text-[#F8FAFC] flex items-center gap-2">
+            <div className="rounded-[8px] border border-brd bg-panel p-3 space-y-1.5">
+              <span className="text-mut block text-[10px] uppercase font-semibold">🎙️ Mic Hardware Status</span>
+              <p className="font-bold text-fg flex items-center gap-2">
                 <span className={`size-2 rounded-full ${mediaStreamRef.current?.active ? "bg-emerald-400 animate-pulse" : "bg-red-400"}`} />
                 {mediaStreamRef.current?.active ? "MediaStream Connected" : "Mic Stream Inactive"}
               </p>
@@ -964,34 +964,34 @@ export function LiveModeWorkspace() {
                   setupMicAnalyzer();
                   startMediaRecorder();
                 }}
-                className="mt-1 rounded-[8px] bg-[#E5A93C]/20 border border-[#E5A93C]/40 text-[#F3C766] px-2 py-0.5 text-[10px] font-bold hover:bg-[#E5A93C]/30 transition"
+                className="mt-1 rounded-[8px] bg-acc/20 border border-acc/40 text-acc2 px-2 py-0.5 text-[10px] font-bold hover:bg-acc/30 transition"
               >
                 ▶️ Start Mic Hardware
               </button>
             </div>
 
             {/* Box 2: Audio Level & VU Meter */}
-            <div className="rounded-[8px] border border-white/10 bg-[#161B2B] p-3 space-y-1.5">
-              <span className="text-[#94A3B8] block text-[10px] uppercase font-semibold">🔊 Audio Level (VU Meter)</span>
+            <div className="rounded-[8px] border border-brd bg-panel p-3 space-y-1.5">
+              <span className="text-mut block text-[10px] uppercase font-semibold">🔊 Audio Level (VU Meter)</span>
               <div className="flex items-center gap-2">
-                <span className="font-bold text-[#F3C766]">{audioLevel}%</span>
-                <div className="flex-1 bg-[#090A10] h-2 rounded-[8px] overflow-hidden border border-white/10">
+                <span className="font-bold text-acc2">{audioLevel}%</span>
+                <div className="flex-1 bg-inset h-2 rounded-[8px] overflow-hidden border border-brd">
                   <div
-                    className="h-full bg-gradient-to-r from-emerald-500 via-cyan-400 to-[#E5A93C]"
+                    className="h-full bg-gradient-to-r from-emerald-500 via-cyan-400 to-acc"
                     style={{ width: `${Math.max(5, audioLevel)}%` }}
                   />
                 </div>
               </div>
-              <span className="text-[10px] text-[#94A3B8]">Speech Threshold: &gt; 14%</span>
+              <span className="text-[10px] text-mut">Speech Threshold: &gt; 14%</span>
             </div>
 
             {/* Box 3: Silence Counter VAD */}
-            <div className="rounded-[8px] border border-white/10 bg-[#161B2B] p-3 space-y-1.5">
-              <span className="text-[#94A3B8] block text-[10px] uppercase font-semibold">⏱️ VAD Silence Timer</span>
-              <p className="font-bold text-[#F8FAFC]">
+            <div className="rounded-[8px] border border-brd bg-panel p-3 space-y-1.5">
+              <span className="text-mut block text-[10px] uppercase font-semibold">⏱️ VAD Silence Timer</span>
+              <p className="font-bold text-fg">
                 {silenceCounterMs}ms / 800ms
               </p>
-              <div className="w-full bg-[#090A10] h-1.5 rounded-[8px] overflow-hidden border border-white/10">
+              <div className="w-full bg-inset h-1.5 rounded-[8px] overflow-hidden border border-brd">
                 <div
                   className="h-full bg-amber-400 transition-all duration-75"
                   style={{ width: `${Math.min(100, (silenceCounterMs / 800) * 100)}%` }}
@@ -1000,8 +1000,8 @@ export function LiveModeWorkspace() {
             </div>
 
             {/* Box 4: Live Speech Listener State */}
-            <div className="rounded-[8px] border border-white/10 bg-[#161B2B] p-3 space-y-1.5">
-              <span className="text-[#94A3B8] block text-[10px] uppercase font-semibold">🗣️ Live Voice Listener</span>
+            <div className="rounded-[8px] border border-brd bg-panel p-3 space-y-1.5">
+              <span className="text-mut block text-[10px] uppercase font-semibold">🗣️ Live Voice Listener</span>
               <p className="font-bold text-xs truncate">
                 {audioLevel > 14 ? (
                   <span className="text-emerald-400 flex items-center gap-1.5 animate-pulse">
@@ -1013,32 +1013,32 @@ export function LiveModeWorkspace() {
                     ⏱️ Counting Silence ({silenceCounterMs}ms)
                   </span>
                 ) : voiceState === "thinking" ? (
-                  <span className="text-[#F3C766]">🧠 Analyzing Speech...</span>
+                  <span className="text-acc2">🧠 Analyzing Speech...</span>
                 ) : voiceState === "speaking" ? (
                   <span className="text-amber-400">🔊 Astrologer Speaking</span>
                 ) : (
-                  <span className="text-[#94A3B8]">👂 Listening for speech...</span>
+                  <span className="text-mut">👂 Listening for speech...</span>
                 )}
               </p>
-              <span className="text-[10px] text-[#94A3B8]">Auto-transcribe after 800ms</span>
+              <span className="text-[10px] text-mut">Auto-transcribe after 800ms</span>
             </div>
 
             {/* Box 5: Native MediaRecorder Status */}
-            <div className="rounded-[8px] border border-white/10 bg-[#161B2B] p-3 space-y-1.5">
-              <span className="text-[#94A3B8] block text-[10px] uppercase font-semibold">📼 MediaRecorder Buffer</span>
+            <div className="rounded-[8px] border border-brd bg-panel p-3 space-y-1.5">
+              <span className="text-mut block text-[10px] uppercase font-semibold">📼 MediaRecorder Buffer</span>
               <p className="font-bold text-cyan-300 flex items-center gap-1.5">
                 <span className={`size-2 rounded-full ${isRecordingMedia ? "bg-red-500 animate-ping" : "bg-slate-600"}`} />
                 {isRecordingMedia ? "Capturing Audio Chunks..." : "Buffer Ready"}
               </p>
-              <span className="text-[10px] text-[#94A3B8]">Voice Audio Buffer</span>
+              <span className="text-[10px] text-mut">Voice Audio Buffer</span>
             </div>
           </div>
 
           {/* Test Action & Last Query Bar */}
-          <div className="flex items-center justify-between bg-[#161B2B] border border-white/10 rounded-[8px] p-3">
+          <div className="flex items-center justify-between bg-panel border border-brd rounded-[8px] p-3">
             <div className="flex items-center gap-2">
-              <span className="text-[#E5A93C] font-bold text-[11px]">Last Transmitted Query:</span>
-              <span className="text-[#F8FAFC] font-semibold">{lastSubmittedQuery || "None yet"}</span>
+              <span className="text-acc font-bold text-[11px]">Last Transmitted Query:</span>
+              <span className="text-fg font-semibold">{lastSubmittedQuery || "None yet"}</span>
             </div>
             <button
               onClick={() => {
@@ -1048,20 +1048,20 @@ export function LiveModeWorkspace() {
                 addDebugLog("SIMULATED_TEST_QUERY", `Injected test query: "${sample}"`);
                 handleSend(sample);
               }}
-              className="rounded-[8px] bg-[#E5A93C] hover:bg-[#F3C766] px-3 py-1 text-xs font-bold text-[#090A10] transition"
+              className="rounded-[8px] bg-acc hover:bg-acc2 px-3 py-1 text-xs font-bold text-onacc transition"
             >
               🧪 Test Trigger Career Query
             </button>
           </div>
 
           {/* Event Stream Console Logs */}
-          <div className="space-y-1 bg-[#090A10] border border-white/10 rounded-[8px] p-3 max-h-48 overflow-y-auto">
-            <span className="text-[10px] text-[#94A3B8] block uppercase font-bold mb-1">Live Event Telemetry Log ({debugLogs.length} events)</span>
+          <div className="space-y-1 bg-inset border border-brd rounded-[8px] p-3 max-h-48 overflow-y-auto">
+            <span className="text-[10px] text-mut block uppercase font-bold mb-1">Live Event Telemetry Log ({debugLogs.length} events)</span>
             {debugLogs.map((log, idx) => (
-              <div key={idx} className="flex items-start gap-2 text-[11px] font-mono leading-tight py-0.5 border-b border-white/5">
-                <span className="text-[#94A3B8] text-[10px] shrink-0">[{log.time}]</span>
-                <span className="text-[#E5A93C] font-bold shrink-0">{log.event}:</span>
-                <span className="text-[#F8FAFC] truncate">{log.detail}</span>
+              <div key={idx} className="flex items-start gap-2 text-[11px] font-mono leading-tight py-0.5 border-b border-brd">
+                <span className="text-mut text-[10px] shrink-0">[{log.time}]</span>
+                <span className="text-acc font-bold shrink-0">{log.event}:</span>
+                <span className="text-fg truncate">{log.detail}</span>
               </div>
             ))}
           </div>
@@ -1080,23 +1080,23 @@ export function LiveModeWorkspace() {
             <div className="lg:col-span-4 flex flex-col space-y-3 h-full justify-between min-h-0">
               
               {/* Seeker Profile / Name Card - PERFECTLY ALIGNED AT TOP LEFT */}
-              <div className="w-full bg-[#161B2B]/90 backdrop-blur-xl border border-white/10 rounded-[8px] p-4 shadow-xl flex items-center gap-3 shrink-0">
-                <div className="size-10 rounded-full bg-gradient-to-br from-[#E5A93C] to-[#F3C766] text-[#090A10] flex items-center justify-center font-bold text-sm shadow-md shrink-0">
+              <div className="w-full bg-panel/90 backdrop-blur-xl border border-brd rounded-[8px] p-4 shadow-xl flex items-center gap-3 shrink-0">
+                <div className="size-10 rounded-full bg-gradient-to-br from-acc to-acc2 text-onacc flex items-center justify-center font-bold text-sm shadow-md shrink-0">
                   {activeBirth.name.charAt(0)}
                 </div>
                 <div className="min-w-0 flex-1">
-                  <span className="text-sm font-bold text-[#F8FAFC] block truncate leading-tight">{activeBirth.name}</span>
-                  <span className="text-[11px] text-[#94A3B8] block truncate">{getSignName(activeChart.lagna_sign, selectedLanguage)} {t.ascendantLabel} · {getPlanetName(mahaLord, selectedLanguage)}-{getPlanetName(antarLord, selectedLanguage)} {selectedLanguage === "ne" ? "दशा" : selectedLanguage === "hi" ? "दशा" : "Dasha"}</span>
+                  <span className="text-sm font-bold text-fg block truncate leading-tight">{activeBirth.name}</span>
+                  <span className="text-[11px] text-mut block truncate">{getSignName(activeChart.lagna_sign, selectedLanguage)} {t.ascendantLabel} · {getPlanetName(mahaLord, selectedLanguage)}-{getPlanetName(antarLord, selectedLanguage)} {selectedLanguage === "ne" ? "दशा" : selectedLanguage === "hi" ? "दशा" : "Dasha"}</span>
                 </div>
               </div>
 
               {/* Realtime Astrologer Response Card - EXPANDS DYNAMICALLY TO FILL FULL SCREEN HEIGHT */}
-              <div className="w-full flex-1 rounded-[8px] border border-[#E5A93C]/30 bg-gradient-to-b from-[#161B2B]/95 via-[#121625]/95 to-[#0D0F19]/95 backdrop-blur-2xl p-5 space-y-4 z-10 shadow-[0_10px_40px_rgba(0,0,0,0.6)] animate-fade-in flex flex-col justify-between min-h-0">
+              <div className="w-full flex-1 rounded-[8px] border border-acc/30 bg-gradient-to-b from-[#161B2B]/95 via-[#121625]/95 to-[#0D0F19]/95 backdrop-blur-2xl p-5 space-y-4 z-10 shadow-[0_10px_40px_rgba(0,0,0,0.6)] animate-fade-in flex flex-col justify-between min-h-0">
                 
                 {/* Response Section Header */}
-                <div className="flex items-center justify-between border-b border-white/10 pb-3 shrink-0">
-                  <span className="text-xs font-serif font-bold text-[#E5A93C] flex items-center gap-2">
-                    <span className="size-2 rounded-full bg-[#E5A93C] animate-pulse" />
+                <div className="flex items-center justify-between border-b border-brd pb-3 shrink-0">
+                  <span className="text-xs font-serif font-bold text-acc flex items-center gap-2">
+                    <span className="size-2 rounded-full bg-acc animate-pulse" />
                     📜 {t.realtimeResponse}
                   </span>
                   {teleprompterBasis && (
@@ -1105,7 +1105,7 @@ export function LiveModeWorkspace() {
                         setShowChartDrawer(true);
                         setHighlightedHouse(teleprompterText.includes("7th") ? 7 : 10);
                       }}
-                      className="rounded-[8px] bg-[#090A10] border border-[#E5A93C]/40 px-2.5 py-1 text-[10px] font-semibold text-[#F3C766] hover:bg-[#E5A93C]/10 transition shadow-sm truncate max-w-[140px]"
+                      className="rounded-[8px] bg-inset border border-acc/40 px-2.5 py-1 text-[10px] font-semibold text-acc2 hover:bg-acc/10 transition shadow-sm truncate max-w-[140px]"
                     >
                       📍 {teleprompterBasis}
                     </button>
@@ -1117,20 +1117,20 @@ export function LiveModeWorkspace() {
                   {teleprompterText ? (
                     <MarkdownRenderer content={teleprompterText} />
                   ) : (
-                    <div className="h-full flex flex-col items-center justify-center text-center p-6 space-y-2 text-[#94A3B8]/60">
+                    <div className="h-full flex flex-col items-center justify-center text-center p-6 space-y-2 text-mut/60">
                       <span className="text-3xl">🪔</span>
-                      <p className="text-xs font-serif font-semibold text-[#F8FAFC]">{t.listeningToVoice}</p>
+                      <p className="text-xs font-serif font-semibold text-fg">{t.listeningToVoice}</p>
                       <p className="text-[10px]">{t.askAnyQuestionOrb}</p>
                     </div>
                   )}
                 </div>
 
                 {/* Session Summary & Transcript Button Footer */}
-                <div className="border-t border-white/10 pt-3 flex items-center justify-between text-[10px] text-[#94A3B8] shrink-0">
-                  <span>{t.messagesCount}: <strong className="text-[#F8FAFC]">{messages.length}</strong></span>
+                <div className="border-t border-brd pt-3 flex items-center justify-between text-[10px] text-mut shrink-0">
+                  <span>{t.messagesCount}: <strong className="text-fg">{messages.length}</strong></span>
                   <button
                     onClick={() => setShowTranscriptDrawer(true)}
-                    className="text-[#E5A93C] font-semibold hover:underline flex items-center gap-1"
+                    className="text-acc font-semibold hover:underline flex items-center gap-1"
                   >
                     <span>📜</span> {t.viewTranscript}
                   </button>
@@ -1150,9 +1150,9 @@ export function LiveModeWorkspace() {
                     voiceState === "listening"
                       ? "bg-cyan-500/20 blur-3xl scale-125"
                       : voiceState === "thinking"
-                      ? "bg-[#E5A93C]/25 blur-3xl scale-110"
+                      ? "bg-acc/25 blur-3xl scale-110"
                       : voiceState === "speaking"
-                      ? "bg-gradient-to-tr from-[#E5A93C]/20 via-[#F3C766]/30 to-amber-500/20 blur-3xl scale-150 animate-pulse-glow"
+                      ? "bg-gradient-to-tr from-acc/20 via-[#F3C766]/30 to-amber-500/20 blur-3xl scale-150 animate-pulse-glow"
                       : "bg-transparent"
                   }`} />
 
@@ -1163,7 +1163,7 @@ export function LiveModeWorkspace() {
 
                   {/* Rotating Dasha Wheel on Thinking */}
                   {voiceState === "thinking" && (
-                    <div className="absolute inset-0 m-auto size-72 md:size-80 rounded-full border-2 border-dashed border-[#E5A93C]/50 animate-rotate-slow pointer-events-none" />
+                    <div className="absolute inset-0 m-auto size-72 md:size-80 rounded-full border-2 border-dashed border-acc/50 animate-rotate-slow pointer-events-none" />
                   )}
 
                   {/* Core 3D Spherical Cosmic Mandala Orb */}
@@ -1183,10 +1183,10 @@ export function LiveModeWorkspace() {
                       voiceState === "listening"
                         ? "bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-cyan-950 via-[#161B2B] to-[#090A10] border-2 border-cyan-400/70 shadow-[0_0_90px_rgba(6,182,212,0.45)] scale-105"
                         : voiceState === "thinking"
-                        ? "bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-[#2A1F0D] via-[#161B2B] to-[#090A10] border-2 border-[#E5A93C] shadow-[0_0_90px_rgba(229,169,60,0.45)] scale-100"
+                        ? "bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-[#2A1F0D] via-[#161B2B] to-[#090A10] border-2 border-acc shadow-[0_0_90px_rgba(229,169,60,0.45)] scale-100"
                         : voiceState === "speaking"
-                        ? "bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-[#38260B] via-[#1E1B4B] to-[#090A10] border-2 border-[#F3C766] shadow-[0_0_110px_rgba(243,199,102,0.6)] scale-110 animate-pulse-glow"
-                        : "bg-[#161B2B] border border-white/10 opacity-70"
+                        ? "bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-[#38260B] via-[#1E1B4B] to-[#090A10] border-2 border-acc2 shadow-[0_0_110px_rgba(243,199,102,0.6)] scale-110 animate-pulse-glow"
+                        : "bg-panel border border-brd opacity-70"
                     }`}
                   >
                     {/* Sacred Geometric SVG Ring */}
@@ -1200,7 +1200,7 @@ export function LiveModeWorkspace() {
                     <div className="text-center z-10 p-5 space-y-1">
                       <span className="block text-[34px] leading-none opacity-90">🕉️</span>
 
-                      <span className="mt-3 block text-[14px] font-semibold leading-snug text-[#F8FAFC]">
+                      <span className="mt-3 block text-[14px] font-semibold leading-snug text-fg">
                         {voiceState === "speaking"
                           ? t.astrologerSpeaking
                           : voiceState === "thinking"
@@ -1222,7 +1222,7 @@ export function LiveModeWorkspace() {
                               key={bar}
                               className={`w-[3px] rounded-full transition-all duration-100 ${
                                 speaking
-                                  ? `bg-[#F3C766] animate-equalizer-${bar + 1}`
+                                  ? `bg-acc2 animate-equalizer-${bar + 1}`
                                   : on
                                     ? "bg-cyan-400"
                                     : "bg-white/15"
@@ -1233,7 +1233,7 @@ export function LiveModeWorkspace() {
                         })}
                       </span>
 
-                      <span className="mt-3 block text-[10.5px] text-[#94A3B8]">
+                      <span className="mt-3 block text-[10.5px] text-mut">
                         {voiceState === "speaking" ? t.tapToInterrupt : t.tapToStartVoice}
                       </span>
                     </div>
@@ -1248,7 +1248,7 @@ export function LiveModeWorkspace() {
                     </div>
                     <button
                       onClick={() => handleSend(interimTranscript)}
-                      className="rounded-[8px] bg-gradient-to-r from-[#E5A93C] to-[#F3C766] hover:from-[#F3C766] hover:to-[#E5A93C] px-4 py-2 text-xs font-bold text-[#090A10] transition shrink-0 shadow-lg"
+                      className="rounded-[8px] bg-gradient-to-r from-acc to-acc2 hover:from-acc2 hover:to-acc px-4 py-2 text-xs font-bold text-onacc transition shrink-0 shadow-lg"
                     >
                       {t.sendNow}
                     </button>
@@ -1287,7 +1287,7 @@ export function LiveModeWorkspace() {
                     <button
                       key={chip.label}
                       onClick={() => handleSend(chip.query)}
-                      className="shrink-0 rounded-[8px] border border-white/10 bg-[#161B2B]/80 backdrop-blur-md px-3.5 py-1.5 text-xs text-[#F8FAFC] hover:border-[#E5A93C] hover:text-[#F3C766] hover:shadow-[0_0_15px_rgba(229,169,60,0.2)] transition-all shadow-md"
+                      className="shrink-0 rounded-[8px] border border-brd bg-panel/80 backdrop-blur-md px-3.5 py-1.5 text-xs text-fg hover:border-acc hover:text-acc2 hover:shadow-[0_0_15px_rgba(229,169,60,0.2)] transition-all shadow-md"
                     >
                       {chip.label}
                     </button>
@@ -1295,7 +1295,7 @@ export function LiveModeWorkspace() {
                 </div>
 
                 {/* CONTROL DOCK (Voice, Mute, Kundali, Interrupt, Transcript, Exit) */}
-                <div className="w-full max-w-2xl rounded-[8px] border border-white/10 bg-[#161B2B]/95 backdrop-blur-2xl p-2 flex flex-wrap items-center justify-between gap-1.5 z-20 shadow-2xl shrink-0">
+                <div className="w-full max-w-2xl rounded-[8px] border border-brd bg-panel/95 backdrop-blur-2xl p-2 flex flex-wrap items-center justify-between gap-1.5 z-20 shadow-2xl shrink-0">
                   {/* Custom Voice Selector with Sound Preview */}
                   <CustomVoiceSelector
                     selectedVoice={selectedVoice}
@@ -1308,10 +1308,10 @@ export function LiveModeWorkspace() {
                     type="button"
                     onClick={() => setIsMicMuted(!isMicMuted)}
                     className={`flex items-center gap-1.5 px-3 py-1.5 rounded-[8px] text-xs font-semibold transition cursor-pointer ${
-                      isMicMuted ? "bg-red-500/20 text-red-400 border border-red-500/40" : "text-[#F8FAFC] hover:bg-white/5 border border-white/10"
+                      isMicMuted ? "bg-red-500/20 text-red-400 border border-red-500/40" : "text-fg hover:bg-fg/5 border border-brd"
                     }`}
                   >
-                    {isMicMuted ? <MicOff className="size-3.5 text-red-400" /> : <Mic className="size-3.5 text-[#E5A93C]" />}
+                    {isMicMuted ? <MicOff className="size-3.5 text-red-400" /> : <Mic className="size-3.5 text-acc" />}
                     <span className="text-[11px]">{isMicMuted ? t.unmute : t.mute}</span>
                   </button>
 
@@ -1320,10 +1320,10 @@ export function LiveModeWorkspace() {
                     type="button"
                     onClick={() => setShowChartDrawer(!showChartDrawer)}
                     className={`flex items-center gap-1.5 px-3 py-1.5 rounded-[8px] text-xs font-semibold transition cursor-pointer ${
-                      showChartDrawer ? "bg-[#E5A93C]/20 text-[#F3C766] border border-[#E5A93C]/40" : "text-[#F8FAFC] hover:bg-white/5 border border-white/10"
+                      showChartDrawer ? "bg-acc/20 text-acc2 border border-acc/40" : "text-fg hover:bg-fg/5 border border-brd"
                     }`}
                   >
-                    <Map className="size-3.5 text-[#E5A93C]" />
+                    <Map className="size-3.5 text-acc" />
                     <span className="text-[11px]">{t.kundaliChart}</span>
                   </button>
 
@@ -1331,7 +1331,7 @@ export function LiveModeWorkspace() {
                   <button
                     type="button"
                     onClick={handleInterrupt}
-                    className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-[8px] bg-gradient-to-r from-[#E5A93C] to-[#F3C766] text-[#090A10] font-bold text-xs hover:shadow-[0_0_20px_rgba(229,169,60,0.4)] transition shadow-lg scale-105 cursor-pointer active:scale-95"
+                    className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-[8px] bg-gradient-to-r from-acc to-acc2 text-onacc font-bold text-xs hover:shadow-[0_0_20px_rgba(229,169,60,0.4)] transition shadow-lg scale-105 cursor-pointer active:scale-95"
                   >
                     <Zap className="size-3.5 fill-current" />
                     <span className="text-[11px]">{t.interrupt}</span>
@@ -1342,10 +1342,10 @@ export function LiveModeWorkspace() {
                     type="button"
                     onClick={() => setShowTranscriptDrawer(!showTranscriptDrawer)}
                     className={`flex items-center gap-1.5 px-3 py-1.5 rounded-[8px] text-xs font-semibold transition cursor-pointer ${
-                      showTranscriptDrawer ? "bg-[#E5A93C]/20 text-[#F3C766] border border-[#E5A93C]/40" : "text-[#F8FAFC] hover:bg-white/5 border border-white/10"
+                      showTranscriptDrawer ? "bg-acc/20 text-acc2 border border-acc/40" : "text-fg hover:bg-fg/5 border border-brd"
                     }`}
                   >
-                    <FileText className="size-3.5 text-[#E5A93C]" />
+                    <FileText className="size-3.5 text-acc" />
                     <span className="text-[11px]">{t.transcript}</span>
                   </button>
 
@@ -1378,14 +1378,14 @@ export function LiveModeWorkspace() {
                       className={`grid size-11 shrink-0 place-items-center rounded-[8px] border transition group cursor-pointer active:scale-95 ${
                         isDictating
                           ? "bg-red-500/20 border-red-500 text-red-400 shadow-[0_0_15px_rgba(239,68,68,0.4)] animate-pulse"
-                          : "border-white/20 bg-[#161B2B]/95 text-[#94A3B8] hover:text-[#F3C766] hover:border-[#E5A93C]/50"
+                          : "border-brd2 bg-panel/95 text-mut hover:text-acc2 hover:border-acc/50"
                       }`}
                       title={isDictating ? "Stop Voice Dictation" : "Dictate Question by Voice"}
                     >
                       {isDictating ? (
                         <MicOff className="size-5 text-red-400" />
                       ) : (
-                        <Mic className="size-5 group-hover:scale-110 transition-transform text-[#E5A93C]" />
+                        <Mic className="size-5 group-hover:scale-110 transition-transform text-acc" />
                       )}
                     </button>
 
@@ -1394,14 +1394,14 @@ export function LiveModeWorkspace() {
                       value={inputQuery}
                       onChange={(e) => setInputQuery(e.target.value)}
                       placeholder={isDictating ? "Listening... Speak now..." : t.askPlaceholder}
-                      className={`flex-1 rounded-[8px] border bg-[#161B2B]/95 backdrop-blur-2xl px-5 py-3.5 text-sm text-[#F8FAFC] placeholder-[#94A3B8]/50 focus:border-[#E5A93C] focus:ring-2 focus:ring-[#E5A93C]/40 focus:outline-none transition shadow-2xl ${
-                        isDictating ? "border-amber-400/70 ring-2 ring-amber-400/20" : "border-white/20"
+                      className={`flex-1 rounded-[8px] border bg-panel/95 backdrop-blur-2xl px-5 py-3.5 text-sm text-fg placeholder-mut/50 focus:border-acc focus:ring-2 focus:ring-acc/40 focus:outline-none transition shadow-2xl ${
+                        isDictating ? "border-amber-400/70 ring-2 ring-amber-400/20" : "border-brd2"
                       }`}
                     />
                     <button
                       type="submit"
                       disabled={!inputQuery.trim() || isThinking}
-                      className="rounded-[8px] bg-gradient-to-r from-[#E5A93C] to-[#F3C766] hover:from-[#F3C766] hover:to-[#E5A93C] px-6 py-3.5 text-xs sm:text-sm font-bold text-[#090A10] transition shrink-0 disabled:opacity-40 shadow-xl active:scale-95 cursor-pointer"
+                      className="rounded-[8px] bg-gradient-to-r from-acc to-acc2 hover:from-acc2 hover:to-acc px-6 py-3.5 text-xs sm:text-sm font-bold text-onacc transition shrink-0 disabled:opacity-40 shadow-xl active:scale-95 cursor-pointer"
                     >
                       {isThinking ? "..." : t.sendQuery}
                     </button>
@@ -1414,26 +1414,26 @@ export function LiveModeWorkspace() {
 
           {/* Collapsible Floating Kundali Chart Drawer */}
           {showChartDrawer && (
-            <div className="absolute top-16 right-6 w-80 rounded-[8px] border border-white/10 bg-[#161B2B]/95 backdrop-blur-2xl p-4 shadow-2xl z-30 space-y-3 animate-fade-in">
-              <div className="flex items-center justify-between border-b border-white/10 pb-2">
-                <h4 className="font-serif text-xs font-bold text-[#F8FAFC]">
+            <div className="absolute top-16 right-6 w-80 rounded-[8px] border border-brd bg-panel/95 backdrop-blur-2xl p-4 shadow-2xl z-30 space-y-3 animate-fade-in">
+              <div className="flex items-center justify-between border-b border-brd pb-2">
+                <h4 className="font-serif text-xs font-bold text-fg">
                   {activeBirth.name}&apos;s D1 Kundali
                 </h4>
                 <button
                   onClick={() => setShowChartDrawer(false)}
-                  className="text-xs text-[#94A3B8] hover:text-[#F8FAFC]"
+                  className="text-xs text-mut hover:text-fg"
                 >
                   ✕ {t.closeChartDrawer}
                 </button>
               </div>
-              <div className="bg-[#090A10] rounded-[8px] border border-[#E5A93C]/30 p-2">
+              <div className="bg-inset rounded-[8px] border border-acc/30 p-2">
                 <NorthIndianChart
                   chart={activeChart}
                   selectedHouse={highlightedHouse}
                   onSelectHouse={(h) => setHighlightedHouse((prev) => (prev === h ? null : h))}
                 />
               </div>
-              <p className="text-[10px] text-center text-[#94A3B8]">
+              <p className="text-[10px] text-center text-mut">
                 {getSignName(activeChart.lagna_sign, selectedLanguage)} {t.ascendantLabel} ({activeChart.lagna_degree.toFixed(2)}°)
               </p>
             </div>
@@ -1441,14 +1441,14 @@ export function LiveModeWorkspace() {
 
           {/* Collapsible Chat Transcript Drawer */}
           {showTranscriptDrawer && (
-            <div className="absolute inset-x-6 top-16 bottom-24 rounded-[8px] border border-white/10 bg-[#161B2B]/95 backdrop-blur-2xl p-6 shadow-2xl z-30 flex flex-col animate-fade-in">
-              <div className="flex items-center justify-between border-b border-white/10 pb-3 mb-3">
-                <h4 className="font-serif text-xs font-bold text-[#F8FAFC]">
+            <div className="absolute inset-x-6 top-16 bottom-24 rounded-[8px] border border-brd bg-panel/95 backdrop-blur-2xl p-6 shadow-2xl z-30 flex flex-col animate-fade-in">
+              <div className="flex items-center justify-between border-b border-brd pb-3 mb-3">
+                <h4 className="font-serif text-xs font-bold text-fg">
                   Live Consultation History ({messages.length} messages)
                 </h4>
                 <button
                   onClick={() => setShowTranscriptDrawer(false)}
-                  className="text-xs font-semibold text-[#E5A93C] hover:underline"
+                  className="text-xs font-semibold text-acc hover:underline"
                 >
                   ✕ {t.closeTranscriptDrawer}
                 </button>
@@ -1459,8 +1459,8 @@ export function LiveModeWorkspace() {
                     key={m.id}
                     className={`p-3.5 rounded-[12px] text-xs ${
                       m.sender === "user"
-                        ? "bg-gradient-to-r from-[#E5A93C] to-[#F3C766] text-[#090A10] font-semibold ml-auto max-w-[80%]"
-                        : "bg-[#090A10] text-[#F8FAFC] border border-white/10 max-w-[85%]"
+                        ? "bg-gradient-to-r from-acc to-acc2 text-onacc font-semibold ml-auto max-w-[80%]"
+                        : "bg-inset text-fg border border-brd max-w-[85%]"
                     }`}
                   >
                     <MarkdownRenderer content={m.text} isUser={m.sender === "user"} />
@@ -1478,45 +1478,45 @@ export function LiveModeWorkspace() {
         <div className="flex-1 min-h-0 h-full grid gap-0 lg:grid-cols-[38%_62%] overflow-hidden">
           
           {/* LEFT COLUMN (38% width) - Interactive Kundali Reference & Seeker Context */}
-          <aside className="h-full min-h-0 space-y-4 overflow-y-auto border-r border-white/[0.06] bg-ink2 p-5">
+          <aside className="h-full min-h-0 space-y-4 overflow-y-auto border-r border-brd bg-inset p-5">
             
             {/* Seeker Profile & D1 Chart Reference Card */}
-            <div className="space-y-4 rounded-[12px] border border-white/[0.09] bg-card p-5">
-              <div className="flex items-center justify-between border-b border-white/10 pb-3">
+            <div className="space-y-4 rounded-[12px] border border-white/[0.09] bg-panel p-5">
+              <div className="flex items-center justify-between border-b border-brd pb-3">
                 <div className="flex items-center gap-2.5">
-                  <div className="size-8 rounded-full bg-gradient-to-br from-[#E5A93C] to-[#F3C766] text-[#090A10] flex items-center justify-center font-bold text-xs shadow-md">
+                  <div className="size-8 rounded-full bg-gradient-to-br from-acc to-acc2 text-onacc flex items-center justify-center font-bold text-xs shadow-md">
                     {activeBirth.name.charAt(0)}
                   </div>
                   <div>
-                    <h2 className="text-[14px] font-bold leading-tight text-paper">
+                    <h2 className="text-[14px] font-bold leading-tight text-fg">
                       {activeBirth.name}
                     </h2>
-                    <span className="text-[10px] text-[#94A3B8] block">{t.d1SiderealBirthChart}</span>
+                    <span className="text-[10px] text-mut block">{t.d1SiderealBirthChart}</span>
                   </div>
                 </div>
-                <span className="rounded-[8px] bg-[#E5A93C]/10 border border-[#E5A93C]/30 text-[#F3C766] px-2.5 py-0.5 text-[10px] font-bold">
+                <span className="rounded-[8px] bg-acc/10 border border-acc/30 text-acc2 px-2.5 py-0.5 text-[10px] font-bold">
                   {getSignName(activeChart.lagna_sign, selectedLanguage)} {t.ascendantLabel}
                 </span>
               </div>
               
               {/* Illuminated North Indian Chart Container */}
-              <div className="relative mx-auto w-full max-w-[290px] rounded-[10px] border border-white/[0.08] bg-ink p-2.5">
+              <div className="relative mx-auto w-full max-w-[290px] rounded-[10px] border border-white/[0.08] bg-app p-2.5">
                 <NorthIndianChart
                   chart={activeChart}
                   selectedHouse={highlightedHouse}
                   onSelectHouse={(h) => setHighlightedHouse((prev) => (prev === h ? null : h))}
                 />
               </div>
-              <p className="text-center text-[10px] text-[#94A3B8]/80 leading-tight">
+              <p className="text-center text-[10px] text-mut/80 leading-tight">
                 {t.tapHouseHelper}
               </p>
             </div>
 
             {/* Quick Dasha & Active Time Lords Widget */}
-            <div className="space-y-3 rounded-[12px] border border-white/[0.09] bg-card p-4">
+            <div className="space-y-3 rounded-[12px] border border-white/[0.09] bg-panel p-4">
               <div className="flex items-center justify-between border-b border-white/[0.07] pb-2.5">
-                <h3 className="text-[12.5px] font-semibold text-paper">{t.activeTimeLords}</h3>
-                <span className="text-[10px] uppercase tracking-[0.1em] text-faint">
+                <h3 className="text-[12.5px] font-semibold text-fg">{t.activeTimeLords}</h3>
+                <span className="text-[10px] uppercase tracking-[0.1em] text-dim">
                   {t.vimshottariLabel}
                 </span>
               </div>
@@ -1526,7 +1526,7 @@ export function LiveModeWorkspace() {
                   label={t.mahadashaLabel}
                   lord={getPlanetName(mahaLord, selectedLanguage)}
                   period={runningNow.maha}
-                  tone="text-gold"
+                  tone="text-acc"
                 />
                 <DashaCell
                   label={t.antardashaLabel}
@@ -1536,9 +1536,9 @@ export function LiveModeWorkspace() {
                 />
               </div>
 
-              <div className="flex items-center justify-between border-t border-white/[0.07] pt-2.5 text-[11.5px] text-faint">
+              <div className="flex items-center justify-between border-t border-white/[0.07] pt-2.5 text-[11.5px] text-dim">
                 <span>{t.ascendantPlacementLabel}</span>
-                <span className="font-medium text-paper">
+                <span className="font-medium text-fg">
                   {getSignName(activeChart.lagna_sign, selectedLanguage)} ·{" "}
                   {activeChart.lagna_degree.toFixed(2)}°
                 </span>
@@ -1568,23 +1568,23 @@ export function LiveModeWorkspace() {
 
               {messages.length <= 1 && !isThinking && (
                 <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col justify-center px-1 py-6">
-                  <h2 className="text-[13px] font-semibold text-paper">{t.consultSuggestedTopics}</h2>
-                  <p className="mt-1 text-[12.5px] leading-[1.7] text-faint">{t.askAnythingHint}</p>
+                  <h2 className="text-[13px] font-semibold text-fg">{t.consultSuggestedTopics}</h2>
+                  <p className="mt-1 text-[12.5px] leading-[1.7] text-dim">{t.askAnythingHint}</p>
                   <div className="mt-4 grid gap-2.5 sm:grid-cols-2">
                     {suggestions.map((chip) => (
                       <button
                         key={chip.title}
                         onClick={() => handleSend(chip.query)}
-                        className="group flex items-start gap-3 rounded-[10px] border border-white/[0.09] bg-card p-3.5 text-left transition-colors hover:border-gold/40 hover:bg-ink2"
+                        className="group flex items-start gap-3 rounded-[10px] border border-white/[0.09] bg-panel p-3.5 text-left transition-colors hover:border-acc/40 hover:bg-inset"
                       >
                         <span className="text-[15px] leading-none">{chip.icon}</span>
                         <span className="min-w-0 flex-1">
-                          <span className="block text-[13px] font-medium text-paper">{chip.title}</span>
-                          <span className="mt-1 block text-[11.5px] leading-[1.6] text-faint">
+                          <span className="block text-[13px] font-medium text-fg">{chip.title}</span>
+                          <span className="mt-1 block text-[11.5px] leading-[1.6] text-dim">
                             {chip.query}
                           </span>
                         </span>
-                        <ArrowLeft className="mt-0.5 size-3.5 shrink-0 rotate-180 text-faint transition-colors group-hover:text-gold" />
+                        <ArrowLeft className="mt-0.5 size-3.5 shrink-0 rotate-180 text-dim transition-colors group-hover:text-acc" />
                       </button>
                     ))}
                   </div>
@@ -1593,14 +1593,14 @@ export function LiveModeWorkspace() {
 
               {/* Thinking / Analyzing Indicator */}
               {isThinking && (
-                <div className="flex items-center gap-3 p-4 rounded-[14px] border border-white/10 bg-[#161B2B]/90 backdrop-blur-md max-w-xs animate-pulse">
-                  <div className="size-6 rounded-full bg-gradient-to-br from-[#E5A93C] to-[#F3C766] text-[#090A10] flex items-center justify-center font-bold text-xs">
+                <div className="flex items-center gap-3 p-4 rounded-[14px] border border-brd bg-panel/90 backdrop-blur-md max-w-xs animate-pulse">
+                  <div className="size-6 rounded-full bg-gradient-to-br from-acc to-acc2 text-onacc flex items-center justify-center font-bold text-xs">
                     <span>🕉️</span>
                   </div>
-                  <div className="flex items-center gap-1.5 text-xs text-[#F3C766] font-medium">
-                    <span className="size-2 rounded-full bg-[#E5A93C] animate-bounce" />
-                    <span className="size-2 rounded-full bg-[#F3C766] animate-bounce delay-150" />
-                    <span className="size-2 rounded-full bg-[#E5A93C] animate-bounce delay-300" />
+                  <div className="flex items-center gap-1.5 text-xs text-acc2 font-medium">
+                    <span className="size-2 rounded-full bg-acc animate-bounce" />
+                    <span className="size-2 rounded-full bg-acc2 animate-bounce delay-150" />
+                    <span className="size-2 rounded-full bg-acc animate-bounce delay-300" />
                     <span className="ml-2">{t.analyzingSpeech}</span>
                   </div>
                 </div>
@@ -1608,16 +1608,16 @@ export function LiveModeWorkspace() {
             </div>
 
             {realtimeError && (
-              <div className="mx-4 mb-2 flex shrink-0 items-center gap-2.5 rounded-[8px] border border-gold/30 bg-[#1A150B] px-3.5 py-2.5">
-                <TriangleAlert className="size-4 shrink-0 text-gold" />
-                <span className="min-w-0 flex-1 text-[12px] leading-[1.6] text-muted">
+              <div className="mx-4 mb-2 flex shrink-0 items-center gap-2.5 rounded-[8px] border border-acc/30 bg-[#1A150B] px-3.5 py-2.5">
+                <TriangleAlert className="size-4 shrink-0 text-acc" />
+                <span className="min-w-0 flex-1 text-[12px] leading-[1.6] text-mut">
                   {t.voiceFellBack}
                 </span>
                 <button
                   type="button"
                   onClick={() => setRealtimeError(null)}
                   aria-label={t.dashClose}
-                  className="shrink-0 text-[11px] text-faint transition-colors hover:text-paper"
+                  className="shrink-0 text-[11px] text-dim transition-colors hover:text-fg"
                 >
                   ✕
                 </button>
@@ -1634,7 +1634,7 @@ export function LiveModeWorkspace() {
                 <button
                   key={chip.title}
                   onClick={() => handleSend(chip.query)}
-                  className="group inline-flex shrink-0 cursor-pointer items-center gap-1.5 rounded-full border border-white/[0.09] bg-card px-3.5 py-1.5 text-xs text-muted transition-colors hover:border-gold/40 hover:text-paper"
+                  className="group inline-flex shrink-0 cursor-pointer items-center gap-1.5 rounded-full border border-white/[0.09] bg-panel px-3.5 py-1.5 text-xs text-mut transition-colors hover:border-acc/40 hover:text-fg"
                 >
                   <span className="text-xs">{chip.icon}</span>
                   <span className="font-medium text-[11px] sm:text-xs">{chip.title}</span>
@@ -1643,7 +1643,7 @@ export function LiveModeWorkspace() {
             </div>
 
             {/* Bottom Mic & Message Input Dock */}
-            <footer className="border-t border-white/10 bg-[#161B2B]/90 backdrop-blur-xl p-4 shadow-2xl">
+            <footer className="border-t border-brd bg-panel/90 backdrop-blur-xl p-4 shadow-2xl">
               <form
                 onSubmit={(e) => {
                   e.preventDefault();
@@ -1655,7 +1655,7 @@ export function LiveModeWorkspace() {
                 <button
                   type="button"
                   onClick={() => toggleLiveVoiceMode(true)}
-                  className="grid size-11 shrink-0 place-items-center rounded-[8px] border border-[#E5A93C]/50 bg-gradient-to-br from-[#161B2B] to-[#2A1F0D] text-[#F3C766] hover:border-[#E5A93C] hover:shadow-[0_0_20px_rgba(229,169,60,0.35)] hover:scale-105 transition group cursor-pointer active:scale-95"
+                  className="grid size-11 shrink-0 place-items-center rounded-[8px] border border-acc/50 bg-gradient-to-br from-[#161B2B] to-[#2A1F0D] text-acc2 hover:border-acc hover:shadow-[0_0_20px_rgba(229,169,60,0.35)] hover:scale-105 transition group cursor-pointer active:scale-95"
                   title={
                     selectedLanguage === "ne"
                       ? "प्रत्यक्ष एआई भ्वाइस परामर्श सुरु गर्नुहोस्"
@@ -1665,8 +1665,8 @@ export function LiveModeWorkspace() {
                   }
                 >
                   <div className="relative">
-                    <Headphones className="size-5 text-[#F3C766] group-hover:scale-110 transition-transform" />
-                    <span className="absolute -top-1 -right-1 size-2 rounded-full bg-[#E5A93C] animate-ping" />
+                    <Headphones className="size-5 text-acc2 group-hover:scale-110 transition-transform" />
+                    <span className="absolute -top-1 -right-1 size-2 rounded-full bg-acc animate-ping" />
                   </div>
                 </button>
 
@@ -1677,7 +1677,7 @@ export function LiveModeWorkspace() {
                   className={`grid size-11 shrink-0 place-items-center rounded-[8px] border transition group cursor-pointer active:scale-95 ${
                     isDictating
                       ? "bg-red-500/20 border-red-500 text-red-400 shadow-[0_0_15px_rgba(239,68,68,0.4)] animate-pulse"
-                      : "border-white/10 bg-[#090A10] text-[#94A3B8] hover:text-[#F3C766] hover:border-[#E5A93C]/50"
+                      : "border-brd bg-inset text-mut hover:text-acc2 hover:border-acc/50"
                   }`}
                   title={
                     isDictating
@@ -1696,7 +1696,7 @@ export function LiveModeWorkspace() {
                   {isDictating ? (
                     <MicOff className="size-5 text-red-400" />
                   ) : (
-                    <Mic className="size-5 group-hover:scale-110 transition-transform text-[#E5A93C]" />
+                    <Mic className="size-5 group-hover:scale-110 transition-transform text-acc" />
                   )}
                 </button>
 
@@ -1713,15 +1713,15 @@ export function LiveModeWorkspace() {
                         : "Listening to your voice... Speak now..."
                       : t.askPlaceholder
                   }
-                  className={`flex-1 rounded-[8px] border bg-[#090A10] px-4 py-3 text-xs sm:text-sm text-[#F8FAFC] placeholder-[#94A3B8]/50 focus:border-[#E5A93C] focus:ring-1 focus:ring-[#E5A93C]/40 focus:outline-none transition ${
-                    isDictating ? "border-amber-400/70 ring-2 ring-amber-400/20" : "border-white/10"
+                  className={`flex-1 rounded-[8px] border bg-inset px-4 py-3 text-xs sm:text-sm text-fg placeholder-mut/50 focus:border-acc focus:ring-1 focus:ring-acc/40 focus:outline-none transition ${
+                    isDictating ? "border-amber-400/70 ring-2 ring-amber-400/20" : "border-brd"
                   }`}
                 />
 
                 <button
                   type="submit"
                   disabled={!inputQuery.trim() || isThinking}
-                  className="rounded-[8px] bg-gradient-to-r from-[#E5A93C] to-[#F3C766] hover:from-[#F3C766] hover:to-[#E5A93C] px-6 py-3 text-xs sm:text-sm font-bold text-[#090A10] transition shadow-lg disabled:opacity-40 cursor-pointer active:scale-95 shrink-0"
+                  className="rounded-[8px] bg-gradient-to-r from-acc to-acc2 hover:from-acc2 hover:to-acc px-6 py-3 text-xs sm:text-sm font-bold text-onacc transition shadow-lg disabled:opacity-40 cursor-pointer active:scale-95 shrink-0"
                 >
                   {isThinking ? "..." : t.sendQuery}
                 </button>
@@ -1754,11 +1754,11 @@ function DashaCell({
   tone: string;
 }) {
   return (
-    <div className="rounded-[10px] border border-white/[0.06] bg-ink p-3">
-      <span className="block text-[10px] uppercase tracking-[0.1em] text-faint">{label}</span>
+    <div className="rounded-[10px] border border-brd bg-app p-3">
+      <span className="block text-[10px] uppercase tracking-[0.1em] text-dim">{label}</span>
       <span className={`mt-1 block text-[15px] font-bold ${tone}`}>{lord}</span>
       {period && (
-        <span className="mt-1 block text-[10.5px] tabular-nums text-faint">
+        <span className="mt-1 block text-[10.5px] tabular-nums text-dim">
           {period.start.slice(0, 4)} – {period.end.slice(0, 4)}
         </span>
       )}

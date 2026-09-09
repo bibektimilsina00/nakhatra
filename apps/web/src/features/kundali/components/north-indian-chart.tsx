@@ -59,7 +59,7 @@ function getPlanetCoordinates(house: number, index: number, totalCount: number) 
  *  and red-and-green ink of a hand-written patro. */
 const CHART_THEMES = {
   dark: {
-    svgBg: "bg-[#090A10]",
+    svgBg: "bg-inset",
     fillA: "#090A10",
     fillB: "#121626",
     activeFill: "#1E2640",

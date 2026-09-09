@@ -68,8 +68,8 @@ export function PractitionerProfile({ id }: { id: string }) {
     return (
       <AppShell sidebar={false}>
         <main className="mx-auto w-full max-w-[820px] px-5 py-20 text-center sm:px-8">
-          <p className="text-[14px] text-faint">{t.profNotFound}</p>
-          <Link href="/dashboard#jyotish" className="mt-4 inline-block text-[13px] text-gold">
+          <p className="text-[14px] text-dim">{t.profNotFound}</p>
+          <Link href="/dashboard#jyotish" className="mt-4 inline-block text-[13px] text-acc">
             {t.dashNavJyotish}
           </Link>
         </main>
@@ -85,7 +85,7 @@ export function PractitionerProfile({ id }: { id: string }) {
         <button
           type="button"
           onClick={() => router.back()}
-          className="flex items-center gap-1.5 text-[12.5px] text-faint transition-colors hover:text-paper"
+          className="flex items-center gap-1.5 text-[12.5px] text-dim transition-colors hover:text-fg"
         >
           <ArrowLeft className="size-4" />
           {t.dashNavJyotish}
@@ -93,23 +93,23 @@ export function PractitionerProfile({ id }: { id: string }) {
 
         {!p ? (
           <div className="mt-6 space-y-4">
-            <div className="h-[150px] animate-pulse rounded-[14px] border border-white/[0.07] bg-card" />
-            <div className="h-[220px] animate-pulse rounded-[14px] border border-white/[0.07] bg-card" />
+            <div className="h-[150px] animate-pulse rounded-[14px] border border-white/[0.07] bg-panel" />
+            <div className="h-[220px] animate-pulse rounded-[14px] border border-white/[0.07] bg-panel" />
           </div>
         ) : (
           <>
-            <header className="mt-5 rounded-[14px] border border-white/[0.09] bg-card p-5 sm:p-6">
+            <header className="mt-5 rounded-[14px] border border-white/[0.09] bg-panel p-5 sm:p-6">
               <div className="flex flex-wrap items-start gap-4">
                 <Avatar name={p.display_name} src={p.photo_url} />
                 <div className="min-w-0 flex-1">
-                  <h1 className="flex items-center gap-2 text-[21px] font-bold leading-tight text-paper">
+                  <h1 className="flex items-center gap-2 text-[21px] font-bold leading-tight text-fg">
                     <span className="truncate">{p.display_name}</span>
                     {p.verified && (
-                      <BadgeCheck className="size-[18px] shrink-0 text-gold" aria-label={t.dashVerified} />
+                      <BadgeCheck className="size-[18px] shrink-0 text-acc" aria-label={t.dashVerified} />
                     )}
                   </h1>
-                  {p.headline && <p className="mt-1 text-[13px] text-muted">{p.headline}</p>}
-                  <p className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-[12px] text-faint">
+                  {p.headline && <p className="mt-1 text-[13px] text-mut">{p.headline}</p>}
+                  <p className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-[12px] text-dim">
                     <span className="flex items-center gap-1.5">
                       <MapPin className="size-3.5" />
                       {[p.city, p.country].filter(Boolean).join(", ")}
@@ -136,8 +136,8 @@ export function PractitionerProfile({ id }: { id: string }) {
                     aria-pressed={isFollowing}
                     className={`flex shrink-0 items-center gap-1.5 rounded-[8px] border px-3 py-2 text-[12.5px] font-medium transition-colors disabled:opacity-50 ${
                       isFollowing
-                        ? "border-gold/45 bg-gold/[0.10] text-gold2"
-                        : "border-white/[0.14] text-paper hover:border-gold/40"
+                        ? "border-acc/45 bg-acc/[0.10] text-acc2"
+                        : "border-white/[0.14] text-fg hover:border-acc/40"
                     }`}
                   >
                     {isFollowing ? <UserCheck className="size-4" /> : <UserPlus className="size-4" />}
@@ -173,7 +173,7 @@ export function PractitionerProfile({ id }: { id: string }) {
                     type="button"
                     onClick={message}
                     disabled={request.isPending}
-                    className="flex flex-1 items-center justify-center gap-2 rounded-[9px] border border-white/[0.14] px-4 py-2.5 text-[13px] font-medium text-paper transition-colors hover:border-gold/40 disabled:opacity-50"
+                    className="flex flex-1 items-center justify-center gap-2 rounded-[9px] border border-white/[0.14] px-4 py-2.5 text-[13px] font-medium text-fg transition-colors hover:border-acc/40 disabled:opacity-50"
                   >
                     <MessageSquare className="size-4" />
                     {t.profMessage}
@@ -181,7 +181,7 @@ export function PractitionerProfile({ id }: { id: string }) {
                   <button
                     type="button"
                     onClick={() => setBooking(true)}
-                    className="flex flex-1 items-center justify-center gap-2 rounded-[9px] bg-gold px-4 py-2.5 text-[13px] font-semibold text-ink transition-opacity hover:opacity-90"
+                    className="flex flex-1 items-center justify-center gap-2 rounded-[9px] bg-acc px-4 py-2.5 text-[13px] font-semibold text-ink transition-opacity hover:opacity-90"
                   >
                     <CalendarClock className="size-4" />
                     {t.profBook}
@@ -197,7 +197,7 @@ export function PractitionerProfile({ id }: { id: string }) {
 
             {p.bio && (
               <Section title={t.profAbout}>
-                <p className="whitespace-pre-wrap text-[13.5px] leading-[1.85] text-muted">{p.bio}</p>
+                <p className="whitespace-pre-wrap text-[13.5px] leading-[1.85] text-mut">{p.bio}</p>
               </Section>
             )}
 
@@ -207,7 +207,7 @@ export function PractitionerProfile({ id }: { id: string }) {
                   {[...p.traditions, ...p.specialities].map((tag) => (
                     <span
                       key={tag}
-                      className="rounded-[6px] border border-white/[0.10] px-2.5 py-1 text-[11.5px] capitalize text-muted"
+                      className="rounded-[6px] border border-white/[0.10] px-2.5 py-1 text-[11.5px] capitalize text-mut"
                     >
                       {tag}
                     </span>
@@ -224,8 +224,8 @@ export function PractitionerProfile({ id }: { id: string }) {
                       key={rate.medium}
                       className="flex items-center justify-between py-2.5 text-[13px]"
                     >
-                      <span className="capitalize text-paper">{rate.medium}</span>
-                      <span className="tabular-nums text-muted">
+                      <span className="capitalize text-fg">{rate.medium}</span>
+                      <span className="tabular-nums text-mut">
                         {formatMinor(rate.per_minute_minor, rate.currency)}/{t.consultPerMinute}
                       </span>
                     </li>
@@ -236,7 +236,7 @@ export function PractitionerProfile({ id }: { id: string }) {
 
             <Section title={`${t.profReviews}${reviews.data?.length ? ` (${reviews.data.length})` : ""}`}>
               {reviews.isPending ? (
-                <div className="h-16 animate-pulse rounded-[10px] bg-white/[0.03]" />
+                <div className="h-16 animate-pulse rounded-[10px] bg-fg/[0.03]" />
               ) : reviews.data && reviews.data.length > 0 ? (
                 <ul className="space-y-4">
                   {reviews.data.map((review) => (
@@ -250,8 +250,8 @@ export function PractitionerProfile({ id }: { id: string }) {
                 </ul>
               ) : (
                 <div className="py-6 text-center">
-                  <p className="text-[13.5px] text-muted">{t.profNoReviews}</p>
-                  <p className="mx-auto mt-1.5 max-w-sm text-[12px] leading-[1.7] text-faint">
+                  <p className="text-[13.5px] text-mut">{t.profNoReviews}</p>
+                  <p className="mx-auto mt-1.5 max-w-sm text-[12px] leading-[1.7] text-dim">
                     {t.profNoReviewsNote}
                   </p>
                 </div>
@@ -287,7 +287,7 @@ function Avatar({ name, src }: { name: string; src: string | null }) {
     .map((part) => part.charAt(0).toUpperCase())
     .join("");
   return (
-    <span className="grid size-16 shrink-0 place-items-center rounded-[12px] bg-gold/[0.12] text-[19px] font-bold text-gold">
+    <span className="grid size-16 shrink-0 place-items-center rounded-[12px] bg-acc/[0.12] text-[19px] font-bold text-acc">
       {initials}
     </span>
   );
@@ -296,17 +296,17 @@ function Avatar({ name, src }: { name: string; src: string | null }) {
 function Stat({ label, value, note }: { label: string; value: string; note?: string }) {
   return (
     <div>
-      <dt className="text-[10.5px] uppercase tracking-[0.12em] text-faint">{label}</dt>
-      <dd className="mt-1 text-[17px] font-bold tabular-nums text-paper">{value}</dd>
-      {note && <dd className="text-[11px] text-faint">{note}</dd>}
+      <dt className="text-[10.5px] uppercase tracking-[0.12em] text-dim">{label}</dt>
+      <dd className="mt-1 text-[17px] font-bold tabular-nums text-fg">{value}</dd>
+      {note && <dd className="text-[11px] text-dim">{note}</dd>}
     </div>
   );
 }
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <section className="mt-4 rounded-[14px] border border-white/[0.09] bg-card p-5 sm:p-6">
-      <h2 className="text-[11px] uppercase tracking-[0.14em] text-faint">{title}</h2>
+    <section className="mt-4 rounded-[14px] border border-white/[0.09] bg-panel p-5 sm:p-6">
+      <h2 className="text-[11px] uppercase tracking-[0.14em] text-dim">{title}</h2>
       <div className="mt-3">{children}</div>
     </section>
   );
@@ -326,24 +326,24 @@ function ReviewRow({
   const send = useReplyToReview(practitionerUserId);
 
   return (
-    <li className="border-b border-white/[0.06] pb-4 last:border-0 last:pb-0">
+    <li className="border-b border-brd pb-4 last:border-0 last:pb-0">
       <div className="flex items-center justify-between gap-3">
-        <span className="text-[13px] font-semibold text-paper">{review.author}</span>
+        <span className="text-[13px] font-semibold text-fg">{review.author}</span>
         <span className="flex shrink-0 items-center gap-0.5" aria-label={`${review.rating}/5`}>
           {[1, 2, 3, 4, 5].map((star) => (
             <Star
               key={star}
-              className={`size-3.5 ${star <= review.rating ? "fill-gold text-gold" : "text-white/15"}`}
+              className={`size-3.5 ${star <= review.rating ? "fill-gold text-acc" : "text-white/15"}`}
             />
           ))}
         </span>
       </div>
       {review.body && (
-        <p className="mt-1.5 text-[13px] leading-[1.75] text-muted">{review.body}</p>
+        <p className="mt-1.5 text-[13px] leading-[1.75] text-mut">{review.body}</p>
       )}
 
       {review.reply ? (
-        <p className="mt-2.5 border-l-2 border-gold/40 pl-3 text-[12.5px] leading-[1.7] text-faint">
+        <p className="mt-2.5 border-l-2 border-acc/40 pl-3 text-[12.5px] leading-[1.7] text-dim">
           {review.reply}
         </p>
       ) : (
@@ -359,12 +359,12 @@ function ReviewRow({
               value={reply}
               onChange={(event) => setReply(event.target.value)}
               placeholder={t.profReplyPlaceholder}
-              className="flex-1 rounded-[7px] border border-white/[0.09] bg-ink px-3 py-1.5 text-[12.5px] text-paper placeholder-faint focus:border-gold/45 focus:outline-none"
+              className="flex-1 rounded-[7px] border border-white/[0.09] bg-app px-3 py-1.5 text-[12.5px] text-fg placeholder-faint focus:border-acc/45 focus:outline-none"
             />
             <button
               type="submit"
               disabled={send.isPending || !reply.trim()}
-              className="rounded-[7px] border border-white/[0.14] px-3 text-[12px] text-paper disabled:opacity-40"
+              className="rounded-[7px] border border-white/[0.14] px-3 text-[12px] text-fg disabled:opacity-40"
             >
               {t.profReply}
             </button>

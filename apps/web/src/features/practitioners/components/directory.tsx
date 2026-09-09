@@ -46,14 +46,14 @@ export function PractitionerDirectory({ onOpen }: { onOpen?: (id: string) => voi
   const chip = (active: boolean) =>
     `rounded-[6px] border px-2.5 py-1 text-[11px] capitalize transition-colors ${
       active
-        ? "border-gold/50 bg-gold/[0.09] text-gold2"
-        : "border-white/[0.10] text-muted hover:border-white/25 hover:text-paper"
+        ? "border-acc/50 bg-acc/[0.09] text-acc2"
+        : "border-white/[0.10] text-mut hover:border-brd2 hover:text-fg"
     }`;
 
   return (
     <div>
       <label className="relative flex max-w-md items-center">
-        <Search className="pointer-events-none absolute left-3 size-4 text-faint" />
+        <Search className="pointer-events-none absolute left-3 size-4 text-dim" />
         <span className="sr-only">{t.dashSearch}</span>
         <input
           value={query.q ?? ""}
@@ -61,7 +61,7 @@ export function PractitionerDirectory({ onOpen }: { onOpen?: (id: string) => voi
             setQuery((current) => ({ ...current, q: event.target.value, offset: 0 }))
           }
           placeholder={t.practSearch}
-          className="w-full rounded-[8px] border border-white/[0.09] bg-card py-2 pl-9 pr-3 text-[13.5px] text-paper placeholder-faint focus:border-gold/45 focus:outline-none"
+          className="w-full rounded-[8px] border border-white/[0.09] bg-panel py-2 pl-9 pr-3 text-[13.5px] text-fg placeholder-faint focus:border-acc/45 focus:outline-none"
         />
       </label>
 
@@ -96,12 +96,12 @@ export function PractitionerDirectory({ onOpen }: { onOpen?: (id: string) => voi
           {[0, 1, 2].map((card) => (
             <div
               key={card}
-              className="h-[150px] animate-pulse rounded-[12px] border border-white/[0.07] bg-card"
+              className="h-[150px] animate-pulse rounded-[12px] border border-white/[0.07] bg-panel"
             />
           ))}
         </div>
       ) : isError ? (
-        <p className="mt-6 text-[13px] text-faint">{t.practUnavailable}</p>
+        <p className="mt-6 text-[13px] text-dim">{t.practUnavailable}</p>
       ) : data && data.items.length > 0 ? (
         <>
           <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -114,7 +114,7 @@ export function PractitionerDirectory({ onOpen }: { onOpen?: (id: string) => voi
             ))}
           </div>
           {data.total > data.items.length && (
-            <p className="mt-4 text-center text-[12px] text-faint">
+            <p className="mt-4 text-center text-[12px] text-dim">
               {data.items.length} / {data.total}
             </p>
           )}
@@ -123,11 +123,11 @@ export function PractitionerDirectory({ onOpen }: { onOpen?: (id: string) => voi
         // An empty directory is the expected state before the first
         // practitioner is verified, so it says that rather than "no results".
         <div className="mt-5 rounded-[12px] border border-dashed border-white/[0.14] px-6 py-12 text-center">
-          <span className="mx-auto grid size-11 place-items-center rounded-full border border-white/[0.10] text-gold">
+          <span className="mx-auto grid size-11 place-items-center rounded-full border border-white/[0.10] text-acc">
             <UserRoundSearch className="size-5" />
           </span>
-          <p className="mt-3 text-[13.5px] text-muted">{t.practNoneYet}</p>
-          <p className="mx-auto mt-1 max-w-sm text-[12px] leading-[1.7] text-faint">
+          <p className="mt-3 text-[13.5px] text-mut">{t.practNoneYet}</p>
+          <p className="mx-auto mt-1 max-w-sm text-[12px] leading-[1.7] text-dim">
             {t.practNoneYetNote}
           </p>
         </div>

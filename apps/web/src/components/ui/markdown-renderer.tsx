@@ -31,51 +31,51 @@ export function MarkdownRenderer({
         remarkPlugins={[remarkGfm]}
         components={{
           p: ({ children }) => (
-            <p className="text-xs sm:text-sm leading-relaxed text-[#F8FAFC] my-1.5 last:mb-0">
+            <p className="text-xs sm:text-sm leading-relaxed text-fg my-1.5 last:mb-0">
               {children}
             </p>
           ),
           h1: ({ children }) => (
-            <h1 className="font-serif font-bold text-sm sm:text-base text-[#E5A93C] border-b border-[#E5A93C]/30 pb-1 mt-3 mb-2 flex items-center gap-2">
+            <h1 className="font-serif font-bold text-sm sm:text-base text-acc border-b border-acc/30 pb-1 mt-3 mb-2 flex items-center gap-2">
               <span className="text-xs">✦</span>
               {children}
             </h1>
           ),
           h2: ({ children }) => (
-            <h2 className="font-serif font-bold text-xs sm:text-sm text-[#F3C766] mt-3 mb-1.5 flex items-center gap-1.5">
-              <span className="text-[#E5A93C] text-[10px]">❖</span>
+            <h2 className="font-serif font-bold text-xs sm:text-sm text-acc2 mt-3 mb-1.5 flex items-center gap-1.5">
+              <span className="text-acc text-[10px]">❖</span>
               {children}
             </h2>
           ),
           h3: ({ children }) => (
-            <h3 className="font-serif font-bold text-xs text-[#E5A93C] mt-2 mb-1">
+            <h3 className="font-serif font-bold text-xs text-acc mt-2 mb-1">
               {children}
             </h3>
           ),
           strong: ({ children }) => (
-            <strong className="font-bold text-[#F3C766] drop-shadow-[0_0_8px_rgba(243,199,102,0.15)]">
+            <strong className="font-bold text-acc2 drop-shadow-[0_0_8px_rgba(243,199,102,0.15)]">
               {children}
             </strong>
           ),
           em: ({ children }) => (
-            <em className="italic text-[#CBD5E1]">{children}</em>
+            <em className="italic text-mid">{children}</em>
           ),
           ul: ({ children }) => (
             <ul className="my-2 space-y-1.5 pl-1">{children}</ul>
           ),
           ol: ({ children }) => (
-            <ol className="my-2 space-y-1.5 pl-1 list-decimal list-inside text-xs sm:text-sm text-[#F8FAFC]">
+            <ol className="my-2 space-y-1.5 pl-1 list-decimal list-inside text-xs sm:text-sm text-fg">
               {children}
             </ol>
           ),
           li: ({ children }) => (
-            <li className="flex items-start gap-2 text-xs sm:text-sm text-[#F8FAFC] leading-relaxed">
-              <span className="text-[#E5A93C] shrink-0 text-xs mt-0.5">•</span>
+            <li className="flex items-start gap-2 text-xs sm:text-sm text-fg leading-relaxed">
+              <span className="text-acc shrink-0 text-xs mt-0.5">•</span>
               <div className="flex-1 min-w-0">{children}</div>
             </li>
           ),
           blockquote: ({ children }) => (
-            <blockquote className="my-2.5 rounded-[8px] border-l-2 border-[#E5A93C] bg-[#090A10]/70 p-3 italic text-xs text-[#CBD5E1] shadow-inner">
+            <blockquote className="my-2.5 rounded-[8px] border-l-2 border-acc bg-inset/70 p-3 italic text-xs text-mid shadow-inner">
               {children}
             </blockquote>
           ),
@@ -86,7 +86,7 @@ export function MarkdownRenderer({
             if (isInline) {
               return (
                 <code
-                  className="rounded-[4px] bg-[#090A10] border border-[#E5A93C]/30 px-1.5 py-0.5 font-mono text-[11px] text-[#F3C766]"
+                  className="rounded-[4px] bg-inset border border-acc/30 px-1.5 py-0.5 font-mono text-[11px] text-acc2"
                   {...props}
                 >
                   {children}
@@ -95,30 +95,30 @@ export function MarkdownRenderer({
             }
 
             return (
-              <div className="my-2.5 overflow-hidden rounded-[8px] border border-white/10 bg-[#090A10] shadow-lg">
-                <div className="flex items-center justify-between border-b border-white/10 bg-[#161B2B] px-3 py-1 text-[10px] font-mono text-[#E5A93C]">
+              <div className="my-2.5 overflow-hidden rounded-[8px] border border-brd bg-inset shadow-lg">
+                <div className="flex items-center justify-between border-b border-brd bg-panel px-3 py-1 text-[10px] font-mono text-acc">
                   <span>{match ? match[1] : "code"}</span>
                 </div>
-                <pre className="overflow-x-auto p-3 font-mono text-xs text-[#F8FAFC]">
+                <pre className="overflow-x-auto p-3 font-mono text-xs text-fg">
                   <code {...props}>{children}</code>
                 </pre>
               </div>
             );
           },
           table: ({ children }) => (
-            <div className="my-3 overflow-x-auto rounded-[8px] border border-white/10">
+            <div className="my-3 overflow-x-auto rounded-[8px] border border-brd">
               <table className="w-full border-collapse text-left text-xs">
                 {children}
               </table>
             </div>
           ),
           thead: ({ children }) => (
-            <thead className="bg-[#161B2B] text-[#E5A93C] font-serif font-bold border-b border-white/10">
+            <thead className="bg-panel text-acc font-serif font-bold border-b border-brd">
               {children}
             </thead>
           ),
           tbody: ({ children }) => (
-            <tbody className="divide-y divide-white/5 bg-[#090A10]/60 text-[#F8FAFC]">
+            <tbody className="divide-y divide-brd bg-inset/60 text-fg">
               {children}
             </tbody>
           ),
@@ -129,7 +129,7 @@ export function MarkdownRenderer({
               href={href}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-[#F3C766] underline hover:text-[#E5A93C] transition-colors"
+              className="text-acc2 underline hover:text-acc transition-colors"
             >
               {children}
             </a>

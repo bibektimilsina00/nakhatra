@@ -61,7 +61,7 @@ export function PhoneField({
 
   return (
     <div
-      className={`flex items-stretch overflow-hidden rounded-[8px] border bg-ink transition-colors focus-within:border-gold/45 ${
+      className={`flex items-stretch overflow-hidden rounded-[8px] border bg-app transition-colors focus-within:border-acc/45 ${
         invalid ? "border-rose-400/50" : "border-white/[0.09]"
       }`}
     >
@@ -71,16 +71,16 @@ export function PhoneField({
           onClick={() => setOpen((current) => !current)}
           aria-haspopup="listbox"
           aria-expanded={open}
-          className="flex h-full items-center gap-1.5 border-r border-white/[0.09] px-3 text-[13px] tabular-nums text-paper transition-colors hover:bg-white/[0.03]"
+          className="flex h-full items-center gap-1.5 border-r border-white/[0.09] px-3 text-[13px] tabular-nums text-fg transition-colors hover:bg-fg/[0.03]"
         >
           {dial}
-          <ChevronDown className={`size-3.5 text-faint transition-transform ${open ? "rotate-180" : ""}`} />
+          <ChevronDown className={`size-3.5 text-dim transition-transform ${open ? "rotate-180" : ""}`} />
         </button>
 
         {open && (
           <ul
             role="listbox"
-            className="absolute left-0 top-[calc(100%+4px)] z-20 max-h-60 w-[132px] overflow-y-auto rounded-[8px] border border-white/[0.10] bg-card py-1 shadow-2xl"
+            className="absolute left-0 top-[calc(100%+4px)] z-20 max-h-60 w-[132px] overflow-y-auto rounded-[8px] border border-white/[0.10] bg-panel py-1 shadow-2xl"
           >
             {DIAL_CODES.map((row) => (
               <li key={row.code}>
@@ -92,8 +92,8 @@ export function PhoneField({
                     onChange({ dial: row.code, digits });
                     setOpen(false);
                   }}
-                  className={`flex w-full items-center justify-between px-3 py-1.5 text-[12.5px] transition-colors hover:bg-white/[0.05] ${
-                    row.code === dial ? "text-gold2" : "text-muted"
+                  className={`flex w-full items-center justify-between px-3 py-1.5 text-[12.5px] transition-colors hover:bg-fg/[0.05] ${
+                    row.code === dial ? "text-acc2" : "text-mut"
                   }`}
                 >
                   <span>{row.country}</span>
@@ -118,7 +118,7 @@ export function PhoneField({
         onChange={(event) =>
           onChange({ dial, digits: event.target.value.replace(/\D/g, "").slice(0, MAX_DIGITS) })
         }
-        className="min-w-0 flex-1 bg-transparent px-3 py-2.5 text-[13.5px] tabular-nums text-paper placeholder-faint focus:outline-none"
+        className="min-w-0 flex-1 bg-transparent px-3 py-2.5 text-[13.5px] tabular-nums text-fg placeholder-faint focus:outline-none"
       />
     </div>
   );

@@ -85,30 +85,30 @@ export function DatePicker({
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className={`flex w-full items-center justify-between rounded-[8px] border bg-[#090A10] px-3.5 py-2.5 text-left text-xs transition ${
-          error ? "border-rose-500 text-rose-200" : "border-white/10 text-[#F8FAFC] hover:border-white/20"
+        className={`flex w-full items-center justify-between rounded-[8px] border bg-inset px-3.5 py-2.5 text-left text-xs transition ${
+          error ? "border-rose-500 text-rose-200" : "border-brd text-fg hover:border-brd2"
         }`}
       >
-        <span className={value ? "text-[#F8FAFC] font-semibold" : "text-[#94A3B8]/60"}>
+        <span className={value ? "text-fg font-semibold" : "text-mut/60"}>
           {displayLabel}
         </span>
-        <span className="rounded bg-[#E5A93C]/20 px-1.5 py-0.5 text-[10px] font-bold text-[#F3C766]">
+        <span className="rounded bg-acc/20 px-1.5 py-0.5 text-[10px] font-bold text-acc2">
           {era} ▾
         </span>
       </button>
       {error && <p className="mt-1 text-[11px] text-rose-400 font-medium">{error}</p>}
 
       {open && (
-        <div className="absolute z-50 mt-2 w-full min-w-[300px] rounded-[8px] border border-white/10 bg-[#161B2B] p-4 shadow-xl">
+        <div className="absolute z-50 mt-2 w-full min-w-[300px] rounded-[8px] border border-brd bg-panel p-4 shadow-xl">
           {/* Era Toggle Switcher (AD / BS) */}
-          <div className="mb-3 flex items-center justify-between border-b border-white/10 pb-2.5">
-            <span className="text-xs font-bold text-[#F8FAFC]">Calendar Era:</span>
-            <div className="flex rounded-[8px] border border-white/10 bg-[#090A10] p-0.5 text-[10px]">
+          <div className="mb-3 flex items-center justify-between border-b border-brd pb-2.5">
+            <span className="text-xs font-bold text-fg">Calendar Era:</span>
+            <div className="flex rounded-[8px] border border-brd bg-inset p-0.5 text-[10px]">
               <button
                 type="button"
                 onClick={() => setEra("AD")}
                 className={`rounded-[6px] px-3 py-1 font-bold transition ${
-                  era === "AD" ? "bg-[#E5A93C] text-[#090A10]" : "text-[#94A3B8] hover:text-[#F8FAFC]"
+                  era === "AD" ? "bg-acc text-onacc" : "text-mut hover:text-fg"
                 }`}
               >
                 AD (Gregorian)
@@ -117,7 +117,7 @@ export function DatePicker({
                 type="button"
                 onClick={() => setEra("BS")}
                 className={`rounded-[6px] px-3 py-1 font-bold transition ${
-                  era === "BS" ? "bg-[#E5A93C] text-[#090A10]" : "text-[#94A3B8] hover:text-[#F8FAFC]"
+                  era === "BS" ? "bg-acc text-onacc" : "text-mut hover:text-fg"
                 }`}
               >
                 BS (Bikram Sambat)
@@ -132,7 +132,7 @@ export function DatePicker({
                 <button
                   type="button"
                   onClick={() => shiftAdMonth(-1)}
-                  className="rounded-[6px] border border-white/10 bg-[#090A10] px-2 py-1 text-xs text-[#94A3B8] hover:text-[#F8FAFC]"
+                  className="rounded-[6px] border border-brd bg-inset px-2 py-1 text-xs text-mut hover:text-fg"
                 >
                   ‹
                 </button>
@@ -161,7 +161,7 @@ export function DatePicker({
                 <button
                   type="button"
                   onClick={() => shiftAdMonth(1)}
-                  className="rounded-[6px] border border-white/10 bg-[#090A10] px-2 py-1 text-xs text-[#94A3B8] hover:text-[#F8FAFC]"
+                  className="rounded-[6px] border border-brd bg-inset px-2 py-1 text-xs text-mut hover:text-fg"
                 >
                   ›
                 </button>
@@ -169,7 +169,7 @@ export function DatePicker({
 
               <div className="grid grid-cols-7 gap-1 text-center text-xs">
                 {["S", "M", "T", "W", "T", "F", "S"].map((d, i) => (
-                  <span key={i} className="py-1 text-[10px] uppercase font-bold text-[#94A3B8]">
+                  <span key={i} className="py-1 text-[10px] uppercase font-bold text-mut">
                     {d}
                   </span>
                 ))}
@@ -189,8 +189,8 @@ export function DatePicker({
                       onClick={() => pickAd(day)}
                       className={`rounded-[6px] py-1.5 text-xs font-semibold transition ${
                         selected
-                          ? "bg-[#E5A93C] text-[#090A10] font-bold"
-                          : "text-[#F8FAFC] hover:bg-white/10"
+                          ? "bg-acc text-onacc font-bold"
+                          : "text-fg hover:bg-fg/10"
                       }`}
                     >
                       {day}
@@ -206,7 +206,7 @@ export function DatePicker({
                 <button
                   type="button"
                   onClick={() => shiftBsMonth(-1)}
-                  className="rounded-[6px] border border-white/10 bg-[#090A10] px-2 py-1 text-xs text-[#94A3B8] hover:text-[#F8FAFC]"
+                  className="rounded-[6px] border border-brd bg-inset px-2 py-1 text-xs text-mut hover:text-fg"
                 >
                   ‹
                 </button>
@@ -235,7 +235,7 @@ export function DatePicker({
                 <button
                   type="button"
                   onClick={() => shiftBsMonth(1)}
-                  className="rounded-[6px] border border-white/10 bg-[#090A10] px-2 py-1 text-xs text-[#94A3B8] hover:text-[#F8FAFC]"
+                  className="rounded-[6px] border border-brd bg-inset px-2 py-1 text-xs text-mut hover:text-fg"
                 >
                   ›
                 </button>
@@ -256,8 +256,8 @@ export function DatePicker({
                       onClick={() => pickBs(day)}
                       className={`rounded-[6px] py-1.5 text-xs font-semibold transition ${
                         selected
-                          ? "bg-[#E5A93C] text-[#090A10] font-bold"
-                          : "text-[#F8FAFC] hover:bg-white/10"
+                          ? "bg-acc text-onacc font-bold"
+                          : "text-fg hover:bg-fg/10"
                       }`}
                     >
                       {day}
@@ -274,7 +274,7 @@ export function DatePicker({
 }
 
 const selectClass =
-  "flex-1 rounded-[6px] border border-white/10 bg-[#090A10] px-2 py-1.5 text-xs text-[#F8FAFC] outline-none focus:border-[#E5A93C]";
+  "flex-1 rounded-[6px] border border-brd bg-inset px-2 py-1.5 text-xs text-fg outline-none focus:border-acc";
 
 function parseIso(iso: string) {
   if (!iso || !iso.includes("-")) {

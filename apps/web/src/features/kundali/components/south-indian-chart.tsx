@@ -52,19 +52,19 @@ export function SouthIndianChart({
         centerSub: "text-[#7a6033]",
       }
     : {
-        wrap: "bg-[#090A10]",
-        cellActive: "border-[#E5A93C] bg-[#1E2640]",
-        cell: "border-white/15 bg-[#121626] hover:border-white/30",
-        lagnaText: "text-[#F3C766]",
-        signText: "text-[#E2E8F0]",
-        houseText: "text-[#CBD5E1]",
+        wrap: "bg-inset",
+        cellActive: "border-acc bg-panel",
+        cell: "border-brd bg-inset hover:border-brd2",
+        lagnaText: "text-acc2",
+        signText: "text-mid",
+        houseText: "text-mid",
         planet: "text-[#FFFFFF]",
-        exalted: "bg-[#E5A93C]/30 text-[#FDE68A]",
-        retro: "text-[#E5A93C]",
-        center: "border-white/15 bg-[#161B2B]",
+        exalted: "bg-acc/30 text-[#FDE68A]",
+        retro: "text-acc",
+        center: "border-brd bg-panel",
         centerTitle: "text-[#FFFFFF]",
-        centerAsc: "text-[#F3C766]",
-        centerSub: "text-[#E2E8F0]",
+        centerAsc: "text-acc2",
+        centerSub: "text-mid",
       };
 
   // Map planets by sign_index

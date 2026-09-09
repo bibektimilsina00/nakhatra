@@ -114,7 +114,7 @@ export function GoogleButton({ onSignedIn }: { onSignedIn: () => void }) {
         type="button"
         disabled={!ready || pending}
         onClick={() => client.current?.requestCode()}
-        className="flex w-full items-center justify-center gap-3 rounded-[8px] border border-white/10 bg-[#181B27] px-4 py-2.5 text-sm font-medium text-[#F8FAFC] transition-colors hover:border-white/20 hover:bg-[#1E2230] focus-visible:border-[#E5A93C] focus-visible:outline-none disabled:opacity-60"
+        className="flex w-full items-center justify-center gap-3 rounded-[8px] border border-brd bg-[#181B27] px-4 py-2.5 text-sm font-medium text-fg transition-colors hover:border-brd2 hover:bg-[#1E2230] focus-visible:border-acc focus-visible:outline-none disabled:opacity-60"
       >
         <GoogleGlyph />
         <span>{pending ? "Signing you in…" : "Continue with Google"}</span>
@@ -127,7 +127,7 @@ export function GoogleButton({ onSignedIn }: { onSignedIn: () => void }) {
       )}
 
       {reason && (
-        <pre className="mt-1.5 whitespace-pre-wrap break-words rounded-[6px] border border-white/10 bg-[#0C0E15] px-3 py-2 text-left font-mono text-[11px] leading-[1.5] text-[#94A3B8]">
+        <pre className="mt-1.5 whitespace-pre-wrap break-words rounded-[6px] border border-brd bg-[#0C0E15] px-3 py-2 text-left font-mono text-[11px] leading-[1.5] text-mut">
           {reason}
         </pre>
       )}

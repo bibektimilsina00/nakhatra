@@ -89,20 +89,20 @@ export function CustomVoiceSelector({
       <button
         type="button"
         onClick={() => setIsOpen((prev) => !prev)}
-        className="group flex items-center justify-between gap-2.5 rounded-[8px] border border-[#E5A93C]/40 bg-[#090A10] px-3 py-1.5 text-xs font-semibold text-[#F3C766] transition-all duration-200 hover:border-[#E5A93C] hover:bg-[#161B2B] hover:shadow-md cursor-pointer active:scale-95"
+        className="group flex items-center justify-between gap-2.5 rounded-[8px] border border-acc/40 bg-inset px-3 py-1.5 text-xs font-semibold text-acc2 transition-all duration-200 hover:border-acc hover:bg-panel hover:shadow-md cursor-pointer active:scale-95"
         title="Choose Astrologer Voice with Audio Preview"
         aria-expanded={isOpen}
         aria-haspopup="listbox"
       >
         <div className="flex items-center gap-2">
-          <Mic className="size-3.5 text-[#E5A93C] shrink-0" />
-          <span className="text-xs font-bold text-[#F8FAFC]">
+          <Mic className="size-3.5 text-acc shrink-0" />
+          <span className="text-xs font-bold text-fg">
             {currentVoiceObj.name}
           </span>
         </div>
 
         <ChevronDown
-          className={`size-3.5 text-[#F3C766] transition-transform duration-200 ${
+          className={`size-3.5 text-acc2 transition-transform duration-200 ${
             isOpen ? "rotate-180" : ""
           }`}
         />
@@ -110,12 +110,12 @@ export function CustomVoiceSelector({
 
       {/* Custom Dropdown Panel */}
       {isOpen && (
-        <div className="absolute right-0 top-full mt-2 z-50 w-72 sm:w-80 rounded-[8px] border border-[#E5A93C]/30 bg-[#161B2B] p-2 shadow-2xl backdrop-blur-xl animate-in fade-in zoom-in-95 duration-150">
+        <div className="absolute right-0 top-full mt-2 z-50 w-72 sm:w-80 rounded-[8px] border border-acc/30 bg-panel p-2 shadow-2xl backdrop-blur-xl animate-in fade-in zoom-in-95 duration-150">
           {/* Dropdown Header */}
-          <div className="flex items-center justify-between border-b border-white/10 px-2.5 pb-2 pt-1">
+          <div className="flex items-center justify-between border-b border-brd px-2.5 pb-2 pt-1">
             <div className="flex items-center gap-1.5">
-              <Mic className="size-3.5 text-[#E5A93C]" />
-              <span className="text-xs font-bold text-[#F8FAFC]">
+              <Mic className="size-3.5 text-acc" />
+              <span className="text-xs font-bold text-fg">
                 {language === "ne"
                   ? "ज्योतिषी स्वर चयन गर्नुहोस्"
                   : language === "hi"
@@ -123,7 +123,7 @@ export function CustomVoiceSelector({
                   : "Select Astrologer Voice"}
               </span>
             </div>
-            <span className="text-[10px] text-[#94A3B8]">
+            <span className="text-[10px] text-mut">
               {language === "ne"
                 ? "पूर्वावलोकन सुन्नुहोस्"
                 : language === "hi"
@@ -144,26 +144,26 @@ export function CustomVoiceSelector({
                   onClick={() => handleSelect(voice.id)}
                   className={`group relative flex items-center justify-between rounded-[6px] p-2.5 text-xs transition-all duration-150 cursor-pointer ${
                     isSelected
-                      ? "bg-[#E5A93C]/15 border border-[#E5A93C]/50 text-[#F8FAFC]"
-                      : "hover:bg-white/5 border border-transparent text-[#CBD5E1]"
+                      ? "bg-acc/15 border border-acc/50 text-fg"
+                      : "hover:bg-fg/5 border border-transparent text-mid"
                   }`}
                 >
                   <div className="flex items-start gap-2.5 flex-1 min-w-0 pr-2">
                     {/* Selected Checkmark */}
-                    <div className="mt-0.5 grid size-4 shrink-0 place-items-center rounded-full border border-white/20">
-                      {isSelected && <Check className="size-3 text-[#E5A93C]" />}
+                    <div className="mt-0.5 grid size-4 shrink-0 place-items-center rounded-full border border-brd2">
+                      {isSelected && <Check className="size-3 text-acc" />}
                     </div>
 
                     <div className="flex flex-col min-w-0">
                       <div className="flex items-center gap-2">
-                        <span className="font-bold text-[#F8FAFC] truncate">
+                        <span className="font-bold text-fg truncate">
                           {voice.name}
                         </span>
-                        <span className="text-[9px] font-semibold uppercase px-1.5 py-0.5 rounded-[4px] bg-white/10 text-[#94A3B8]">
+                        <span className="text-[9px] font-semibold uppercase px-1.5 py-0.5 rounded-[4px] bg-fg/10 text-mut">
                           {voice.gender}
                         </span>
                       </div>
-                      <p className="text-[10px] text-[#94A3B8] line-clamp-1 mt-0.5">
+                      <p className="text-[10px] text-mut line-clamp-1 mt-0.5">
                         {voice.description[language] || voice.description.en}
                       </p>
                     </div>
@@ -180,8 +180,8 @@ export function CustomVoiceSelector({
                     }
                     className={`flex size-8 shrink-0 items-center justify-center rounded-[6px] border transition-all duration-150 cursor-pointer active:scale-95 ${
                       isPreviewing
-                        ? "border-[#E5A93C] bg-[#E5A93C] text-[#090A10] shadow-md shadow-[#E5A93C]/30"
-                        : "border-white/10 bg-[#090A10] text-[#E5A93C] hover:border-[#E5A93C] hover:bg-[#E5A93C]/20"
+                        ? "border-acc bg-acc text-onacc shadow-md shadow-acc/30"
+                        : "border-brd bg-inset text-acc hover:border-acc hover:bg-acc/20"
                     }`}
                   >
                     {isPreviewing ? (

@@ -45,7 +45,69 @@
   --font-disp: var(--font-sora), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-jetbrains), ui-monospace, monospace;
 
+  /* ── Themed app tokens ─────────────────────────────────────────────
+     The app (everything behind login) draws from these; marketing keeps its
+     own fixed dark palette above. Dark is the app's existing night-sky
+     values, light is the janma patrika: parchment ground, the guru's red
+     for accents, ink for text. The utilities resolve through --t-* vars so
+     [data-theme] can flip them at runtime. */
+  --color-app: var(--t-app);
+  --color-panel: var(--t-panel);
+  --color-inset: var(--t-inset);
+  --color-fg: var(--t-fg);
+  --color-mid: var(--t-mid);
+  --color-mut: var(--t-mut);
+  --color-dim: var(--t-dim);
+  --color-acc: var(--t-acc);
+  --color-acc2: var(--t-acc2);
+  --color-onacc: var(--t-onacc);
+  --color-brd: var(--t-brd);
+  --color-brd2: var(--t-brd2);
+
+  /* Names the kundali chart page always used; they were never defined, so
+     those classes silently did nothing. Wired to the same theme. */
+  --color-cream: var(--t-app);
+  --color-surface: var(--t-panel);
+  --color-line: var(--t-brd);
+  --color-accent-strong: var(--t-acc);
+  --color-accent-ink: var(--t-acc2);
+  --text-2xs: 0.6875rem;
 }
+
+/* Dark: the values every app screen was built with. */
+:root, html[data-theme="dark"] {
+  --t-app: #090A10;
+  --t-panel: #161B2B;
+  --t-inset: #0B0E18;
+  --t-fg: #F8FAFC;
+  --t-mid: #CBD5E1;
+  --t-mut: #94A3B8;
+  --t-dim: #5F6B7F;
+  --t-acc: #E5A93C;
+  --t-acc2: #F3C766;
+  --t-onacc: #090A10;
+  --t-brd: rgba(255, 255, 255, 0.10);
+  --t-brd2: rgba(255, 255, 255, 0.25);
+}
+
+/* Light: the patro. Parchment ground, red rules, ink writing. */
+html[data-theme="light"] {
+  color-scheme: light;
+  background-color: #f7efdc;
+  --t-app: #f7efdc;
+  --t-panel: #fcf6e8;
+  --t-inset: #f0e4c8;
+  --t-fg: #26221b;
+  --t-mid: #4a3a22;
+  --t-mut: #7a6033;
+  --t-dim: #a38e63;
+  --t-acc: #9B1C1C;
+  --t-acc2: #B01F1F;
+  --t-onacc: #f7efdc;
+  --t-brd: rgba(155, 28, 28, 0.22);
+  --t-brd2: rgba(155, 28, 28, 0.40);
+}
+
 
 html {
   color-scheme: dark;

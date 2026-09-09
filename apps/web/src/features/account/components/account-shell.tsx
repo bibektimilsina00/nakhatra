@@ -34,8 +34,8 @@ export function AccountShell({
       aria-current={pathname === href ? "page" : undefined}
       className={`rounded-[8px] px-3.5 py-2 text-[13px] transition-colors ${
         pathname === href
-          ? "bg-gold/[0.11] font-medium text-gold2"
-          : "text-muted hover:bg-white/[0.04] hover:text-paper"
+          ? "bg-acc/[0.11] font-medium text-acc2"
+          : "text-mut hover:bg-fg/[0.04] hover:text-fg"
       }`}
     >
       {label}
@@ -46,11 +46,11 @@ export function AccountShell({
     <AppShell>
       <main className="mx-auto w-full max-w-[820px] px-5 pb-24 pt-10 sm:px-8">
         <header>
-          <span className={`text-[11px] text-gold ${eyebrow}`}>{t.acctYourAccount}</span>
-          <h1 className="mt-3 text-[26px] font-bold leading-tight text-paper sm:text-[30px]">
+          <span className={`text-[11px] text-acc ${eyebrow}`}>{t.acctYourAccount}</span>
+          <h1 className="mt-3 text-[26px] font-bold leading-tight text-fg sm:text-[30px]">
             {title}
           </h1>
-          {user && <p className="mt-1.5 text-[13px] text-faint">{user.email}</p>}
+          {user && <p className="mt-1.5 text-[13px] text-dim">{user.email}</p>}
         </header>
 
         <nav className="mt-6 flex gap-1.5 border-b border-white/[0.08] pb-3">
@@ -75,16 +75,16 @@ export function AccountCard({
   children?: React.ReactNode;
 }) {
   return (
-    <section className="rounded-[14px] border border-white/[0.09] bg-card p-5 sm:p-6">
-      <h2 className="text-[11px] uppercase tracking-[0.14em] text-faint">{title}</h2>
-      {note && <p className="mt-2 text-[12.5px] leading-[1.7] text-faint">{note}</p>}
+    <section className="rounded-[14px] border border-white/[0.09] bg-panel p-5 sm:p-6">
+      <h2 className="text-[11px] uppercase tracking-[0.14em] text-dim">{title}</h2>
+      {note && <p className="mt-2 text-[12.5px] leading-[1.7] text-dim">{note}</p>}
       {children && <div className="mt-4">{children}</div>}
     </section>
   );
 }
 
 export const accountField =
-  "w-full rounded-[8px] border border-white/[0.09] bg-ink px-3 py-2.5 text-[13.5px] text-paper placeholder-faint focus:border-gold/45 focus:outline-none disabled:opacity-50";
-export const accountLabel = "mb-1.5 block text-[12px] text-muted";
+  "w-full rounded-[8px] border border-white/[0.09] bg-app px-3 py-2.5 text-[13.5px] text-fg placeholder-faint focus:border-acc/45 focus:outline-none disabled:opacity-50";
+export const accountLabel = "mb-1.5 block text-[12px] text-mut";
 export const accountButton =
-  "rounded-[9px] bg-gold px-5 py-2.5 text-[13px] font-bold text-ink transition-colors hover:bg-gold2 disabled:pointer-events-none disabled:opacity-40";
+  "rounded-[9px] bg-acc px-5 py-2.5 text-[13px] font-bold text-ink transition-colors hover:bg-acc2 disabled:pointer-events-none disabled:opacity-40";

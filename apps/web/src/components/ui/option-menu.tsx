@@ -42,7 +42,7 @@ export function OptionMenu<T extends string>({
         aria-expanded={open}
         aria-haspopup="listbox"
         aria-label={label}
-        className="flex items-center gap-1.5 rounded-[8px] border border-white/10 bg-[#090A10] px-2.5 py-1.5 text-xs text-[#F3C766] transition-colors hover:border-white/25"
+        className="flex items-center gap-1.5 rounded-[8px] border border-brd bg-inset px-2.5 py-1.5 text-xs text-acc2 transition-colors hover:border-brd2"
       >
         <span className="tabular-nums">{current.label}</span>
         <ChevronDown className={`size-3 transition-transform ${open ? "rotate-180" : ""}`} />
@@ -51,7 +51,7 @@ export function OptionMenu<T extends string>({
       {open && (
         <ul
           role="listbox"
-          className={`absolute z-50 mt-2 min-w-[92px] rounded-[8px] border border-white/12 bg-[#0B0E18] p-1.5 shadow-2xl shadow-black/50 ${
+          className={`absolute z-50 mt-2 min-w-[92px] rounded-[8px] border border-white/12 bg-inset p-1.5 shadow-2xl shadow-black/50 ${
             align === "right" ? "right-0" : "left-0"
           }`}
         >
@@ -67,8 +67,8 @@ export function OptionMenu<T extends string>({
                 }}
                 className={`flex w-full items-center justify-between gap-3 rounded-[6px] px-2.5 py-1.5 text-left text-xs transition-colors ${
                   option.value === value
-                    ? "bg-white/[0.05] text-gold"
-                    : "text-muted hover:bg-white/[0.04] hover:text-paper"
+                    ? "bg-white/[0.05] text-acc"
+                    : "text-mut hover:bg-fg/[0.04] hover:text-fg"
                 }`}
               >
                 <span className="tabular-nums">{option.label}</span>

@@ -66,7 +66,7 @@ export function ConsultationRoom({ id }: { id: string }) {
     return (
       <AppShell>
         <main className="mx-auto w-full max-w-[900px] px-5 pt-10 sm:px-8">
-          <div className="h-[180px] animate-pulse rounded-[12px] border border-white/[0.07] bg-card" />
+          <div className="h-[180px] animate-pulse rounded-[12px] border border-white/[0.07] bg-panel" />
         </main>
       </AppShell>
     );
@@ -83,7 +83,7 @@ export function ConsultationRoom({ id }: { id: string }) {
         <button
           type="button"
           onClick={() => router.push("/consultations")}
-          className="mb-5 inline-flex items-center gap-2 text-[12.5px] text-muted transition-colors hover:text-paper"
+          className="mb-5 inline-flex items-center gap-2 text-[12.5px] text-mut transition-colors hover:text-fg"
         >
           <ArrowLeft className="size-4" />
           {t.chatTab}
@@ -100,18 +100,18 @@ export function ConsultationRoom({ id }: { id: string }) {
               className="size-10 shrink-0 rounded-full object-cover"
             />
           ) : (
-            <span className="grid size-10 shrink-0 place-items-center rounded-full bg-gold/[0.12] text-[13px] font-bold text-gold">
+            <span className="grid size-10 shrink-0 place-items-center rounded-full bg-acc/[0.12] text-[13px] font-bold text-acc">
               {(c.counterpart_name || "?").charAt(0).toUpperCase()}
             </span>
           )}
           <div className="min-w-0">
-            <p className="truncate text-[15px] font-semibold text-paper">
+            <p className="truncate text-[15px] font-semibold text-fg">
               {c.counterpart_name || t.dashJyotish}
             </p>
             {!isPractitioner && (
               <Link
                 href={`/practitioners/${c.profile_id}`}
-                className="text-[11.5px] text-gold hover:underline"
+                className="text-[11.5px] text-acc hover:underline"
               >
                 {t.profAbout}
               </Link>
@@ -132,7 +132,7 @@ export function ConsultationRoom({ id }: { id: string }) {
         {live && !socketUp && (
           // Said out loud rather than degrading silently: updates still arrive,
           // just more slowly, and the reader should know which they are getting.
-          <p className="mt-2 text-[11.5px] text-faint">{t.consultReconnecting}</p>
+          <p className="mt-2 text-[11.5px] text-dim">{t.consultReconnecting}</p>
         )}
 
         <div className="mt-4 flex flex-wrap gap-2">
@@ -141,14 +141,14 @@ export function ConsultationRoom({ id }: { id: string }) {
               <button
                 type="button"
                 onClick={() => act.mutate("accept")}
-                className={`${button} bg-gold text-ink hover:bg-gold2`}
+                className={`${button} bg-acc text-ink hover:bg-acc2`}
               >
                 {t.consultAccept}
               </button>
               <button
                 type="button"
                 onClick={() => act.mutate("decline")}
-                className={`${button} border border-white/12 text-muted hover:border-white/25 hover:text-paper`}
+                className={`${button} border border-white/12 text-mut hover:border-brd2 hover:text-fg`}
               >
                 {t.consultDecline}
               </button>
@@ -157,11 +157,11 @@ export function ConsultationRoom({ id }: { id: string }) {
 
           {!isPractitioner && c.state === "requested" && (
             <>
-              <span className="text-[13px] text-faint">{t.consultWaiting}</span>
+              <span className="text-[13px] text-dim">{t.consultWaiting}</span>
               <button
                 type="button"
                 onClick={() => act.mutate("cancel")}
-                className={`${button} border border-white/12 text-muted hover:border-white/25 hover:text-paper`}
+                className={`${button} border border-white/12 text-mut hover:border-brd2 hover:text-fg`}
               >
                 {t.consultCancel}
               </button>
@@ -173,7 +173,7 @@ export function ConsultationRoom({ id }: { id: string }) {
               type="button"
               onClick={() => act.mutate("connect")}
               disabled={act.isPending}
-              className={`${button} bg-gold text-ink hover:bg-gold2`}
+              className={`${button} bg-acc text-ink hover:bg-acc2`}
             >
               {t.consultStart}
             </button>
@@ -190,7 +190,7 @@ export function ConsultationRoom({ id }: { id: string }) {
             </button>
           )}
 
-          {c.state === "ended" && <span className="text-[13px] text-faint">{t.consultEnded}</span>}
+          {c.state === "ended" && <span className="text-[13px] text-dim">{t.consultEnded}</span>}
         </div>
 
         {c.state === "ended" && !isPractitioner && (
@@ -211,7 +211,7 @@ export function ConsultationRoom({ id }: { id: string }) {
 
         <div
           ref={feed}
-          className="mt-6 max-h-[46vh] space-y-3 overflow-y-auto rounded-[12px] border border-white/[0.09] bg-card p-4"
+          className="mt-6 max-h-[46vh] space-y-3 overflow-y-auto rounded-[12px] border border-white/[0.09] bg-panel p-4"
         >
           {messages.data && messages.data.length > 0 ? (
             messages.data.map((message) => {
@@ -220,7 +220,7 @@ export function ConsultationRoom({ id }: { id: string }) {
                 <div key={message.id} className={`flex ${mine ? "justify-end" : "justify-start"}`}>
                   <span
                     className={`max-w-[76%] rounded-[10px] px-3.5 py-2.5 text-[13.5px] leading-[1.65] ${
-                      mine ? "bg-gold text-ink" : "border border-white/[0.09] bg-ink text-paper"
+                      mine ? "bg-acc text-ink" : "border border-white/[0.09] bg-app text-fg"
                     }`}
                   >
                     {message.body}
@@ -229,7 +229,7 @@ export function ConsultationRoom({ id }: { id: string }) {
               );
             })
           ) : (
-            <p className="py-8 text-center text-[12.5px] text-faint">{t.consultPlaceholder}</p>
+            <p className="py-8 text-center text-[12.5px] text-dim">{t.consultPlaceholder}</p>
           )}
         </div>
 
@@ -248,12 +248,12 @@ export function ConsultationRoom({ id }: { id: string }) {
             onChange={(event) => setDraft(event.target.value)}
             placeholder={t.consultPlaceholder}
             disabled={c.state === "declined" || c.state === "cancelled"}
-            className="min-w-0 flex-1 rounded-[8px] border border-white/[0.09] bg-card px-3.5 py-2.5 text-[13.5px] text-paper placeholder-faint focus:border-gold/45 focus:outline-none disabled:opacity-50"
+            className="min-w-0 flex-1 rounded-[8px] border border-white/[0.09] bg-panel px-3.5 py-2.5 text-[13.5px] text-fg placeholder-faint focus:border-acc/45 focus:outline-none disabled:opacity-50"
           />
           <button
             type="submit"
             disabled={!draft.trim() || send.isPending}
-            className={`${button} inline-flex items-center gap-1.5 bg-gold text-ink hover:bg-gold2`}
+            className={`${button} inline-flex items-center gap-1.5 bg-acc text-ink hover:bg-acc2`}
           >
             <Send className="size-3.5" />
             {t.consultSend}
@@ -286,19 +286,19 @@ function ReviewForm({
   const review = useLeaveReview(consultationId, practitionerUserId);
 
   if (done || review.isSuccess) {
-    return <p className="mt-4 text-[13px] text-gold2">{t.reviewThanks}</p>;
+    return <p className="mt-4 text-[13px] text-acc2">{t.reviewThanks}</p>;
   }
 
   return (
     <form
-      className="mt-5 rounded-[12px] border border-white/[0.09] bg-card p-4"
+      className="mt-5 rounded-[12px] border border-white/[0.09] bg-panel p-4"
       onSubmit={(event) => {
         event.preventDefault();
         if (rating > 0) review.mutate({ rating, body: body.trim() });
       }}
     >
-      <p className="text-[14px] font-semibold text-paper">{t.reviewTitle}</p>
-      <p className="mt-1 text-[11.5px] text-faint">{t.reviewNote}</p>
+      <p className="text-[14px] font-semibold text-fg">{t.reviewTitle}</p>
+      <p className="mt-1 text-[11.5px] text-dim">{t.reviewNote}</p>
 
       <div className="mt-3 flex gap-1">
         {[1, 2, 3, 4, 5].map((star) => (
@@ -312,7 +312,7 @@ function ReviewForm({
           >
             <Star
               className={`size-6 transition-colors ${
-                star <= rating ? "fill-gold text-gold" : "text-white/20 hover:text-white/40"
+                star <= rating ? "fill-gold text-acc" : "text-white/20 hover:text-white/40"
               }`}
             />
           </button>
@@ -325,7 +325,7 @@ function ReviewForm({
         onChange={(event) => setBody(event.target.value)}
         placeholder={t.reviewPlaceholder}
         maxLength={2000}
-        className="mt-3 w-full resize-none rounded-[8px] border border-white/[0.09] bg-ink px-3 py-2 text-[13px] leading-[1.7] text-paper placeholder-faint focus:border-gold/45 focus:outline-none"
+        className="mt-3 w-full resize-none rounded-[8px] border border-white/[0.09] bg-app px-3 py-2 text-[13px] leading-[1.7] text-fg placeholder-faint focus:border-acc/45 focus:outline-none"
       />
 
       {review.isError && (
@@ -337,7 +337,7 @@ function ReviewForm({
       <button
         type="submit"
         disabled={rating === 0 || review.isPending}
-        className="mt-3 rounded-[8px] bg-gold px-4 py-2 text-[13px] font-semibold text-ink disabled:opacity-40"
+        className="mt-3 rounded-[8px] bg-acc px-4 py-2 text-[13px] font-semibold text-ink disabled:opacity-40"
       >
         {t.reviewSubmit}
       </button>

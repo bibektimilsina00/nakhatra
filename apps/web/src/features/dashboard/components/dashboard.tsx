@@ -51,10 +51,10 @@ export function Dashboard() {
       <main className="mx-auto w-full max-w-[1180px] px-5 pb-24 pt-10 sm:px-8">
             <section id="kundalis" className="scroll-mt-24">
               <div className="flex flex-wrap items-baseline justify-between gap-3 border-b border-white/[0.09] pb-3">
-                <h2 className="text-[17px] font-bold text-paper">{t.dashSaved}</h2>
+                <h2 className="text-[17px] font-bold text-fg">{t.dashSaved}</h2>
                 <div className="flex items-center gap-4">
                   {!isLoading && (
-                    <span className="text-[11.5px] text-faint">
+                    <span className="text-[11.5px] text-dim">
                       {query
                         ? t.dashMatches.replace("{n}", String(shown.length))
                         : t.dashSavedCount.replace("{n}", String(kundalis.length))}
@@ -68,7 +68,7 @@ export function Dashboard() {
                   {[0, 1, 2, 3].map((i) => (
                     <div
                       key={i}
-                      className="h-[224px] animate-pulse rounded-[10px] border border-white/[0.07] bg-card"
+                      className="h-[224px] animate-pulse rounded-[10px] border border-white/[0.07] bg-panel"
                     />
                   ))}
                 </div>
@@ -79,12 +79,12 @@ export function Dashboard() {
                     <button
                       type="button"
                       onClick={() => setCreating(true)}
-                      className="group flex min-h-[224px] flex-col items-center justify-center gap-2.5 rounded-[10px] border border-dashed border-white/[0.14] transition-colors hover:border-gold/50 hover:bg-card"
+                      className="group flex min-h-[224px] flex-col items-center justify-center gap-2.5 rounded-[10px] border border-dashed border-white/[0.14] transition-colors hover:border-acc/50 hover:bg-panel"
                     >
-                      <span className="grid size-10 place-items-center rounded-full border border-white/12 text-muted transition-colors group-hover:border-gold/45 group-hover:text-gold">
+                      <span className="grid size-10 place-items-center rounded-full border border-white/12 text-mut transition-colors group-hover:border-acc/45 group-hover:text-acc">
                         <Plus className="size-4" />
                       </span>
-                      <span className="text-[13.5px] font-medium text-muted transition-colors group-hover:text-paper">
+                      <span className="text-[13.5px] font-medium text-mut transition-colors group-hover:text-fg">
                         {t.dashNewKundali}
                       </span>
                     </button>
@@ -104,13 +104,13 @@ export function Dashboard() {
               )}
 
               {!isLoading && kundalis.length === 0 && (
-                <p className="mt-5 max-w-md text-[13.5px] leading-[1.75] text-faint">
+                <p className="mt-5 max-w-md text-[13.5px] leading-[1.75] text-dim">
                   {t.dashEmptyBody}
                 </p>
               )}
 
               {!isLoading && query && shown.length === 0 && kundalis.length > 0 && (
-                <p className="mt-5 text-[13.5px] text-faint">
+                <p className="mt-5 text-[13.5px] text-dim">
                   {t.dashNoMatches.replace("{q}", query)}
                 </p>
               )}

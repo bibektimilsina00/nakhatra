@@ -39,9 +39,9 @@ export function GeneratingScreen({
     <div className="min-h-dvh bg-gradient-to-b from-[#090A10] via-[#0D101A] to-[#0F121E] flex flex-col items-center justify-center p-6 text-center">
       {/* Sacred Geometry SVG Chart with Gold Stroke Animation */}
       <div className="relative size-72 sm:size-80 flex items-center justify-center">
-        <div className="absolute inset-0 rounded-full bg-[#E5A93C]/10 blur-3xl animate-pulse" />
+        <div className="absolute inset-0 rounded-full bg-acc/10 blur-3xl animate-pulse" />
 
-        <svg className="size-full stroke-[#E5A93C]" viewBox="0 0 300 300" fill="none">
+        <svg className="size-full stroke-acc" viewBox="0 0 300 300" fill="none">
           {/* Outer Square */}
           <rect
             x="10"
@@ -96,10 +96,10 @@ export function GeneratingScreen({
 
       {/* Progress Ticker */}
       <div className="mt-10 max-w-md space-y-3">
-        <h2 className="font-serif text-2xl font-bold text-[#F8FAFC]">
+        <h2 className="font-serif text-2xl font-bold text-fg">
           Precision Astronomy Computation
         </h2>
-        <p className="text-sm font-semibold text-[#F3C766] transition-all duration-300 min-h-[24px]">
+        <p className="text-sm font-semibold text-acc2 transition-all duration-300 min-h-[24px]">
           {STEPS[currentStepIndex]}
         </p>
 
@@ -110,7 +110,7 @@ export function GeneratingScreen({
               key={idx}
               className={`h-1.5 rounded-full transition-all duration-500 ${
                 idx <= currentStepIndex
-                  ? "w-8 bg-[#E5A93C]"
+                  ? "w-8 bg-acc"
                   : "w-2 bg-white/20"
               }`}
             />

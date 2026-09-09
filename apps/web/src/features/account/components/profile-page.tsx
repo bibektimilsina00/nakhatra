@@ -43,13 +43,13 @@ export function ProfilePage() {
     <AccountShell title={t.acctProfile}>
       <AccountCard title={t.acctYourAccount}>
         <div className="flex flex-wrap items-center gap-4">
-          <span className="grid size-16 shrink-0 place-items-center rounded-full bg-gold text-[20px] font-bold text-ink">
+          <span className="grid size-16 shrink-0 place-items-center rounded-full bg-acc text-[20px] font-bold text-ink">
             {initials}
           </span>
           <div className="min-w-0">
-            <p className="truncate text-[17px] font-bold text-paper">{user?.full_name}</p>
-            <p className="mt-0.5 truncate text-[12.5px] text-muted">{user?.email}</p>
-            <p className="mt-1 flex flex-wrap items-center gap-2 text-[11.5px] text-faint">
+            <p className="truncate text-[17px] font-bold text-fg">{user?.full_name}</p>
+            <p className="mt-0.5 truncate text-[12.5px] text-mut">{user?.email}</p>
+            <p className="mt-1 flex flex-wrap items-center gap-2 text-[11.5px] text-dim">
               <span className="rounded-[6px] border border-white/[0.10] px-2 py-0.5 capitalize">
                 {t.acctRole}: {user?.role ?? "seeker"}
               </span>
@@ -81,7 +81,7 @@ export function ProfilePage() {
               className={accountField}
             />
           </label>
-          <p className="mt-1.5 text-[11.5px] text-faint">{t.acctNameNote}</p>
+          <p className="mt-1.5 text-[11.5px] text-dim">{t.acctNameNote}</p>
 
           <label className="mt-4 block">
             <span className={accountLabel}>{t.acctEmail}</span>
@@ -89,7 +89,7 @@ export function ProfilePage() {
                 "you cannot change this here" is information. */}
             <input disabled value={user?.email ?? ""} className={accountField} />
           </label>
-          <p className="mt-1.5 text-[11.5px] text-faint">{t.acctEmailNote}</p>
+          <p className="mt-1.5 text-[11.5px] text-dim">{t.acctEmailNote}</p>
 
           {update.isError && (
             <p role="alert" className="mt-3 text-[12.5px] text-rose-300">
@@ -154,11 +154,11 @@ function Stat({
   return (
     <Link
       href={href}
-      className="rounded-[10px] border border-white/[0.09] bg-ink p-3.5 transition-colors hover:border-gold/35"
+      className="rounded-[10px] border border-white/[0.09] bg-app p-3.5 transition-colors hover:border-acc/35"
     >
-      <span className="flex items-center gap-2 text-gold">{icon}</span>
-      <span className="mt-2 block text-[20px] font-bold tabular-nums text-paper">{value}</span>
-      <span className="mt-0.5 block truncate text-[11.5px] text-faint">{label}</span>
+      <span className="flex items-center gap-2 text-acc">{icon}</span>
+      <span className="mt-2 block text-[20px] font-bold tabular-nums text-fg">{value}</span>
+      <span className="mt-0.5 block truncate text-[11.5px] text-dim">{label}</span>
     </Link>
   );
 }

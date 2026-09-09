@@ -13,6 +13,7 @@ import { NorthIndianChart } from "@/features/kundali/components/north-indian-cha
 import { SouthIndianChart } from "@/features/kundali/components/south-indian-chart";
 import { Section, ViewMore, useReveal } from "@/features/kundali/components/section";
 import { VargaGrid } from "@/features/kundali/components/varga-grid";
+import { useTheme } from "@/providers/theme-provider";
 import type {
   BirthDetailsIn,
   Chart,
@@ -36,6 +37,9 @@ export function ChartView({
 }) {
   const [house, setHouse] = useState<number | null>(null);
   const [chartStyle, setChartStyle] = useState<"north" | "south">("north");
+  // In the patro theme the charts are drawn in the patro's inks.
+  const { theme } = useTheme();
+  const chartTheme = theme === "light" ? ("patro" as const) : ("dark" as const);
   // Captured once on mount. Reading the clock during render is impure and
   // makes the server and client renders disagree.
   const [now] = useState(() => Date.now());
@@ -57,11 +61,11 @@ export function ChartView({
         title="Lagna Chart"
         note="Houses are fixed; signs move. The number in each compartment is the rashi — 1 is Aries. Tap a house for detail."
         action={
-          <div className="flex rounded-[8px] border border-white/10 bg-[#090A10] p-0.5 text-[10px]">
+          <div className="flex rounded-[8px] border border-brd bg-inset p-0.5 text-[10px]">
             <button
               onClick={() => setChartStyle("north")}
               className={`rounded-[6px] px-2.5 py-1 font-bold transition ${
-                chartStyle === "north" ? "bg-[#E5A93C] text-[#090A10]" : "text-[#94A3B8]"
+                chartStyle === "north" ? "bg-acc text-onacc" : "text-mut"
               }`}
             >
               North
@@ -69,7 +73,7 @@ export function ChartView({
             <button
               onClick={() => setChartStyle("south")}
               className={`rounded-[6px] px-2.5 py-1 font-bold transition ${
-                chartStyle === "south" ? "bg-[#E5A93C] text-[#090A10]" : "text-[#94A3B8]"
+                chartStyle === "south" ? "bg-acc text-onacc" : "text-mut"
               }`}
             >
               South
@@ -81,12 +85,14 @@ export function ChartView({
           <div className="flex flex-col items-center gap-8 lg:flex-row lg:items-start">
             {chartStyle === "north" ? (
               <NorthIndianChart
+                theme={chartTheme}
                 chart={chart}
                 selectedHouse={house}
                 onSelectHouse={(h) => setHouse((prev) => (prev === h ? null : h))}
               />
             ) : (
               <SouthIndianChart
+                theme={chartTheme}
                 chart={chart}
                 selectedHouse={house}
                 onSelectHouse={(h) => setHouse((prev) => (prev === h ? null : h))}
@@ -94,11 +100,11 @@ export function ChartView({
             )}
             {d9 && (
               <div className="flex flex-col items-center">
-                <p className="mb-2 text-2xs uppercase tracking-[0.16em] text-muted">
+                <p className="mb-2 text-2xs uppercase tracking-[0.16em] text-mut">
                   D9 · Navamsa
                 </p>
                 <div className="w-full max-w-[300px]">
-                  <VargaMini varga={d9} chartStyle={chartStyle} />
+                  <VargaMini varga={d9} chartStyle={chartStyle} chartTheme={chartTheme} />
                 </div>
               </div>
             )}
@@ -165,9 +171,11 @@ export function ChartView({
 function VargaMini({
   varga,
   chartStyle = "north",
+  chartTheme = "dark",
 }: {
   varga: NonNullable<Chart["vargas"][number]>;
   chartStyle?: "north" | "south";
+  chartTheme?: "dark" | "patro";
 }) {
   const adapted = {
     lagna_sign_index: varga.lagna_sign_index,
@@ -187,9 +195,9 @@ function VargaMini({
   } as unknown as Chart;
 
   return chartStyle === "north" ? (
-    <NorthIndianChart chart={adapted} />
+    <NorthIndianChart chart={adapted} theme={chartTheme} />
   ) : (
-    <SouthIndianChart chart={adapted} />
+    <SouthIndianChart chart={adapted} theme={chartTheme} />
   );
 }
 
@@ -210,7 +218,7 @@ function Jump() {
           <a
             key={id}
             href={`#${id}`}
-            className="shrink-0 rounded-full border border-line px-4 py-1.5 text-xs text-muted transition hover:border-accent-strong/40 hover:text-accent-ink"
+            className="shrink-0 rounded-full border border-line px-4 py-1.5 text-xs text-mut transition hover:border-accent-strong/40 hover:text-accent-ink"
           >
             {label}
           </a>
@@ -224,7 +232,7 @@ function Missing() {
   return (
     <section className="rounded-lg border border-dashed border-line p-6">
       <h3 className="font-display text-lg text-fg">Not built yet</h3>
-      <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted">
+      <p className="mt-2 max-w-2xl text-sm leading-relaxed text-mut">
         Ashtakvarga, KP (its own ayanamsa, Placidus cusps and sub-lords), Bhav
         Chalit, Shadbala, Bhavbala and the Ghata Chakra are still to come. Each
         is a separate calculation system with its own tables, and a wrong table
@@ -250,7 +258,7 @@ function Header({
         <h2 className="font-display text-4xl text-fg sm:text-5xl">
           {birth.name}&apos;s Kundali
         </h2>
-        <p className="mt-2 text-sm text-muted">
+        <p className="mt-2 text-sm text-mut">
           {birth.date} · {birth.time} · {birth.place_label}
         </p>
         <p className="mt-3 text-sm text-accent-ink">
@@ -280,7 +288,7 @@ function Header({
         </a>
         <button
           onClick={onReset}
-          className="rounded-full border border-line px-5 py-2 text-sm text-muted transition hover:border-accent-strong/50 hover:text-fg"
+          className="rounded-full border border-line px-5 py-2 text-sm text-mut transition hover:border-accent-strong/50 hover:text-fg"
         >
           New chart
         </button>
@@ -295,7 +303,7 @@ function HousePanel({ chart, house }: { chart: Chart; house: number | null }) {
     return (
       <Card>
         <CardLabel>House detail</CardLabel>
-        <p className="mt-2 text-sm text-muted">
+        <p className="mt-2 text-sm text-mut">
           Select a house in the chart to see its sign, lord and occupants.
         </p>
       </Card>
@@ -306,7 +314,7 @@ function HousePanel({ chart, house }: { chart: Chart; house: number | null }) {
     <Card accent>
       <CardLabel>House {selected.number}</CardLabel>
       <p className="mt-1.5 font-display text-2xl text-fg">{selected.sign}</p>
-      <p className="mt-1 text-xs text-muted">
+      <p className="mt-1 text-xs text-mut">
         Lord {selected.lord} · rashi {selected.sign_index + 1}
       </p>
       <div className="mt-4 space-y-1.5">
@@ -316,7 +324,7 @@ function HousePanel({ chart, house }: { chart: Chart; house: number | null }) {
           occupants.map((p) => (
             <div key={p.name} className="flex items-baseline justify-between text-sm">
               <span className="text-fg">{p.name}</span>
-              <span className="tabular-nums text-muted">{fmtDeg(p.degree_in_sign)}</span>
+              <span className="tabular-nums text-mut">{fmtDeg(p.degree_in_sign)}</span>
             </div>
           ))
         )}
@@ -343,7 +351,7 @@ function DashaNow({ chain, birthLord }: { chain: DashaPeriod[]; birthLord: strin
     return (
       <Card>
         <CardLabel>Current period</CardLabel>
-        <p className="mt-2 text-sm text-muted">Outside the generated 120-year cycle.</p>
+        <p className="mt-2 text-sm text-mut">Outside the generated 120-year cycle.</p>
       </Card>
     );
   }
@@ -353,9 +361,9 @@ function DashaNow({ chain, birthLord }: { chain: DashaPeriod[]; birthLord: strin
       <CardLabel>Current period</CardLabel>
       <p className="mt-1.5 font-display text-2xl text-fg">
         {maha.lord}
-        {antar && <span className="text-muted"> / {antar.lord}</span>}
+        {antar && <span className="text-mut"> / {antar.lord}</span>}
       </p>
-      <p className="mt-1 text-xs text-muted">
+      <p className="mt-1 text-xs text-mut">
         Mahadasha {yr(maha.start)}–{yr(maha.end)}
         {antar && ` · antardasha to ${antar.end}`}
       </p>
@@ -401,14 +409,14 @@ function PlanetTable({
               >
                 <td className="px-4 py-3 font-display text-base text-fg">{p.name}</td>
                 <td className="px-4 py-3 text-fg">{p.sign}</td>
-                <td className="px-4 py-3 text-muted">{SIGN_LORDS[p.sign_index]}</td>
-                <td className="px-4 py-3 tabular-nums text-muted">{fmtDeg(p.degree_in_sign)}</td>
-                <td className="px-4 py-3 tabular-nums text-muted">{p.house}</td>
-                <td className="px-4 py-3 text-muted">
+                <td className="px-4 py-3 text-mut">{SIGN_LORDS[p.sign_index]}</td>
+                <td className="px-4 py-3 tabular-nums text-mut">{fmtDeg(p.degree_in_sign)}</td>
+                <td className="px-4 py-3 tabular-nums text-mut">{p.house}</td>
+                <td className="px-4 py-3 text-mut">
                   {p.nakshatra.name}
                   <span className="text-dim"> ·{p.nakshatra.pada}</span>
                 </td>
-                <td className="px-4 py-3 text-muted">{p.avastha}</td>
+                <td className="px-4 py-3 text-mut">{p.avastha}</td>
                 <td className="px-4 py-3">
                   {/* null for Rahu and Ketu by design — classical sources
                       disagree, so the engine declines to invent one. */}
@@ -498,7 +506,7 @@ function MahaRow({ period, now }: { period: DashaPeriod; now: number }) {
             </span>
           )}
         </span>
-        <span className="tabular-nums text-xs text-muted">
+        <span className="tabular-nums text-xs text-mut">
           {period.start} → {period.end}
         </span>
       </summary>
@@ -507,7 +515,7 @@ function MahaRow({ period, now }: { period: DashaPeriod; now: number }) {
           <li
             key={`${antar.lord}-${antar.start}`}
             className={`flex justify-between text-xs ${
-              isActive(antar, now) ? "text-accent-ink" : "text-muted"
+              isActive(antar, now) ? "text-accent-ink" : "text-mut"
             }`}
           >
             <span className="pl-3">{antar.lord}</span>
@@ -534,7 +542,7 @@ function Card({ children, accent }: { children: React.ReactNode; accent?: boolea
 }
 
 function CardLabel({ children }: { children: React.ReactNode }) {
-  return <p className="text-2xs uppercase tracking-[0.22em] text-muted">{children}</p>;
+  return <p className="text-2xs uppercase tracking-[0.22em] text-mut">{children}</p>;
 }
 
 function Tag({ children, title }: { children: React.ReactNode; title: string }) {
@@ -552,7 +560,7 @@ function dignityClass(dignity: string): string {
   if (dignity === "exalted" || dignity === "own" || dignity === "moolatrikona")
     return "text-emerald-300";
   if (dignity === "debilitated" || dignity === "enemy") return "text-rose-300";
-  return "text-muted";
+  return "text-mut";
 }
 
 function isActive(p: DashaPeriod, now: number): boolean {

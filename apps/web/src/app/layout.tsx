@@ -6,6 +6,7 @@ import { SessionSync } from "@/features/auth/components/session-sync";
 import { SITE_NAME, SITE_URL } from "@/lib/seo/site";
 import { QueryProvider } from "@/providers/query-provider";
 import { LanguageProvider } from "@/lib/i18n/language-context";
+import { THEME_INIT_SCRIPT, ThemeProvider } from "@/providers/theme-provider";
 
 import "./globals.css";
 
@@ -122,14 +123,24 @@ export default function RootLayout({
   const umamiHost = process.env.NEXT_PUBLIC_UMAMI_HOST || "https://cloud.umami.is/script.js";
 
   return (
-    <html lang="en" className={`${cinzel.variable} ${sora.variable} ${jetbrains.variable} dark`}>
-      <body className="font-body antialiased bg-[#090A10] text-[#94A3B8] min-h-dvh">
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={`${cinzel.variable} ${sora.variable} ${jetbrains.variable} dark`}
+    >
+      <head>
+        {/* Before paint, so the patro theme never flashes dark first. */}
+        <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
+      </head>
+      <body className="font-body antialiased bg-app text-mut min-h-dvh">
+        <ThemeProvider>
         <LanguageProvider>
           <QueryProvider>
             <SessionSync />
             {children}
           </QueryProvider>
         </LanguageProvider>
+        </ThemeProvider>
         {umamiWebsiteId && (
           <Script
             src={umamiHost}

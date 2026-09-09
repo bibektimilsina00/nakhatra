@@ -46,7 +46,7 @@ export function LanguageMenu({
         aria-expanded={open}
         aria-haspopup="true"
         aria-label={LANGUAGES.find((l) => l.code === language)?.label ?? "Language"}
-        className="flex items-center gap-1.5 rounded-[6px] px-2.5 py-2 text-muted transition-colors hover:text-paper"
+        className="flex items-center gap-1.5 rounded-[6px] px-2.5 py-2 text-mut transition-colors hover:text-fg"
       >
         <svg
           className="size-[15px]"
@@ -76,7 +76,7 @@ export function LanguageMenu({
         <div
           className={`absolute right-0 z-50 ${dropUp ? "bottom-full pb-3" : "top-full pt-3"}`}
         >
-          <div className="w-[168px] rounded-[8px] border border-white/12 bg-[#0B0E18]/95 p-1.5 shadow-2xl shadow-black/50 backdrop-blur-xl">
+          <div className="w-[168px] rounded-[8px] border border-white/12 bg-inset/95 p-1.5 shadow-2xl shadow-black/50 backdrop-blur-xl">
             {LANGUAGES.map((l) => (
               <button
                 key={l.code}
@@ -88,8 +88,8 @@ export function LanguageMenu({
                 }}
                 className={`flex w-full items-center justify-between rounded-[6px] px-2.5 py-2 text-left text-[13.5px] transition-colors ${
                   l.code === language
-                    ? "bg-white/[0.05] text-gold"
-                    : "text-muted hover:bg-white/[0.04] hover:text-paper"
+                    ? "bg-white/[0.05] text-acc"
+                    : "text-mut hover:bg-fg/[0.04] hover:text-fg"
                 }`}
               >
                 <span>{l.nativeName}</span>

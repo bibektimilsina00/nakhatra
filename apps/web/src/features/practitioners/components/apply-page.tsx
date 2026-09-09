@@ -86,22 +86,22 @@ export function ApplyPage() {
     });
 
   const application = existing.data;
-  const labelText = "mb-1.5 block text-[12px] text-muted";
+  const labelText = "mb-1.5 block text-[12px] text-mut";
   const field =
-    "w-full rounded-[8px] border border-white/[0.09] bg-ink px-3 py-2.5 text-[13.5px] text-paper placeholder-faint focus:border-gold/45 focus:outline-none";
+    "w-full rounded-[8px] border border-white/[0.09] bg-app px-3 py-2.5 text-[13.5px] text-fg placeholder-faint focus:border-acc/45 focus:outline-none";
   const chip = (active: boolean) =>
     `rounded-[8px] border px-3 py-1.5 text-[12px] capitalize transition-colors ${
       active
-        ? "border-gold/50 bg-gold/[0.09] text-gold2"
-        : "border-white/[0.10] text-muted hover:border-white/25 hover:text-paper"
+        ? "border-acc/50 bg-acc/[0.09] text-acc2"
+        : "border-white/[0.10] text-mut hover:border-brd2 hover:text-fg"
     }`;
 
   if (application) {
     return (
       <AppShell>
         <main className="mx-auto w-full max-w-[640px] px-5 pb-24 pt-12 sm:px-8">
-          <span className={`text-[11px] text-gold ${eyebrow}`}>{t.practRegister}</span>
-          <h1 className="mt-3 text-[26px] font-bold leading-tight text-paper sm:text-[30px]">
+          <span className={`text-[11px] text-acc ${eyebrow}`}>{t.practRegister}</span>
+          <h1 className="mt-3 text-[26px] font-bold leading-tight text-fg sm:text-[30px]">
             {t.practApplyTitle}
           </h1>
           <SubmittedProfile application={application} />
@@ -117,11 +117,11 @@ export function ApplyPage() {
           of it — the width was there, the page just refused to use it. */}
       <main className="mx-auto w-full max-w-[1120px] px-5 pb-28 pt-10 sm:px-8">
         <header className="max-w-2xl">
-          <span className={`text-[11px] text-gold ${eyebrow}`}>{t.practRegister}</span>
-          <h1 className="mt-3 text-[26px] font-bold leading-tight text-paper sm:text-[30px]">
+          <span className={`text-[11px] text-acc ${eyebrow}`}>{t.practRegister}</span>
+          <h1 className="mt-3 text-[26px] font-bold leading-tight text-fg sm:text-[30px]">
             {t.practApplyTitle}
           </h1>
-          <p className="mt-3 text-[14px] leading-[1.75] text-muted">{t.practApplyLead}</p>
+          <p className="mt-3 text-[14px] leading-[1.75] text-mut">{t.practApplyLead}</p>
         </header>
 
         <form
@@ -140,26 +140,26 @@ export function ApplyPage() {
               stacked on top of it — it is what a seeker looks at first, and
               what an applicant is most likely to skip. */}
           <aside className="space-y-4 lg:sticky lg:top-[76px]">
-            <section className="rounded-[14px] border border-white/[0.09] bg-card p-5 text-center">
+            <section className="rounded-[14px] border border-white/[0.09] bg-panel p-5 text-center">
               <button
                 type="button"
                 onClick={() => filePicker.current?.click()}
-                className="group relative mx-auto grid size-28 place-items-center overflow-hidden rounded-full border border-dashed border-white/[0.16] bg-ink transition-colors hover:border-gold/45"
+                className="group relative mx-auto grid size-28 place-items-center overflow-hidden rounded-full border border-dashed border-white/[0.16] bg-app transition-colors hover:border-acc/45"
               >
                 {form.photo_url ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={assetUrl(form.photo_url)} alt="" className="size-full object-cover" />
                 ) : (
-                  <Camera className="size-7 text-faint transition-colors group-hover:text-gold" />
+                  <Camera className="size-7 text-dim transition-colors group-hover:text-acc" />
                 )}
                 {upload.isPending && (
-                  <span className="absolute inset-0 grid place-items-center bg-black/50 text-[11px] text-paper">
+                  <span className="absolute inset-0 grid place-items-center bg-black/50 text-[11px] text-fg">
                     …
                   </span>
                 )}
               </button>
-              <p className="mt-3 text-[13px] font-medium text-paper">{t.practPhoto}</p>
-              <p className="mt-1 text-[11.5px] leading-[1.6] text-faint">{t.practPhotoNote}</p>
+              <p className="mt-3 text-[13px] font-medium text-fg">{t.practPhoto}</p>
+              <p className="mt-1 text-[11.5px] leading-[1.6] text-dim">{t.practPhotoNote}</p>
               {upload.isError && (
                 <p role="alert" className="mt-1.5 text-[11.5px] text-rose-300">
                   {upload.error.message}
@@ -180,12 +180,12 @@ export function ApplyPage() {
               />
             </section>
 
-            <section className="rounded-[14px] border border-white/[0.09] bg-card p-5">
-              <h2 className="flex items-center gap-2 text-[12.5px] font-semibold text-paper">
-                <ShieldCheck className="size-4 text-gold" />
+            <section className="rounded-[14px] border border-white/[0.09] bg-panel p-5">
+              <h2 className="flex items-center gap-2 text-[12.5px] font-semibold text-fg">
+                <ShieldCheck className="size-4 text-acc" />
                 {t.applyNext}
               </h2>
-              <p className="mt-2 text-[11.5px] leading-[1.75] text-faint">{t.practPendingNote}</p>
+              <p className="mt-2 text-[11.5px] leading-[1.75] text-dim">{t.practPendingNote}</p>
             </section>
           </aside>
 
@@ -223,7 +223,7 @@ export function ApplyPage() {
                       }
                       className={`${field} pr-16`}
                     />
-                    <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-[12px] text-faint">
+                    <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-[12px] text-dim">
                       {t.practYearsSuffix}
                     </span>
                   </span>
@@ -239,7 +239,7 @@ export function ApplyPage() {
                   maxLength={160}
                   className={field}
                 />
-                <span className="mt-1 block text-right text-[11px] tabular-nums text-faint">
+                <span className="mt-1 block text-right text-[11px] tabular-nums text-dim">
                   {(form.headline ?? "").length}/160
                 </span>
               </label>
@@ -261,7 +261,7 @@ export function ApplyPage() {
                     </button>
                   ))}
                 </div>
-                <p className="mt-1.5 text-[11.5px] text-faint">{t.practBothNote}</p>
+                <p className="mt-1.5 text-[11.5px] text-dim">{t.practBothNote}</p>
               </fieldset>
 
               <fieldset className="mt-5">
@@ -317,7 +317,7 @@ export function ApplyPage() {
                     }
                   />
                   {form.country && (
-                    <p className="mt-1.5 text-[11.5px] text-faint">
+                    <p className="mt-1.5 text-[11.5px] text-dim">
                       {t.practCountry}: {form.country}
                     </p>
                   )}
@@ -341,7 +341,7 @@ export function ApplyPage() {
                     className={`mt-1.5 text-[11.5px] ${
                       phoneTouched && digits.length > 0 && digits.length < MIN_DIGITS
                         ? "text-rose-300"
-                        : "text-faint"
+                        : "text-dim"
                     }`}
                   >
                     {phoneTouched && digits.length > 0 && digits.length < MIN_DIGITS
@@ -362,7 +362,7 @@ export function ApplyPage() {
               <button
                 type="submit"
                 disabled={apply.isPending || !form.full_name.trim()}
-                className="rounded-[9px] bg-gold px-6 py-2.5 text-[13.5px] font-bold text-ink transition-colors hover:bg-gold2 disabled:pointer-events-none disabled:opacity-40"
+                className="rounded-[9px] bg-acc px-6 py-2.5 text-[13.5px] font-bold text-ink transition-colors hover:bg-acc2 disabled:pointer-events-none disabled:opacity-40"
               >
                 {t.practApplySubmit}
               </button>
@@ -377,8 +377,8 @@ export function ApplyPage() {
 /** One group of related questions. Sections beat one long ungrouped scroll. */
 function Card({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <section className="rounded-[14px] border border-white/[0.09] bg-card p-5 sm:p-6">
-      <h2 className="text-[11px] uppercase tracking-[0.14em] text-faint">{title}</h2>
+    <section className="rounded-[14px] border border-white/[0.09] bg-panel p-5 sm:p-6">
+      <h2 className="text-[11px] uppercase tracking-[0.14em] text-dim">{title}</h2>
       <div className="mt-4">{children}</div>
     </section>
   );
@@ -414,8 +414,8 @@ function SubmittedProfile({
   const { t } = useTranslation();
 
   const shown = {
-    submitted: { icon: Clock, label: t.practApplyPending, tone: "text-gold", ring: "border-gold/30" },
-    in_review: { icon: Clock, label: t.practApplyPending, tone: "text-gold", ring: "border-gold/30" },
+    submitted: { icon: Clock, label: t.practApplyPending, tone: "text-acc", ring: "border-acc/30" },
+    in_review: { icon: Clock, label: t.practApplyPending, tone: "text-acc", ring: "border-acc/30" },
     approved: {
       icon: CheckCircle2,
       label: t.practApplyApproved,
@@ -431,8 +431,8 @@ function SubmittedProfile({
   }[application.state] ?? {
     icon: Clock,
     label: t.practApplyPending,
-    tone: "text-gold",
-    ring: "border-gold/30",
+    tone: "text-acc",
+    ring: "border-acc/30",
   };
   const Icon = shown.icon;
   const pending = application.state === "submitted" || application.state === "in_review";
@@ -445,15 +445,15 @@ function SubmittedProfile({
 
   return (
     <>
-      <div className={`mt-8 flex items-start gap-3 rounded-[12px] border bg-card px-4 py-3.5 ${shown.ring}`}>
+      <div className={`mt-8 flex items-start gap-3 rounded-[12px] border bg-panel px-4 py-3.5 ${shown.ring}`}>
         <Icon className={`mt-0.5 size-5 shrink-0 ${shown.tone}`} />
         <div className="min-w-0">
           <p className={`text-[14px] font-medium ${shown.tone}`}>{shown.label}</p>
           {application.decision_note ? (
-            <p className="mt-1 text-[13px] leading-[1.7] text-muted">{application.decision_note}</p>
+            <p className="mt-1 text-[13px] leading-[1.7] text-mut">{application.decision_note}</p>
           ) : (
             pending && (
-              <p className="mt-1 text-[12.5px] leading-[1.7] text-faint">{t.practPendingNote}</p>
+              <p className="mt-1 text-[12.5px] leading-[1.7] text-dim">{t.practPendingNote}</p>
             )
           )}
         </div>
@@ -462,34 +462,34 @@ function SubmittedProfile({
       {application.state === "approved" && (
         <Link
           href="/practitioners/me"
-          className="mt-4 inline-flex items-center gap-2 rounded-[8px] bg-gold px-4 py-2.5 text-[13.5px] font-bold text-ink transition-colors hover:bg-gold2"
+          className="mt-4 inline-flex items-center gap-2 rounded-[8px] bg-acc px-4 py-2.5 text-[13.5px] font-bold text-ink transition-colors hover:bg-acc2"
         >
           {t.practDesk}
         </Link>
       )}
 
       <section className="mt-8">
-        <h2 className="text-[11px] uppercase tracking-[0.14em] text-faint">{t.practSubmitted}</h2>
+        <h2 className="text-[11px] uppercase tracking-[0.14em] text-dim">{t.practSubmitted}</h2>
 
-        <div className="mt-4 rounded-[12px] border border-white/[0.09] bg-card p-5">
+        <div className="mt-4 rounded-[12px] border border-white/[0.09] bg-panel p-5">
           <div className="flex items-start gap-4">
-            <span className="grid size-16 shrink-0 place-items-center overflow-hidden rounded-full border border-white/[0.09] bg-ink">
+            <span className="grid size-16 shrink-0 place-items-center overflow-hidden rounded-full border border-white/[0.09] bg-app">
               {application.photo_url ? (
                 // Served by our own endpoint; next/image adds a loader for nothing.
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={assetUrl(application.photo_url)} alt="" className="size-full object-cover" />
               ) : (
-                <span className="text-[18px] font-bold text-gold">
+                <span className="text-[18px] font-bold text-acc">
                   {application.full_name.charAt(0).toUpperCase()}
                 </span>
               )}
             </span>
             <div className="min-w-0 flex-1">
-              <p className="text-[16px] font-semibold text-paper">{application.full_name}</p>
+              <p className="text-[16px] font-semibold text-fg">{application.full_name}</p>
               {application.headline && (
-                <p className="mt-0.5 text-[12.5px] text-muted">{application.headline}</p>
+                <p className="mt-0.5 text-[12.5px] text-mut">{application.headline}</p>
               )}
-              <p className="mt-1 text-[11.5px] text-faint">
+              <p className="mt-1 text-[11.5px] text-dim">
                 {[application.city || application.country,
                   application.years_experience > 0 &&
                     `${application.years_experience} ${t.dashYears}`]
@@ -504,7 +504,7 @@ function SubmittedProfile({
               {facets.map((tag) => (
                 <span
                   key={tag}
-                  className="rounded-[6px] border border-white/[0.10] px-2 py-0.5 text-[10.5px] capitalize text-muted"
+                  className="rounded-[6px] border border-white/[0.10] px-2 py-0.5 text-[10.5px] capitalize text-mut"
                 >
                   {tag}
                 </span>

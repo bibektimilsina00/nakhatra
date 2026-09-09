@@ -40,17 +40,17 @@ export function ReadingStatus({
   if (isError || source === "rule_engine") {
     return (
       <Bar>
-        <TriangleAlert className="size-4 shrink-0 text-gold" />
+        <TriangleAlert className="size-4 shrink-0 text-acc" />
         <span className="min-w-0 flex-1">
-          <span className="block text-[13px] font-medium text-paper">{t.readingCalculated}</span>
-          <span className="mt-0.5 block text-[11.5px] leading-[1.6] text-faint">
+          <span className="block text-[13px] font-medium text-fg">{t.readingCalculated}</span>
+          <span className="mt-0.5 block text-[11.5px] leading-[1.6] text-dim">
             {t.readingCalculatedNote}
           </span>
         </span>
         <button
           type="button"
           onClick={onRetry}
-          className="inline-flex shrink-0 items-center gap-1.5 rounded-[8px] border border-white/12 px-3 py-1.5 text-[12px] text-muted transition-colors hover:border-white/25 hover:text-paper"
+          className="inline-flex shrink-0 items-center gap-1.5 rounded-[8px] border border-white/12 px-3 py-1.5 text-[12px] text-mut transition-colors hover:border-brd2 hover:text-fg"
         >
           <RotateCw className="size-3.5" />
           {t.milanRetry}
@@ -64,7 +64,7 @@ export function ReadingStatus({
 
 function Bar({ children }: { children: React.ReactNode }) {
   return (
-    <div className="mb-6 flex items-center gap-3 rounded-[8px] border border-gold/30 bg-[#1A150B] px-4 py-3">
+    <div className="mb-6 flex items-center gap-3 rounded-[8px] border border-acc/30 bg-[#1A150B] px-4 py-3">
       {children}
     </div>
   );
@@ -76,12 +76,12 @@ export function ReadingSkeleton({ count = 3 }: { count?: number }) {
   return (
     <div className="space-y-6" aria-hidden>
       {Array.from({ length: count }, (_, card) => (
-        <div key={card} className="rounded-[8px] border border-white/10 bg-[#161B2B] p-5">
+        <div key={card} className="rounded-[8px] border border-brd bg-panel p-5">
           <div className="flex items-center gap-3">
-            <div className="size-9 shrink-0 animate-pulse rounded-[8px] bg-white/[0.06]" />
+            <div className="size-9 shrink-0 animate-pulse rounded-[8px] bg-fg/[0.06]" />
             <div className="min-w-0 flex-1 space-y-2">
-              <div className="h-3.5 w-40 animate-pulse rounded bg-white/[0.06]" />
-              <div className="h-2.5 w-56 animate-pulse rounded bg-white/[0.04]" />
+              <div className="h-3.5 w-40 animate-pulse rounded bg-fg/[0.06]" />
+              <div className="h-2.5 w-56 animate-pulse rounded bg-fg/[0.04]" />
             </div>
           </div>
           <div className="mt-5 space-y-2.5">
@@ -95,7 +95,7 @@ export function ReadingSkeleton({ count = 3 }: { count?: number }) {
           </div>
           <div className="mt-5 flex gap-2">
             {[120, 148, 96].map((w) => (
-              <div key={w} className="h-6 animate-pulse rounded-[6px] bg-white/[0.04]" style={{ width: w }} />
+              <div key={w} className="h-6 animate-pulse rounded-[6px] bg-fg/[0.04]" style={{ width: w }} />
             ))}
           </div>
         </div>

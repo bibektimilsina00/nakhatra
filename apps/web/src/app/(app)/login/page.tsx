@@ -11,11 +11,11 @@ import { useLogin, useSession, useSignup } from "@/features/auth/hooks/use-auth"
 import { loginSchema, signupSchema } from "@/features/auth/schema/auth-forms";
 
 const FIELD =
-  "w-full rounded-[8px] border border-white/10 bg-[#181B27] px-3.5 py-2.5 text-sm " +
-  "text-[#F8FAFC] placeholder-[#5A6172] transition-colors " +
-  "focus:border-[#E5A93C]/70 focus:outline-none focus-visible:border-[#E5A93C]";
+  "w-full rounded-[8px] border border-brd bg-[#181B27] px-3.5 py-2.5 text-sm " +
+  "text-fg placeholder-[#5A6172] transition-colors " +
+  "focus:border-acc/70 focus:outline-none focus-visible:border-acc";
 
-const LABEL = "block text-[13px] font-semibold text-[#E2E8F0] mb-1.5";
+const LABEL = "block text-[13px] font-semibold text-mid mb-1.5";
 
 /**
  * Where a signed-in visitor lands. One constant because three paths reach it —
@@ -178,13 +178,13 @@ function LoginFormContent() {
       <div className="overflow-hidden rounded-[14px] border border-white/[0.08] bg-[#111420]">
         <div className="px-7 pb-8 pt-8 sm:px-8">
           {/* Same treatment as the app bar: gold linework, no tile. */}
-          <NakhatraMark className="mx-auto mb-5 block size-12 text-[#E5A93C]" />
+          <NakhatraMark className="mx-auto mb-5 block size-12 text-acc" />
 
           <div className="mb-7 text-center">
-            <h1 className="font-serif text-[22px] font-bold tracking-tight text-[#F8FAFC]">
+            <h1 className="font-serif text-[22px] font-bold tracking-tight text-fg">
               {isLogin ? "Sign in to Nakhatra" : "Create your Nakhatra account"}
             </h1>
-            <p className="mt-1.5 text-[13px] text-[#94A3B8]">
+            <p className="mt-1.5 text-[13px] text-mut">
               {isLogin
                 ? "Welcome back. Please sign in to continue."
                 : "Welcome. Fill in your details to get started."}
@@ -194,9 +194,9 @@ function LoginFormContent() {
           <GoogleButton onSignedIn={() => router.push(AFTER_SIGN_IN)} />
 
           <div className="my-6 flex items-center gap-4">
-            <span className="h-px flex-1 bg-white/10" />
-            <span className="text-[13px] text-[#94A3B8]">or</span>
-            <span className="h-px flex-1 bg-white/10" />
+            <span className="h-px flex-1 bg-fg/10" />
+            <span className="text-[13px] text-mut">or</span>
+            <span className="h-px flex-1 bg-fg/10" />
           </div>
 
           {error && (
@@ -253,7 +253,7 @@ function LoginFormContent() {
                 {isLogin && (
                   <Link
                     href="#"
-                    className="text-[12px] text-[#E5A93C] hover:underline"
+                    className="text-[12px] text-acc hover:underline"
                   >
                     Forgot password?
                   </Link>
@@ -275,7 +275,7 @@ function LoginFormContent() {
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   aria-label={showPassword ? "Hide password" : "Show password"}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#5A6172] transition-colors hover:text-[#CBD5E1] focus-visible:text-[#E5A93C] focus-visible:outline-none"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#5A6172] transition-colors hover:text-mid focus-visible:text-acc focus-visible:outline-none"
                 >
                   {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
                 </button>
@@ -285,7 +285,7 @@ function LoginFormContent() {
             <button
               type="submit"
               disabled={loading}
-              className="mt-2 flex w-full items-center justify-center gap-2 rounded-[8px] bg-[#E5A93C] py-2.5 text-sm font-semibold text-[#090A10] transition-colors hover:bg-[#F3C766] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F3C766] focus-visible:ring-offset-2 focus-visible:ring-offset-[#111420] disabled:cursor-not-allowed disabled:opacity-60"
+              className="mt-2 flex w-full items-center justify-center gap-2 rounded-[8px] bg-acc py-2.5 text-sm font-semibold text-onacc transition-colors hover:bg-acc2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F3C766] focus-visible:ring-offset-2 focus-visible:ring-offset-[#111420] disabled:cursor-not-allowed disabled:opacity-60"
             >
               {loading ? (
                 <span className="inline-block size-4 animate-spin rounded-full border-2 border-[#090A10] border-t-transparent" />
@@ -299,12 +299,12 @@ function LoginFormContent() {
           </form>
         </div>
 
-        <div className="border-t border-white/[0.08] bg-[#0C0E15] px-7 py-4 text-center text-[13px] text-[#94A3B8]">
+        <div className="border-t border-white/[0.08] bg-[#0C0E15] px-7 py-4 text-center text-[13px] text-mut">
           {isLogin ? "Don't have an account? " : "Already have an account? "}
           <button
             type="button"
             onClick={switchMode}
-            className="font-semibold text-[#E5A93C] hover:underline focus-visible:outline-none focus-visible:underline"
+            className="font-semibold text-acc hover:underline focus-visible:outline-none focus-visible:underline"
           >
             {isLogin ? "Sign up" : "Sign in"}
           </button>
@@ -316,20 +316,20 @@ function LoginFormContent() {
 
 export default function LoginPage() {
   return (
-    <div className="relative flex min-h-dvh flex-col justify-between overflow-hidden bg-[#0A0B11] font-body text-[#F8FAFC]">
+    <div className="relative flex min-h-dvh flex-col justify-between overflow-hidden bg-[#0A0B11] font-body text-fg">
       <Backdrop />
 
       <header className="relative z-10 mx-auto flex w-full max-w-7xl items-center justify-between px-6 py-5">
         <Link href="/" className="group flex items-center gap-2.5">
-          <NakhatraMark className="size-8 text-[#E5A93C] transition-colors group-hover:text-[#F3C766]" />
-          <span className="font-logo text-sm font-bold tracking-[0.16em] text-[#F8FAFC]">
+          <NakhatraMark className="size-8 text-acc transition-colors group-hover:text-acc2" />
+          <span className="font-logo text-sm font-bold tracking-[0.16em] text-fg">
             NAKHATRA
           </span>
         </Link>
 
         <Link
           href="/kundali"
-          className="flex items-center gap-1 text-[13px] font-semibold text-[#E5A93C] hover:underline"
+          className="flex items-center gap-1 text-[13px] font-semibold text-acc hover:underline"
         >
           Free kundali <ArrowRight className="size-3.5" />
         </Link>
@@ -348,11 +348,11 @@ export default function LoginPage() {
       <footer className="relative z-10 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 px-6 py-7 text-[13px] text-[#64748B]">
         <span>© 2026 Nakhatra</span>
         <span aria-hidden="true" className="text-[#2A3040]">·</span>
-        <Link href="#" className="transition-colors hover:text-[#CBD5E1]">Support</Link>
+        <Link href="#" className="transition-colors hover:text-mid">Support</Link>
         <span aria-hidden="true" className="text-[#2A3040]">·</span>
-        <Link href="/privacy" className="transition-colors hover:text-[#CBD5E1]">Privacy</Link>
+        <Link href="/privacy" className="transition-colors hover:text-mid">Privacy</Link>
         <span aria-hidden="true" className="text-[#2A3040]">·</span>
-        <Link href="/terms" className="transition-colors hover:text-[#CBD5E1]">Terms</Link>
+        <Link href="/terms" className="transition-colors hover:text-mid">Terms</Link>
       </footer>
     </div>
   );

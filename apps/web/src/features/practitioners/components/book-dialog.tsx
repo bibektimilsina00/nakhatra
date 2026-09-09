@@ -83,15 +83,15 @@ export function BookDialog({
         role="dialog"
         aria-modal="true"
         aria-label={t.bookTitle}
-        className="w-full max-w-[420px] rounded-[14px] border border-white/[0.10] bg-card p-5 shadow-2xl"
+        className="w-full max-w-[420px] rounded-[14px] border border-white/[0.10] bg-panel p-5 shadow-2xl"
       >
         <div className="flex items-start justify-between gap-3">
-          <h2 className="text-[16px] font-bold text-paper">{t.bookTitle}</h2>
+          <h2 className="text-[16px] font-bold text-fg">{t.bookTitle}</h2>
           <button
             type="button"
             onClick={onClose}
             aria-label={t.dashClose}
-            className="text-faint transition-colors hover:text-paper"
+            className="text-dim transition-colors hover:text-fg"
           >
             <X className="size-4.5" />
           </button>
@@ -99,7 +99,7 @@ export function BookDialog({
 
         <form onSubmit={submit} className="mt-4 space-y-4">
           <fieldset>
-            <legend className="text-[11px] uppercase tracking-[0.12em] text-faint">
+            <legend className="text-[11px] uppercase tracking-[0.12em] text-dim">
               {t.bookMedium}
             </legend>
             <div className="mt-2 flex flex-wrap gap-2">
@@ -111,8 +111,8 @@ export function BookDialog({
                   aria-pressed={medium === row.medium}
                   className={`rounded-[8px] border px-3 py-1.5 text-[12.5px] capitalize transition-colors ${
                     medium === row.medium
-                      ? "border-gold/50 bg-gold/[0.09] text-gold2"
-                      : "border-white/[0.10] text-muted hover:border-white/25"
+                      ? "border-acc/50 bg-acc/[0.09] text-acc2"
+                      : "border-white/[0.10] text-mut hover:border-brd2"
                   }`}
                 >
                   {row.medium}
@@ -120,16 +120,16 @@ export function BookDialog({
               ))}
             </div>
             {rate ? (
-              <p className="mt-2 text-[12px] tabular-nums text-muted">
+              <p className="mt-2 text-[12px] tabular-nums text-mut">
                 {formatMinor(rate.per_minute_minor, rate.currency)}/{t.consultPerMinute}
               </p>
             ) : (
-              <p className="mt-2 text-[12px] text-faint">{t.bookUnpriced}</p>
+              <p className="mt-2 text-[12px] text-dim">{t.bookUnpriced}</p>
             )}
           </fieldset>
 
           <fieldset>
-            <legend className="text-[11px] uppercase tracking-[0.12em] text-faint">
+            <legend className="text-[11px] uppercase tracking-[0.12em] text-dim">
               {t.bookWhen}
             </legend>
             <div className="mt-2 flex gap-2">
@@ -144,8 +144,8 @@ export function BookDialog({
                   aria-pressed={later === option.value}
                   className={`flex-1 rounded-[8px] border px-3 py-1.5 text-[12.5px] transition-colors ${
                     later === option.value
-                      ? "border-gold/50 bg-gold/[0.09] text-gold2"
-                      : "border-white/[0.10] text-muted hover:border-white/25"
+                      ? "border-acc/50 bg-acc/[0.09] text-acc2"
+                      : "border-white/[0.10] text-mut hover:border-brd2"
                   }`}
                 >
                   {option.label}
@@ -156,23 +156,23 @@ export function BookDialog({
             {later && (
               <div className="mt-2.5 grid grid-cols-2 gap-2">
                 <label className="block">
-                  <span className="text-[11px] text-faint">{t.bookDate}</span>
+                  <span className="text-[11px] text-dim">{t.bookDate}</span>
                   <input
                     type="date"
                     required
                     value={date}
                     onChange={(event) => setDate(event.target.value)}
-                    className="mt-1 w-full rounded-[8px] border border-white/[0.09] bg-ink px-3 py-2 text-[13px] text-paper focus:border-gold/45 focus:outline-none"
+                    className="mt-1 w-full rounded-[8px] border border-white/[0.09] bg-app px-3 py-2 text-[13px] text-fg focus:border-acc/45 focus:outline-none"
                   />
                 </label>
                 <label className="block">
-                  <span className="text-[11px] text-faint">{t.bookTime}</span>
+                  <span className="text-[11px] text-dim">{t.bookTime}</span>
                   <input
                     type="time"
                     required
                     value={time}
                     onChange={(event) => setTime(event.target.value)}
-                    className="mt-1 w-full rounded-[8px] border border-white/[0.09] bg-ink px-3 py-2 text-[13px] text-paper focus:border-gold/45 focus:outline-none"
+                    className="mt-1 w-full rounded-[8px] border border-white/[0.09] bg-app px-3 py-2 text-[13px] text-fg focus:border-acc/45 focus:outline-none"
                   />
                 </label>
               </div>
@@ -180,13 +180,13 @@ export function BookDialog({
           </fieldset>
 
           <label className="block">
-            <span className="text-[11px] uppercase tracking-[0.12em] text-faint">{t.bookNote}</span>
+            <span className="text-[11px] uppercase tracking-[0.12em] text-dim">{t.bookNote}</span>
             <textarea
               rows={3}
               value={note}
               onChange={(event) => setNote(event.target.value)}
               maxLength={2000}
-              className="mt-2 w-full resize-none rounded-[8px] border border-white/[0.09] bg-ink px-3 py-2 text-[13px] leading-[1.7] text-paper placeholder-faint focus:border-gold/45 focus:outline-none"
+              className="mt-2 w-full resize-none rounded-[8px] border border-white/[0.09] bg-app px-3 py-2 text-[13px] leading-[1.7] text-fg placeholder-faint focus:border-acc/45 focus:outline-none"
             />
           </label>
 
@@ -199,7 +199,7 @@ export function BookDialog({
           <button
             type="submit"
             disabled={request.isPending || !rate}
-            className="w-full rounded-[9px] bg-gold px-4 py-2.5 text-[13px] font-semibold text-ink transition-opacity hover:opacity-90 disabled:opacity-50"
+            className="w-full rounded-[9px] bg-acc px-4 py-2.5 text-[13px] font-semibold text-ink transition-opacity hover:opacity-90 disabled:opacity-50"
           >
             {t.bookConfirm}
           </button>

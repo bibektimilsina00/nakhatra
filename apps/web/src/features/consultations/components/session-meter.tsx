@@ -53,9 +53,9 @@ export function SessionMeter({
   const low = running && wallet !== undefined && remaining <= WARN_SECONDS;
 
   return (
-    <div className="rounded-[12px] border border-white/[0.09] bg-card p-4">
+    <div className="rounded-[12px] border border-white/[0.09] bg-panel p-4">
       <div className="flex flex-wrap items-baseline justify-between gap-3">
-        <span className="text-[11px] uppercase tracking-[0.14em] text-faint">
+        <span className="text-[11px] uppercase tracking-[0.14em] text-dim">
           {formatMinor(consultation.rate_per_minute_minor, consultation.currency)}
           {" / "}
           {t.consultPerMinute}
@@ -64,7 +64,7 @@ export function SessionMeter({
           className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-[10.5px] uppercase tracking-[0.12em] ${
             running
               ? "border-emerald-400/30 bg-[#0D1A16] text-emerald-300/90"
-              : "border-white/[0.10] text-faint"
+              : "border-white/[0.10] text-dim"
           }`}
         >
           {running && <span className="size-1.5 animate-pulse rounded-full bg-emerald-400" />}
@@ -74,14 +74,14 @@ export function SessionMeter({
 
       <div className="mt-3 flex items-end justify-between gap-4">
         <span>
-          <span className="block text-[11px] text-faint">{t.consultElapsed}</span>
-          <span className="block text-[26px] font-bold leading-none tabular-nums text-paper">
+          <span className="block text-[11px] text-dim">{t.consultElapsed}</span>
+          <span className="block text-[26px] font-bold leading-none tabular-nums text-fg">
             {formatDuration(elapsed)}
           </span>
         </span>
         <span className="text-right">
-          <span className="block text-[11px] text-faint">{t.consultCost}</span>
-          <span className="block text-[26px] font-bold leading-none tabular-nums text-gold">
+          <span className="block text-[11px] text-dim">{t.consultCost}</span>
+          <span className="block text-[26px] font-bold leading-none tabular-nums text-acc">
             {formatMinor(cost, consultation.currency)}
           </span>
         </span>
@@ -89,8 +89,8 @@ export function SessionMeter({
 
       {wallet && (
         <div className="mt-3 flex items-baseline justify-between border-t border-white/[0.07] pt-2.5 text-[12px]">
-          <span className="text-faint">{t.consultBalance}</span>
-          <span className="tabular-nums text-muted">
+          <span className="text-dim">{t.consultBalance}</span>
+          <span className="tabular-nums text-mut">
             {formatMinor(wallet.available_minor, wallet.currency)}
             {running && ` · ${formatDuration(remaining)} ${t.consultLeft}`}
           </span>
@@ -100,7 +100,7 @@ export function SessionMeter({
       {low && (
         // Said at two minutes, not at zero. A warning that arrives as the call
         // ends is not a warning.
-        <p className="mt-3 flex items-start gap-2 rounded-[8px] border border-gold/30 bg-[#1A150B] px-3 py-2 text-[12px] leading-[1.6] text-gold2">
+        <p className="mt-3 flex items-start gap-2 rounded-[8px] border border-acc/30 bg-[#1A150B] px-3 py-2 text-[12px] leading-[1.6] text-acc2">
           <TriangleAlert className="mt-0.5 size-3.5 shrink-0" />
           {t.consultLowBalance}
         </p>

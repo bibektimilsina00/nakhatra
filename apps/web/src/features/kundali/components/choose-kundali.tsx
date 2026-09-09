@@ -43,15 +43,15 @@ export function ChooseKundali({ mode }: { mode: "reading" | "live" }) {
             type="button"
             onClick={() => router.push("/dashboard")}
             aria-label={t.readingBack}
-            className="grid size-9 shrink-0 place-items-center rounded-[8px] border border-white/10 text-muted transition-colors hover:border-white/25 hover:text-paper"
+            className="grid size-9 shrink-0 place-items-center rounded-[8px] border border-brd text-mut transition-colors hover:border-brd2 hover:text-fg"
           >
             <ArrowLeft className="size-4" />
           </button>
           <span className="min-w-0">
-            <span className="block truncate text-[14px] font-bold text-paper">
+            <span className="block truncate text-[14px] font-bold text-fg">
               {t.chooseTitle}
             </span>
-            <span className="block truncate text-[11px] text-faint">
+            <span className="block truncate text-[11px] text-dim">
               {mode === "live" ? t.chooseLiveNote : t.chooseReadingNote}
             </span>
           </span>
@@ -62,12 +62,12 @@ export function ChooseKundali({ mode }: { mode: "reading" | "live" }) {
         <div className="grid gap-8 lg:grid-cols-[460px_minmax(0,1fr)] lg:items-start xl:grid-cols-[500px_minmax(0,1fr)]">
           {/* Where the charts go once one is chosen. */}
           <aside className="space-y-6 lg:sticky lg:top-20">
-            <div className="space-y-4 rounded-[8px] border border-white/10 bg-[#161B2B] p-4">
-              <div className="border-b border-white/10 pb-2.5">
-                <h2 className="text-[15px] font-bold text-paper">
+            <div className="space-y-4 rounded-[8px] border border-brd bg-panel p-4">
+              <div className="border-b border-brd pb-2.5">
+                <h2 className="text-[15px] font-bold text-fg">
                   {mode === "live" ? t.dashNavLive : t.dashNavReading}
                 </h2>
-                <p className="mt-0.5 text-[11.5px] text-faint">
+                <p className="mt-0.5 text-[11.5px] text-dim">
                   {mode === "live" ? t.chooseLiveNote : t.chooseReadingNote}
                 </p>
               </div>
@@ -77,7 +77,7 @@ export function ChooseKundali({ mode }: { mode: "reading" | "live" }) {
                   {[0, 1, 2].map((row) => (
                     <div
                       key={row}
-                      className="h-[68px] animate-pulse rounded-[8px] border border-white/[0.07] bg-white/[0.03]"
+                      className="h-[68px] animate-pulse rounded-[8px] border border-white/[0.07] bg-fg/[0.03]"
                     />
                   ))}
                 </div>
@@ -94,7 +94,7 @@ export function ChooseKundali({ mode }: { mode: "reading" | "live" }) {
                         // which is the one thing rule 5 forbids.
                         disabled={!kundali.birth || openingId === kundali.id}
                         onClick={() => open(kundali)}
-                        className="flex w-full items-center gap-3 rounded-[8px] border border-white/10 bg-[#0F1320] p-2.5 text-left transition-colors hover:border-gold/45 disabled:pointer-events-none disabled:opacity-45"
+                        className="flex w-full items-center gap-3 rounded-[8px] border border-brd bg-[#0F1320] p-2.5 text-left transition-colors hover:border-acc/45 disabled:pointer-events-none disabled:opacity-45"
                       >
                         <span
                           className="grid size-12 shrink-0 place-items-center rounded-[6px]"
@@ -103,19 +103,19 @@ export function ChooseKundali({ mode }: { mode: "reading" | "live" }) {
                           <ChartLattice stroke={stroke} className="size-8" />
                         </span>
                         <span className="min-w-0 flex-1">
-                          <span className="block truncate text-[13.5px] font-semibold text-paper">
+                          <span className="block truncate text-[13.5px] font-semibold text-fg">
                             {kundali.name}
                           </span>
-                          <span className="mt-0.5 block truncate text-[11px] text-muted">
+                          <span className="mt-0.5 block truncate text-[11px] text-mut">
                             {kundali.dob} · {kundali.tob}
                           </span>
-                          <span className="mt-0.5 flex items-center gap-1.5 text-[10.5px] text-faint">
+                          <span className="mt-0.5 flex items-center gap-1.5 text-[10.5px] text-dim">
                             <MapPin className="size-3 shrink-0" />
                             <span className="truncate">{kundali.place_name}</span>
                           </span>
                         </span>
                         {openingId === kundali.id && (
-                          <span className="shrink-0 text-[11px] text-gold2">{t.dashOpening}</span>
+                          <span className="shrink-0 text-[11px] text-acc2">{t.dashOpening}</span>
                         )}
                         {failedId === kundali.id && (
                           <span className="shrink-0 text-[11px] text-rose-300">
@@ -123,7 +123,7 @@ export function ChooseKundali({ mode }: { mode: "reading" | "live" }) {
                           </span>
                         )}
                         {!kundali.birth && (
-                          <span className="max-w-[120px] shrink-0 text-right text-[10.5px] leading-tight text-faint">
+                          <span className="max-w-[120px] shrink-0 text-right text-[10.5px] leading-tight text-dim">
                             {t.dashNotRecalculable}
                           </span>
                         )}
@@ -132,15 +132,15 @@ export function ChooseKundali({ mode }: { mode: "reading" | "live" }) {
                   })}
 
                   {kundalis.length === 0 && (
-                    <p className="py-3 text-[12.5px] text-faint">{t.chooseEmpty}</p>
+                    <p className="py-3 text-[12.5px] text-dim">{t.chooseEmpty}</p>
                   )}
 
                   <button
                     type="button"
                     onClick={() => setCreating(true)}
-                    className="flex w-full items-center justify-center gap-2 rounded-[8px] border border-dashed border-white/[0.16] p-3 text-[12.5px] text-muted transition-colors hover:border-gold/45 hover:text-paper"
+                    className="flex w-full items-center justify-center gap-2 rounded-[8px] border border-dashed border-white/[0.16] p-3 text-[12.5px] text-mut transition-colors hover:border-acc/45 hover:text-fg"
                   >
-                    <Plus className="size-4 text-gold" />
+                    <Plus className="size-4 text-acc" />
                     {t.dashNewKundali}
                   </button>
                 </div>

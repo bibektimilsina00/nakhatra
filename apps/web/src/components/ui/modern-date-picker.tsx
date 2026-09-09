@@ -110,40 +110,40 @@ export function ModernDatePicker({
       <button
         type="button"
         onClick={toggle}
-        className={`flex w-full items-center justify-between rounded-[8px] border bg-[#090A10] px-4 py-3 text-xs font-semibold text-[#F8FAFC] transition hover:border-[#E5A93C] focus:outline-none ${
-          error ? "border-rose-500" : isOpen ? "border-[#E5A93C] ring-1 ring-[#E5A93C]" : "border-white/10"
+        className={`flex w-full items-center justify-between rounded-[8px] border bg-inset px-4 py-3 text-xs font-semibold text-fg transition hover:border-acc focus:outline-none ${
+          error ? "border-rose-500" : isOpen ? "border-acc ring-1 ring-acc" : "border-brd"
         }`}
       >
         <div className="flex items-center gap-2.5">
-          <Calendar className="size-4 text-[#E5A93C]" />
-          <span className={day && month && year ? "text-[#F8FAFC] font-medium" : "text-[#94A3B8]/50"}>
+          <Calendar className="size-4 text-acc" />
+          <span className={day && month && year ? "text-fg font-medium" : "text-mut/50"}>
             {formatDisplayDate()}
           </span>
         </div>
         <div className="flex items-center gap-2">
-          <span className="rounded bg-[#161B2B] px-2 py-0.5 text-[10px] font-bold text-[#E5A93C] border border-white/10">
+          <span className="rounded bg-panel px-2 py-0.5 text-[10px] font-bold text-acc border border-brd">
             {era}
           </span>
           <ChevronDown
-            className={`size-4 text-[#94A3B8] transition-transform duration-200 ${isOpen ? "rotate-180 text-[#E5A93C]" : ""}`}
+            className={`size-4 text-mut transition-transform duration-200 ${isOpen ? "rotate-180 text-acc" : ""}`}
           />
         </div>
       </button>
 
       {/* Floating Popover Calendar Modal */}
       {isOpen && (
-        <div className={`absolute left-0 z-50 w-full max-w-sm overflow-y-auto rounded-[8px] border border-[#E5A93C]/30 bg-[#161B2B] p-4 shadow-2xl space-y-4 animate-in fade-in zoom-in-95 duration-150 ${placementClass(fit.placement)}`}
+        <div className={`absolute left-0 z-50 w-full max-w-sm overflow-y-auto rounded-[8px] border border-acc/30 bg-panel p-4 shadow-2xl space-y-4 animate-in fade-in zoom-in-95 duration-150 ${placementClass(fit.placement)}`}
           style={{ maxHeight: fit.maxHeight }}
         >
           
           {/* Era Tab Bar */}
-          <div className="border-b border-white/10 pb-3">
-            <div className="grid grid-cols-2 rounded-[6px] border border-white/10 bg-[#090A10] p-1 text-xs font-bold">
+          <div className="border-b border-brd pb-3">
+            <div className="grid grid-cols-2 rounded-[6px] border border-brd bg-inset p-1 text-xs font-bold">
               <button
                 type="button"
                 onClick={() => onEraChange("AD")}
                 className={`rounded-[4px] py-1.5 text-center transition ${
-                  era === "AD" ? "bg-[#E5A93C] text-[#090A10]" : "text-[#94A3B8] hover:text-[#F8FAFC]"
+                  era === "AD" ? "bg-acc text-onacc" : "text-mut hover:text-fg"
                 }`}
               >
                 AD (Gregorian)
@@ -152,7 +152,7 @@ export function ModernDatePicker({
                 type="button"
                 onClick={() => onEraChange("BS")}
                 className={`rounded-[4px] py-1.5 text-center transition ${
-                  era === "BS" ? "bg-[#E5A93C] text-[#090A10]" : "text-[#94A3B8] hover:text-[#F8FAFC]"
+                  era === "BS" ? "bg-acc text-onacc" : "text-mut hover:text-fg"
                 }`}
               >
                 BS (Bikram Sambat)
@@ -165,7 +165,7 @@ export function ModernDatePicker({
             <button
               type="button"
               onClick={() => navigateMonth(-1)}
-              className="size-8 shrink-0 rounded-[6px] border border-white/10 bg-[#090A10] text-xs font-bold text-[#F8FAFC] hover:border-[#E5A93C] transition flex items-center justify-center"
+              className="size-8 shrink-0 rounded-[6px] border border-brd bg-inset text-xs font-bold text-fg hover:border-acc transition flex items-center justify-center"
               title="Previous Month"
             >
               <ChevronLeft className="size-4" />
@@ -190,7 +190,7 @@ export function ModernDatePicker({
             <button
               type="button"
               onClick={() => navigateMonth(1)}
-              className="size-8 shrink-0 rounded-[6px] border border-white/10 bg-[#090A10] text-xs font-bold text-[#F8FAFC] hover:border-[#E5A93C] transition flex items-center justify-center"
+              className="size-8 shrink-0 rounded-[6px] border border-brd bg-inset text-xs font-bold text-fg hover:border-acc transition flex items-center justify-center"
               title="Next Month"
             >
               <ChevronRight className="size-4" />
@@ -198,7 +198,7 @@ export function ModernDatePicker({
           </div>
 
           {/* Days Grid Header */}
-          <div className="grid grid-cols-7 text-center text-[10px] font-bold uppercase text-[#94A3B8] pt-1">
+          <div className="grid grid-cols-7 text-center text-[10px] font-bold uppercase text-mut pt-1">
             <span>Su</span>
             <span>Mo</span>
             <span>Tu</span>
@@ -225,8 +225,8 @@ export function ModernDatePicker({
                   }}
                   className={`rounded-[6px] py-1.5 text-xs font-bold transition ${
                     isSelected
-                      ? "bg-[#E5A93C] text-[#090A10] shadow"
-                      : "text-[#CBD5E1] hover:bg-white/10 hover:text-[#F8FAFC]"
+                      ? "bg-acc text-onacc shadow"
+                      : "text-mid hover:bg-fg/10 hover:text-fg"
                   }`}
                 >
                   {d}
@@ -236,7 +236,7 @@ export function ModernDatePicker({
           </div>
 
           {/* Modal Footer Controls */}
-          <div className="flex items-center justify-between border-t border-white/10 pt-3">
+          <div className="flex items-center justify-between border-t border-brd pt-3">
             <div className="flex gap-2">
               <button
                 type="button"
@@ -248,7 +248,7 @@ export function ModernDatePicker({
                     String(now.getFullYear())
                   );
                 }}
-                className="text-[11px] font-bold text-[#E5A93C] hover:underline"
+                className="text-[11px] font-bold text-acc hover:underline"
               >
                 Today
               </button>
@@ -257,7 +257,7 @@ export function ModernDatePicker({
             <button
               type="button"
               onClick={() => setIsOpen(false)}
-              className="rounded-[6px] bg-[#E5A93C] px-4 py-1.5 text-xs font-bold text-[#090A10] transition hover:bg-[#F3C766]"
+              className="rounded-[6px] bg-acc px-4 py-1.5 text-xs font-bold text-onacc transition hover:bg-acc2"
             >
               Done
             </button>

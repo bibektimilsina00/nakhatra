@@ -99,18 +99,18 @@ export function PlaceCombobox({
           className="absolute z-50 mt-2 max-h-72 w-full overflow-y-auto rounded-lg border border-line bg-surface elev-raised border border-line-strong"
         >
           {!searchable ? (
-            <li className="px-4 py-3 text-xs text-muted">
+            <li className="px-4 py-3 text-xs text-mut">
               Type at least two letters. Every populated place in Nepal and India
               is here, plus towns worldwide.
             </li>
           ) : loading ? (
-            <li className="px-4 py-3 text-xs text-muted">Searching…</li>
+            <li className="px-4 py-3 text-xs text-mut">Searching…</li>
           ) : failed ? (
             <li className="px-4 py-3 text-xs text-rose-300">
               Could not reach the place index. Is the API running?
             </li>
           ) : results.length === 0 ? (
-            <li className="px-4 py-3 text-xs text-muted">
+            <li className="px-4 py-3 text-xs text-mut">
               Nothing found. Try a nearby larger town.
             </li>
           ) : (
@@ -133,7 +133,7 @@ export function PlaceCombobox({
                         <span className="text-dim"> · {place.matched_as}</span>
                       )}
                     </span>
-                    <span className="block truncate text-2xs text-muted">
+                    <span className="block truncate text-2xs text-mut">
                       {[place.admin1, place.country].filter(Boolean).join(", ")}
                     </span>
                   </span>

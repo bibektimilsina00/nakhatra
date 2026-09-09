@@ -29,8 +29,8 @@ export function NotificationsPage() {
       <main className="mx-auto w-full max-w-[760px] px-5 pb-24 pt-10 sm:px-8">
         <header className="flex flex-wrap items-end justify-between gap-4">
           <div>
-            <span className={`text-[11px] text-gold ${eyebrow}`}>{t.notifTitle}</span>
-            <h1 className="mt-3 text-[26px] font-bold leading-tight text-paper sm:text-[30px]">
+            <span className={`text-[11px] text-acc ${eyebrow}`}>{t.notifTitle}</span>
+            <h1 className="mt-3 text-[26px] font-bold leading-tight text-fg sm:text-[30px]">
               {t.dashNotifications}
             </h1>
           </div>
@@ -38,7 +38,7 @@ export function NotificationsPage() {
             <button
               type="button"
               onClick={markAllRead}
-              className="inline-flex items-center gap-2 rounded-[8px] border border-white/12 px-3.5 py-2 text-[12.5px] text-muted transition-colors hover:border-white/25 hover:text-paper"
+              className="inline-flex items-center gap-2 rounded-[8px] border border-white/12 px-3.5 py-2 text-[12.5px] text-mut transition-colors hover:border-brd2 hover:text-fg"
             >
               <CheckCheck className="size-4" />
               {t.notifMarkAllRead}
@@ -48,28 +48,28 @@ export function NotificationsPage() {
 
         {items.length === 0 ? (
           <div className="mt-10 rounded-[12px] border border-dashed border-white/[0.14] px-6 py-16 text-center">
-            <span className="mx-auto grid size-12 place-items-center rounded-full border border-white/[0.10] text-gold">
+            <span className="mx-auto grid size-12 place-items-center rounded-full border border-white/[0.10] text-acc">
               <Bell className="size-5" />
             </span>
-            <p className="mt-4 text-[14px] text-muted">{t.dashNoNotifications}</p>
+            <p className="mt-4 text-[14px] text-mut">{t.dashNoNotifications}</p>
           </div>
         ) : (
           <ul className="mt-8 overflow-hidden rounded-[12px] border border-white/[0.09]">
             {items.map((item) => (
               <li
                 key={item.id}
-                className="flex gap-3 border-b border-white/[0.06] bg-card px-4 py-3.5 last:border-0"
+                className="flex gap-3 border-b border-brd bg-panel px-4 py-3.5 last:border-0"
               >
                 {/* The dot holds its column whether or not it is shown, so a
                     read row does not sit half a step left of an unread one. */}
                 <span
                   className={`mt-2 size-1.5 shrink-0 rounded-full ${
-                    item.unread ? "bg-gold" : "bg-transparent"
+                    item.unread ? "bg-acc" : "bg-transparent"
                   }`}
                 />
                 <span className="min-w-0 flex-1">
-                  <span className="block truncate text-[14px] text-paper">{item.title}</span>
-                  <span className="mt-0.5 block text-[11.5px] text-faint">
+                  <span className="block truncate text-[14px] text-fg">{item.title}</span>
+                  <span className="mt-0.5 block text-[11.5px] text-dim">
                     {t[item.detail]} · {relativeTime(item.at, now)}
                   </span>
                 </span>
@@ -79,7 +79,7 @@ export function NotificationsPage() {
         )}
 
         {items.length > 0 && unread === 0 && (
-          <p className="mt-5 text-center text-[12.5px] text-faint">{t.notifAllCaughtUp}</p>
+          <p className="mt-5 text-center text-[12.5px] text-dim">{t.notifAllCaughtUp}</p>
         )}
       </main>
     </AppShell>

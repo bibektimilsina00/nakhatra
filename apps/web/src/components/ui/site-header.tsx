@@ -41,7 +41,7 @@ export function SiteHeader() {
 
             <Link
               href="/reading"
-              className="rounded-sm bg-[#E5A93C] px-2.5 py-1 text-2xs font-bold uppercase tracking-wide text-[#090A10] hover:bg-[#F3C766] transition"
+              className="rounded-sm bg-acc px-2.5 py-1 text-2xs font-bold uppercase tracking-wide text-onacc hover:bg-acc2 transition"
             >
               {t.vedicReading}
             </Link>
@@ -82,7 +82,7 @@ export function SiteHeader() {
                 <span className="text-base leading-none text-accent-ink">
                   {sign.glyph}
                 </span>
-                <span className="text-2xs font-medium uppercase tracking-wide text-muted">
+                <span className="text-2xs font-medium uppercase tracking-wide text-mut">
                   {sign.name.slice(0, 3)}
                 </span>
               </Link>
@@ -114,7 +114,7 @@ export function SiteHeader() {
             <li key={label}>
               <Link
                 href={href}
-                className="block whitespace-nowrap rounded-sm border border-line-strong px-3 py-1.5 text-xs text-muted transition duration-200 hover:border-accent-strong hover:bg-accent-wash hover:text-accent-ink"
+                className="block whitespace-nowrap rounded-sm border border-line-strong px-3 py-1.5 text-xs text-mut transition duration-200 hover:border-accent-strong hover:bg-accent-wash hover:text-accent-ink"
               >
                 {label}
               </Link>

@@ -33,26 +33,26 @@ export function KundaliCard({
   const openable = Boolean(kundali.birth);
 
   const ghost =
-    "rounded-[7px] border border-white/12 px-2.5 py-1.5 text-[11.5px] text-muted transition-colors hover:border-white/25 hover:text-paper disabled:pointer-events-none disabled:opacity-40";
+    "rounded-[7px] border border-white/12 px-2.5 py-1.5 text-[11.5px] text-mut transition-colors hover:border-brd2 hover:text-fg disabled:pointer-events-none disabled:opacity-40";
 
   return (
-    <article className="relative overflow-hidden rounded-[10px] border border-white/[0.09] bg-card transition-colors hover:border-white/25">
+    <article className="relative overflow-hidden rounded-[10px] border border-white/[0.09] bg-panel transition-colors hover:border-brd2">
       <div className="relative flex h-[104px] items-center justify-center" style={{ background: fill }}>
         <ChartLattice stroke={stroke} className="size-[74px]" />
 
         {busy && (
-          <span className="absolute inset-0 grid place-items-center bg-ink/75 text-[12px] font-semibold text-gold2">
+          <span className="absolute inset-0 grid place-items-center bg-app/75 text-[12px] font-semibold text-acc2">
             {t.dashOpening}
           </span>
         )}
       </div>
 
       <div className="px-3.5 pb-3.5 pt-3">
-        <h3 className="truncate text-[14px] font-semibold text-paper">{kundali.name}</h3>
-        <p className="mt-1 truncate text-[11px] text-muted">
+        <h3 className="truncate text-[14px] font-semibold text-fg">{kundali.name}</h3>
+        <p className="mt-1 truncate text-[11px] text-mut">
           {kundali.dob} · {kundali.tob}
         </p>
-        <p className="mt-1 flex items-center gap-1.5 text-[11px] text-faint">
+        <p className="mt-1 flex items-center gap-1.5 text-[11px] text-dim">
           <MapPin className="size-3 shrink-0" />
           <span className="truncate">{kundali.place_name}</span>
         </p>
@@ -63,7 +63,7 @@ export function KundaliCard({
             disabled={!openable || busy}
             onClick={onOpen}
             title={openable ? undefined : t.dashNotRecalculable}
-            className="flex-1 rounded-[7px] bg-gold px-2 py-1.5 text-[11.5px] font-bold text-ink transition-colors hover:bg-gold2 disabled:pointer-events-none disabled:opacity-40"
+            className="flex-1 rounded-[7px] bg-acc px-2 py-1.5 text-[11.5px] font-bold text-ink transition-colors hover:bg-acc2 disabled:pointer-events-none disabled:opacity-40"
           >
             {t.dashReadingAction}
           </button>
@@ -87,7 +87,7 @@ export function KundaliCard({
         </div>
 
         {!openable && (
-          <p className="mt-3 border-t border-white/[0.07] pt-2.5 text-[11px] leading-[1.5] text-faint">
+          <p className="mt-3 border-t border-white/[0.07] pt-2.5 text-[11px] leading-[1.5] text-dim">
             {t.dashNotRecalculable}
           </p>
         )}
@@ -99,11 +99,11 @@ export function KundaliCard({
       </div>
 
       {confirming && (
-        <div className="absolute inset-0 grid place-items-center bg-ink/95 p-4 text-center">
+        <div className="absolute inset-0 grid place-items-center bg-app/95 p-4 text-center">
           <div>
             <Trash2 className="mx-auto size-4 text-rose-300" />
-            <p className="mt-2 text-[13px] font-semibold text-paper">{t.dashConfirmDelete}</p>
-            <p className="mt-1 truncate text-[12px] text-muted">{kundali.name}</p>
+            <p className="mt-2 text-[13px] font-semibold text-fg">{t.dashConfirmDelete}</p>
+            <p className="mt-1 truncate text-[12px] text-mut">{kundali.name}</p>
             <div className="mt-3 flex items-center justify-center gap-2">
               <button
                 type="button"
@@ -116,7 +116,7 @@ export function KundaliCard({
               <button
                 type="button"
                 onClick={() => setConfirming(false)}
-                className="rounded-[6px] border border-white/12 px-3 py-1.5 text-[12px] text-muted transition-colors hover:text-paper"
+                className="rounded-[6px] border border-white/12 px-3 py-1.5 text-[12px] text-mut transition-colors hover:text-fg"
               >
                 {t.dashCancel}
               </button>

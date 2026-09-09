@@ -46,7 +46,7 @@ export function CallPanel({
         <button
           type="button"
           onClick={() => call.session.start(medium === "video")}
-          className="inline-flex items-center gap-2 rounded-[8px] bg-gold px-4 py-2.5 text-[13px] font-bold text-ink transition-colors hover:bg-gold2"
+          className="inline-flex items-center gap-2 rounded-[8px] bg-acc px-4 py-2.5 text-[13px] font-bold text-ink transition-colors hover:bg-acc2"
         >
           {medium === "video" ? <Video className="size-4" /> : <Phone className="size-4" />}
           {medium === "video" ? t.callStartVideo : t.callStartVoice}
@@ -58,21 +58,21 @@ export function CallPanel({
   }
 
   return (
-    <div className="mt-4 overflow-hidden rounded-[12px] border border-white/[0.09] bg-card">
+    <div className="mt-4 overflow-hidden rounded-[12px] border border-white/[0.09] bg-panel">
       {video && state !== "ringing" && (
-        <div className="relative aspect-video bg-ink">
+        <div className="relative aspect-video bg-app">
           <video
             ref={remote}
             autoPlay
             playsInline
-            className="size-full bg-ink object-cover"
+            className="size-full bg-app object-cover"
           />
           <video
             ref={local}
             autoPlay
             playsInline
             muted
-            className="absolute bottom-3 right-3 aspect-video w-32 rounded-[8px] border border-white/[0.12] bg-ink object-cover"
+            className="absolute bottom-3 right-3 aspect-video w-32 rounded-[8px] border border-white/[0.12] bg-app object-cover"
           />
         </div>
       )}
@@ -81,7 +81,7 @@ export function CallPanel({
       {!video && <video ref={remote} autoPlay playsInline className="hidden" />}
 
       <div className="flex flex-wrap items-center justify-between gap-3 p-4">
-        <span className="text-[12.5px] text-muted">
+        <span className="text-[12.5px] text-mut">
           {state === "calling" && t.callRinging}
           {state === "ringing" && t.callIncoming}
           {state === "connecting" && t.callConnecting}
@@ -122,7 +122,7 @@ export function CallPanel({
                 aria-pressed={!call.micOn}
                 className={`${round} border ${
                   call.micOn
-                    ? "border-white/12 text-muted hover:text-paper"
+                    ? "border-white/12 text-mut hover:text-fg"
                     : "border-rose-400/40 bg-rose-500/10 text-rose-300"
                 }`}
               >
@@ -137,7 +137,7 @@ export function CallPanel({
                   aria-pressed={!call.cameraOn}
                   className={`${round} border ${
                     call.cameraOn
-                      ? "border-white/12 text-muted hover:text-paper"
+                      ? "border-white/12 text-mut hover:text-fg"
                       : "border-rose-400/40 bg-rose-500/10 text-rose-300"
                   }`}
                 >
@@ -169,10 +169,10 @@ export function CallPanel({
 
 function Warning({ text, onDismiss }: { text: string; onDismiss: () => void }) {
   return (
-    <p className="flex items-start gap-2 rounded-[8px] border border-gold/30 bg-[#1A150B] px-3 py-2 text-[11.5px] leading-[1.6] text-gold2">
+    <p className="flex items-start gap-2 rounded-[8px] border border-acc/30 bg-[#1A150B] px-3 py-2 text-[11.5px] leading-[1.6] text-acc2">
       <TriangleAlert className="mt-0.5 size-3.5 shrink-0" />
       <span className="flex-1">{text}</span>
-      <button type="button" onClick={onDismiss} className="shrink-0 text-faint hover:text-paper">
+      <button type="button" onClick={onDismiss} className="shrink-0 text-dim hover:text-fg">
         ✕
       </button>
     </p>

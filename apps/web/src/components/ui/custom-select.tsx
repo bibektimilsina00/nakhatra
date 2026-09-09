@@ -45,19 +45,19 @@ export function CustomSelect({
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="flex w-full items-center justify-between rounded-[8px] border border-white/10 bg-[#090A10] px-3 py-2.5 text-xs font-semibold text-[#F8FAFC] hover:border-[#E5A93C] focus:border-[#E5A93C] focus:outline-none transition"
+        className="flex w-full items-center justify-between rounded-[8px] border border-brd bg-inset px-3 py-2.5 text-xs font-semibold text-fg hover:border-acc focus:border-acc focus:outline-none transition"
       >
         <span className="truncate">{selectedOption ? selectedOption.label : placeholder}</span>
         <ChevronDown
-          className={`size-3.5 shrink-0 text-[#94A3B8] transition-transform duration-200 ${
-            isOpen ? "rotate-180 text-[#E5A93C]" : ""
+          className={`size-3.5 shrink-0 text-mut transition-transform duration-200 ${
+            isOpen ? "rotate-180 text-acc" : ""
           }`}
         />
       </button>
 
       {/* Popover Options Menu */}
       {isOpen && (
-        <div className="absolute left-0 top-full z-50 mt-1 max-h-52 w-full overflow-y-auto rounded-[8px] border border-white/10 bg-[#161B2B] p-1 shadow-2xl">
+        <div className="absolute left-0 top-full z-50 mt-1 max-h-52 w-full overflow-y-auto rounded-[8px] border border-brd bg-panel p-1 shadow-2xl">
           {options.map((opt) => {
             const isSelected = opt.value === value;
             return (
@@ -70,8 +70,8 @@ export function CustomSelect({
                 }}
                 className={`w-full rounded-[6px] px-3 py-1.5 text-left text-xs font-semibold transition ${
                   isSelected
-                    ? "bg-[#E5A93C] text-[#090A10]"
-                    : "text-[#94A3B8] hover:bg-white/5 hover:text-[#F8FAFC]"
+                    ? "bg-acc text-onacc"
+                    : "text-mut hover:bg-fg/5 hover:text-fg"
                 }`}
               >
                 {opt.label}

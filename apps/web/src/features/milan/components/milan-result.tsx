@@ -30,14 +30,14 @@ export function MilanResult({
     pct >= 65
       ? { ring: "stroke-emerald-400", text: "text-emerald-300", label: t.milanGood }
       : pct >= 45
-        ? { ring: "stroke-gold", text: "text-gold2", label: t.milanFair }
+        ? { ring: "stroke-gold", text: "text-acc2", label: t.milanFair }
         : { ring: "stroke-rose-400", text: "text-rose-300", label: t.milanPoor };
 
   const circumference = 2 * Math.PI * 52;
 
   return (
     <div className="space-y-4">
-      <section className="rounded-[10px] border border-white/[0.09] bg-card p-6">
+      <section className="rounded-[10px] border border-white/[0.09] bg-panel p-6">
         <div className="flex flex-wrap items-center gap-8">
           <div className="relative shrink-0">
             <svg viewBox="0 0 120 120" className="size-[132px] -rotate-90">
@@ -50,10 +50,10 @@ export function MilanResult({
               />
             </svg>
             <div className="absolute inset-0 grid place-content-center text-center">
-              <span className="text-[30px] font-bold leading-none text-paper">
+              <span className="text-[30px] font-bold leading-none text-fg">
                 {result.total_guna}
               </span>
-              <span className="mt-1 text-[12px] text-faint">of {result.max_guna}</span>
+              <span className="mt-1 text-[12px] text-dim">of {result.max_guna}</span>
             </div>
           </div>
 
@@ -61,10 +61,10 @@ export function MilanResult({
             <p className={`text-[13px] font-semibold uppercase tracking-[0.14em] ${band.text}`}>
               {band.label}
             </p>
-            <h2 className="mt-2 text-[22px] font-bold leading-tight text-paper">
+            <h2 className="mt-2 text-[22px] font-bold leading-tight text-fg">
               {result.bride_name} &amp; {result.groom_name}
             </h2>
-            <p className="mt-2 max-w-lg text-[13.5px] leading-[1.7] text-muted">
+            <p className="mt-2 max-w-lg text-[13.5px] leading-[1.7] text-mut">
               {result.recommendation}
             </p>
           </div>
@@ -72,7 +72,7 @@ export function MilanResult({
           <button
             type="button"
             onClick={onReset}
-            className="rounded-[8px] border border-white/12 px-4 py-2 text-[12.5px] text-muted transition-colors hover:border-white/25 hover:text-paper"
+            className="rounded-[8px] border border-white/12 px-4 py-2 text-[12.5px] text-mut transition-colors hover:border-brd2 hover:text-fg"
           >
             {t.milanNewMatch}
           </button>
@@ -80,10 +80,10 @@ export function MilanResult({
       </section>
 
       <div className="grid items-start gap-4 lg:grid-cols-[1.3fr_1fr]">
-        <section className="rounded-[10px] border border-white/[0.09] bg-card p-5">
+        <section className="rounded-[10px] border border-white/[0.09] bg-panel p-5">
           <div className="mb-4 flex items-baseline justify-between">
-            <h3 className="text-[13px] font-semibold text-paper">{t.milanKootaByKoota}</h3>
-            <span className="text-[11px] text-faint">{t.milanBarNote}</span>
+            <h3 className="text-[13px] font-semibold text-fg">{t.milanKootaByKoota}</h3>
+            <span className="text-[11px] text-dim">{t.milanBarNote}</span>
           </div>
           <ul className="space-y-3">
             {result.kutas.map((kuta) => (
@@ -122,7 +122,7 @@ function KutaRow({ kuta }: { kuta: Kuta }) {
         {/* Width by max_points, so the bar's length shows what the koota is
             worth as well as what it scored. Bhakoot at 7 and Varna at 1 are
             not the same loss. */}
-        <span className={`w-24 shrink-0 text-[12.5px] ${zero ? "text-rose-300/85" : "text-muted"}`}>
+        <span className={`w-24 shrink-0 text-[12.5px] ${zero ? "text-rose-300/85" : "text-mut"}`}>
           {kuta.name}
         </span>
         {/* The track's own width carries the koota's weight, so Varna at 1
@@ -130,21 +130,21 @@ function KutaRow({ kuta }: { kuta: Kuta }) {
             caption above is a claim the chart does not make. */}
         <span className="flex-1">
           <span
-            className="block h-1.5 overflow-hidden rounded-full bg-ink"
+            className="block h-1.5 overflow-hidden rounded-full bg-app"
             style={{ width: `${(kuta.max_points / MAX_KUTA_POINTS) * 100}%` }}
           >
             <span
-              className={`block h-full rounded-full ${zero ? "bg-rose-500/70" : "bg-gold"}`}
+              className={`block h-full rounded-full ${zero ? "bg-rose-500/70" : "bg-acc"}`}
               style={{ width: `${Math.max(share * 100, zero ? 0 : 4)}%` }}
             />
           </span>
         </span>
-        <span className="w-10 shrink-0 text-right text-[11.5px] text-faint">
+        <span className="w-10 shrink-0 text-right text-[11.5px] text-dim">
           {kuta.obtained}/{kuta.max_points}
         </span>
       </div>
       {kuta.description && (
-        <p className="mt-1 pl-[108px] text-[11px] leading-[1.5] text-faint">{kuta.description}</p>
+        <p className="mt-1 pl-[108px] text-[11px] leading-[1.5] text-dim">{kuta.description}</p>
       )}
     </li>
   );
@@ -165,9 +165,9 @@ function ManglikPanel({
   const { t } = useTranslation();
 
   return (
-    <div className="rounded-[10px] border border-white/[0.09] bg-card p-5">
+    <div className="rounded-[10px] border border-white/[0.09] bg-panel p-5">
       <div className="mb-4 flex items-center justify-between gap-3">
-        <h3 className="text-[13px] font-semibold text-paper">{title}</h3>
+        <h3 className="text-[13px] font-semibold text-fg">{title}</h3>
         <span
           className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-[10px] uppercase tracking-[0.12em] ${
             compatible
@@ -188,17 +188,17 @@ function ManglikPanel({
           const person = side as Manglik;
           return (
             <div key={name as string} className="flex items-baseline justify-between gap-3">
-              <dt className="truncate text-[12.5px] text-muted">{name as string}</dt>
+              <dt className="truncate text-[12.5px] text-mut">{name as string}</dt>
               <dd className="shrink-0 text-[12px]">
                 {person.is_manglik ? (
                   <span className="text-rose-300/85">
                     {t.milanIsManglik}
                     {person.houses.length > 0 && (
-                      <span className="text-faint"> · {person.houses.join(", ")}</span>
+                      <span className="text-dim"> · {person.houses.join(", ")}</span>
                     )}
                   </span>
                 ) : (
-                  <span className="text-faint">{t.milanNotManglik}</span>
+                  <span className="text-dim">{t.milanNotManglik}</span>
                 )}
               </dd>
             </div>
@@ -207,7 +207,7 @@ function ManglikPanel({
       </dl>
 
       {reason && (
-        <p className="mt-4 border-t border-white/[0.07] pt-3.5 text-[12px] leading-[1.7] text-faint">
+        <p className="mt-4 border-t border-white/[0.07] pt-3.5 text-[12px] leading-[1.7] text-dim">
           {reason}
         </p>
       )}

@@ -17,18 +17,18 @@ import { KundaliPanel } from "@/features/kundali/components/kundali-panel";
  */
 export default function KundaliPage() {
   return (
-    <div className="min-h-dvh bg-ink font-sys text-muted antialiased">
-      <header className="border-b border-white/[0.06]">
+    <div className="min-h-dvh bg-app font-sys text-mut antialiased">
+      <header className="border-b border-brd">
         <div className="mx-auto flex w-full max-w-lg items-center justify-between px-4 py-3.5">
           <Link href="/dashboard" className="flex items-center gap-2.5">
-            <NakhatraMark className="size-6 text-gold" />
-            <span className="font-logo text-[13px] font-bold tracking-[0.18em] text-paper">
+            <NakhatraMark className="size-6 text-acc" />
+            <span className="font-logo text-[13px] font-bold tracking-[0.18em] text-fg">
               NAKHATRA
             </span>
           </Link>
           <Link
             href="/dashboard"
-            className="text-[13px] text-muted transition-colors hover:text-paper"
+            className="text-[13px] text-mut transition-colors hover:text-fg"
           >
             ← Dashboard
           </Link>

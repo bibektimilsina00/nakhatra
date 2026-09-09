@@ -428,7 +428,7 @@ export function ReadingDashboard() {
             type="button"
             onClick={() => router.back()}
             aria-label={t.readingBack}
-            className="grid size-9 shrink-0 place-items-center rounded-[8px] border border-white/10 text-muted transition-colors hover:border-white/25 hover:text-paper"
+            className="grid size-9 shrink-0 place-items-center rounded-[8px] border border-brd text-mut transition-colors hover:border-brd2 hover:text-fg"
           >
             <ArrowLeft className="size-4" />
           </button>
@@ -442,10 +442,10 @@ export function ReadingDashboard() {
             }}
             trigger={
               <span className="min-w-0">
-                <span className="block truncate text-[14px] font-bold text-paper">
+                <span className="block truncate text-[14px] font-bold text-fg">
                   {activeBirth.name}&apos;s Kundali
                 </span>
-                <span className="block truncate text-[11px] text-faint">
+                <span className="block truncate text-[11px] text-dim">
                   {activeBirth.date} · {activeBirth.time} · {activeBirth.place_label.split("(")[0]}
                 </span>
               </span>
@@ -636,37 +636,37 @@ export function ReadingDashboard() {
               </div>
 
               <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-xs">
-                <div className="flex justify-between border-b border-white/5 pb-1">
+                <div className="flex justify-between border-b border-brd pb-1">
                   <span className="text-[#4a3a22]">{t.moonSignLabel}</span>
                   <span className="font-bold text-[#26221b]">{getSignName(activeChart.avakhada?.sign || "Sagittarius", language)}</span>
                 </div>
-                <div className="flex justify-between border-b border-white/5 pb-1">
+                <div className="flex justify-between border-b border-brd pb-1">
                   <span className="text-[#4a3a22]">{t.nakshatraLabel}</span>
                   <span className="font-bold text-[#9B1C1C]">{getNakshatraName(activeChart.avakhada?.nakshatra || "Moola", language)}</span>
                 </div>
-                <div className="flex justify-between border-b border-white/5 pb-1">
+                <div className="flex justify-between border-b border-brd pb-1">
                   <span className="text-[#4a3a22]">{t.nakshatraPadaLabel}</span>
                   <span className="font-bold text-[#26221b]">
                     {language === "en" ? "Pada " : "चरण "}{toLocalizedDigit(activeChart.avakhada?.charan || 2, language)}
                   </span>
                 </div>
-                <div className="flex justify-between border-b border-white/5 pb-1">
+                <div className="flex justify-between border-b border-brd pb-1">
                   <span className="text-[#4a3a22]">{t.nameSyllableLabel}</span>
                   <span className="font-bold text-[#9B1C1C]">{activeChart.avakhada?.name_syllable || "Yo"}</span>
                 </div>
-                <div className="flex justify-between border-b border-white/5 pb-1">
+                <div className="flex justify-between border-b border-brd pb-1">
                   <span className="text-[#4a3a22]">{t.ganaLabel}</span>
                   <span className="font-bold text-[#26221b]">{getAvakhadaTerm(activeChart.avakhada?.gana || "Rakshasa", language)}</span>
                 </div>
-                <div className="flex justify-between border-b border-white/5 pb-1">
+                <div className="flex justify-between border-b border-brd pb-1">
                   <span className="text-[#4a3a22]">{t.nadiLabel}</span>
                   <span className="font-bold text-[#26221b]">{getAvakhadaTerm(activeChart.avakhada?.nadi || "Adi", language)}</span>
                 </div>
-                <div className="flex justify-between border-b border-white/5 pb-1">
+                <div className="flex justify-between border-b border-brd pb-1">
                   <span className="text-[#4a3a22]">{t.yoniLabel}</span>
                   <span className="font-bold text-[#26221b]">{getAvakhadaTerm(activeChart.avakhada?.yoni || "Rat", language)}</span>
                 </div>
-                <div className="flex justify-between border-b border-white/5 pb-1">
+                <div className="flex justify-between border-b border-brd pb-1">
                   <span className="text-[#4a3a22]">{t.varnaElementLabel}</span>
                   <span className="font-bold text-[#26221b]">
                     {getAvakhadaTerm(activeChart.avakhada?.varna || "Kshatriya", language)} · {getAvakhadaTerm(activeChart.avakhada?.tatva || "Fire", language)}
@@ -703,7 +703,7 @@ export function ReadingDashboard() {
                       </p>
                     </div>
 
-                    <div className="border-t border-white/5 pt-2">
+                    <div className="border-t border-brd pt-2">
                       <span className="font-bold text-[#10B981] flex items-center gap-1">
                         {t.luckyGemstones}
                       </span>
@@ -758,15 +758,15 @@ export function ReadingDashboard() {
                       <th className="pb-1">{t.thDegree}</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-white/5">
-                    <tr className="hover:bg-white/5 font-semibold text-[#26221b]">
+                  <tbody className="divide-y divide-brd">
+                    <tr className="hover:bg-fg/5 font-semibold text-[#26221b]">
                       <td className="py-1 text-[#9B1C1C]">{getPlanetName("Ascendant", language)}</td>
                       <td className="py-1">{getSignName(activeChart.lagna_sign, language)}</td>
                       <td className="py-1 text-[#26221b]">{language === "en" ? "H1" : "भाव १"}</td>
                       <td className="py-1 text-[#9B1C1C] font-mono">{fmtDeg(activeChart.lagna_degree, language)}</td>
                     </tr>
                     {activeChart.planets.map((p) => (
-                      <tr key={p.name} className="hover:bg-white/5">
+                      <tr key={p.name} className="hover:bg-fg/5">
                         <td className="py-1 font-semibold text-[#26221b]">
                           {getPlanetName(p.name, language)} {p.retrograde && <span className="text-[#9B1C1C]">{language === "en" ? " ℞" : " (व)"}</span>}
                         </td>
@@ -827,7 +827,7 @@ export function ReadingDashboard() {
           <div className="space-y-6">
 
             {/* Hero Audio Player Bar (Sticky beneath top nav) */}
-            <div className="sticky top-[57px] z-30 rounded-[8px] border border-white/10 bg-[#161B2B] p-4 space-y-3 shadow-xl backdrop-blur-md">
+            <div className="sticky top-[57px] z-30 rounded-[8px] border border-brd bg-panel p-4 space-y-3 shadow-xl backdrop-blur-md">
               {/* Top Row: Play Info on Left, Modern Action Icons on Top Right */}
               <div className="flex items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
@@ -875,7 +875,7 @@ export function ReadingDashboard() {
                         });
                       }
                     }}
-                    className="grid size-10 shrink-0 place-items-center rounded-[8px] bg-[#E5A93C] text-[#090A10] font-bold transition hover:bg-[#F3C766] active:scale-95 cursor-pointer shadow-md"
+                    className="grid size-10 shrink-0 place-items-center rounded-[8px] bg-acc text-onacc font-bold transition hover:bg-acc2 active:scale-95 cursor-pointer shadow-md"
                     title={isPlaying ? "Pause Audio" : "Play Audio"}
                   >
                     {isPlaying ? (
@@ -887,10 +887,10 @@ export function ReadingDashboard() {
 
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="font-serif text-sm font-bold text-[#F8FAFC]">{t.narrativeAudioTitle}</span>
+                      <span className="font-serif text-sm font-bold text-fg">{t.narrativeAudioTitle}</span>
                     </div>
-                    <p className="text-[11px] text-[#94A3B8]">
-                      Voice: <strong className="text-[#F3C766]">{ASTROLOGER_VOICES.find(v => v.id === selectedVoice)?.name || "Acharya Dev"}</strong> ({ASTROLOGER_VOICES.find(v => v.id === selectedVoice)?.description[language as "en"|"ne"|"hi"] || "HD MP3 Stream Engine"})
+                    <p className="text-[11px] text-mut">
+                      Voice: <strong className="text-acc2">{ASTROLOGER_VOICES.find(v => v.id === selectedVoice)?.name || "Acharya Dev"}</strong> ({ASTROLOGER_VOICES.find(v => v.id === selectedVoice)?.description[language as "en"|"ne"|"hi"] || "HD MP3 Stream Engine"})
                     </p>
                   </div>
                 </div>
@@ -913,7 +913,7 @@ export function ReadingDashboard() {
                     onClick={handleDownloadAudio}
                     title={t.downloadAudio}
                     aria-label={t.downloadAudio}
-                    className="group relative flex size-8 items-center justify-center rounded-[8px] border border-[#E5A93C]/40 bg-[#090A10] text-[#E5A93C] transition-all duration-200 hover:border-[#E5A93C] hover:bg-[#E5A93C] hover:text-[#090A10] hover:shadow-md hover:shadow-[#E5A93C]/20 active:scale-95 cursor-pointer"
+                    className="group relative flex size-8 items-center justify-center rounded-[8px] border border-acc/40 bg-inset text-acc transition-all duration-200 hover:border-acc hover:bg-acc hover:text-onacc hover:shadow-md hover:shadow-acc/20 active:scale-95 cursor-pointer"
                   >
                     <Download className="size-4 transition-transform duration-200 group-hover:scale-110" />
                   </button>
@@ -922,7 +922,7 @@ export function ReadingDashboard() {
                     onClick={handleShareAudio}
                     title={t.shareAudio}
                     aria-label={t.shareAudio}
-                    className="group relative flex size-8 items-center justify-center rounded-[8px] border border-white/10 bg-[#090A10] text-[#CBD5E1] transition-all duration-200 hover:border-[#E5A93C] hover:bg-[#161B2B] hover:text-[#F3C766] hover:shadow-md active:scale-95 cursor-pointer"
+                    className="group relative flex size-8 items-center justify-center rounded-[8px] border border-brd bg-inset text-mid transition-all duration-200 hover:border-acc hover:bg-panel hover:text-acc2 hover:shadow-md active:scale-95 cursor-pointer"
                   >
                     <Share2 className="size-4 transition-transform duration-200 group-hover:scale-110" />
                   </button>
@@ -930,14 +930,14 @@ export function ReadingDashboard() {
               </div>
 
               {/* Bottom Scrubber & Speed Controls Bar */}
-              <div className="flex flex-wrap items-center justify-between gap-3 border-t border-white/10 pt-2.5">
+              <div className="flex flex-wrap items-center justify-between gap-3 border-t border-brd pt-2.5">
                 <div className="flex items-center gap-3 flex-1">
                   <button
                     onClick={() => seekAudioBy(-10)}
                     title="Rewind 10 seconds"
-                    className="flex items-center gap-1 text-xs text-[#94A3B8] hover:text-[#F8FAFC] font-mono transition active:scale-95 cursor-pointer"
+                    className="flex items-center gap-1 text-xs text-mut hover:text-fg font-mono transition active:scale-95 cursor-pointer"
                   >
-                    <RotateCcw className="size-3 text-[#E5A93C]" />
+                    <RotateCcw className="size-3 text-acc" />
                     <span>10s</span>
                   </button>
 
@@ -950,16 +950,16 @@ export function ReadingDashboard() {
                         setAudioProgress(pct);
                         seekAudioToPercent(pct);
                       }}
-                      className="w-full h-2 rounded-[4px] bg-[#090A10] overflow-hidden cursor-pointer relative group border border-white/10"
+                      className="w-full h-2 rounded-[4px] bg-inset overflow-hidden cursor-pointer relative group border border-brd"
                       title="Click to seek"
                     >
                       <div
-                        className="h-full bg-[#E5A93C] transition-all duration-100 group-hover:bg-[#F3C766]"
+                        className="h-full bg-acc transition-all duration-100 group-hover:bg-acc2"
                         style={{ width: `${audioProgress}%` }}
                       />
                     </div>
                     {audioDuration > 0 && (
-                      <span className="text-[10px] font-mono text-[#94A3B8] shrink-0">
+                      <span className="text-[10px] font-mono text-mut shrink-0">
                         {formatAudioTime(audioCurrentTime)} / {formatAudioTime(audioDuration)}
                       </span>
                     )}
@@ -968,10 +968,10 @@ export function ReadingDashboard() {
                   <button
                     onClick={() => seekAudioBy(10)}
                     title="Forward 10 seconds"
-                    className="flex items-center gap-1 text-xs text-[#94A3B8] hover:text-[#F8FAFC] font-mono transition active:scale-95 cursor-pointer"
+                    className="flex items-center gap-1 text-xs text-mut hover:text-fg font-mono transition active:scale-95 cursor-pointer"
                   >
                     <span>10s</span>
-                    <RotateCw className="size-3 text-[#E5A93C]" />
+                    <RotateCw className="size-3 text-acc" />
                   </button>
                 </div>
 
@@ -991,32 +991,32 @@ export function ReadingDashboard() {
 
             {/* Audio Telemetry & Live Teleprompter Debug Panel */}
             {(isPlaying || audioDebugText) && (
-              <div className="rounded-[8px] border border-[#E5A93C]/40 bg-[#090A10] p-4 space-y-3 shadow-xl transition-all">
-                <div className="flex items-center justify-between border-b border-white/10 pb-2.5">
+              <div className="rounded-[8px] border border-acc/40 bg-inset p-4 space-y-3 shadow-xl transition-all">
+                <div className="flex items-center justify-between border-b border-brd pb-2.5">
                   <div className="flex items-center gap-2">
-                    <span className="inline-block size-2 rounded-full bg-[#E5A93C] animate-pulse" />
-                    <span className="font-mono text-xs font-bold uppercase tracking-wider text-[#F3C766] flex items-center gap-1.5">
-                      <Activity className="size-3.5 text-[#E5A93C]" /> {t.telemetryTitle}
+                    <span className="inline-block size-2 rounded-full bg-acc animate-pulse" />
+                    <span className="font-mono text-xs font-bold uppercase tracking-wider text-acc2 flex items-center gap-1.5">
+                      <Activity className="size-3.5 text-acc" /> {t.telemetryTitle}
                     </span>
                   </div>
 
                   <div className="flex items-center gap-2 text-[11px]">
-                    <span className="rounded bg-[#161B2B] px-2 py-0.5 font-mono text-[#94A3B8] border border-white/10">
+                    <span className="rounded bg-panel px-2 py-0.5 font-mono text-mut border border-brd">
                       Engine: {audioSource || "hd_mp3_audio_engine"}
                     </span>
-                    <span className="rounded bg-[#E5A93C] px-2 py-0.5 font-bold text-[#090A10]">
+                    <span className="rounded bg-acc px-2 py-0.5 font-bold text-onacc">
                       {isPlaying ? "PLAYING" : "PAUSED"}
                     </span>
                   </div>
                 </div>
 
                 <div className="space-y-1.5">
-                  <div className="flex items-center justify-between text-[11px] text-[#94A3B8]">
+                  <div className="flex items-center justify-between text-[11px] text-mut">
                     <span>{t.activeScriptLabel}</span>
-                    <span className="font-mono text-[#F3C766]">Playback Rate: {playbackSpeed}</span>
+                    <span className="font-mono text-acc2">Playback Rate: {playbackSpeed}</span>
                   </div>
-                  <div className="max-h-36 overflow-y-auto rounded-[6px] border border-white/10 bg-[#161B2B] p-3 text-xs leading-relaxed text-[#F8FAFC] font-sans selection:bg-[#E5A93C] selection:text-[#090A10]">
-                    <p className="border-l-2 border-[#E5A93C] pl-2.5 text-[#F3C766] font-medium leading-relaxed">
+                  <div className="max-h-36 overflow-y-auto rounded-[6px] border border-brd bg-panel p-3 text-xs leading-relaxed text-fg font-sans selection:bg-acc selection:text-onacc">
+                    <p className="border-l-2 border-acc pl-2.5 text-acc2 font-medium leading-relaxed">
                       {audioDebugText || "Synthesizing spoken audio script stream..."}
                     </p>
                   </div>
@@ -1039,8 +1039,8 @@ export function ReadingDashboard() {
                   onClick={() => filterCategory(id)}
                   className={`shrink-0 rounded-[8px] px-4 py-1.5 text-xs font-semibold transition ${
                     activeCategory === id
-                      ? "bg-[#E5A93C] text-[#090A10]"
-                      : "border border-white/10 bg-[#161B2B] text-[#94A3B8] hover:text-[#F8FAFC]"
+                      ? "bg-acc text-onacc"
+                      : "border border-brd bg-panel text-mut hover:text-fg"
                   }`}
                 >
                   {label}
@@ -1067,13 +1067,13 @@ export function ReadingDashboard() {
             </div>
 
             {/* Bottom Fixed Banner / Floating CTA */}
-            <div className="rounded-[8px] border border-[#E5A93C]/40 bg-[#161B2B] p-6 text-center space-y-3">
-              <p className="font-serif text-base font-bold text-[#F8FAFC]">
+            <div className="rounded-[8px] border border-acc/40 bg-panel p-6 text-center space-y-3">
+              <p className="font-serif text-base font-bold text-fg">
                 {t.bottomCtaQuestion}
               </p>
               <button
                 onClick={() => router.push("/reading/live")}
-                className="inline-flex items-center gap-2 rounded-[8px] bg-[#E5A93C] hover:bg-[#F3C766] px-6 py-3 text-sm font-bold text-[#090A10] transition cursor-pointer"
+                className="inline-flex items-center gap-2 rounded-[8px] bg-acc hover:bg-acc2 px-6 py-3 text-sm font-bold text-onacc transition cursor-pointer"
               >
                 <span>{t.bottomCtaBtn}</span>
               </button>
@@ -1087,37 +1087,37 @@ export function ReadingDashboard() {
       <div
         ref={pdfReportRef}
         style={{ display: "none" }}
-        className="bg-[#090A10] text-[#F8FAFC] p-8 space-y-8 font-sans max-w-[1100px] mx-auto"
+        className="bg-inset text-fg p-8 space-y-8 font-sans max-w-[1100px] mx-auto"
       >
-        <div className="border-b border-[#E5A93C] pb-6 flex items-center justify-between">
+        <div className="border-b border-acc pb-6 flex items-center justify-between">
           <div>
-            <h1 className="font-serif text-2xl font-bold text-[#F3C766]">
+            <h1 className="font-serif text-2xl font-bold text-acc2">
               {activeBirth.name}&apos;s Complete Janma Kundali Report
             </h1>
-            <p className="text-sm text-[#94A3B8] mt-1">
+            <p className="text-sm text-mut mt-1">
               {activeBirth.date} · {activeBirth.time} · {activeBirth.place_label}
             </p>
             {activeChart && (
-              <p className="text-xs text-[#E5A93C] mt-1">
+              <p className="text-xs text-acc mt-1">
                 {t.lagnaAscendant}: {getSignName(activeChart.lagna_sign, language)} · {t.moonSign}: {getSignName(activeChart.avakhada?.sign || "Sagittarius", language)} · {t.nakshatra}: {getNakshatraName(activeChart.avakhada?.nakshatra || "Moola", language)}
               </p>
             )}
           </div>
           <div className="text-right">
-            <span className="font-serif text-lg font-bold text-[#E5A93C]">Nakhatra</span>
-            <p className="text-xs text-[#94A3B8]">Sidereal Ephemeris Analysis</p>
+            <span className="font-serif text-lg font-bold text-acc">Nakhatra</span>
+            <p className="text-xs text-mut">Sidereal Ephemeris Analysis</p>
           </div>
         </div>
 
         {/* Dual Charts side-by-side */}
         {activeChart && (
           <div className="grid grid-cols-2 gap-6">
-            <div className="rounded-[8px] border border-white/10 bg-[#161B2B] p-4 space-y-2">
-              <h3 className="font-serif text-xs font-bold text-[#F3C766] uppercase tracking-wider">{t.d1LagnaChartTitle}</h3>
+            <div className="rounded-[8px] border border-brd bg-panel p-4 space-y-2">
+              <h3 className="font-serif text-xs font-bold text-acc2 uppercase tracking-wider">{t.d1LagnaChartTitle}</h3>
               <NorthIndianChart chart={activeChart} />
             </div>
-            <div className="rounded-[8px] border border-white/10 bg-[#161B2B] p-4 space-y-2">
-              <h3 className="font-serif text-xs font-bold text-[#F3C766] uppercase tracking-wider">{t.d9NavamshaChartTitle}</h3>
+            <div className="rounded-[8px] border border-brd bg-panel p-4 space-y-2">
+              <h3 className="font-serif text-xs font-bold text-acc2 uppercase tracking-wider">{t.d9NavamshaChartTitle}</h3>
               <NorthIndianChart chart={d9Chart} />
             </div>
           </div>
@@ -1126,26 +1126,26 @@ export function ReadingDashboard() {
         {/* Avakhada & Auspicious Tables side-by-side */}
         {activeChart && (
           <div className="grid grid-cols-2 gap-6 text-xs">
-            <div className="rounded-[8px] border border-white/10 bg-[#161B2B] p-4 space-y-3">
-              <h3 className="font-serif text-xs font-bold text-[#F8FAFC] uppercase tracking-wider flex items-center gap-1.5">
-                <Sparkles className="size-3.5 text-[#E5A93C]" /> {t.avakhadaTitle}
+            <div className="rounded-[8px] border border-brd bg-panel p-4 space-y-3">
+              <h3 className="font-serif text-xs font-bold text-fg uppercase tracking-wider flex items-center gap-1.5">
+                <Sparkles className="size-3.5 text-acc" /> {t.avakhadaTitle}
               </h3>
               <div className="grid grid-cols-2 gap-2">
-                <div><span className="text-[#94A3B8]">{t.moonSignLabel}</span> <strong>{getSignName(activeChart.avakhada?.sign || "Sagittarius", language)}</strong></div>
-                <div><span className="text-[#94A3B8]">{t.nakshatraLabel}</span> <strong>{getNakshatraName(activeChart.avakhada?.nakshatra || "Moola", language)}</strong></div>
-                <div><span className="text-[#94A3B8]">{t.ganaLabel}</span> <strong>{getAvakhadaTerm(activeChart.avakhada?.gana || "Rakshasa", language)}</strong></div>
-                <div><span className="text-[#94A3B8]">{t.nadiLabel}</span> <strong>{getAvakhadaTerm(activeChart.avakhada?.nadi || "Adi", language)}</strong></div>
-                <div><span className="text-[#94A3B8]">{t.yoniLabel}</span> <strong>{getAvakhadaTerm(activeChart.avakhada?.yoni || "Rat", language)}</strong></div>
-                <div><span className="text-[#94A3B8]">{t.varnaElementLabel}</span> <strong>{getAvakhadaTerm(activeChart.avakhada?.varna || "Kshatriya", language)} · {getAvakhadaTerm(activeChart.avakhada?.tatva || "Fire", language)}</strong></div>
+                <div><span className="text-mut">{t.moonSignLabel}</span> <strong>{getSignName(activeChart.avakhada?.sign || "Sagittarius", language)}</strong></div>
+                <div><span className="text-mut">{t.nakshatraLabel}</span> <strong>{getNakshatraName(activeChart.avakhada?.nakshatra || "Moola", language)}</strong></div>
+                <div><span className="text-mut">{t.ganaLabel}</span> <strong>{getAvakhadaTerm(activeChart.avakhada?.gana || "Rakshasa", language)}</strong></div>
+                <div><span className="text-mut">{t.nadiLabel}</span> <strong>{getAvakhadaTerm(activeChart.avakhada?.nadi || "Adi", language)}</strong></div>
+                <div><span className="text-mut">{t.yoniLabel}</span> <strong>{getAvakhadaTerm(activeChart.avakhada?.yoni || "Rat", language)}</strong></div>
+                <div><span className="text-mut">{t.varnaElementLabel}</span> <strong>{getAvakhadaTerm(activeChart.avakhada?.varna || "Kshatriya", language)} · {getAvakhadaTerm(activeChart.avakhada?.tatva || "Fire", language)}</strong></div>
               </div>
             </div>
 
             {(() => {
               const aus = getLocalizedAuspiciousElements(activeChart.lagna_sign, language);
               return (
-                <div className="rounded-[8px] border border-white/10 bg-[#161B2B] p-4 space-y-3">
-                  <h3 className="font-serif text-xs font-bold text-[#F8FAFC] uppercase tracking-wider flex items-center gap-1.5">
-                    <Gem className="size-3.5 text-[#E5A93C]" /> {t.auspiciousTitle}
+                <div className="rounded-[8px] border border-brd bg-panel p-4 space-y-3">
+                  <h3 className="font-serif text-xs font-bold text-fg uppercase tracking-wider flex items-center gap-1.5">
+                    <Gem className="size-3.5 text-acc" /> {t.auspiciousTitle}
                   </h3>
                   <div className="space-y-1.5 text-xs">
                     <p><strong className="text-[#10B981]">{t.luckyColors}</strong> {aus.luckyColors}</p>
@@ -1161,22 +1161,22 @@ export function ReadingDashboard() {
 
         {/* Planetary Table */}
         {activeChart && (
-          <div className="rounded-[8px] border border-white/10 bg-[#161B2B] p-4 space-y-3">
-            <h3 className="font-serif text-xs font-bold text-[#F8FAFC] uppercase tracking-wider flex items-center gap-1.5">
-              <Orbit className="size-3.5 text-[#E5A93C]" /> {t.planetaryPositionsTitle}
+          <div className="rounded-[8px] border border-brd bg-panel p-4 space-y-3">
+            <h3 className="font-serif text-xs font-bold text-fg uppercase tracking-wider flex items-center gap-1.5">
+              <Orbit className="size-3.5 text-acc" /> {t.planetaryPositionsTitle}
             </h3>
             <table className="w-full text-left text-xs">
               <thead>
-                <tr className="border-b border-white/10 text-[#94A3B8]">
+                <tr className="border-b border-brd text-mut">
                   <th className="pb-1">{t.thPlanet}</th>
                   <th className="pb-1">{t.thSign}</th>
                   <th className="pb-1">{t.thHouse}</th>
                   <th className="pb-1">{t.thDegree}</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/5">
+              <tbody className="divide-y divide-brd">
                 <tr>
-                  <td className="py-1 text-[#F3C766]">{getPlanetName("Ascendant", language)}</td>
+                  <td className="py-1 text-acc2">{getPlanetName("Ascendant", language)}</td>
                   <td className="py-1">{getSignName(activeChart.lagna_sign, language)}</td>
                   <td className="py-1">{language === "en" ? "H1" : "भाव १"}</td>
                   <td className="py-1 font-mono">{fmtDeg(activeChart.lagna_degree, language)}</td>
@@ -1196,19 +1196,19 @@ export function ReadingDashboard() {
 
         {/* ALL Narrative Report Sections - Complete without tab filtering */}
         <div className="space-y-6">
-          <h2 className="font-serif text-lg font-bold text-[#F3C766] border-b border-white/10 pb-2">
+          <h2 className="font-serif text-lg font-bold text-acc2 border-b border-brd pb-2">
             {t.tabAnalysis} (Complete Kundali Analysis)
           </h2>
           {reportSections.map((section) => (
-            <div key={section.id} className="rounded-[8px] border border-white/10 bg-[#161B2B] p-5 space-y-3">
+            <div key={section.id} className="rounded-[8px] border border-brd bg-panel p-5 space-y-3">
               <div className="flex items-center gap-2">
-                <span className="grid size-7 place-items-center rounded-[6px] bg-[#090A10] border border-white/10">
-                  <SectionIcon sectionId={section.id} className="size-4 text-[#E5A93C]" />
+                <span className="grid size-7 place-items-center rounded-[6px] bg-inset border border-brd">
+                  <SectionIcon sectionId={section.id} className="size-4 text-acc" />
                 </span>
-                <h3 className="font-serif text-base font-bold text-[#F8FAFC]">{section.title}</h3>
+                <h3 className="font-serif text-base font-bold text-fg">{section.title}</h3>
               </div>
-              <p className="text-xs text-[#F3C766] font-semibold">{section.summary}</p>
-              <div className="space-y-2 text-xs leading-relaxed text-[#CBD5E1]">
+              <p className="text-xs text-acc2 font-semibold">{section.summary}</p>
+              <div className="space-y-2 text-xs leading-relaxed text-mid">
                 {section.content?.map((para: string, idx: number) => (
                   <p key={idx}>{para}</p>
                 ))}
@@ -1222,18 +1222,18 @@ export function ReadingDashboard() {
       <div className="fixed bottom-6 right-6 z-40">
         <button
           onClick={() => router.push("/reading/live")}
-          className="group flex items-center gap-2.5 rounded-[8px] bg-[#E5A93C] hover:bg-[#F3C766] px-4 py-3 text-xs font-bold text-[#090A10] shadow-2xl shadow-[#E5A93C]/40 border border-[#F3C766]/50 transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer"
+          className="group flex items-center gap-2.5 rounded-[8px] bg-acc hover:bg-acc2 px-4 py-3 text-xs font-bold text-onacc shadow-2xl shadow-acc/40 border border-acc2/50 transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer"
           title={t.talkToAstrologer}
         >
-          <MessageSquareText className="size-4 text-[#090A10]" />
+          <MessageSquareText className="size-4 text-onacc" />
           <span>{language === "ne" ? "AI ज्योतिषीसँग बोल्नुहोस् (निःशुल्क)" : language === "hi" ? "AI ज्योतिषी से बात करें (निःशुल्क)" : "Talk to AI Astrologer (FREE)"}</span>
         </button>
       </div>
 
       {/* Floating Toast Notification */}
       {toastMessage && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 rounded-[8px] border border-[#E5A93C] bg-[#161B2B] px-5 py-2.5 text-xs font-bold text-[#F3C766] shadow-2xl animate-fade-in flex items-center gap-2">
-          <Sparkles className="size-4 text-[#E5A93C]" />
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 rounded-[8px] border border-acc bg-panel px-5 py-2.5 text-xs font-bold text-acc2 shadow-2xl animate-fade-in flex items-center gap-2">
+          <Sparkles className="size-4 text-acc" />
           <span>{toastMessage}</span>
         </div>
       )}

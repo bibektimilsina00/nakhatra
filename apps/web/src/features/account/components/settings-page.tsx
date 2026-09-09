@@ -98,7 +98,7 @@ export function SettingsPage() {
       </AccountCard>
 
       <AccountCard title={t.acctPrivacy} note={t.acctPrivacyNote}>
-        <Link href="/privacy" className="text-[12.5px] text-gold hover:underline">
+        <Link href="/privacy" className="text-[12.5px] text-acc hover:underline">
           {t.acctPrivacyLink}
         </Link>
       </AccountCard>

@@ -55,7 +55,7 @@ export function KundaliPanel() {
 /** Same box as the form, so nothing shifts when it swaps in. */
 function FormSkeleton() {
   return (
-    <div className="mx-auto h-[520px] w-full max-w-lg animate-pulse rounded-[8px] border border-white/10 bg-[#161B2B]" />
+    <div className="mx-auto h-[520px] w-full max-w-lg animate-pulse rounded-[8px] border border-brd bg-panel" />
   );
 }
 

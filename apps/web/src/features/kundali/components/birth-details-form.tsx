@@ -125,13 +125,13 @@ export function BirthDetailsForm({ onSubmit, pending, serverFieldErrors, chrome 
       onSubmit={handleSubmit}
       className={
         chrome
-          ? "mx-auto w-full max-w-lg rounded-[8px] border border-white/10 bg-[#161B2B] p-6 sm:p-7"
+          ? "mx-auto w-full max-w-lg rounded-[8px] border border-brd bg-panel p-6 sm:p-7"
           : "w-full"
       }
     >
       <div className="mb-5">
-        <h2 className="font-serif text-xl font-bold text-[#F8FAFC]">{t.birthDetails}</h2>
-        <p className="mt-1 text-xs leading-relaxed text-[#94A3B8]">
+        <h2 className="font-serif text-xl font-bold text-fg">{t.birthDetails}</h2>
+        <p className="mt-1 text-xs leading-relaxed text-mut">
           {t.birthTimeNote}
         </p>
       </div>
@@ -146,8 +146,8 @@ export function BirthDetailsForm({ onSubmit, pending, serverFieldErrors, chrome 
               if (errors.name) setErrors({ ...errors, name: "" });
             }}
             placeholder={t.fullName}
-            className={`w-full rounded-[8px] border bg-[#090A10] px-3.5 py-2.5 text-xs text-[#F8FAFC] placeholder-[#94A3B8]/40 transition focus:outline-none ${
-              shown.name ? "border-rose-500" : "border-white/10 focus:border-[#E5A93C]"
+            className={`w-full rounded-[8px] border bg-inset px-3.5 py-2.5 text-xs text-fg placeholder-mut/40 transition focus:outline-none ${
+              shown.name ? "border-rose-500" : "border-brd focus:border-acc"
             }`}
           />
         </Field>
@@ -200,7 +200,7 @@ export function BirthDetailsForm({ onSubmit, pending, serverFieldErrors, chrome 
         <button
           type="submit"
           disabled={pending}
-          className="mt-1 flex w-full items-center justify-center gap-2 rounded-[8px] bg-[#E5A93C] py-3.5 text-sm font-bold text-[#090A10] shadow-md transition hover:bg-[#F3C766] disabled:opacity-50"
+          className="mt-1 flex w-full items-center justify-center gap-2 rounded-[8px] bg-acc py-3.5 text-sm font-bold text-onacc shadow-md transition hover:bg-acc2 disabled:opacity-50"
         >
           <span>{pending ? t.calculating : t.calculateKundali}</span>
           {!pending && <span className="text-base">→</span>}
@@ -223,8 +223,8 @@ function Field({
 }) {
   return (
     <div>
-      <span className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-[#CBD5E1]">
-        {label} {required && <span className="text-[#E5A93C]">*</span>}
+      <span className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-mid">
+        {label} {required && <span className="text-acc">*</span>}
       </span>
       {children}
       {error && <p className="mt-1 text-xs font-medium text-rose-400">{error}</p>}

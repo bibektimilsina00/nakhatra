@@ -98,15 +98,15 @@ export function CreateKundaliDialog({
           role="dialog"
           aria-modal="true"
           aria-label={t.dashNewKundali}
-          className="rounded-[12px] border border-white/12 bg-ink2 shadow-2xl shadow-black/60"
+          className="rounded-[12px] border border-white/12 bg-inset shadow-2xl shadow-black/60"
         >
           <div className="flex items-center justify-between rounded-t-[12px] border-b border-white/[0.08] px-5 py-4">
-            <h2 className="text-[15px] font-semibold text-paper">{t.dashNewKundali}</h2>
+            <h2 className="text-[15px] font-semibold text-fg">{t.dashNewKundali}</h2>
             <button
               type="button"
               onClick={onClose}
               aria-label={t.dashClose}
-              className="rounded-[7px] p-1.5 text-muted transition-colors hover:bg-white/[0.06] hover:text-paper"
+              className="rounded-[7px] p-1.5 text-mut transition-colors hover:bg-fg/[0.06] hover:text-fg"
             >
               <X className="size-4" />
             </button>

@@ -59,7 +59,7 @@ export function ChartPicker({
   return (
     <div
       ref={panel}
-      className={`relative rounded-[12px] border bg-card p-5 transition-colors ${
+      className={`relative rounded-[12px] border bg-panel p-5 transition-colors ${
         selected ? tone.ring : "border-white/[0.09]"
       }`}
     >
@@ -72,7 +72,7 @@ export function ChartPicker({
           <button
             type="button"
             onClick={() => setOpen((v) => !v)}
-            className="text-[12px] text-muted transition-colors hover:text-paper"
+            className="text-[12px] text-mut transition-colors hover:text-fg"
           >
             {t.milanChange}
           </button>
@@ -83,12 +83,12 @@ export function ChartPicker({
         <div className="mt-5 flex items-center gap-4">
           <ChartAvatar id={selected.id} size="lg" />
           <div className="min-w-0">
-            <p className="truncate text-[16px] font-semibold text-paper">{selected.name}</p>
-            <p className="mt-1.5 flex items-center gap-1.5 truncate text-[12px] text-faint">
+            <p className="truncate text-[16px] font-semibold text-fg">{selected.name}</p>
+            <p className="mt-1.5 flex items-center gap-1.5 truncate text-[12px] text-dim">
               <Calendar className="size-3 shrink-0" />
               {selected.dob} · {selected.tob}
             </p>
-            <p className="mt-1 flex items-center gap-1.5 truncate text-[12px] text-faint">
+            <p className="mt-1 flex items-center gap-1.5 truncate text-[12px] text-dim">
               <MapPin className="size-3 shrink-0" />
               {selected.place_name}
             </p>
@@ -99,30 +99,30 @@ export function ChartPicker({
           type="button"
           onClick={() => setOpen((v) => !v)}
           aria-expanded={open}
-          className="group mt-5 flex w-full items-center gap-4 rounded-[10px] border border-dashed border-white/[0.14] p-4 text-left transition-colors hover:border-gold/45 hover:bg-ink"
+          className="group mt-5 flex w-full items-center gap-4 rounded-[10px] border border-dashed border-white/[0.14] p-4 text-left transition-colors hover:border-acc/45 hover:bg-app"
         >
           <span
             className={`grid size-14 shrink-0 place-items-center rounded-[10px] border transition-colors ${tone.ring} ${tone.glow} ${tone.text}`}
           >
             <RoleIcon className="size-6" />
           </span>
-          <span className="min-w-0 flex-1 text-[14px] font-medium text-muted transition-colors group-hover:text-paper">
+          <span className="min-w-0 flex-1 text-[14px] font-medium text-mut transition-colors group-hover:text-fg">
             {t.milanChoose}
           </span>
-          <ChevronDown className={`size-4 shrink-0 text-faint transition-transform ${open ? "rotate-180" : ""}`} />
+          <ChevronDown className={`size-4 shrink-0 text-dim transition-transform ${open ? "rotate-180" : ""}`} />
         </button>
       )}
 
       {open && (
-        <div className="absolute inset-x-5 top-full z-20 -mt-1 rounded-[10px] border border-white/12 bg-ink2 p-2 shadow-2xl shadow-black/60">
+        <div className="absolute inset-x-5 top-full z-20 -mt-1 rounded-[10px] border border-white/12 bg-inset p-2 shadow-2xl shadow-black/60">
           {kundalis.length > 4 && (
             <label className="relative mb-2 flex items-center">
-              <Search className="pointer-events-none absolute left-2.5 size-3.5 text-faint" />
+              <Search className="pointer-events-none absolute left-2.5 size-3.5 text-dim" />
               <input
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder={t.milanSearch}
-                className="w-full rounded-[8px] border border-white/[0.09] bg-card py-2 pl-8 pr-2 text-[12.5px] text-paper placeholder-faint focus:border-gold/45 focus:outline-none"
+                className="w-full rounded-[8px] border border-white/[0.09] bg-panel py-2 pl-8 pr-2 text-[12.5px] text-fg placeholder-faint focus:border-acc/45 focus:outline-none"
               />
             </label>
           )}
@@ -143,20 +143,20 @@ export function ChartPicker({
                     }}
                     className={`flex w-full items-center gap-3 rounded-[8px] border p-2.5 text-left transition-colors disabled:pointer-events-none disabled:opacity-40 ${
                       chosen
-                        ? `${tone.ring} bg-card`
-                        : "border-transparent hover:border-white/[0.09] hover:bg-card"
+                        ? `${tone.ring} bg-panel`
+                        : "border-transparent hover:border-white/[0.09] hover:bg-panel"
                     }`}
                   >
                     <ChartAvatar id={k.id} size="sm" />
                     <span className="min-w-0 flex-1">
-                      <span className="block truncate text-[13.5px] font-medium text-paper">
+                      <span className="block truncate text-[13.5px] font-medium text-fg">
                         {k.name}
                       </span>
-                      <span className="mt-0.5 block truncate text-[11px] text-faint">
+                      <span className="mt-0.5 block truncate text-[11px] text-dim">
                         {k.dob} · {k.place_name}
                       </span>
                     </span>
-                    {chosen && <Check className="size-4 shrink-0 text-gold" />}
+                    {chosen && <Check className="size-4 shrink-0 text-acc" />}
                   </button>
                 </li>
               );
@@ -164,7 +164,7 @@ export function ChartPicker({
           </ul>
 
           {shown.length === 0 && (
-            <p className="px-2.5 py-4 text-center text-[12.5px] text-faint">{t.milanNoCharts}</p>
+            <p className="px-2.5 py-4 text-center text-[12.5px] text-dim">{t.milanNoCharts}</p>
           )}
 
           <button
@@ -173,7 +173,7 @@ export function ChartPicker({
               setOpen(false);
               onCreate();
             }}
-            className="mt-2 flex w-full items-center gap-2.5 rounded-[8px] border-t border-white/[0.07] px-2.5 py-3 text-[12.5px] text-muted transition-colors hover:text-gold"
+            className="mt-2 flex w-full items-center gap-2.5 rounded-[8px] border-t border-white/[0.07] px-2.5 py-3 text-[12.5px] text-mut transition-colors hover:text-acc"
           >
             <span className="grid size-9 shrink-0 place-items-center rounded-[8px] border border-dashed border-white/[0.14]">
               <Plus className="size-4" />

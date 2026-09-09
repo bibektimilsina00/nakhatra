@@ -39,7 +39,7 @@ export function TimePicker({
           max={12}
           onChange={(v) => emit(v, minute, meridiem)}
         />
-        <span className="self-center pb-1 font-display text-xl text-muted">:</span>
+        <span className="self-center pb-1 font-display text-xl text-mut">:</span>
         <Spinner
           label="Minute"
           value={minute}
@@ -57,7 +57,7 @@ export function TimePicker({
               className={`rounded-sm border px-3 py-1 text-xs transition ${
                 meridiem === m
                   ? "border-accent-strong/50 bg-accent-strong/12 text-accent-ink"
-                  : "border-line text-muted hover:border-muted/40"
+                  : "border-line text-mut hover:border-muted/40"
               }`}
             >
               {m}
@@ -99,7 +99,7 @@ function Spinner({
         <button
           type="button"
           onClick={() => step(-1)}
-          className="px-2.5 py-2 text-muted transition hover:text-fg"
+          className="px-2.5 py-2 text-mut transition hover:text-fg"
           aria-label={`${label} down`}
         >
           −
@@ -116,7 +116,7 @@ function Spinner({
         <button
           type="button"
           onClick={() => step(1)}
-          className="px-2.5 py-2 text-muted transition hover:text-fg"
+          className="px-2.5 py-2 text-mut transition hover:text-fg"
           aria-label={`${label} up`}
         >
           +

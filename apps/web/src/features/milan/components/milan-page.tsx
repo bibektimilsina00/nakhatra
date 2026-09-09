@@ -97,11 +97,11 @@ export function MilanPage() {
     <AppShell>
       <main className="mx-auto w-full max-w-[1100px] px-5 pb-24 pt-10 sm:px-8">
         <header className="max-w-2xl">
-          <span className={`text-[11px] text-gold ${eyebrow}`}>{t.milanEyebrow}</span>
-          <h1 className="mt-3 text-[26px] font-bold leading-tight text-paper sm:text-[32px]">
+          <span className={`text-[11px] text-acc ${eyebrow}`}>{t.milanEyebrow}</span>
+          <h1 className="mt-3 text-[26px] font-bold leading-tight text-fg sm:text-[32px]">
             {t.milanTitle}
           </h1>
-          <p className="mt-3 text-[14.5px] leading-[1.7] text-muted">{t.milanSub}</p>
+          <p className="mt-3 text-[14.5px] leading-[1.7] text-mut">{t.milanSub}</p>
         </header>
 
         {match.data ? (
@@ -116,8 +116,8 @@ export function MilanPage() {
           </div>
         ) : isLoading ? (
           <div className="mt-10 grid gap-4 md:grid-cols-2">
-            <div className="h-[188px] animate-pulse rounded-[12px] border border-white/[0.07] bg-card" />
-            <div className="h-[188px] animate-pulse rounded-[12px] border border-white/[0.07] bg-card" />
+            <div className="h-[188px] animate-pulse rounded-[12px] border border-white/[0.07] bg-panel" />
+            <div className="h-[188px] animate-pulse rounded-[12px] border border-white/[0.07] bg-panel" />
           </div>
         ) : (
           <>
@@ -147,7 +147,7 @@ export function MilanPage() {
                 />
               </div>
               <span className="pointer-events-none absolute left-1/2 top-1/2 hidden -translate-x-1/2 -translate-y-1/2 md:block">
-                <span className="grid size-11 place-items-center rounded-full border border-white/[0.09] bg-ink text-gold">
+                <span className="grid size-11 place-items-center rounded-full border border-white/[0.09] bg-app text-acc">
                   <Heart className="size-4" />
                 </span>
               </span>
@@ -158,7 +158,7 @@ export function MilanPage() {
                 type="button"
                 disabled={!ready || match.isPending}
                 onClick={run}
-                className="inline-flex w-full max-w-xs items-center justify-center gap-2 rounded-[8px] bg-gold px-6 py-3 text-[14px] font-bold text-ink transition-colors hover:bg-gold2 disabled:pointer-events-none disabled:opacity-40"
+                className="inline-flex w-full max-w-xs items-center justify-center gap-2 rounded-[8px] bg-acc px-6 py-3 text-[14px] font-bold text-ink transition-colors hover:bg-acc2 disabled:pointer-events-none disabled:opacity-40"
               >
                 {match.isPending ? t.milanMatching : t.milanMatch}
                 {!match.isPending && <ArrowRight className="size-4" />}
@@ -167,7 +167,7 @@ export function MilanPage() {
               {/* Says which half is missing rather than leaving you to guess
                   why the button is dead. */}
               {!ready && (
-                <p className="text-[12.5px] text-faint">
+                <p className="text-[12.5px] text-dim">
                   {sameChart ? t.milanSameChart : t.milanPickBoth}
                 </p>
               )}
@@ -197,13 +197,13 @@ function WhatItChecks() {
 
   return (
     <section className="mt-16">
-      <h2 className={`text-[10.5px] text-gold ${label}`}>{t.milanWhatWeCheck}</h2>
+      <h2 className={`text-[10.5px] text-acc ${label}`}>{t.milanWhatWeCheck}</h2>
 
       <div className="mt-4 grid gap-px overflow-hidden rounded-[10px] bg-white/[0.08] sm:grid-cols-2 lg:grid-cols-4">
         {KUTAS.map(([name, points]) => (
-          <div key={name} className="flex items-baseline justify-between gap-2 bg-ink px-4 py-3.5">
-            <span className="text-[13px] text-muted">{name}</span>
-            <span className="text-[12px] text-faint">
+          <div key={name} className="flex items-baseline justify-between gap-2 bg-app px-4 py-3.5">
+            <span className="text-[13px] text-mut">{name}</span>
+            <span className="text-[12px] text-dim">
               {points} <span className="text-[10px]">{t.milanGuna}</span>
             </span>
           </div>
