@@ -10,6 +10,14 @@ import { loadKundaliFromStorage } from "@/features/kundali/store/kundali-store";
 import type { BirthDetailsIn, Chart, Planet } from "@/features/kundali/types";
 import { useTranslation } from "@/lib/i18n/language-context";
 import {
+  KARANA_DEV,
+  PAKSHA_DEV,
+  TITHI_DEV,
+  VARA_DEV,
+  YOGA_DEV,
+  dev,
+} from "@/lib/i18n/patro-sanskrit";
+import {
   getNakshatraName,
   getPlanetName,
   getSignName,
@@ -227,7 +235,14 @@ function MoonCard({ chart }: { chart: Chart }) {
       <div className="flex items-center gap-4">
         <MoonPhase3D phaseDeg={moonElongation(chart)} className="size-16 shrink-0" />
         <div className="min-w-0 flex-1">
-          <Row k={sk ? "तिथि" : "Tithi"} v={`${p.paksha} ${p.tithi_name}`} />
+          <Row
+          k={sk ? "तिथि" : "Tithi"}
+          v={
+            sk
+              ? `${dev(PAKSHA_DEV, p.paksha)} ${dev(TITHI_DEV, p.tithi_name)}`
+              : `${p.paksha} ${p.tithi_name}`
+          }
+        />
           <Row k={sk ? "चन्द्र राशि" : "Moon sign"} v={getSignName(p.moon_sign, language)} />
           <Row
             k={sk ? "जन्म नक्षत्र" : "Janma nakshatra"}
@@ -250,9 +265,9 @@ function LagnaCard({ chart }: { chart: Chart }) {
         k={sk ? "लग्न" : "Ascendant"}
         v={`${getSignName(chart.lagna_sign, language)} ${n(dms(chart.lagna_degree))}`}
       />
-      <Row k={sk ? "वार" : "Vara"} v={p.vara} />
-      <Row k={sk ? "योग" : "Yoga"} v={p.yoga} />
-      <Row k={sk ? "करण" : "Karana"} v={p.karana} />
+      <Row k={sk ? "वार" : "Vara"} v={sk ? `${dev(VARA_DEV, p.vara)}वार` : p.vara} />
+      <Row k={sk ? "योग" : "Yoga"} v={sk ? dev(YOGA_DEV, p.yoga) : p.yoga} />
+      <Row k={sk ? "करण" : "Karana"} v={sk ? dev(KARANA_DEV, p.karana) : p.karana} />
       {p.sunrise && (
         <Row k={sk ? "सूर्योदय" : "Sunrise"} v={p.sunrise.slice(11, 16)} />
       )}
