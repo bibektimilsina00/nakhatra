@@ -90,8 +90,8 @@ export function BirthSky() {
         </div>
       }
     >
-      <main className="mx-auto w-full max-w-[1500px] px-4 py-6 lg:px-8">
-        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-start">
+      <main className="w-full px-2 py-2 lg:px-3">
+        <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-start">
           {/* The wheel — edge to edge, the chrome floats over it */}
           <div className="relative overflow-hidden rounded-[12px] border border-white/10 bg-[#090A10]">
             {/* view toggles live on the sky itself */}

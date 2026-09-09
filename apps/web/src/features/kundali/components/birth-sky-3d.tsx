@@ -810,7 +810,7 @@ export function BirthSky3D({
   }, [chart, language]);
 
   return (
-    <div className="relative h-[72vh] min-h-[480px] w-full overflow-hidden rounded-[12px] sm:h-[80vh]">
+    <div className="relative h-[76vh] min-h-[500px] w-full overflow-hidden rounded-[12px] sm:h-[86vh]">
       <canvas ref={canvasRef} className="absolute inset-0 h-full w-full cursor-grab" />
       <div
         ref={panelRef}
