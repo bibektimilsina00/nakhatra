@@ -17,6 +17,7 @@ import { useEffect, useRef } from "react";
 import type { Chart } from "@/features/kundali/types";
 import { useTranslation } from "@/lib/i18n/language-context";
 import {
+  getNakshatraName,
   getPlanetAbbrev,
   getSignName,
   toLocalizedDigit,
@@ -59,6 +60,41 @@ const SHELL: Record<string, { r: number; size: number }> = {
   Jupiter: { r: 150, size: 9 },
   Saturn: { r: 174, size: 7.8 },
 };
+
+/** The 27 yogataras — the real star each nakshatra is anchored to, J2000
+ *  right ascension and declination in degrees. Catalog reference data, like
+ *  the sign glyphs; the engine's nakshatra is the equal 13°20' arc, and
+ *  these are the stars those arcs were drawn around. `bright` marks the
+ *  first-magnitude anchors. */
+const YOGATARA: { name: string; ra: number; dec: number; bright?: boolean }[] = [
+  { name: "Ashwini", ra: 28.66, dec: 20.81 },
+  { name: "Bharani", ra: 42.5, dec: 27.26 },
+  { name: "Krittika", ra: 56.87, dec: 24.11 },
+  { name: "Rohini", ra: 68.98, dec: 16.51, bright: true },       // Aldebaran
+  { name: "Mrigashira", ra: 83.78, dec: 9.93 },
+  { name: "Ardra", ra: 88.79, dec: 7.41, bright: true },         // Betelgeuse
+  { name: "Punarvasu", ra: 116.33, dec: 28.03, bright: true },   // Pollux
+  { name: "Pushya", ra: 131.17, dec: 18.15 },
+  { name: "Ashlesha", ra: 131.69, dec: 6.42 },
+  { name: "Magha", ra: 152.09, dec: 11.97, bright: true },       // Regulus
+  { name: "Purva Phalguni", ra: 168.53, dec: 20.52 },
+  { name: "Uttara Phalguni", ra: 177.26, dec: 14.57 },
+  { name: "Hasta", ra: 187.47, dec: -16.52 },
+  { name: "Chitra", ra: 201.3, dec: -11.16, bright: true },      // Spica
+  { name: "Swati", ra: 213.92, dec: 19.18, bright: true },       // Arcturus
+  { name: "Vishakha", ra: 222.72, dec: -16.04 },
+  { name: "Anuradha", ra: 240.08, dec: -22.62 },
+  { name: "Jyeshtha", ra: 247.35, dec: -26.43, bright: true },   // Antares
+  { name: "Moola", ra: 263.4, dec: -37.1 },
+  { name: "Purva Ashadha", ra: 275.25, dec: -29.83 },
+  { name: "Uttara Ashadha", ra: 283.82, dec: -26.3 },
+  { name: "Shravana", ra: 297.7, dec: 8.87, bright: true },      // Altair
+  { name: "Dhanishta", ra: 309.39, dec: 14.6 },
+  { name: "Shatabhisha", ra: 343.15, dec: -7.58 },
+  { name: "Purva Bhadrapada", ra: 346.19, dec: 15.21 },
+  { name: "Uttara Bhadrapada", ra: 3.31, dec: 15.18 },
+  { name: "Revati", ra: 18.43, dec: 7.58 },
+];
 
 const RING_IN = 196;
 const RING_OUT = 234;
@@ -452,6 +488,60 @@ export function BirthSky3D({
           new THREE.LineBasicMaterial({ color: 0x7a9cc6, transparent: true, opacity: 0.3 }),
         );
         nakGroup.add(tick);
+      }
+    }
+    /* ── the yogataras: each nakshatra's actual star ──────────────────
+       J2000 equatorial → ecliptic (obliquity 23.4393°), then into this
+       chart's sidereal frame by subtracting its own ayanamsa — the same
+       frame the ring is drawn in. The proof the transform is right: Lahiri
+       is defined by holding Spica at 180°, so Chitra's star must land
+       dead-centre of Chitra's arc. */
+    {
+      const EPS = (23.4393 * Math.PI) / 180;
+      const R_STAR = 320;
+      for (const star of YOGATARA) {
+        const a = (star.ra * Math.PI) / 180;
+        const d = (star.dec * Math.PI) / 180;
+        const sinBeta =
+          Math.sin(d) * Math.cos(EPS) - Math.cos(d) * Math.sin(EPS) * Math.sin(a);
+        const beta = Math.asin(sinBeta);
+        const lonTropical =
+          (Math.atan2(
+            Math.sin(a) * Math.cos(EPS) + Math.tan(d) * Math.sin(EPS),
+            Math.cos(a),
+          ) * 180) / Math.PI;
+        const lonSidereal = (lonTropical - chart.ayanamsa_value + 360) % 360;
+        const pos = at(lonSidereal, R_STAR * Math.cos(beta), R_STAR * sinBeta);
+
+        const glowSize = star.bright ? 30 : 18;
+        const cnv = document.createElement("canvas");
+        cnv.width = cnv.height = 64;
+        const g3 = cnv.getContext("2d")!;
+        const grad3 = g3.createRadialGradient(32, 32, 1, 32, 32, 32);
+        grad3.addColorStop(0, "rgba(255,255,255,0.95)");
+        grad3.addColorStop(0.2, star.bright ? "rgba(243,199,102,0.6)" : "rgba(201,212,230,0.5)");
+        grad3.addColorStop(1, "rgba(201,212,230,0)");
+        g3.fillStyle = grad3;
+        g3.fillRect(0, 0, 64, 64);
+        const dot = new THREE.Sprite(
+          new THREE.SpriteMaterial({
+            map: new THREE.CanvasTexture(cnv),
+            transparent: true, depthWrite: false,
+            blending: THREE.AdditiveBlending,
+            sizeAttenuation: false,
+          }),
+        );
+        dot.scale.setScalar(glowSize * 0.0005);
+        dot.position.copy(pos);
+        nakGroup.add(dot);
+
+        const tag = makeLabel(
+          getNakshatraName(star.name, language),
+          star.bright ? "#E5C77A" : "#8FA3C4",
+          star.bright ? 30 : 26,
+        );
+        tag.position.copy(pos.clone().multiplyScalar(1.04));
+        nakGroup.add(tag);
       }
     }
     scene.add(nakGroup);
