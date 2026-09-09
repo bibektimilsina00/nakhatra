@@ -47,6 +47,9 @@ services:
       - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
       - CORS_ORIGINS=${CORS_ORIGINS:-[]}
       - JWT_SECRET=${JWT_SECRET}
+      # Voice: the API synthesises TTS itself; without this the endpoint 503s
+      # in production while working on every dev machine.
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
     depends_on:
       nakhatra_postgres:
         condition: service_healthy
