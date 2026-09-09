@@ -102,16 +102,38 @@ export function BirthSky3D({
       cleanup.push(() => target.removeEventListener(k, fn as EventListener));
     };
 
-    const IMG = "https://cdn.jsdelivr.net/gh/N3rson/Solar-System-3D@main/src/images/";
+    // Textures are the Solar-System-3D set, self-hosted from /public/planets.
+    const IMG = "/planets/";
     const loader = new THREE.TextureLoader();
-    const T = (f: string) => loader.load(IMG + f);
-
     const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
     renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+    // Filmic tone mapping is most of what "high quality" means here: without
+    // it the bloom clips and every texture reads flat.
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.1;
+    const maxAniso = renderer.capabilities.getMaxAnisotropy();
+    /** A colour texture: sRGB and fully anisotropic, or it looks washed out
+     *  and smears at grazing angles. */
+    const T = (f: string) => {
+      const t = loader.load(IMG + f);
+      t.colorSpace = THREE.SRGBColorSpace;
+      t.anisotropy = maxAniso;
+      return t;
+    };
+    /** A data texture (bump/normal): linear, never sRGB. */
+    const D = (f: string) => {
+      const t = loader.load(IMG + f);
+      t.anisotropy = maxAniso;
+      return t;
+    };
 
     const scene = new THREE.Scene();
-    scene.background = new THREE.CubeTextureLoader().setPath(IMG)
-      .load(["3.jpg", "1.jpg", "2.jpg", "2.jpg", "4.jpg", "2.jpg"]);
+    {
+      const cube = new THREE.CubeTextureLoader().setPath(IMG)
+        .load(["3.jpg", "1.jpg", "2.jpg", "2.jpg", "4.jpg", "2.jpg"]);
+      cube.colorSpace = THREE.SRGBColorSpace;
+      scene.background = cube;
+    }
 
     const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 2000);
 
@@ -136,37 +158,22 @@ export function BirthSky3D({
     scene.add(sunLight);
 
     /* ── the Earth, home of the moment ───────────────────────────── */
-    const earthMat = new THREE.ShaderMaterial({
-      uniforms: {
-        dayTexture: { value: T("earth_daymap.jpg") },
-        nightTexture: { value: T("earth_nightmap.jpg") },
-        sunPosition: { value: sunLight.position },
-      },
-      vertexShader: `
-        varying vec3 vNormal; varying vec2 vUv; varying vec3 vSunDirection;
-        uniform vec3 sunPosition;
-        void main() {
-          vUv = uv;
-          vec4 worldPosition = modelMatrix * vec4(position, 1.0);
-          vNormal = normalize(modelMatrix * vec4(normal, 0.0)).xyz;
-          vSunDirection = normalize(sunPosition - worldPosition.xyz);
-          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-        }`,
-      fragmentShader: `
-        uniform sampler2D dayTexture; uniform sampler2D nightTexture;
-        varying vec3 vNormal; varying vec2 vUv; varying vec3 vSunDirection;
-        void main() {
-          float intensity = max(dot(vNormal, vSunDirection), 0.0);
-          vec4 dayColor = texture2D(dayTexture, vUv);
-          vec4 nightColor = texture2D(nightTexture, vUv) * 0.55;
-          gl_FragColor = mix(nightColor, dayColor, intensity);
-        }`,
+    const earthMat = new THREE.MeshPhongMaterial({
+      map: T("earth_daymap.jpg"),
+      normalMap: D("earth_normalmap.jpg"),
+      normalScale: new THREE.Vector2(0.8, 0.8),
+      specularMap: D("earth_specularmap.jpg"),
+      specular: new THREE.Color(0x333333),
+      shininess: 18,
+      emissiveMap: T("earth_nightmap.jpg"),
+      emissive: new THREE.Color(0x887755),
+      emissiveIntensity: 0.55,
     });
-    const earth = new THREE.Mesh(new THREE.SphereGeometry(10, 48, 32), earthMat);
+    const earth = new THREE.Mesh(new THREE.SphereGeometry(10, 96, 64), earthMat);
     earth.rotation.z = (23.44 * Math.PI) / 180;
     scene.add(earth);
     const earthAtmo = new THREE.Mesh(
-      new THREE.SphereGeometry(10.18, 48, 32),
+      new THREE.SphereGeometry(10.18, 96, 64),
       new THREE.MeshPhongMaterial({
         map: T("earth_atmosphere.jpg"), transparent: true, opacity: 0.4,
         depthTest: true, depthWrite: false,
@@ -180,20 +187,24 @@ export function BirthSky3D({
 
     const material = (name: string): THREE.Material => {
       switch (name) {
-        case "Sun":
-          return new THREE.MeshStandardMaterial({
-            emissive: 0xfff88f, emissiveMap: T("sun.jpg"), emissiveIntensity: 1.9,
+        case "Sun": {
+          // Outside tone mapping, or ACES rolls the clipped core to pink.
+          const sun = new THREE.MeshStandardMaterial({
+            emissive: 0xfff2c0, emissiveMap: T("sun.jpg"), emissiveIntensity: 1.6,
           });
+          sun.toneMapped = false;
+          return sun;
+        }
         case "Moon":
           return new THREE.MeshPhongMaterial({
-            map: T("moonmap.jpg"), bumpMap: T("moonbump.jpg"), bumpScale: 0.6,
+            map: T("moonmap.jpg"), bumpMap: D("moonbump.jpg"), bumpScale: 0.6,
           });
         case "Mercury":
-          return new THREE.MeshPhongMaterial({ map: T("mercurymap.jpg"), bumpMap: T("mercurybump.jpg"), bumpScale: 0.7 });
+          return new THREE.MeshPhongMaterial({ map: T("mercurymap.jpg"), bumpMap: D("mercurybump.jpg"), bumpScale: 0.7 });
         case "Venus":
-          return new THREE.MeshPhongMaterial({ map: T("venusmap.jpg"), bumpMap: T("venusbump.jpg"), bumpScale: 0.7 });
+          return new THREE.MeshPhongMaterial({ map: T("venusmap.jpg"), bumpMap: D("venusbump.jpg"), bumpScale: 0.7 });
         case "Mars":
-          return new THREE.MeshPhongMaterial({ map: T("marsmap.jpg"), bumpMap: T("marsbump.jpg"), bumpScale: 0.7 });
+          return new THREE.MeshPhongMaterial({ map: T("marsmap.jpg"), bumpMap: D("marsbump.jpg"), bumpScale: 0.7 });
         case "Jupiter":
           return new THREE.MeshPhongMaterial({ map: T("jupiter.jpg") });
         case "Saturn":
@@ -214,14 +225,14 @@ export function BirthSky3D({
       if (!shell) continue;
       const lon = p.sign_index * 30 + p.degree_in_sign;
       const mesh = new THREE.Mesh(
-        new THREE.SphereGeometry(shell.size, 32, 20), material(p.name),
+        new THREE.SphereGeometry(shell.size, 72, 48), material(p.name),
       );
       mesh.position.copy(at(lon, shell.r));
       scene.add(mesh);
 
       if (p.name === "Saturn") {
         const ring = new THREE.Mesh(
-          new THREE.RingGeometry(shell.size + 1.6, shell.size + 4.6, 40),
+          new THREE.RingGeometry(shell.size + 1.6, shell.size + 4.6, 96),
           new THREE.MeshStandardMaterial({ map: T("saturn_ring.png"), side: THREE.DoubleSide }),
         );
         ring.position.copy(mesh.position);
@@ -399,7 +410,7 @@ export function BirthSky3D({
     /* ── bloom ───────────────────────────────────────────────────── */
     const composer = new EffectComposer(renderer);
     composer.addPass(new RenderPass(scene, camera));
-    composer.addPass(new UnrealBloomPass(new THREE.Vector2(1, 1), 0.7, 0.4, 0.85));
+    composer.addPass(new UnrealBloomPass(new THREE.Vector2(1, 1), 0.55, 0.4, 0.85));
 
     /* ── drag-orbit camera, as on the landing page ───────────────── */
     const R_CAM = 460;
