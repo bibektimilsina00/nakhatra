@@ -66,34 +66,34 @@ const SHELL: Record<string, { r: number; size: number }> = {
  *  the sign glyphs; the engine's nakshatra is the equal 13°20' arc, and
  *  these are the stars those arcs were drawn around. `bright` marks the
  *  first-magnitude anchors. */
-const YOGATARA: { name: string; ra: number; dec: number; bright?: boolean }[] = [
-  { name: "Ashwini", ra: 28.66, dec: 20.81 },
-  { name: "Bharani", ra: 42.5, dec: 27.26 },
-  { name: "Krittika", ra: 56.87, dec: 24.11 },
-  { name: "Rohini", ra: 68.98, dec: 16.51, bright: true },       // Aldebaran
-  { name: "Mrigashira", ra: 83.78, dec: 9.93 },
-  { name: "Ardra", ra: 88.79, dec: 7.41, bright: true },         // Betelgeuse
-  { name: "Punarvasu", ra: 116.33, dec: 28.03, bright: true },   // Pollux
-  { name: "Pushya", ra: 131.17, dec: 18.15 },
-  { name: "Ashlesha", ra: 131.69, dec: 6.42 },
-  { name: "Magha", ra: 152.09, dec: 11.97, bright: true },       // Regulus
-  { name: "Purva Phalguni", ra: 168.53, dec: 20.52 },
-  { name: "Uttara Phalguni", ra: 177.26, dec: 14.57 },
-  { name: "Hasta", ra: 187.47, dec: -16.52 },
-  { name: "Chitra", ra: 201.3, dec: -11.16, bright: true },      // Spica
-  { name: "Swati", ra: 213.92, dec: 19.18, bright: true },       // Arcturus
-  { name: "Vishakha", ra: 222.72, dec: -16.04 },
-  { name: "Anuradha", ra: 240.08, dec: -22.62 },
-  { name: "Jyeshtha", ra: 247.35, dec: -26.43, bright: true },   // Antares
-  { name: "Moola", ra: 263.4, dec: -37.1 },
-  { name: "Purva Ashadha", ra: 275.25, dec: -29.83 },
-  { name: "Uttara Ashadha", ra: 283.82, dec: -26.3 },
-  { name: "Shravana", ra: 297.7, dec: 8.87, bright: true },      // Altair
-  { name: "Dhanishta", ra: 309.39, dec: 14.6 },
-  { name: "Shatabhisha", ra: 343.15, dec: -7.58 },
-  { name: "Purva Bhadrapada", ra: 346.19, dec: 15.21 },
-  { name: "Uttara Bhadrapada", ra: 3.31, dec: 15.18 },
-  { name: "Revati", ra: 18.43, dec: 7.58 },
+export const YOGATARA: { name: string; ra: number; dec: number; star: string; bright?: boolean }[] = [
+  { name: "Ashwini", ra: 28.66, dec: 20.81, star: "Sheratan (β Arietis)" },
+  { name: "Bharani", ra: 42.5, dec: 27.26, star: "41 Arietis" },
+  { name: "Krittika", ra: 56.87, dec: 24.11, star: "Alcyone (Pleiades)" },
+  { name: "Rohini", ra: 68.98, dec: 16.51, star: "Aldebaran", bright: true },       // Aldebaran
+  { name: "Mrigashira", ra: 83.78, dec: 9.93, star: "Meissa (λ Orionis)" },
+  { name: "Ardra", ra: 88.79, dec: 7.41, star: "Betelgeuse", bright: true },         // Betelgeuse
+  { name: "Punarvasu", ra: 116.33, dec: 28.03, star: "Pollux", bright: true },   // Pollux
+  { name: "Pushya", ra: 131.17, dec: 18.15, star: "Asellus Australis (δ Cancri)" },
+  { name: "Ashlesha", ra: 131.69, dec: 6.42, star: "ε Hydrae" },
+  { name: "Magha", ra: 152.09, dec: 11.97, star: "Regulus", bright: true },       // Regulus
+  { name: "Purva Phalguni", ra: 168.53, dec: 20.52, star: "Zosma (δ Leonis)" },
+  { name: "Uttara Phalguni", ra: 177.26, dec: 14.57, star: "Denebola" },
+  { name: "Hasta", ra: 187.47, dec: -16.52, star: "Algorab (δ Corvi)" },
+  { name: "Chitra", ra: 201.3, dec: -11.16, star: "Spica", bright: true },      // Spica
+  { name: "Swati", ra: 213.92, dec: 19.18, star: "Arcturus", bright: true },       // Arcturus
+  { name: "Vishakha", ra: 222.72, dec: -16.04, star: "Zubenelgenubi (α Librae)" },
+  { name: "Anuradha", ra: 240.08, dec: -22.62, star: "Dschubba (δ Scorpii)" },
+  { name: "Jyeshtha", ra: 247.35, dec: -26.43, star: "Antares", bright: true },   // Antares
+  { name: "Moola", ra: 263.4, dec: -37.1, star: "Shaula (λ Scorpii)" },
+  { name: "Purva Ashadha", ra: 275.25, dec: -29.83, star: "Kaus Media (δ Sagittarii)" },
+  { name: "Uttara Ashadha", ra: 283.82, dec: -26.3, star: "Nunki (σ Sagittarii)" },
+  { name: "Shravana", ra: 297.7, dec: 8.87, star: "Altair", bright: true },      // Altair
+  { name: "Dhanishta", ra: 309.39, dec: 14.6, star: "Rotanev (β Delphini)" },
+  { name: "Shatabhisha", ra: 343.15, dec: -7.58, star: "Hydor (λ Aquarii)" },
+  { name: "Purva Bhadrapada", ra: 346.19, dec: 15.21, star: "Markab (α Pegasi)" },
+  { name: "Uttara Bhadrapada", ra: 3.31, dec: 15.18, star: "Algenib (γ Pegasi)" },
+  { name: "Revati", ra: 18.43, dec: 7.58, star: "ζ Piscium" },
 ];
 
 /** Ambient revolution rates (radians per frame), echoing the geocentric
@@ -131,6 +131,7 @@ export function BirthSky3D({
   avoidSelector,
   planetLabels = true,
   hint = true,
+  onSelectNakshatra,
 }: {
   chart: Chart;
   selected: string | null;
@@ -161,6 +162,9 @@ export function BirthSky3D({
   planetLabels?: boolean;
   /** The corner usage hint; off for non-interactive previews. */
   hint?: boolean;
+  /** A yogatara was tapped (null: the selection was dismissed). Stars are
+   *  pickable only while the nakshatra layer is shown. */
+  onSelectNakshatra?: (name: string | null) => void;
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const chipRef = useRef<HTMLDivElement>(null);
@@ -173,12 +177,14 @@ export function BirthSky3D({
   const aspRef = useRef(showAspects);
   const onSelectRef = useRef(onSelect);
   const wheelZoomRef = useRef(wheelZoom);
+  const onSelectNakRef = useRef(onSelectNakshatra);
   const orbitsRef = useRef(animateOrbits);
   useEffect(() => { selRef.current = selected; }, [selected]);
   useEffect(() => { nakRef.current = showNakshatras; }, [showNakshatras]);
   useEffect(() => { aspRef.current = showAspects; }, [showAspects]);
   useEffect(() => { onSelectRef.current = onSelect; }, [onSelect]);
   useEffect(() => { wheelZoomRef.current = wheelZoom; }, [wheelZoom]);
+  useEffect(() => { onSelectNakRef.current = onSelectNakshatra; }, [onSelectNakshatra]);
   useEffect(() => { orbitsRef.current = animateOrbits; }, [animateOrbits]);
 
   useEffect(() => {
@@ -607,6 +613,7 @@ export function BirthSky3D({
        frame the ring is drawn in. The proof the transform is right: Lahiri
        is defined by holding Spica at 180°, so Chitra's star must land
        dead-centre of Chitra's arc. */
+    const nakPicks: { name: string; dot: THREE.Sprite }[] = [];
     {
       const EPS = (23.4393 * Math.PI) / 180;
       const R_STAR = 320;
@@ -645,6 +652,7 @@ export function BirthSky3D({
         dot.scale.setScalar(glowSize * 0.0005);
         dot.position.copy(pos);
         nakGroup.add(dot);
+        nakPicks.push({ name: star.name, dot });
 
         const tag = makeLabel(
           getNakshatraName(star.name, language),
@@ -766,7 +774,10 @@ export function BirthSky3D({
     on(interactTarget, "pointermove", (e) => {
       if (!dragging) {
         if (!uiTarget(e)) {
-          canvas.style.cursor = pickAt(e.clientX, e.clientY) ? "pointer" : "grab";
+          canvas.style.cursor =
+            pickAt(e.clientX, e.clientY) || pickNakAt(e.clientX, e.clientY)
+              ? "pointer"
+              : "grab";
         }
         return;
       }
@@ -812,11 +823,36 @@ export function BirthSky3D({
       return best;
     }
 
+    function pickNakAt(clientX: number, clientY: number): string | null {
+      if (!nakGroup.visible) return null;
+      const b = canvas.getBoundingClientRect();
+      let best: string | null = null, bestD = Infinity;
+      for (const n of nakPicks) {
+        n.dot.getWorldPosition(_v).project(camera);
+        if (_v.z > 1) continue;
+        const sx = b.left + ((_v.x + 1) / 2) * b.width;
+        const sy = b.top + ((1 - _v.y) / 2) * b.height;
+        const d = Math.hypot(sx - clientX, sy - clientY);
+        if (d <= 16 && d < bestD) { bestD = d; best = n.name; }
+      }
+      return best;
+    }
+
     on(interactTarget, "click", (e) => {
       if (dragged || uiTarget(e)) return;
       const hit = pickAt(e.clientX, e.clientY);
-      if (hit) onSelectRef.current(hit.name);
-      else if (selRef.current) onSelectRef.current(selRef.current); // toggle off
+      if (hit) {
+        onSelectNakRef.current?.(null);
+        onSelectRef.current(hit.name);
+        return;
+      }
+      const nak = pickNakAt(e.clientX, e.clientY);
+      if (nak) {
+        onSelectNakRef.current?.(nak);
+        return;
+      }
+      onSelectNakRef.current?.(null);
+      if (selRef.current) onSelectRef.current(selRef.current); // toggle off
     });
 
     /* ── the chip that follows the selected graha ────────────────── */
@@ -974,7 +1010,7 @@ export function BirthSky3D({
         />
       </div>
       {hint && (
-      <p className="pointer-events-none absolute bottom-2 right-3 z-10 text-[10px] text-white/40">
+      <p className="pointer-events-none absolute left-3 top-2 z-10 text-[10px] text-white/40">
         {wheelZoom
           ? "drag to orbit · right-drag to pan · scroll to zoom · click a graha to visit it"
           : "drag to orbit · right-drag to pan · click a graha to visit it"}

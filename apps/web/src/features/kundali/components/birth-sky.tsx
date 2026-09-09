@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { ArrowLeft, Eye, EyeOff, Sparkles } from "lucide-react";
 
 import { AppShell } from "@/features/dashboard/components/app-shell";
-import { BirthSky3D, MoonPhase3D, PLANET_COLORS } from "@/features/kundali/components/birth-sky-3d";
+import {BirthSky3D, MoonPhase3D, PLANET_COLORS, YOGATARA } from "@/features/kundali/components/birth-sky-3d";
 import { loadKundaliFromStorage } from "@/features/kundali/store/kundali-store";
 import type { BirthDetailsIn, Chart, Planet } from "@/features/kundali/types";
 import { useTranslation } from "@/lib/i18n/language-context";
@@ -51,6 +51,7 @@ export function BirthSky() {
     [hydrated],
   );
   const [selected, setSelected] = useState<string | null>(null);
+  const [selectedNak, setSelectedNak] = useState<string | null>(null);
   const [showNakshatras, setShowNakshatras] = useState(false);
   const [showAspects, setShowAspects] = useState(true);
 
@@ -112,7 +113,14 @@ export function BirthSky() {
               className="relative h-[calc(100dvh-92px)] min-h-[520px] w-full overflow-hidden rounded-[12px]"
               chart={chart}
               selected={selected}
-              onSelect={(name) => setSelected((s) => (s === name ? null : name))}
+              onSelect={(name) => {
+                setSelectedNak(null);
+                setSelected((s) => (s === name ? null : name));
+              }}
+              onSelectNakshatra={(name) => {
+                setSelectedNak(name);
+                if (name) setSelected(null);
+              }}
               showNakshatras={showNakshatras}
               showAspects={showAspects}
             />
@@ -171,7 +179,9 @@ export function BirthSky() {
           {/* Detail panel */}
           <aside className="space-y-4 lg:sticky lg:top-20">
             <MoonCard chart={chart} />
-            {selected === "Earth" ? (
+            {selectedNak ? (
+              <NakshatraCard name={selectedNak} janma={chart.panchang.nakshatra} />
+            ) : selected === "Earth" ? (
               <div className="rounded-[8px] border border-brd bg-panel p-4">
                 <h3 className="mb-2 border-b border-brd pb-2 font-serif text-xs font-bold uppercase tracking-wider text-fg">
                   {sk ? "पृथ्वी" : "Earth"}
@@ -368,4 +378,70 @@ function planetFace(name: string): React.CSSProperties {
         ? "radial-gradient(circle at 35% 35%, #8B7BC7, #141026 75%)"
         : "radial-gradient(circle at 35% 35%, #C77B58, #1c0f08 75%)",
   };
+}
+
+/** Which nakshatra a tapped yogatara belongs to — its star, its Vimshottari
+ *  lord, and the 13°20' arc it names. Reference data plus arithmetic on the
+ *  index; nothing computed about the chart. */
+function NakshatraCard({ name, janma }: { name: string; janma: string }) {
+  const { language } = useTranslation();
+  const sk = language !== "en";
+  const n = (x: number | string) => toLocalizedDigit(x, language);
+  const idx = YOGATARA.findIndex((y) => y.name === name);
+  if (idx < 0) return null;
+  const entry = YOGATARA[idx];
+  const LORDS = ["Ketu", "Venus", "Sun", "Moon", "Mars", "Rahu", "Jupiter", "Saturn", "Mercury"];
+  const lord = LORDS[idx % 9];
+  const start = idx * (360 / 27);
+  const end = (idx + 1) * (360 / 27);
+  const seg = (deg: number) => {
+    const sign = Math.floor(deg / 30) % 12;
+    const within = deg - sign * 30;
+    const m = Math.round((within - Math.floor(within)) * 60);
+    const signName = getSignName(
+      ["Aries","Taurus","Gemini","Cancer","Leo","Virgo","Libra","Scorpio","Sagittarius","Capricorn","Aquarius","Pisces"][sign],
+      language,
+    );
+    return `${signName} ${n(Math.floor(within))}°${n(String(m).padStart(2, "0"))}'`;
+  };
+  // the engine spells a few of these differently (Mula/Moola)
+  const isJanma = janma.replace("oo", "u") === name.replace("oo", "u");
+
+  return (
+    <div className="rounded-[8px] border border-brd bg-panel p-4">
+      <h3 className="mb-2 flex items-center justify-between border-b border-brd pb-2 font-serif text-xs font-bold uppercase tracking-wider text-fg">
+        <span>{getNakshatraName(name, language)}</span>
+        {isJanma && (
+          <span className="rounded-[4px] border border-acc/40 px-1.5 py-0.5 text-[9px] text-acc">
+            {sk ? "जन्म नक्षत्र" : "Janma nakshatra"}
+          </span>
+        )}
+      </h3>
+      <div className="space-y-1 text-[12px]">
+        <div className="flex justify-between gap-3">
+          <span className="text-mut">{sk ? "योगतारा" : "Yogatara"}</span>
+          <span className="text-right font-semibold text-fg">{entry.star}</span>
+        </div>
+        <div className="flex justify-between gap-3">
+          <span className="text-mut">{sk ? "स्वामी ग्रह" : "Lord"}</span>
+          <span className="font-semibold text-fg">{getPlanetName(lord, language)}</span>
+        </div>
+        <div className="flex justify-between gap-3">
+          <span className="text-mut">{sk ? "विस्तार" : "Extent"}</span>
+          <span className="text-right font-semibold text-fg">
+            {seg(start)} – {seg(end)}
+          </span>
+        </div>
+        <div className="flex justify-between gap-3">
+          <span className="text-mut">{sk ? "चरण" : "Padas"}</span>
+          <span className="font-semibold text-fg">{n(4)} × {n("3")}°{n("20")}'</span>
+        </div>
+      </div>
+      <p className="mt-2 border-t border-brd pt-2 text-[10px] leading-relaxed text-mut">
+        {sk
+          ? "यो तारा आकाशमा आफ्नै वास्तविक स्थानमा छ — नक्षत्र भनेको यसैको वरिपरि कोरिएको १३°२०' को खण्ड हो।"
+          : "The star stands at its true place in the sky — the nakshatra is the 13°20' arc drawn around it."}
+      </p>
+    </div>
+  );
 }
