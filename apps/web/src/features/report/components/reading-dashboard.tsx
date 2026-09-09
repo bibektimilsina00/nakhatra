@@ -696,9 +696,6 @@ export function ReadingDashboard() {
                 <h3 className="font-serif text-xs font-bold uppercase tracking-wider text-[#26221b] flex items-center gap-1.5">
                   <Clock className="size-3.5 text-[#9B1C1C]" /> {t.activeDashaTitle}
                 </h3>
-                <span className="text-[10px] font-bold text-[#9B1C1C] bg-[#efe3c8] px-2.5 py-1 rounded-[6px] border border-red-800/40">
-                  {t.currentDasha}: <span className="text-[#26221b] ml-1">{currentDashaText}</span>
-                </span>
               </div>
 
               {/* The three schemes as महादशाचक्रम् tables — the layout a
@@ -737,14 +734,6 @@ export function ReadingDashboard() {
                 </h3>
               </div>
 
-              {/* Highlighted Current Dasha Banner in Left Panel */}
-              <div className="flex items-center justify-between rounded-[8px] border border-red-800/40 bg-[#efe3c8] px-3 py-2 text-xs font-semibold text-[#9B1C1C]">
-                <div className="flex items-center gap-1.5">
-                  <Clock className="size-3.5 text-[#9B1C1C]" />
-                  <span>{t.currentDasha}:</span>
-                </div>
-                <span className="font-bold text-[#26221b]">{currentDashaText}</span>
-              </div>
 
               <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-xs">
                 <div className="flex justify-between border-b border-brd pb-1">
@@ -1269,6 +1258,123 @@ export function ReadingDashboard() {
           ))}
         </div>
       </div>
+
+      {/* Detailed Dasha Section — simple, for everyone */}
+      {running.maha && (
+        <div className="mx-auto w-full max-w-5xl px-4 pb-12 space-y-6">
+          {/* Section header */}
+          <div className="border-b-2 border-red-800/30 pb-3">
+            <h2 className="font-serif text-lg font-bold text-[#26221b] flex items-center gap-2">
+              <Clock className="size-5 text-[#9B1C1C]" /> {t.dashaOverviewTitle}
+            </h2>
+          </div>
+
+          {/* What is Dasha — plain language explainer */}
+          <div className="rounded-[8px] border border-red-800/20 bg-[#f7efdc] p-5">
+            <h3 className="font-serif text-sm font-bold text-[#9B1C1C] mb-2">{t.dashaOverviewWhatIs}</h3>
+            <p className="text-sm leading-relaxed text-[#4a3a22]">
+              {t.dashaOverviewWhatIsDesc}
+            </p>
+          </div>
+
+          {/* Current Mahadasha & Antardasha cards */}
+          <div>
+            <h3 className="font-serif text-sm font-bold text-[#26221b] mb-3">{t.dashaOverviewYourCurrent}</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Mahadasha card */}
+              <div className="rounded-[8px] border-2 border-amber-400/60 bg-amber-50/50 p-5 space-y-2">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-[#9B1C1C]">
+                  {t.dashaOverviewMainPeriod}
+                </p>
+                <p className="text-xl font-serif font-bold text-[#26221b]">
+                  {getPlanetName(running.maha.lord, language)}
+                </p>
+                <div className="flex items-center gap-2 text-xs text-[#7a6033]">
+                  <span>{running.maha.start}</span>
+                  <span>→</span>
+                  <span>{running.maha.end}</span>
+                </div>
+                <p className="text-xs font-semibold text-[#4a3a22]">
+                  {(() => {
+                    const years = (new Date(running.maha.end).getTime() - new Date(running.maha.start).getTime()) / (365.25 * 24 * 3600 * 1000);
+                    return `~${Math.round(years)} ${t.dashaOverviewYears}`;
+                  })()}
+                </p>
+              </div>
+
+              {/* Antardasha card */}
+              <div className="rounded-[8px] border border-red-800/20 bg-[#f7efdc] p-5 space-y-2">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-[#9B1C1C]">
+                  {t.dashaOverviewSubPeriod}
+                </p>
+                {running.antar ? (
+                  <>
+                    <p className="text-xl font-serif font-bold text-[#26221b]">
+                      {getPlanetName(running.antar.lord, language)}
+                    </p>
+                    <div className="flex items-center gap-2 text-xs text-[#7a6033]">
+                      <span>{running.antar.start}</span>
+                      <span>→</span>
+                      <span>{running.antar.end}</span>
+                    </div>
+                    <p className="text-xs font-semibold text-[#4a3a22]">
+                      {(() => {
+                        const months = (new Date(running.antar.end).getTime() - new Date(running.antar.start).getTime()) / (30.44 * 24 * 3600 * 1000);
+                        return months >= 12
+                          ? `~${Math.round(months / 12)} ${t.dashaOverviewYears}`
+                          : `~${Math.round(months)} ${language === "ne" ? "महिना" : language === "hi" ? "महीने" : "months"}`;
+                      })()}
+                    </p>
+                  </>
+                ) : (
+                  <p className="text-sm text-[#7a6033] italic">{t.dashaOverviewNoPeriod}</p>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* All Mahadasha periods — full life timeline */}
+          {activeChart.dasha?.periods && activeChart.dasha.periods.length > 0 && (
+            <div>
+              <h3 className="font-serif text-sm font-bold text-[#26221b] mb-3">
+                {language === "ne" ? "तपाईंको जीवनका सबै महादशा अवधिहरू" : language === "hi" ? "आपके जीवन की सभी महादशा अवधियाँ" : "All Mahadasha Periods in Your Life"}
+              </h3>
+              <div className="rounded-[8px] border border-red-800/20 bg-[#f7efdc] overflow-hidden">
+                {activeChart.dasha.periods.map((p, idx) => {
+                  const isNow = new Date(p.start).getTime() <= todayMs && todayMs < new Date(p.end).getTime();
+                  const years = (new Date(p.end).getTime() - new Date(p.start).getTime()) / (365.25 * 24 * 3600 * 1000);
+                  return (
+                    <div
+                      key={`${p.lord}-${p.start}`}
+                      className={`flex items-center justify-between px-5 py-3 text-sm ${
+                        idx !== 0 ? "border-t border-red-800/10" : ""
+                      } ${isNow ? "bg-amber-100/60 border-l-4 border-l-amber-500" : ""}`}
+                    >
+                      <div className="flex items-center gap-3">
+                        {isNow && <span className="size-2 rounded-full bg-amber-500 animate-pulse" />}
+                        <span className={`font-serif font-bold ${isNow ? "text-[#26221b]" : "text-[#4a3a22]"}`}>
+                          {getPlanetName(p.lord, language)}
+                        </span>
+                        {isNow && (
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-amber-700 bg-amber-200/60 px-2 py-0.5 rounded">
+                            {language === "ne" ? "हाल चालू" : language === "hi" ? "वर्तमान" : "Now"}
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-4 text-xs text-[#7a6033]">
+                        <span>{p.start} → {p.end}</span>
+                        <span className="font-semibold text-[#4a3a22] min-w-[60px] text-right">
+                          ~{Math.round(years)} {t.dashaOverviewYears}
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Sticky Floating Live Astrologer Action Button */}
       <div className="fixed bottom-6 right-6 z-40">

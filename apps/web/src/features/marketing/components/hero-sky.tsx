@@ -66,6 +66,7 @@ export function HeroSky() {
       globalInteract
       subtleRing
       planetLabels={false}
+      hint={false}
       avoidSelector="[data-sky-avoid]"
       className="absolute inset-0 h-full w-full overflow-hidden"
     />

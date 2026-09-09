@@ -434,7 +434,7 @@ function NakshatraCard({ name, janma }: { name: string; janma: string }) {
         </div>
         <div className="flex justify-between gap-3">
           <span className="text-mut">{sk ? "चरण" : "Padas"}</span>
-          <span className="font-semibold text-fg">{n(4)} × {n("3")}°{n("20")}'</span>
+          <span className="font-semibold text-fg">{n(4)} × {n("3")}°{n("20")}&apos;</span>
         </div>
       </div>
       <p className="mt-2 border-t border-brd pt-2 text-[10px] leading-relaxed text-mut">
