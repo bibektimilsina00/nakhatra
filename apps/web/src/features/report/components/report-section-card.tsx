@@ -1,4 +1,5 @@
 import { MapPin } from "lucide-react";
+import { MarkdownRenderer } from "@/components/ui/markdown-renderer";
 
 import { SectionIcon } from "@/features/report/components/section-icon";
 import type { ReportSection } from "@/features/report/types";
@@ -36,13 +37,15 @@ export function ReportSectionCard({
         </div>
       </div>
 
-      <div className="space-y-3 text-sm leading-relaxed text-mid font-sans">
-        {section.content.map((paragraph, idx) => (
-          <p key={idx}>{paragraph}</p>
-        ))}
+      {/* The model writes markdown — bold placements, the odd list — so the
+          paragraphs are rendered, not printed. They used to go through a bare
+          <p>, which showed the asterisks to the reader. Joined with blank
+          lines so each stays its own paragraph. */}
+      <div className="font-sans">
+        <MarkdownRenderer content={section.content.join("\n\n")} />
       </div>
 
-      <div className="rounded-[8px] border border-acc/40 bg-inset p-3 text-xs font-bold text-[#FDE68A]">
+      <div className="rounded-[8px] border border-acc/40 bg-inset p-3 text-xs font-bold text-acc2">
         {section.summary}
       </div>
 
