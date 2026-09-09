@@ -21,9 +21,9 @@ export function MilanSection() {
           <h2 className="mt-4 font-disp text-[30px] font-bold leading-[1.12] tracking-[-0.015em] text-paper sm:text-[38px]">{c.title}</h2>
           <p className="mt-4 text-[15.5px] leading-[1.7] text-muted">{c.sub}</p>
 
-          <dl className="mt-9 max-w-md border-t border-white/[0.09] text-[13.5px]">
-            <div className="flex items-baseline justify-between gap-4 border-b border-white/[0.06] py-3"><dt className="text-muted">{c.kutasLabel}</dt><dd className="font-mono text-paper">{c.kutasValue}</dd></div>
-            <div className="flex items-baseline justify-between gap-4 border-b border-white/[0.06] py-3"><dt className="text-muted">{c.doshaLabel}</dt><dd className="font-mono text-paper">{c.doshaValue}</dd></div>
+          <dl className="mt-9 max-w-md border-t border-brd text-[13.5px]">
+            <div className="flex items-baseline justify-between gap-4 border-b border-brd py-3"><dt className="text-muted">{c.kutasLabel}</dt><dd className="font-mono text-paper">{c.kutasValue}</dd></div>
+            <div className="flex items-baseline justify-between gap-4 border-b border-brd py-3"><dt className="text-muted">{c.doshaLabel}</dt><dd className="font-mono text-paper">{c.doshaValue}</dd></div>
             <div className="flex items-baseline justify-between gap-4 py-3"><dt className="text-muted">{c.rulesLabel}</dt><dd className="font-mono text-paper">{c.rulesValue}</dd></div>
           </dl>
 
@@ -34,10 +34,10 @@ export function MilanSection() {
           </Link>
         </div>
 
-        <div className="reveal overflow-hidden rounded-[8px] border border-white/10 bg-card/60">
+        <div className="reveal overflow-hidden rounded-[8px] border border-brd bg-card/60">
           <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-gold/40 to-transparent"></div>
 
-          <div className="flex items-center gap-6 border-b border-white/[0.09] p-7 sm:p-8">
+          <div className="flex items-center gap-6 border-b border-brd p-7 sm:p-8">
             <div className="flex-1 text-center">
                   <svg viewBox="-1 -1 102 102" className="mx-auto w-full max-w-[104px]">
                     <g fill="none" stroke="#E5A93C" strokeOpacity=".34" strokeWidth="1.1">
@@ -98,7 +98,7 @@ export function MilanSection() {
             </ul>
 
             {/* The dosha the copy promises, actually shown. */}
-            <div className="mt-7 rounded-[8px] border border-white/[0.09] bg-ink/50 p-4">
+            <div className="mt-7 rounded-[8px] border border-brd bg-ink/50 p-4">
               <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
                 <span className={`font-mono text-[10px] text-gold ${micro}`}>{c.manglik}</span>
                 <span className="font-mono text-[11.5px] text-muted">{c.bride} <span className="text-rose-400/85">{c.yes}</span></span>
@@ -108,7 +108,7 @@ export function MilanSection() {
               <p className="mt-2.5 text-[12.5px] leading-[1.7] text-faint">{c.manglikNote}</p>
             </div>
 
-            <p className="mt-6 border-t border-white/[0.07] pt-5 text-[12.5px] leading-[1.7] text-faint">
+            <p className="mt-6 border-t border-brd pt-5 text-[12.5px] leading-[1.7] text-faint">
               {c.illustrative}
             </p>
           </div>

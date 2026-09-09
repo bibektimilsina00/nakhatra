@@ -23,7 +23,7 @@ export function Hero() {
   const focus = d1.focus ?? d9.focus;
 
   return (
-    <section id="top" className="grain relative min-h-screen overflow-hidden">
+    <section id="top" className="theme-dark grain relative min-h-screen overflow-hidden bg-[#070810]">
       <SolarSystem />
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_78%_62%_at_50%_46%,transparent_0%,rgba(7,8,16,.5)_58%,#070810_90%)]" />
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-ink to-transparent" />
@@ -42,7 +42,7 @@ export function Hero() {
               {m.ctaPrimary}
               <svg className="size-4 transition-transform group-hover:translate-x-0.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2"><path d="M2 8h11M9 4l4 4-4 4" /></svg>
             </a>
-            <a href="#reading" className="glass rounded-[8px] border border-white/15 px-7 py-3 text-[14px] font-semibold text-paper transition hover:border-gold/50">{m.ctaSecondary}</a>
+            <a href="#reading" className="glass rounded-[8px] border border-brd px-7 py-3 text-[14px] font-semibold text-paper transition hover:border-gold/50">{m.ctaSecondary}</a>
           </div>
         </div>
 

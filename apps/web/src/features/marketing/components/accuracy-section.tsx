@@ -22,7 +22,7 @@ export function AccuracySection() {
         </h2>
 
         {/* The argument is the section, so it gets the type rather than a card. */}
-        <div className="reveal mt-14 grid gap-10 border-y border-white/[0.09] py-10 sm:grid-cols-3">
+        <div className="reveal mt-14 grid gap-10 border-y border-brd py-10 sm:grid-cols-3">
           <div>
             <div className={`font-mono text-[10.5px] text-faint ${label}`}>{m.todayLabel}</div>
             <div className="mt-2 font-mono text-[30px] leading-none text-rose-400/85">+05:45</div>

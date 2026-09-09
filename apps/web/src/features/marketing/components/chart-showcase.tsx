@@ -41,7 +41,7 @@ export function ChartShowcase() {
             ["Yoga", chart.panchang.yoga],
             ["Ayanamsa", `${chart.ayanamsa_value.toFixed(3)}°`],
           ].map(([label, value]) => (
-            <div key={label} className="rounded-[8px] border border-white/10 bg-[#161B2B] p-3">
+            <div key={label} className="rounded-[8px] border border-brd bg-[#161B2B] p-3">
               <div className="text-[10px] font-semibold uppercase tracking-widest text-[#64748B]">
                 {label}
               </div>
@@ -50,8 +50,8 @@ export function ChartShowcase() {
           ))}
         </div>
 
-        <div className="rounded-[10px] border border-white/10 bg-[#161B2B] p-5">
-          <div className="flex items-baseline justify-between gap-3 border-b border-white/10 pb-3">
+        <div className="rounded-[10px] border border-brd bg-[#161B2B] p-5">
+          <div className="flex items-baseline justify-between gap-3 border-b border-brd pb-3">
             <h3 className="font-serif text-base font-bold text-[#F8FAFC]">
               House {selected?.number} · {selected?.sign}
             </h3>

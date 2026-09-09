@@ -31,7 +31,7 @@ export function ReadingSection() {
 
         <div className="grid items-start gap-10 lg:grid-cols-[minmax(0,.8fr)_minmax(0,1.2fr)] lg:gap-14">
           <div ref={listRef}>
-            <div className="mb-4 flex items-baseline justify-between border-b border-white/[0.09] pb-3">
+            <div className="mb-4 flex items-baseline justify-between border-b border-brd pb-3">
               <span className={`font-mono text-[10px] text-gold ${label}`}>{m.contents}</span>
               <span className="font-mono text-[10px] text-faint">{m.sectionCount}</span>
             </div>
@@ -44,7 +44,7 @@ export function ReadingSection() {
                   className={`rsel group relative flex w-full items-center gap-4 border-l-2 py-3.5 pl-5 pr-4 text-left transition ${
                     on
                       ? "border-gold bg-gradient-to-r from-gold/[0.07] to-transparent text-paper"
-                      : "border-white/[0.09] text-muted hover:border-white/30 hover:bg-white/[0.02] hover:text-paper"
+                      : "border-brd text-muted hover:border-brd2 hover:bg-fg/[0.02] hover:text-paper"
                   }`}
                   aria-current={on}
                   onClick={() => setI(j)}
@@ -63,7 +63,7 @@ export function ReadingSection() {
             })}
           </div>
 
-          <article className="relative overflow-hidden rounded-[8px] border border-white/10 bg-gradient-to-b from-card to-card/40">
+          <article className="relative overflow-hidden rounded-[8px] border border-brd bg-gradient-to-b from-card to-card/40">
             <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-gold/45 to-transparent" />
             <span aria-hidden="true" className="pointer-events-none absolute -top-8 right-4 select-none font-mono text-[140px] font-bold leading-none text-white/[0.022]">{n}</span>
 
@@ -77,20 +77,20 @@ export function ReadingSection() {
               <p className="mt-5 border-l-2 border-gold/50 pl-4 text-[14.5px] font-medium leading-[1.7] text-gold2">{s.summary}</p>
               <p className="mt-5 text-[14.5px] leading-[1.85] text-muted">{s.body}</p>
 
-              <div className="mt-8 border-t border-white/10 pt-5">
+              <div className="mt-8 border-t border-brd pt-5">
                 <div className="mb-3 flex items-center gap-2">
                   <svg className="size-3.5 text-gold" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"><path d="M6.5 9.5a3 3 0 0 0 4.2 0l2-2a3 3 0 0 0-4.2-4.2l-.6.6" /><path d="M9.5 6.5a3 3 0 0 0-4.2 0l-2 2a3 3 0 0 0 4.2 4.2l.6-.6" /></svg>
                   <span className={`font-mono text-[10px] text-gold ${label}`}>{m.drawnFrom}</span>
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {s.refs.map((r) => (
-                    <span key={r} className="rounded-[5px] border border-white/10 bg-ink px-2.5 py-1 font-mono text-[11.5px] text-paper">{r}</span>
+                    <span key={r} className="rounded-[5px] border border-brd bg-ink px-2.5 py-1 font-mono text-[11.5px] text-paper">{r}</span>
                   ))}
                 </div>
               </div>
 
               {/* Read straight through, the way the real reading is read. */}
-              <div className="mt-8 flex items-center justify-between gap-4 border-t border-white/10 pt-5">
+              <div className="mt-8 flex items-center justify-between gap-4 border-t border-brd pt-5">
                 <button type="button" disabled={i === 0} onClick={() => setI(i - 1)} className="inline-flex items-center gap-2 text-[13px] font-medium text-muted transition-colors hover:text-paper disabled:pointer-events-none disabled:opacity-30">
                   <svg className="size-3.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2"><path d="M10 3 5 8l5 5" /></svg>{m.prev}
                 </button>

@@ -159,7 +159,7 @@ export function HomepageHero() {
                   <a
                     key={label}
                     href={href}
-                    className="rounded-full border border-white/12 bg-[#161B2B]/80 px-3.5 py-1.5 text-[13px] text-[#CBD5E1] backdrop-blur-sm transition-colors hover:border-[#E5A93C]/40 hover:text-[#F3C766]"
+                    className="rounded-full border border-brd bg-[#161B2B]/80 px-3.5 py-1.5 text-[13px] text-[#CBD5E1] backdrop-blur-sm transition-colors hover:border-[#E5A93C]/40 hover:text-[#F3C766]"
                   >
                     {label}
                   </a>
@@ -187,7 +187,7 @@ export function HomepageHero() {
           {/* RIGHT SIDE: Intake Form with Clean Custom Select Pickers & AD/BS Toggle */}
           <div className="lg:col-span-5" id="form">
             <div className="rounded-[8px] border border-[#E5A93C]/40 bg-[#161B2B] p-6 sm:p-7 space-y-5 shadow-2xl">
-              <div className="border-b border-white/10 pb-3 flex items-center justify-between">
+              <div className="border-b border-brd pb-3 flex items-center justify-between">
                 <div>
                   <h2 className="font-serif text-xl font-bold text-[#F8FAFC]">{t.birthDetails}</h2>
                   <p className="text-xs text-[#94A3B8] mt-1 leading-relaxed">
@@ -211,7 +211,7 @@ export function HomepageHero() {
                     }}
                     placeholder={t.fullName}
                     className={`w-full rounded-[8px] border bg-[#090A10] px-3.5 py-2.5 text-sm text-[#F8FAFC] placeholder-[#94A3B8] focus:outline-none transition ${
-                      errors.name ? "border-rose-500" : "border-white/10 focus:border-[#E5A93C]"
+                      errors.name ? "border-rose-500" : "border-brd focus:border-[#E5A93C]"
                     }`}
                   />
                   {errors.name && <p className="mt-1 text-xs text-rose-400 font-medium">{errors.name}</p>}
@@ -222,7 +222,7 @@ export function HomepageHero() {
                   <label className="block text-xs font-bold uppercase tracking-wider text-[#CBD5E1] mb-1.5">
                     Gender
                   </label>
-                  <div className="grid grid-cols-3 gap-2 rounded-[8px] border border-white/10 bg-[#090A10] p-1">
+                  <div className="grid grid-cols-3 gap-2 rounded-[8px] border border-brd bg-[#090A10] p-1">
                     {(["male", "female", "other"] as const).map((g) => (
                       <button
                         key={g}
@@ -317,7 +317,7 @@ export function HomepageHero() {
       </main>
 
       {/* How it works — the two halves, and why the split matters. */}
-      <section className="border-t border-white/10 bg-[#0D101A] py-20" id="how">
+      <section className="border-t border-brd bg-[#0D101A] py-20" id="how">
         <div className="mx-auto max-w-5xl space-y-14 px-6">
           <div className="mx-auto max-w-2xl space-y-3 text-center">
             <span className="text-xs font-bold uppercase tracking-widest text-[#E5A93C]">
@@ -334,7 +334,7 @@ export function HomepageHero() {
           </div>
 
           <div className="grid gap-6 md:grid-cols-2">
-            <article className="space-y-3 rounded-[10px] border border-white/10 bg-[#161B2B] p-7">
+            <article className="space-y-3 rounded-[10px] border border-brd bg-[#161B2B] p-7">
               <span className="font-mono text-xs text-[#64748B]">01</span>
               <h3 className="font-serif text-lg font-bold text-[#F8FAFC]">
                 The ephemeris calculates
@@ -347,7 +347,7 @@ export function HomepageHero() {
               </p>
             </article>
 
-            <article className="space-y-3 rounded-[10px] border border-white/10 bg-[#161B2B] p-7">
+            <article className="space-y-3 rounded-[10px] border border-brd bg-[#161B2B] p-7">
               <span className="font-mono text-xs text-[#64748B]">02</span>
               <h3 className="font-serif text-lg font-bold text-[#F8FAFC]">
                 The astrologer reads it
@@ -364,7 +364,7 @@ export function HomepageHero() {
 
       {/* The time zone argument: specific, checkable, and the thing most
           competitors quietly get wrong. */}
-      <section className="border-t border-white/10 py-20">
+      <section className="border-t border-brd py-20">
         <div className="mx-auto grid max-w-5xl items-center gap-10 px-6 md:grid-cols-5">
           <div className="space-y-4 md:col-span-3">
             <span className="text-xs font-bold uppercase tracking-widest text-[#E5A93C]">
@@ -387,11 +387,11 @@ export function HomepageHero() {
           </div>
 
           <div className="md:col-span-2">
-            <div className="space-y-3 rounded-[10px] border border-white/10 bg-[#161B2B] p-6 font-mono text-[13px]">
+            <div className="space-y-3 rounded-[10px] border border-brd bg-[#161B2B] p-6 font-mono text-[13px]">
               <div className="mb-1 text-xs uppercase tracking-widest text-[#64748B]">
                 Kathmandu, 14 June 1975
               </div>
-              <div className="flex items-baseline justify-between gap-4 border-b border-white/10 pb-3">
+              <div className="flex items-baseline justify-between gap-4 border-b border-brd pb-3">
                 <span className="text-[#94A3B8]">Today&apos;s offset</span>
                 <span className="text-rose-400">+5:45</span>
               </div>

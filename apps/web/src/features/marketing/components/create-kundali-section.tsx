@@ -30,9 +30,9 @@ export function CreateKundaliSection() {
 
           <div className="mt-10">
             <div className={`font-mono text-[10px] text-gold ${label}`}>{m.thenLabel}</div>
-            <ul className="mt-3 max-w-lg border-t border-white/[0.09]">
+            <ul className="mt-3 max-w-lg border-t border-brd">
               {m.steps.map((step, i) => (
-                <li key={step.title} className="flex gap-4 border-b border-white/[0.07] py-4 last:border-0">
+                <li key={step.title} className="flex gap-4 border-b border-brd py-4 last:border-0">
                   <span className="mt-px font-mono text-[11px] tabular-nums text-gold">{String(i + 1).padStart(2, "0")}</span>
                   <span>
                     <span className="block text-[13.5px] font-medium text-paper">{step.title}</span>
@@ -43,9 +43,9 @@ export function CreateKundaliSection() {
             </ul>
           </div>
 
-          <dl className="mt-9 max-w-lg border-t border-white/[0.09] text-[14px]">
+          <dl className="mt-9 max-w-lg border-t border-brd text-[14px]">
             {m.checks.map((line) => (
-              <div key={line} className="flex items-baseline gap-3 border-b border-white/[0.07] py-3.5">
+              <div key={line} className="flex items-baseline gap-3 border-b border-brd py-3.5">
                 <span className="text-gold">✓</span>
                 <span className="text-muted">{line}</span>
               </div>

@@ -67,7 +67,7 @@ const PILLARS = [
 
 export function PillarsSection() {
   return (
-    <section className="border-t border-white/10 bg-[#0D101A] py-20" id="platform">
+    <section className="border-t border-brd bg-[#0D101A] py-20" id="platform">
       <div className="mx-auto max-w-6xl space-y-12 px-6">
         <div className="mx-auto max-w-2xl space-y-3 text-center">
           <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-[#E5A93C]">
@@ -86,10 +86,10 @@ export function PillarsSection() {
             <Link
               key={n}
               href={href}
-              className="group flex flex-col gap-4 rounded-[12px] border border-white/10 bg-[#161B2B] p-6 transition-colors hover:border-[#E5A93C]/45"
+              className="group flex flex-col gap-4 rounded-[12px] border border-brd bg-[#161B2B] p-6 transition-colors hover:border-[#E5A93C]/45"
             >
               <div className="flex items-start justify-between gap-3">
-                <span className="flex size-11 items-center justify-center rounded-[10px] border border-white/10 bg-[#090A10] text-[#E5A93C]">
+                <span className="flex size-11 items-center justify-center rounded-[10px] border border-brd bg-[#090A10] text-[#E5A93C]">
                   <Icon className="size-5" />
                 </span>
                 {live ? (
@@ -114,7 +114,7 @@ export function PillarsSection() {
           ))}
 
           {/* Sixth cell: the throughline, rather than a sixth feature. */}
-          <div className="flex flex-col justify-center gap-3 rounded-[12px] border border-dashed border-white/10 p-6">
+          <div className="flex flex-col justify-center gap-3 rounded-[12px] border border-dashed border-brd p-6">
             <p className="text-[14px] leading-relaxed text-[#94A3B8]">
               The chart is computed once and carried through all of it — the reading,
               the conversation, the matching, and eventually the astrologer you sit

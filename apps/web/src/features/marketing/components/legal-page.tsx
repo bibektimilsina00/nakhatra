@@ -28,7 +28,7 @@ export function LegalPage({
       <MainNavbar />
 
       <main className="mx-auto w-full max-w-3xl px-6 py-14 sm:py-20">
-        <header className="mb-12 border-b border-white/10 pb-8">
+        <header className="mb-12 border-b border-brd pb-8">
           <h1 className="font-serif text-3xl font-bold tracking-tight text-[#F8FAFC] sm:text-4xl">
             {title}
           </h1>
@@ -55,7 +55,7 @@ export function LegalPage({
           {children}
         </div>
 
-        <div className="mt-14 border-t border-white/10 pt-8 text-[14px] text-[#94A3B8]">
+        <div className="mt-14 border-t border-brd pt-8 text-[14px] text-[#94A3B8]">
           Questions about this document? Email{" "}
           <a
             href={`mailto:${CONTACT_EMAIL}`}

@@ -21,14 +21,14 @@ export function SiteFooter() {
   const { language, setLanguage } = useTranslation();
 
   return (
-    <footer className="relative overflow-hidden border-t border-white/[0.08]">
+    <footer className="relative overflow-hidden border-t border-brd">
       {/* A horizon, so the page closes the way it opened. */}
       <div className="pointer-events-none absolute inset-x-0 top-0 h-56 bg-[radial-gradient(ellipse_75%_100%_at_50%_0%,rgba(229,169,60,.06),transparent_72%)]"></div>
     
       {/* The sky at the moment you are reading this. Same ephemeris the
            hero charts use, so the page ends on live data rather than a
            copyright line. */}
-      <div className="relative border-b border-white/[0.06]">
+      <div className="relative border-b border-brd">
         <div className="mx-auto flex max-w-[1360px] flex-wrap items-center gap-x-7 gap-y-3 px-8 py-5">
           <span className={`font-mono text-[10px] text-gold ${label}`}>{c.rightNow}</span>
           <div className="flex flex-wrap items-center gap-x-5 gap-y-2 font-mono text-[11.5px]">
@@ -61,10 +61,10 @@ export function SiteFooter() {
               {c.tagline}
             </p>
     
-            <dl className="mt-7 max-w-xs border-t border-white/[0.08] font-mono text-[11px]">
-              <div className="flex items-baseline justify-between gap-4 border-b border-white/[0.05] py-2"><dt className="text-faint">{c.ephemeris}</dt><dd className="text-muted">Swiss Ephemeris</dd></div>
-              <div className="flex items-baseline justify-between gap-4 border-b border-white/[0.05] py-2"><dt className="text-faint">{c.ayanamsa}</dt><dd className="text-muted">Lahiri · Chitrapaksha</dd></div>
-              <div className="flex items-baseline justify-between gap-4 border-b border-white/[0.05] py-2"><dt className="text-faint">{c.houses}</dt><dd className="text-muted">{c.wholeSign}</dd></div>
+            <dl className="mt-7 max-w-xs border-t border-brd font-mono text-[11px]">
+              <div className="flex items-baseline justify-between gap-4 border-b border-brd py-2"><dt className="text-faint">{c.ephemeris}</dt><dd className="text-muted">Swiss Ephemeris</dd></div>
+              <div className="flex items-baseline justify-between gap-4 border-b border-brd py-2"><dt className="text-faint">{c.ayanamsa}</dt><dd className="text-muted">Lahiri · Chitrapaksha</dd></div>
+              <div className="flex items-baseline justify-between gap-4 border-b border-brd py-2"><dt className="text-faint">{c.houses}</dt><dd className="text-muted">{c.wholeSign}</dd></div>
               <div className="flex items-baseline justify-between gap-4 py-2"><dt className="text-faint">{c.nodes}</dt><dd className="text-muted">{c.mean}</dd></div>
             </dl>
           </div>
@@ -91,15 +91,15 @@ export function SiteFooter() {
               <li><a href="#how" className="text-muted transition-colors hover:text-paper">{c.howItWorks}</a></li>
               <li><a href="#accuracy" className="text-muted transition-colors hover:text-paper">{c.whyDisagree}</a></li>
               <li><a href="#faq" className="text-muted transition-colors hover:text-paper">{c.questions}</a></li>
-              <li><span className="cursor-default text-faint" title="Coming soon">{c.nakshatras}<span className={`ml-1.5 rounded-[3px] border border-white/12 px-1 py-px font-mono text-[8px] text-faint ${badge}`}>{c.soon}</span></span></li>
-              <li><span className="cursor-default text-faint" title="Coming soon">{c.dasha}<span className={`ml-1.5 rounded-[3px] border border-white/12 px-1 py-px font-mono text-[8px] text-faint ${badge}`}>{c.soon}</span></span></li>
+              <li><span className="cursor-default text-faint" title="Coming soon">{c.nakshatras}<span className={`ml-1.5 rounded-[3px] border border-brd px-1 py-px font-mono text-[8px] text-faint ${badge}`}>{c.soon}</span></span></li>
+              <li><span className="cursor-default text-faint" title="Coming soon">{c.dasha}<span className={`ml-1.5 rounded-[3px] border border-brd px-1 py-px font-mono text-[8px] text-faint ${badge}`}>{c.soon}</span></span></li>
             </ul>
           </div>
     
           <div>
             <h3 className={`font-mono text-[10px] text-gold ${label}`}>{c.company}</h3>
             <ul className="mt-5 space-y-3 text-[13.5px]">
-              <li><span className="cursor-default text-faint" title="Coming soon">{c.about}<span className={`ml-1.5 rounded-[3px] border border-white/12 px-1 py-px font-mono text-[8px] text-faint ${badge}`}>{c.soon}</span></span></li>
+              <li><span className="cursor-default text-faint" title="Coming soon">{c.about}<span className={`ml-1.5 rounded-[3px] border border-brd px-1 py-px font-mono text-[8px] text-faint ${badge}`}>{c.soon}</span></span></li>
               <li><a href="mailto:support@nakhatra.com" className="text-muted transition-colors hover:text-paper">{c.support}</a></li>
               <li><Link href="/privacy" className="text-muted transition-colors hover:text-paper">{c.privacy}</Link></li>
               <li><Link href="/terms" className="text-muted transition-colors hover:text-paper">{c.terms}</Link></li>
@@ -108,7 +108,7 @@ export function SiteFooter() {
           </div>
         </div>
     
-        <div className="mt-14 flex flex-col-reverse items-start justify-between gap-6 border-t border-white/[0.08] pt-7 sm:flex-row sm:items-center">
+        <div className="mt-14 flex flex-col-reverse items-start justify-between gap-6 border-t border-brd pt-7 sm:flex-row sm:items-center">
           <p className="text-[12.5px] text-faint">{c.copyright}</p>
           <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-[12.5px]">
             {([["en", "English"], ["ne", "नेपाली"], ["hi", "हिन्दी"]] as const).map(([code, label]) => (

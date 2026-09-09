@@ -15,7 +15,7 @@ export function FaqSection() {
           <h2 className="mt-4 font-disp text-[30px] font-bold leading-[1.12] tracking-[-0.015em] text-paper sm:text-[38px]">{m.title}</h2>
           <p className="mt-4 max-w-sm text-[15px] leading-[1.7] text-muted">{m.sub}</p>
 
-          <div className="mt-9 max-w-sm rounded-[8px] border border-white/[0.09] bg-card/50 p-5">
+          <div className="mt-9 max-w-sm rounded-[8px] border border-brd bg-card/50 p-5">
             <h3 className="text-[14px] font-semibold text-paper">{m.stuckTitle}</h3>
             <p className="mt-2 text-[13px] leading-[1.7] text-muted">{m.stuckBody}</p>
             <a href="mailto:support@nakhatra.com" className="mt-4 inline-flex items-center gap-2 text-[13px] font-semibold text-gold transition-colors hover:text-gold2">
@@ -25,12 +25,12 @@ export function FaqSection() {
           </div>
         </div>
 
-        <div className="border-t border-white/[0.09]">
+        <div className="border-t border-brd">
           {m.items.map(([q, a]) => (
-            <details key={q} className="faq group border-b border-white/[0.09]">
+            <details key={q} className="faq group border-b border-brd">
               <summary className="flex cursor-pointer list-none items-center justify-between gap-6 py-5 text-[15.5px] font-semibold text-paper transition-colors hover:text-gold2">
                 <span className="flex-1">{q}</span>
-                <span className="chev flex size-7 shrink-0 items-center justify-center rounded-full border border-white/12 text-gold transition-all group-hover:border-gold/40">
+                <span className="chev flex size-7 shrink-0 items-center justify-center rounded-full border border-brd text-gold transition-all group-hover:border-gold/40">
                   <svg className="size-3" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><path d="M6 1.5v9M1.5 6h9" /></svg>
                 </span>
               </summary>

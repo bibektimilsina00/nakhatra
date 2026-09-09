@@ -30,16 +30,18 @@
      right set once, in capitals, with wide tracking. */
   --font-logo: var(--font-serif-face), Georgia, serif;
 
-  /* Marketing palette — the same values the landing demo was built on. */
-  --color-ink: #070810;
-  --color-ink2: #0C0F19;
-  --color-card: #141928;
-  --color-gold: #E5A93C;
-  --color-gold2: #F3C766;
-  --color-gold3: #B87A14;
-  --color-paper: #F8FAFC;
-  --color-muted: #94A3B8;
-  --color-faint: #5F6B7F;
+  /* Marketing palette. Originally fixed dark; now themed like the app —
+     the same var indirection, so the landing page turns to warm paper in
+     light while the hero (wrapped in .theme-dark) keeps its night sky. */
+  --color-ink: var(--m-ink);
+  --color-ink2: var(--m-ink2);
+  --color-card: var(--m-card);
+  --color-gold: var(--m-gold);
+  --color-gold2: var(--m-gold2);
+  --color-gold3: var(--m-gold3);
+  --color-paper: var(--m-paper);
+  --color-muted: var(--m-muted);
+  --color-faint: var(--m-faint);
 
   --font-sys: var(--font-sora), ui-sans-serif, system-ui, -apple-system, sans-serif;
   --font-disp: var(--font-sora), ui-sans-serif, system-ui, sans-serif;
@@ -88,6 +90,16 @@
   --t-onacc: #090A10;
   --t-brd: rgba(255, 255, 255, 0.10);
   --t-brd2: rgba(255, 255, 255, 0.25);
+  --m-ink: #070810;
+  --m-ink2: #0C0F19;
+  --m-card: #141928;
+  --m-gold: #E5A93C;
+  --m-gold2: #F3C766;
+  --m-gold3: #B87A14;
+  --m-paper: #F8FAFC;
+  --m-muted: #94A3B8;
+  --m-faint: #5F6B7F;
+  --m-glass: rgba(20, 25, 40, 0.55);
 }
 
 /* Light: the patro. Parchment ground, red rules, ink writing. */
@@ -114,6 +126,41 @@ html[data-theme="light"] {
   --t-onacc: #FFFDF5;
   --t-brd: rgba(183, 128, 12, 0.22);
   --t-brd2: rgba(183, 128, 12, 0.42);
+  --m-ink: #FBF6EC;
+  --m-ink2: #F3EBD8;
+  --m-card: #FFFDF7;
+  --m-gold: #B7800C;
+  --m-gold2: #96690a;
+  --m-gold3: #8F6206;
+  --m-paper: #33291a;
+  --m-muted: #6b5836;
+  --m-faint: #a38c5f;
+  --m-glass: rgba(255, 253, 247, 0.72);
+}
+
+/* An island that stays night regardless of theme — the hero's solar system
+   and the site header live here, because light text over a starfield cannot
+   flip, and a dark band over paper is exactly how the classic patro sites
+   crown their pages. Custom properties resolve their var() references where
+   they are DECLARED (:root), not where they are used — so the island must
+   override the final color tokens, not the t-/m- variables they were built
+   from. (And never write star-slash inside a CSS comment: an earlier version
+   of this note did, ended the comment mid-sentence, and the parser's error
+   recovery silently swallowed the entire rule below.) */
+.theme-dark {
+  color-scheme: dark;
+  --color-app: #090A10; --color-panel: #161B2B; --color-inset: #0B0E18;
+  --color-fg: #F8FAFC; --color-mid: #CBD5E1; --color-mut: #94A3B8;
+  --color-dim: #5F6B7F; --color-acc: #E5A93C; --color-acc2: #F3C766;
+  --color-onacc: #090A10;
+  --color-brd: rgba(255, 255, 255, 0.10); --color-brd2: rgba(255, 255, 255, 0.25);
+  --color-ink: #070810; --color-ink2: #0C0F19; --color-card: #141928;
+  --color-gold: #E5A93C; --color-gold2: #F3C766; --color-gold3: #B87A14;
+  --color-paper: #F8FAFC; --color-muted: #94A3B8; --color-faint: #5F6B7F;
+  --color-cream: #090A10; --color-surface: #161B2B;
+  --color-line: rgba(255, 255, 255, 0.10);
+  --color-accent-strong: #E5A93C; --color-accent-ink: #F3C766;
+  --m-glass: rgba(20, 25, 40, 0.55);
 }
 
 
@@ -273,7 +320,7 @@ input:focus-visible, textarea:focus-visible, select:focus-visible { outline:none
 .grain::after { content:""; position:absolute; inset:0; pointer-events:none; opacity:.03;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E") }
 
-.glass { background:rgba(20,25,40,.55); backdrop-filter:blur(14px) }
+.glass { background:var(--m-glass); backdrop-filter:blur(14px) }
 
 @keyframes bob { 0%,100%{transform:translateY(0)} 50%{transform:translateY(6px)} }
 .bob { animation:bob 2.6s ease-in-out infinite }

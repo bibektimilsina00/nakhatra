@@ -62,7 +62,7 @@ function SectionHead({
 
 export function ChartSection() {
   return (
-    <section className="border-t border-white/10 bg-[#0D101A] py-20" id="chart">
+    <section className="border-t border-brd bg-[#0D101A] py-20" id="chart">
       <div className="mx-auto max-w-6xl space-y-12 px-6">
         <SectionHead
           eyebrow="Your chart"
@@ -79,7 +79,7 @@ export function ChartSection() {
 
 export function HowItWorksSection() {
   return (
-    <section className="border-t border-white/10 py-20" id="how">
+    <section className="border-t border-brd py-20" id="how">
       <div className="mx-auto max-w-5xl space-y-14 px-6">
         <SectionHead
           eyebrow="How it works"
@@ -104,10 +104,10 @@ export function HowItWorksSection() {
           ].map(({ n, Icon, title, body }) => (
             <article
               key={n}
-              className="space-y-3 rounded-[10px] border border-white/10 bg-[#161B2B] p-7"
+              className="space-y-3 rounded-[10px] border border-brd bg-[#161B2B] p-7"
             >
               <div className="flex items-center gap-3">
-                <span className="flex size-10 items-center justify-center rounded-[8px] border border-white/10 bg-[#090A10] text-[#E5A93C]">
+                <span className="flex size-10 items-center justify-center rounded-[8px] border border-brd bg-[#090A10] text-[#E5A93C]">
                   <Icon className="size-5" />
                 </span>
                 <span className="font-mono text-xs text-[#64748B]">{n}</span>
@@ -137,7 +137,7 @@ const CONTENTS = [
 
 export function ContentsSection() {
   return (
-    <section className="border-t border-white/10 bg-[#0D101A] py-20" id="contents">
+    <section className="border-t border-brd bg-[#0D101A] py-20" id="contents">
       <div className="mx-auto max-w-6xl space-y-12 px-6">
         <SectionHead
           eyebrow="What is calculated"
@@ -149,9 +149,9 @@ export function ContentsSection() {
           {CONTENTS.map(({ Icon, title, body }) => (
             <article
               key={title}
-              className="space-y-3 rounded-[10px] border border-white/10 bg-[#161B2B] p-5 transition-colors hover:border-[#E5A93C]/40"
+              className="space-y-3 rounded-[10px] border border-brd bg-[#161B2B] p-5 transition-colors hover:border-[#E5A93C]/40"
             >
-              <span className="flex size-10 items-center justify-center rounded-[8px] border border-white/10 bg-[#090A10] text-[#E5A93C]">
+              <span className="flex size-10 items-center justify-center rounded-[8px] border border-brd bg-[#090A10] text-[#E5A93C]">
                 <Icon className="size-[18px]" />
               </span>
               <h3 className="font-serif text-[15px] font-bold text-[#F8FAFC]">{title}</h3>
@@ -176,7 +176,7 @@ export function ReadingSection() {
   };
 
   return (
-    <section className="border-t border-white/10 py-20" id="reading">
+    <section className="border-t border-brd py-20" id="reading">
       <div className="mx-auto max-w-6xl space-y-12 px-6">
         <SectionHead
           eyebrow="Your reading"
@@ -200,7 +200,7 @@ export function ReadingSection() {
                 className={`flex items-center gap-3 rounded-[8px] border px-4 py-3 text-[14px] ${
                   i === 0
                     ? "border-[#E5A93C]/40 bg-[#161B2B] text-[#F8FAFC]"
-                    : "border-white/10 text-[#94A3B8]"
+                    : "border-brd text-[#94A3B8]"
                 }`}
               >
                 <span className="font-mono text-[11px] text-[#64748B]">
@@ -212,7 +212,7 @@ export function ReadingSection() {
           </div>
 
           {/* An actual generated section, not placeholder copy. */}
-          <article className="space-y-4 rounded-[10px] border border-white/10 bg-[#161B2B] p-7 lg:col-span-3">
+          <article className="space-y-4 rounded-[10px] border border-brd bg-[#161B2B] p-7 lg:col-span-3">
             <div>
               <h3 className="font-serif text-lg font-bold text-[#F8FAFC]">
                 {reading.title}
@@ -230,7 +230,7 @@ export function ReadingSection() {
               </p>
             ))}
 
-            <div className="border-t border-white/10 pt-4">
+            <div className="border-t border-brd pt-4">
               <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.18em] text-[#E5A93C]">
                 Based on
               </p>
@@ -238,7 +238,7 @@ export function ReadingSection() {
                 {reading.reasoning.map((r) => (
                   <span
                     key={r.placement}
-                    className="rounded-[6px] border border-white/10 bg-[#090A10] px-2.5 py-1 text-[12px] text-[#F8FAFC]"
+                    className="rounded-[6px] border border-brd bg-[#090A10] px-2.5 py-1 text-[12px] text-[#F8FAFC]"
                   >
                     {r.placement}
                   </span>
@@ -259,7 +259,7 @@ export function ConversationSection() {
   const maha = chart.dasha.periods[0]?.lord ?? "Mercury";
 
   return (
-    <section className="border-t border-white/10 bg-[#0D101A] py-20" id="ask">
+    <section className="border-t border-brd bg-[#0D101A] py-20" id="ask">
       <div className="mx-auto max-w-6xl space-y-12 px-6">
         <SectionHead
           eyebrow="Ask anything"
@@ -268,21 +268,21 @@ export function ConversationSection() {
         />
 
         <div className="grid items-start gap-8 lg:grid-cols-2">
-          <div className="space-y-3 rounded-[10px] border border-white/10 bg-[#161B2B] p-6">
+          <div className="space-y-3 rounded-[10px] border border-brd bg-[#161B2B] p-6">
             <div className="ml-auto max-w-[85%] rounded-[10px] rounded-br-sm bg-[#E5A93C] px-4 py-2.5 text-[14px] text-[#090A10]">
               Is this a good year to change jobs?
             </div>
-            <div className="max-w-[92%] space-y-2 rounded-[10px] rounded-bl-sm border border-white/10 bg-[#090A10] px-4 py-3">
+            <div className="max-w-[92%] space-y-2 rounded-[10px] rounded-bl-sm border border-brd bg-[#090A10] px-4 py-3">
               <p className="text-[14px] leading-relaxed text-[#CBD5E1]">
                 You are running <strong className="text-[#F8FAFC]">{maha} Mahadasha</strong>,
                 and your tenth lord sits with it. That favours a considered move rather
                 than a sudden one — negotiate, do not leap.
               </p>
-              <div className="flex flex-wrap gap-1.5 border-t border-white/10 pt-2">
+              <div className="flex flex-wrap gap-1.5 border-t border-brd pt-2">
                 {["10th lord placement", `${maha} Mahadasha`, "D10 Dasamsa"].map((tag) => (
                   <span
                     key={tag}
-                    className="rounded-[5px] border border-white/10 px-2 py-0.5 text-[11px] text-[#94A3B8]"
+                    className="rounded-[5px] border border-brd px-2 py-0.5 text-[11px] text-[#94A3B8]"
                   >
                     {tag}
                   </span>
@@ -297,8 +297,8 @@ export function ConversationSection() {
               { Icon: Mic, title: "Speak to it", body: "Hold a live spoken consultation. Ask out loud and hear the answer, hands free." },
               { Icon: Languages, title: "Three languages", body: "English, नेपाली and हिन्दी — the whole reading and the whole conversation, not just the interface." },
             ].map(({ Icon, title, body }) => (
-              <div key={title} className="flex gap-4 rounded-[10px] border border-white/10 bg-[#161B2B] p-5">
-                <span className="flex size-10 shrink-0 items-center justify-center rounded-[8px] border border-white/10 bg-[#090A10] text-[#E5A93C]">
+              <div key={title} className="flex gap-4 rounded-[10px] border border-brd bg-[#161B2B] p-5">
+                <span className="flex size-10 shrink-0 items-center justify-center rounded-[8px] border border-brd bg-[#090A10] text-[#E5A93C]">
                   <Icon className="size-[18px]" />
                 </span>
                 <div className="space-y-1">
@@ -318,7 +318,7 @@ export function ConversationSection() {
 
 export function MilanSection() {
   return (
-    <section className="border-t border-white/10 py-20" id="milan">
+    <section className="border-t border-brd py-20" id="milan">
       <div className="mx-auto max-w-6xl px-6">
         <div className="grid items-center gap-10 lg:grid-cols-2">
           <div className="space-y-5">
@@ -342,8 +342,8 @@ export function MilanSection() {
             </Link>
           </div>
 
-          <div className="rounded-[10px] border border-white/10 bg-[#161B2B] p-6">
-            <div className="mb-4 flex items-baseline justify-between border-b border-white/10 pb-3">
+          <div className="rounded-[10px] border border-brd bg-[#161B2B] p-6">
+            <div className="mb-4 flex items-baseline justify-between border-b border-brd pb-3">
               <span className="text-[13px] text-[#94A3B8]">Total guna</span>
               <span className="font-mono text-2xl font-bold text-[#E5A93C]">28<span className="text-base text-[#64748B]">/36</span></span>
             </div>
@@ -382,7 +382,7 @@ export function MilanSection() {
 
 export function AccuracySection() {
   return (
-    <section className="border-t border-white/10 bg-[#0D101A] py-20" id="accuracy">
+    <section className="border-t border-brd bg-[#0D101A] py-20" id="accuracy">
       <div className="mx-auto grid max-w-5xl items-center gap-10 px-6 md:grid-cols-5">
         <div className="space-y-4 md:col-span-3">
           <Eyebrow>Why charts disagree</Eyebrow>
@@ -404,12 +404,12 @@ export function AccuracySection() {
         </div>
 
         <div className="md:col-span-2">
-          <div className="space-y-3 rounded-[10px] border border-white/10 bg-[#161B2B] p-6 font-mono text-[13px]">
+          <div className="space-y-3 rounded-[10px] border border-brd bg-[#161B2B] p-6 font-mono text-[13px]">
             <div className="mb-1 flex items-center gap-2 text-xs uppercase tracking-widest text-[#64748B]">
               <ShieldCheck className="size-3.5 text-[#E5A93C]" />
               Kathmandu, 14 June 1975
             </div>
-            <div className="flex items-baseline justify-between gap-4 border-b border-white/10 pb-3">
+            <div className="flex items-baseline justify-between gap-4 border-b border-brd pb-3">
               <span className="text-[#94A3B8]">Today&apos;s offset</span>
               <span className="text-rose-400">+5:45</span>
             </div>
@@ -431,7 +431,7 @@ export function AccuracySection() {
 
 export function AstrologersSection() {
   return (
-    <section className="border-t border-white/10 py-20" id="astrologers">
+    <section className="border-t border-brd py-20" id="astrologers">
       <div className="mx-auto max-w-5xl px-6">
         <div className="rounded-[12px] border border-[#E5A93C]/25 bg-[#161B2B] p-8 sm:p-12">
           <div className="flex flex-wrap items-center gap-3">
@@ -459,8 +459,8 @@ export function AstrologersSection() {
               { Icon: Phone, title: "Then speak", body: "Move to an audio or video consultation when writing is not enough, scheduled in your time zone and theirs." },
               { Icon: ShieldCheck, title: "Your data, your call", body: "Sharing a chart is an explicit grant to one person. It is revocable, and you can see every grant you have made." },
             ].map(({ Icon, title, body }) => (
-              <div key={title} className="space-y-2.5 rounded-[10px] border border-white/10 bg-[#0D101A] p-5">
-                <span className="flex size-9 items-center justify-center rounded-[8px] border border-white/10 bg-[#090A10] text-[#E5A93C]">
+              <div key={title} className="space-y-2.5 rounded-[10px] border border-brd bg-[#0D101A] p-5">
+                <span className="flex size-9 items-center justify-center rounded-[8px] border border-brd bg-[#090A10] text-[#E5A93C]">
                   <Icon className="size-[17px]" />
                 </span>
                 <h3 className="text-sm font-semibold text-[#F8FAFC]">{title}</h3>
@@ -472,7 +472,7 @@ export function AstrologersSection() {
           <div className="mt-9 flex flex-wrap items-center gap-x-6 gap-y-3">
             <a
               href="#form"
-              className="inline-flex items-center gap-2 rounded-[8px] border border-white/15 px-5 py-2.5 text-sm font-semibold text-[#F8FAFC] transition-colors hover:border-[#E5A93C]/50 hover:text-[#F3C766]"
+              className="inline-flex items-center gap-2 rounded-[8px] border border-brd px-5 py-2.5 text-sm font-semibold text-[#F8FAFC] transition-colors hover:border-[#E5A93C]/50 hover:text-[#F3C766]"
             >
               Start with your chart <ArrowRight className="size-4" />
             </a>
@@ -517,10 +517,10 @@ const FAQ: [string, string][] = [
 
 export function FaqSection() {
   return (
-    <section className="border-t border-white/10 bg-[#0D101A] py-20" id="faq">
+    <section className="border-t border-brd bg-[#0D101A] py-20" id="faq">
       <div className="mx-auto max-w-3xl space-y-10 px-6">
         <SectionHead eyebrow="Questions" title="Before you start" />
-        <div className="divide-y divide-white/10 border-y border-white/10">
+        <div className="divide-y divide-brd border-y border-brd">
           {FAQ.map(([q, a]) => (
             <details key={q} className="group py-5">
               <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-[15px] font-semibold text-[#F8FAFC] marker:hidden">
@@ -542,7 +542,7 @@ export function FaqSection() {
 
 export function ClosingSection() {
   return (
-    <section className="border-t border-white/10 py-20">
+    <section className="border-t border-brd py-20">
       <div className="mx-auto max-w-2xl space-y-6 px-6 text-center">
         <h2 className="text-balance font-serif text-2xl font-bold text-[#F8FAFC] sm:text-3xl">
           Your chart takes about a minute

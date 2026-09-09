@@ -71,9 +71,9 @@ export function ChartSection() {
           </div>
 
           <div className="space-y-10">
-            <dl className="border-y border-white/[0.09] font-mono text-[13px]">
+            <dl className="border-y border-brd font-mono text-[13px]">
               {m.stats.map((k, i) => (
-                <div key={k} className={`flex items-baseline justify-between gap-4 py-3${i < m.stats.length - 1 ? " border-b border-white/[0.06]" : ""}`}>
+                <div key={k} className={`flex items-baseline justify-between gap-4 py-3${i < m.stats.length - 1 ? " border-b border-brd" : ""}`}>
                   <dt className={`text-[11px] text-faint ${label}`}>{k}</dt>
                   <dd className="tabular-nums text-gold2">{m.statValues[i]}</dd>
                 </div>

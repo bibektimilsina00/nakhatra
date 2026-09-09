@@ -53,7 +53,7 @@ export function AstrologersSection() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder={m.emailPlaceholder}
-                className="min-w-0 flex-1 rounded-[8px] border border-white/12 bg-ink px-4 py-3 text-[14px] text-paper outline-none placeholder:text-faint focus:border-gold/60"
+                className="min-w-0 flex-1 rounded-[8px] border border-brd bg-ink px-4 py-3 text-[14px] text-paper outline-none placeholder:text-faint focus:border-gold/60"
               />
                   <button
                 type="submit"
@@ -67,19 +67,19 @@ export function AstrologersSection() {
             </div>
 
             {/* The directory it is describing, drawn. */}
-            <div className="rounded-[8px] border border-white/10 bg-ink/60 p-6">
+            <div className="rounded-[8px] border border-brd bg-ink/60 p-6">
               <div className="mb-5 flex items-center justify-between gap-4">
                 <span className={`font-mono text-[10px] text-gold ${label}`}>{m.findLabel}</span>
-                <span className={`rounded-[4px] border border-white/12 px-1.5 py-0.5 font-mono text-[9px] text-faint ${chip}`}>{m.preview}</span>
+                <span className={`rounded-[4px] border border-brd px-1.5 py-0.5 font-mono text-[9px] text-faint ${chip}`}>{m.preview}</span>
               </div>
               <div className="mb-1 flex flex-wrap gap-2">
                 <span className="rounded-full border border-gold/40 bg-gold/10 px-3 py-1 text-[11.5px] text-gold2">Parashari</span>
-                <span className="rounded-full border border-white/10 px-3 py-1 text-[11.5px] text-muted">नेपाली</span>
-                <span className="rounded-full border border-white/10 px-3 py-1 text-[11.5px] text-muted">{m.marriage}</span>
-                <span className="rounded-full border border-white/10 px-3 py-1 text-[11.5px] text-faint">+4</span>
+                <span className="rounded-full border border-brd px-3 py-1 text-[11.5px] text-muted">नेपाली</span>
+                <span className="rounded-full border border-brd px-3 py-1 text-[11.5px] text-muted">{m.marriage}</span>
+                <span className="rounded-full border border-brd px-3 py-1 text-[11.5px] text-faint">+4</span>
               </div>
               <ul className="mt-3">
-                <li className="flex items-center gap-4 border-b border-white/[0.07] py-4 last:border-0">
+                <li className="flex items-center gap-4 border-b border-brd py-4 last:border-0">
                   <span className="flex size-11 shrink-0 items-center justify-center rounded-full border border-gold/25 bg-ink font-mono text-[12px] text-gold">RS</span>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
@@ -93,7 +93,7 @@ export function AstrologersSection() {
                     <div className="mt-1 font-mono text-[10.5px] text-faint">NPR 1,500 / 30 min</div>
                   </div>
                 </li>
-                <li className="flex items-center gap-4 border-b border-white/[0.07] py-4 last:border-0">
+                <li className="flex items-center gap-4 border-b border-brd py-4 last:border-0">
                   <span className="flex size-11 shrink-0 items-center justify-center rounded-full border border-gold/25 bg-ink font-mono text-[12px] text-gold">RA</span>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
@@ -107,7 +107,7 @@ export function AstrologersSection() {
                     <div className="mt-1 font-mono text-[10.5px] text-faint">NPR 2,000 / 30 min</div>
                   </div>
                 </li>
-                <li className="flex items-center gap-4 border-b border-white/[0.07] py-4 last:border-0 opacity-55">
+                <li className="flex items-center gap-4 border-b border-brd py-4 last:border-0 opacity-55">
                   <span className="flex size-11 shrink-0 items-center justify-center rounded-full border border-gold/25 bg-ink font-mono text-[12px] text-gold">SJ</span>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
@@ -122,14 +122,14 @@ export function AstrologersSection() {
                   </div>
                 </li>
               </ul>
-              <div className="mt-5 flex gap-3 border-t border-white/[0.09] pt-4">
+              <div className="mt-5 flex gap-3 border-t border-brd pt-4">
                 <span className="mt-px shrink-0 text-gold"><svg className="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><rect x="4" y="10.5" width="16" height="10" rx="2"/><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"/></svg></span>
                 <p className="text-[12px] leading-[1.7] text-faint">{m.shareNote}</p>
               </div>
             </div>
           </div>
 
-          <div className="grid gap-x-10 gap-y-9 border-t border-white/[0.09] p-8 sm:p-12 sm:grid-cols-2 lg:grid-cols-4 lg:p-14 lg:pt-12">
+          <div className="grid gap-x-10 gap-y-9 border-t border-brd p-8 sm:p-12 sm:grid-cols-2 lg:grid-cols-4 lg:p-14 lg:pt-12">
             <div>
               <span className="text-gold"><svg className="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 4.5 4.5"/></svg></span>
               <h3 className="mt-3.5 text-[15px] font-semibold text-paper">{m.cards[0].title}</h3>
