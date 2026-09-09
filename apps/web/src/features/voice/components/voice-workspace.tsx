@@ -974,32 +974,22 @@ onClick={() => setupMicAnalyzer()}
       {/* MODE 1: ULTRA-PREMIUM FULLSCREEN LIVE VOICE EXPERIENCE             */}
       {/* =================================================================== */}
       {viewMode === "live_voice" ? (
-        <div className="relative flex-1 min-h-0 h-full bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[#1E1B4B]/40 via-[#090A10] to-[#090A10] flex flex-col items-start justify-start p-4 sm:p-5 overflow-hidden">
-          
-          <div className="w-full flex-1 grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch min-h-0">
-            
-            {/* LEFT COLUMN (4 COLS): SEEKER NAME CARD + REALTIME RESPONSE CARD - DYNAMICALLY FIT TO SCREEN */}
-            <div className="lg:col-span-4 flex flex-col space-y-3 h-full justify-between min-h-0">
-              
-              {/* Seeker Profile / Name Card - PERFECTLY ALIGNED AT TOP LEFT */}
-              <div className="w-full bg-panel/90 backdrop-blur-xl border border-brd rounded-[8px] p-4 shadow-xl flex items-center gap-3 shrink-0">
-                <div className="size-10 rounded-full bg-gradient-to-br from-acc to-acc2 text-onacc flex items-center justify-center font-bold text-sm shadow-md shrink-0">
-                  {activeBirth.name.charAt(0)}
-                </div>
-                <div className="min-w-0 flex-1">
-                  <span className="text-sm font-bold text-fg block truncate leading-tight">{activeBirth.name}</span>
-                  <span className="text-[11px] text-mut block truncate">{getSignName(activeChart.lagna_sign, selectedLanguage)} {t.ascendantLabel} · {getPlanetName(mahaLord, selectedLanguage)}-{getPlanetName(antarLord, selectedLanguage)} {selectedLanguage === "ne" ? "दशा" : selectedLanguage === "hi" ? "दशा" : "Dasha"}</span>
-                </div>
-              </div>
+        /* The consultation room. Everything sits on the theme tokens, so the
+           patro light theme owns it as fully as the night theme does; the one
+           accent is the house gold. */
+        <div className="relative flex-1 min-h-0 h-full bg-app flex flex-col p-4 sm:p-5 overflow-hidden">
+          <div className="w-full flex-1 grid grid-cols-1 lg:grid-cols-[380px_1fr] gap-5 items-stretch min-h-0">
 
-              {/* Realtime Astrologer Response Card - EXPANDS DYNAMICALLY TO FILL FULL SCREEN HEIGHT */}
-              <div className="w-full flex-1 rounded-[8px] border border-acc/30 bg-gradient-to-b from-[#161B2B]/95 via-[#121625]/95 to-[#0D0F19]/95 backdrop-blur-2xl p-5 space-y-4 z-10 shadow-[0_10px_40px_rgba(0,0,0,0.6)] animate-fade-in flex flex-col justify-between min-h-0">
-                
-                {/* Response Section Header */}
-                <div className="flex items-center justify-between border-b border-brd pb-3 shrink-0">
-                  <span className="text-xs font-serif font-bold text-acc flex items-center gap-2">
-                    <span className="size-2 rounded-full bg-acc animate-pulse" />
-                    📜 {t.realtimeResponse}
+            {/* ── The conversation, as a written record ─────────────────── */}
+            <div className="hidden lg:flex flex-col rounded-[8px] border border-brd bg-panel min-h-0 overflow-hidden">
+              <div className="border-b border-brd px-4 py-3 shrink-0">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="flex items-center gap-2 font-serif text-sm font-bold text-fg">
+                    <span className="relative flex size-2">
+                      <span className="absolute inline-flex size-full animate-ping rounded-full bg-acc opacity-60" />
+                      <span className="relative inline-flex size-2 rounded-full bg-acc" />
+                    </span>
+                    {t.realtimeResponse}
                   </span>
                   {teleprompterBasis && (
                     <button
@@ -1007,78 +997,74 @@ onClick={() => setupMicAnalyzer()}
                         setShowChartDrawer(true);
                         setHighlightedHouse(teleprompterText.includes("7th") ? 7 : 10);
                       }}
-                      className="rounded-[8px] bg-inset border border-acc/40 px-2.5 py-1 text-[10px] font-semibold text-acc2 hover:bg-acc/10 transition shadow-sm truncate max-w-[140px]"
+                      className="max-w-[150px] truncate rounded-full border border-brd bg-inset px-2.5 py-0.5 text-[10px] font-semibold text-mid transition hover:border-acc/50 hover:text-acc2"
                     >
-                      📍 {teleprompterBasis}
+                      {teleprompterBasis}
                     </button>
                   )}
                 </div>
+                <p className="mt-1 truncate text-[11px] text-mut">
+                  {activeBirth.name} · {getSignName(activeChart.lagna_sign, selectedLanguage)} {t.ascendantLabel} ·{" "}
+                  {getPlanetName(mahaLord, selectedLanguage)}-{getPlanetName(antarLord, selectedLanguage)}{" "}
+                  {selectedLanguage === "en" ? "Dasha" : "दशा"}
+                </p>
+              </div>
 
-                {/* Response Text Content Body - STRETCHES FULL HEIGHT */}
-                <div
-                  ref={chatScrollRef}
-                  className="flex-1 overflow-y-auto pr-1 space-y-3 min-h-[260px] max-h-[calc(100vh-280px)]"
-                >
-                  {messages.length > 0 ? (
-                    messages.map((m) => (
-                      <div
-                        key={m.id}
-                        className={`rounded-[10px] p-3 text-xs ${
-                          m.sender === "user"
-                            ? "ml-4 bg-acc/15 border border-acc/30"
-                            : "mr-2 bg-inset/60 border border-brd"
-                        }`}
-                      >
-                        <MarkdownRenderer content={m.text} isUser={m.sender === "user"} />
-                        <span className="mt-1 block text-[9px] opacity-60">{m.timestamp}</span>
+              <div ref={chatScrollRef} className="flex-1 space-y-4 overflow-y-auto p-4">
+                {messages.length > 0 ? (
+                  messages.map((m) =>
+                    m.sender === "user" ? (
+                      <div key={m.id} className="flex justify-end">
+                        <div className="max-w-[85%] rounded-[12px] rounded-br-[4px] border border-acc/30 bg-acc/10 px-3.5 py-2.5">
+                          <MarkdownRenderer content={m.text} isUser />
+                          <span className="mt-1 block text-right text-[9px] text-dim">{m.timestamp}</span>
+                        </div>
                       </div>
-                    ))
-                  ) : (
-                    <div className="h-full flex flex-col items-center justify-center text-center p-6 space-y-2 text-mut/60">
-                      <span className="text-3xl">🪔</span>
-                      <p className="text-xs font-serif font-semibold text-fg">{t.listeningToVoice}</p>
-                      <p className="text-[10px]">{t.askAnyQuestionOrb}</p>
-                    </div>
-                  )}
-                </div>
-
-                {/* Session Summary & Transcript Button Footer */}
-                <div className="border-t border-brd pt-3 flex items-center justify-between text-[10px] text-mut shrink-0">
-                  <span>{t.messagesCount}: <strong className="text-fg">{messages.length}</strong></span>
-
-                </div>
+                    ) : (
+                      <div key={m.id} className="flex items-start gap-2.5">
+                        <span className="mt-0.5 grid size-6 shrink-0 place-items-center rounded-full bg-inset font-serif text-[11px] font-bold text-acc">
+                          ॐ
+                        </span>
+                        <div className="min-w-0 max-w-[85%] rounded-[12px] rounded-tl-[4px] border border-brd bg-inset px-3.5 py-2.5">
+                          <MarkdownRenderer content={m.text} />
+                          <span className="mt-1 block text-[9px] text-dim">{m.timestamp}</span>
+                        </div>
+                      </div>
+                    ),
+                  )
+                ) : (
+                  <div className="flex h-full flex-col items-center justify-center space-y-2 p-6 text-center">
+                    <span className="font-serif text-2xl text-acc">ॐ</span>
+                    <p className="font-serif text-xs font-semibold text-fg">{t.listeningToVoice}</p>
+                    <p className="text-[10px] text-mut">{t.askAnyQuestionOrb}</p>
+                  </div>
+                )}
               </div>
             </div>
 
-            {/* RIGHT COLUMN (8 COLS): Cosmic Visualizer Orb + Controls */}
-            <div className="lg:col-span-8 flex flex-col items-center justify-between h-full space-y-3 min-h-0">
-              
-              {/* VERTICALLY CENTERED ORB VISUALIZER SECTION */}
-              <div className="flex-1 flex flex-col items-center justify-center my-auto w-full space-y-4">
-                {/* Central Animated Cosmic Mandala Orb */}
-                <div className="relative flex items-center justify-center size-72 md:size-80 shrink-0">
-                  {/* Ambient Backlight Glow Aura */}
-                  <div className={`absolute inset-0 m-auto size-72 md:size-80 rounded-full transition-all duration-700 pointer-events-none ${
-                    voiceState === "listening"
-                      ? "bg-cyan-500/20 blur-3xl scale-125"
-                      : voiceState === "thinking"
-                      ? "bg-acc/25 blur-3xl scale-110"
-                      : voiceState === "speaking"
-                      ? "bg-gradient-to-tr from-acc/20 via-[#F3C766]/30 to-amber-500/20 blur-3xl scale-150 animate-pulse-glow"
-                      : "bg-transparent"
-                  }`} />
-
-                  {/* Pulsing Radar Wave on Listening */}
+            {/* ── The stage ─────────────────────────────────────────────── */}
+            <div className="flex min-h-0 flex-col items-center justify-between space-y-4">
+              <div className="my-auto flex w-full flex-1 flex-col items-center justify-center space-y-5">
+                <div className="relative flex size-60 shrink-0 items-center justify-center md:size-64">
+                  {/* One quiet aura; the state changes its warmth, not its colour family. */}
+                  <div
+                    className={`pointer-events-none absolute inset-0 m-auto rounded-full transition-all duration-700 ${
+                      voiceState === "speaking"
+                        ? "bg-acc/25 blur-3xl scale-125 animate-pulse-glow"
+                        : voiceState === "listening"
+                          ? "bg-acc/10 blur-3xl scale-110"
+                          : voiceState === "thinking"
+                            ? "bg-acc/15 blur-3xl"
+                            : "bg-transparent"
+                    }`}
+                  />
                   {voiceState === "listening" && (
-                    <div className="absolute inset-0 m-auto size-72 md:size-80 rounded-full border border-cyan-500/30 animate-pulse-radar pointer-events-none" />
+                    <div className="pointer-events-none absolute inset-0 m-auto animate-pulse-radar rounded-full border border-acc/25" />
                   )}
-
-                  {/* Rotating Dasha Wheel on Thinking */}
                   {voiceState === "thinking" && (
-                    <div className="absolute inset-0 m-auto size-72 md:size-80 rounded-full border-2 border-dashed border-acc/50 animate-rotate-slow pointer-events-none" />
+                    <div className="pointer-events-none absolute inset-0 m-auto animate-rotate-slow rounded-full border-2 border-dashed border-acc/40" />
                   )}
 
-                  {/* Core 3D Spherical Cosmic Mandala Orb */}
                   <button
                     onClick={() => {
                       if (voiceState === "speaking") {
@@ -1091,41 +1077,39 @@ onClick={() => setupMicAnalyzer()}
                         startOpenAIRealtimeWebRTC();
                       }
                     }}
-                    className={`group relative size-56 md:size-64 rounded-full flex items-center justify-center transition-all duration-700 cursor-pointer overflow-hidden backdrop-blur-xl ${
-                      voiceState === "listening"
-                        ? "bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-cyan-950 via-[#161B2B] to-[#090A10] border-2 border-cyan-400/70 shadow-[0_0_90px_rgba(6,182,212,0.45)] scale-105"
-                        : voiceState === "thinking"
-                        ? "bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-[#2A1F0D] via-[#161B2B] to-[#090A10] border-2 border-acc shadow-[0_0_90px_rgba(229,169,60,0.45)] scale-100"
-                        : voiceState === "speaking"
-                        ? "bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-[#38260B] via-[#1E1B4B] to-[#090A10] border-2 border-acc2 shadow-[0_0_110px_rgba(243,199,102,0.6)] scale-110 animate-pulse-glow"
-                        : "bg-panel border border-brd opacity-70"
+                    className={`group relative flex size-48 cursor-pointer items-center justify-center overflow-hidden rounded-full border-2 bg-panel transition-all duration-700 md:size-52 ${
+                      voiceState === "speaking"
+                        ? "scale-105 border-acc shadow-[0_0_70px_rgba(229,169,60,0.35)]"
+                        : voiceState === "listening"
+                          ? "border-acc/50 shadow-[0_0_50px_rgba(229,169,60,0.18)]"
+                          : voiceState === "thinking"
+                            ? "border-acc/70"
+                            : "border-brd opacity-80"
                     }`}
                   >
-                    {/* Sacred Geometric SVG Ring */}
-                    <svg className="absolute inset-0 size-full p-2 text-white/15 animate-rotate-slow pointer-events-none" viewBox="0 0 100 100">
+                    <svg
+                      className="pointer-events-none absolute inset-0 size-full animate-rotate-slow p-2 text-fg/10"
+                      viewBox="0 0 100 100"
+                    >
                       <circle cx="50" cy="50" r="45" fill="none" stroke="currentColor" strokeWidth="0.5" strokeDasharray="4 2" />
                       <circle cx="50" cy="50" r="32" fill="none" stroke="currentColor" strokeWidth="0.3" strokeDasharray="2 2" />
                       <polygon points="50,6 88.1,72 11.9,72" fill="none" stroke="currentColor" strokeWidth="0.4" />
                       <polygon points="50,94 88.1,28 11.9,28" fill="none" stroke="currentColor" strokeWidth="0.4" />
                     </svg>
-                    
-                    <div className="text-center z-10 p-5 space-y-1">
-                      <span className="block text-[34px] leading-none opacity-90">🕉️</span>
 
-                      <span className="mt-3 block text-[14px] font-semibold leading-snug text-fg">
+                    <div className="z-10 space-y-2 p-5 text-center">
+                      <span className="block font-serif text-[32px] leading-none text-acc">ॐ</span>
+                      <span className="block text-[13px] font-semibold leading-snug text-fg">
                         {voiceState === "speaking"
                           ? t.astrologerSpeaking
                           : voiceState === "thinking"
-                          ? t.thinkingState
-                          : micOpen
-                            ? t.listeningState
-                            : t.voiceReadyPaused}
+                            ? t.thinkingState
+                            : micOpen
+                              ? t.listeningState
+                              : t.voiceReadyPaused}
                       </span>
-
-                      {/* One meter, inside the circle. Bars while listening are
-                          the level from this room, so you can see it hears you;
-                          while speaking they move on their own. */}
-                      <span className="mt-3 flex h-5 items-end justify-center gap-[3px]" aria-hidden>
+                      {/* One meter: room level while listening, its own pulse while speaking. */}
+                      <span className="flex h-5 items-end justify-center gap-[3px]" aria-hidden>
                         {[0, 1, 2, 3, 4].map((bar) => {
                           const speaking = voiceState === "speaking";
                           const on = speaking || (micOpen && audioLevel >= (bar + 1) * 16);
@@ -1134,33 +1118,32 @@ onClick={() => setupMicAnalyzer()}
                               key={bar}
                               className={`w-[3px] rounded-full transition-all duration-100 ${
                                 speaking
-                                  ? `bg-acc2 animate-equalizer-${bar + 1}`
+                                  ? `bg-acc animate-equalizer-${bar + 1}`
                                   : on
-                                    ? "bg-cyan-400"
-                                    : "bg-white/15"
+                                    ? "bg-acc"
+                                    : "bg-fg/15"
                               }`}
                               style={speaking ? undefined : { height: on ? 7 + bar * 3 : 5 }}
                             />
                           );
                         })}
                       </span>
-
-                      <span className="mt-3 block text-[10.5px] text-mut">
-                        {voiceState === "speaking" ? t.tapToInterrupt : t.tapToStartVoice}
-                      </span>
                     </div>
                   </button>
                 </div>
 
-                {/* Live User Speech Teleprompter */}
+                <p className="text-[11px] text-mut">
+                  {voiceState === "speaking" ? t.tapToInterrupt : t.tapToStartVoice}
+                </p>
+
                 {interimTranscript && (
-                  <div className="flex items-center gap-2 w-full max-w-xl animate-fade-in z-20 shrink-0">
-                    <div className="rounded-[8px] border border-cyan-500/40 bg-cyan-950/80 backdrop-blur-xl px-4 py-2 text-center text-xs font-semibold text-cyan-200 shadow-2xl flex-1 truncate">
-                      🗣️ &quot;{interimTranscript}&quot;
-                    </div>
+                  <div className="z-20 flex w-full max-w-xl shrink-0 animate-fade-in items-center gap-2">
+                    <p className="flex-1 truncate rounded-[8px] border border-brd bg-panel px-4 py-2 text-center text-xs italic text-mid">
+                      &ldquo;{interimTranscript}&rdquo;
+                    </p>
                     <button
                       onClick={() => handleSend(interimTranscript)}
-                      className="rounded-[8px] bg-gradient-to-r from-acc to-acc2 hover:from-acc2 hover:to-acc px-4 py-2 text-xs font-bold text-onacc transition shrink-0 shadow-lg"
+                      className="shrink-0 rounded-[8px] bg-acc px-4 py-2 text-xs font-bold text-onacc transition hover:bg-acc2"
                     >
                       {t.sendNow}
                     </button>
@@ -1168,161 +1151,149 @@ onClick={() => setupMicAnalyzer()}
                 )}
 
                 {micPermissionError && (
-                  <div className="w-full max-w-md rounded-[8px] border border-red-500/30 bg-red-950/50 backdrop-blur-md px-4 py-2 text-center text-[11px] text-red-300 shadow-lg shrink-0">
-                    ⚠️ {micPermissionError}
+                  <div className="w-full max-w-md shrink-0 rounded-[8px] border border-red-500/30 bg-red-500/10 px-4 py-2 text-center text-[11px] text-red-400">
+                    {micPermissionError}
+                  </div>
+                )}
+                {realtimeError && (
+                  <div className="w-full max-w-md shrink-0 rounded-[8px] border border-red-500/30 bg-red-500/10 px-4 py-2 text-center text-[11px] text-red-400">
+                    {realtimeError}
                   </div>
                 )}
               </div>
 
-              {/* TIGHT BOTTOM STACK: PROMPT PILLS, CONTROL DOCK & INPUT BAR */}
-              <div className="w-full flex flex-col items-center gap-2.5 shrink-0 z-20">
-                {/* Dynamic Quick Prompt Pills */}
-                <div className="w-full max-w-xl flex gap-2 overflow-x-auto justify-center z-10 shrink-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+              {/* ── One console: suggestions, input, controls ─────────────── */}
+              <div className="z-20 w-full max-w-2xl shrink-0 space-y-2.5">
+                <div className="flex justify-center gap-2 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                   {(selectedLanguage === "ne"
                     ? [
-                        { label: "✨ करियरको योग?", query: "मेरो करियर र नोकरीमा कहिले राम्रो समय आउँछ?" },
-                        { label: "❤️ विवाह र ७औं भाव?", query: "मेरो विवाह र दाम्पत्य जीवनको विश्लेषण गर्नुहोस्।" },
-                        { label: `🪔 ${getPlanetName(mahaLord, selectedLanguage)} दशा उपाय?`, query: `मेरो ${getPlanetName(mahaLord, selectedLanguage)} महादशाको लागि के शान्ति उपायहरू छन्?` },
+                        { label: "करियरको योग?", query: "मेरो करियर र नोकरीमा कहिले राम्रो समय आउँछ?" },
+                        { label: "विवाह र ७औं भाव?", query: "मेरो विवाह र दाम्पत्य जीवनको विश्लेषण गर्नुहोस्।" },
+                        { label: `${getPlanetName(mahaLord, selectedLanguage)} दशा उपाय?`, query: `मेरो ${getPlanetName(mahaLord, selectedLanguage)} महादशाको लागि के शान्ति उपायहरू छन्?` },
                       ]
                     : selectedLanguage === "hi"
-                    ? [
-                        { label: "✨ करियर का समय?", query: "मेरे करियर और पदोन्नति का सबसे अच्छा समय कब है?" },
-                        { label: "❤️ विवाह और 7वां भाव?", query: "मेरे विवाह और 7वें भाव का विस्तृत विश्लेषण करें।" },
-                        { label: `🪔 ${getPlanetName(mahaLord, selectedLanguage)} दशा उपाय?`, query: `मेरी ${getPlanetName(mahaLord, selectedLanguage)} महादशा के लिए कौन से उपाय करने चाहिए?` },
-                      ]
-                    : [
-                        { label: "✨ Career shift timing?", query: "When is the strongest period for my career growth?" },
-                        { label: "❤️ Marriage & relationship?", query: "Analyze my 7th house for marriage & relationship." },
-                        { label: `🪔 ${getPlanetName(mahaLord, selectedLanguage)} Remedies?`, query: `What remedies help my ${getPlanetName(mahaLord, selectedLanguage)} Dasha period?` },
-                      ]
+                      ? [
+                          { label: "करियर का समय?", query: "मेरे करियर और पदोन्नति का सबसे अच्छा समय कब है?" },
+                          { label: "विवाह और 7वां भाव?", query: "मेरे विवाह और 7वें भाव का विस्तृत विश्लेषण करें।" },
+                          { label: `${getPlanetName(mahaLord, selectedLanguage)} दशा उपाय?`, query: `मेरी ${getPlanetName(mahaLord, selectedLanguage)} महादशा के लिए कौन से उपाय करने चाहिए?` },
+                        ]
+                      : [
+                          { label: "Career timing?", query: "When is the strongest period for my career growth?" },
+                          { label: "Marriage & 7th house?", query: "Analyze my 7th house for marriage & relationship." },
+                          { label: `${getPlanetName(mahaLord, selectedLanguage)} remedies?`, query: `What remedies help my ${getPlanetName(mahaLord, selectedLanguage)} Dasha period?` },
+                        ]
                   ).map((chip) => (
                     <button
                       key={chip.label}
                       onClick={() => handleSend(chip.query)}
-                      className="shrink-0 rounded-[8px] border border-brd bg-panel/80 backdrop-blur-md px-3.5 py-1.5 text-xs text-fg hover:border-acc hover:text-acc2 hover:shadow-[0_0_15px_rgba(229,169,60,0.2)] transition-all shadow-md"
+                      className="shrink-0 rounded-full border border-brd bg-panel px-3.5 py-1.5 text-[11px] font-medium text-mid transition hover:border-acc/50 hover:text-acc2"
                     >
                       {chip.label}
                     </button>
                   ))}
                 </div>
 
-                {/* CONTROL DOCK (Voice, Mute, Kundali, Interrupt, Transcript, Exit) */}
-                <div className="w-full max-w-2xl rounded-[8px] border border-brd bg-panel/95 backdrop-blur-2xl p-2 flex flex-wrap items-center justify-between gap-1.5 z-20 shadow-2xl shrink-0">
-                  {/* Custom Voice Selector with Sound Preview */}
-                  <CustomVoiceSelector
-                    selectedVoice={selectedVoice}
-                    onSelectVoice={(vId) => handleVoiceChange(vId)}
-                    language={selectedLanguage}
-                    voices={liveProvider === "gemini" ? GEMINI_ASTROLOGER_VOICES : undefined}
-                  />
-
-                  {/* Mute / Unmute Button */}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const next = !isMicMuted;
-                      setIsMicMuted(next);
-                      // the state was only ever cosmetic — the session's
-                      // microphone track is what actually goes quiet
-                      webrtcClientRef.current?.setMuted(next);
-                    }}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-[8px] text-xs font-semibold transition cursor-pointer ${
-                      isMicMuted ? "bg-red-500/20 text-red-400 border border-red-500/40" : "text-fg hover:bg-fg/5 border border-brd"
-                    }`}
-                  >
-                    {isMicMuted ? <MicOff className="size-3.5 text-red-400" /> : <Mic className="size-3.5 text-acc" />}
-                    <span className="text-[11px]">{isMicMuted ? t.unmute : t.mute}</span>
-                  </button>
-
-                  {/* Kundali Chart Drawer Button */}
-                  <button
-                    type="button"
-                    onClick={() => setShowChartDrawer(!showChartDrawer)}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-[8px] text-xs font-semibold transition cursor-pointer ${
-                      showChartDrawer ? "bg-acc/20 text-acc2 border border-acc/40" : "text-fg hover:bg-fg/5 border border-brd"
-                    }`}
-                  >
-                    <Map className="size-3.5 text-acc" />
-                    <span className="text-[11px]">{t.kundaliChart}</span>
-                  </button>
-
-                  {/* Interrupt Button */}
-                  <button
-                    type="button"
-                    onClick={handleInterrupt}
-                    className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-[8px] bg-gradient-to-r from-acc to-acc2 text-onacc font-bold text-xs hover:shadow-[0_0_20px_rgba(229,169,60,0.4)] transition shadow-lg scale-105 cursor-pointer active:scale-95"
-                  >
-                    <Zap className="size-3.5 fill-current" />
-                    <span className="text-[11px]">{t.interrupt}</span>
-                  </button>
-
-
-                  {/* Exit Consultation Button */}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      toggleLiveVoiceMode(false);
-                      router.push("/reading");
-                    }}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-[8px] text-xs font-semibold text-red-400 hover:bg-red-500/10 border border-red-500/20 transition cursor-pointer"
-                  >
-                    <LogOut className="size-3.5 text-red-400" />
-                    <span className="text-[11px]">{t.exitVoice}</span>
-                  </button>
-                </div>
-
-                {/* DIRECT TEXT INPUT BAR - ALIGNED FLUSH AT BOTTOM */}
-                <div className="w-full max-w-2xl z-20 shrink-0">
+                <div className="rounded-[10px] border border-brd bg-panel shadow-xl">
                   <form
                     onSubmit={(e) => {
                       e.preventDefault();
                       handleSend();
                     }}
-                    className="flex items-center gap-2.5"
+                    className="flex items-center gap-2 p-2"
                   >
                     <button
                       type="button"
                       onClick={toggleDictation}
-                      className={`grid size-11 shrink-0 place-items-center rounded-[8px] border transition group cursor-pointer active:scale-95 ${
+                      className={`grid size-10 shrink-0 cursor-pointer place-items-center rounded-[8px] transition active:scale-95 ${
                         isDictating
-                          ? "bg-red-500/20 border-red-500 text-red-400 shadow-[0_0_15px_rgba(239,68,68,0.4)] animate-pulse"
-                          : "border-brd2 bg-panel/95 text-mut hover:text-acc2 hover:border-acc/50"
+                          ? "bg-red-500/15 text-red-400 animate-pulse"
+                          : "text-mut hover:bg-inset hover:text-acc2"
                       }`}
                       title={isDictating ? "Stop Voice Dictation" : "Dictate Question by Voice"}
                     >
-                      {isDictating ? (
-                        <MicOff className="size-5 text-red-400" />
-                      ) : (
-                        <Mic className="size-5 group-hover:scale-110 transition-transform text-acc" />
-                      )}
+                      {isDictating ? <MicOff className="size-4.5" /> : <Mic className="size-4.5" />}
                     </button>
-
                     <input
                       type="text"
                       value={inputQuery}
                       onChange={(e) => setInputQuery(e.target.value)}
-                      placeholder={isDictating ? "Listening... Speak now..." : t.askPlaceholder}
-                      className={`flex-1 rounded-[8px] border bg-panel/95 backdrop-blur-2xl px-5 py-3.5 text-sm text-fg placeholder-mut/50 focus:border-acc focus:ring-2 focus:ring-acc/40 focus:outline-none transition shadow-2xl ${
-                        isDictating ? "border-amber-400/70 ring-2 ring-amber-400/20" : "border-brd2"
-                      }`}
+                      placeholder={isDictating ? "Listening..." : t.askPlaceholder}
+                      className="min-w-0 flex-1 bg-transparent px-2 py-2.5 text-sm text-fg outline-none placeholder:text-mut/60"
                     />
                     <button
                       type="submit"
                       disabled={!inputQuery.trim() || isThinking}
-                      className="rounded-[8px] bg-gradient-to-r from-acc to-acc2 hover:from-acc2 hover:to-acc px-6 py-3.5 text-xs sm:text-sm font-bold text-onacc transition shrink-0 disabled:opacity-40 shadow-xl active:scale-95 cursor-pointer"
+                      className="shrink-0 cursor-pointer rounded-[8px] bg-acc px-5 py-2.5 text-xs font-bold text-onacc transition hover:bg-acc2 active:scale-95 disabled:opacity-40"
                     >
                       {isThinking ? "..." : t.sendQuery}
                     </button>
                   </form>
+
+                  <div className="flex flex-wrap items-center justify-between gap-1.5 border-t border-brd px-2 py-1.5">
+                    <div className="flex items-center gap-1.5">
+                      <CustomVoiceSelector
+                        selectedVoice={selectedVoice}
+                        onSelectVoice={(vId) => handleVoiceChange(vId)}
+                        language={selectedLanguage}
+                        voices={liveProvider === "gemini" ? GEMINI_ASTROLOGER_VOICES : undefined}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const next = !isMicMuted;
+                          setIsMicMuted(next);
+                          // the state was only ever cosmetic — the session's
+                          // microphone track is what actually goes quiet
+                          webrtcClientRef.current?.setMuted(next);
+                        }}
+                        className={`flex cursor-pointer items-center gap-1.5 rounded-[8px] px-2.5 py-1.5 text-[11px] font-semibold transition ${
+                          isMicMuted ? "bg-red-500/15 text-red-400" : "text-mid hover:bg-inset hover:text-fg"
+                        }`}
+                      >
+                        {isMicMuted ? <MicOff className="size-3.5" /> : <Mic className="size-3.5" />}
+                        {isMicMuted ? t.unmute : t.mute}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setShowChartDrawer(!showChartDrawer)}
+                        className={`flex cursor-pointer items-center gap-1.5 rounded-[8px] px-2.5 py-1.5 text-[11px] font-semibold transition ${
+                          showChartDrawer ? "bg-acc/15 text-acc2" : "text-mid hover:bg-inset hover:text-fg"
+                        }`}
+                      >
+                        <Map className="size-3.5" />
+                        {t.kundaliChart}
+                      </button>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        type="button"
+                        onClick={handleInterrupt}
+                        className="flex cursor-pointer items-center gap-1.5 rounded-[8px] border border-acc/40 px-3 py-1.5 text-[11px] font-bold text-acc2 transition hover:bg-acc/10 active:scale-95"
+                      >
+                        <Zap className="size-3.5" />
+                        {t.interrupt}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          toggleLiveVoiceMode(false);
+                          router.push("/reading");
+                        }}
+                        className="flex cursor-pointer items-center gap-1.5 rounded-[8px] px-2.5 py-1.5 text-[11px] font-semibold text-mid transition hover:bg-red-500/10 hover:text-red-400"
+                      >
+                        <LogOut className="size-3.5" />
+                        {t.exitVoice}
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
-
           </div>
 
-          {/* Collapsible Floating Kundali Chart Drawer */}
+          {/* The chart, close at hand */}
           {showChartDrawer && (
-            <div className="absolute top-16 right-6 w-80 rounded-[8px] border border-brd bg-panel/95 backdrop-blur-2xl p-4 shadow-2xl z-30 space-y-3 animate-fade-in">
+            <div className="absolute right-5 top-5 z-30 w-80 animate-fade-in space-y-3 rounded-[8px] border border-brd bg-panel p-4 shadow-2xl">
               <div className="flex items-center justify-between border-b border-brd pb-2">
                 <h4 className="font-serif text-xs font-bold text-fg">
                   {activeBirth.name}&apos;s D1 Kundali
@@ -1331,22 +1302,21 @@ onClick={() => setupMicAnalyzer()}
                   onClick={() => setShowChartDrawer(false)}
                   className="text-xs text-mut hover:text-fg"
                 >
-                  ✕ {t.closeChartDrawer}
+                  {t.closeChartDrawer}
                 </button>
               </div>
-              <div className="bg-inset rounded-[8px] border border-acc/30 p-2">
+              <div className="rounded-[8px] border border-brd bg-inset p-2">
                 <NorthIndianChart
                   chart={activeChart}
                   selectedHouse={highlightedHouse}
                   onSelectHouse={(h) => setHighlightedHouse((prev) => (prev === h ? null : h))}
                 />
               </div>
-              <p className="text-[10px] text-center text-mut">
+              <p className="text-center text-[10px] text-mut">
                 {getSignName(activeChart.lagna_sign, selectedLanguage)} {t.ascendantLabel} ({activeChart.lagna_degree.toFixed(2)}°)
               </p>
             </div>
           )}
-
         </div>
       ) : (
         /* =================================================================== */
