@@ -468,12 +468,6 @@ export function ReadingDashboard() {
           {/* LEFT COLUMN (Wider layout) - Fixed/Sticky on Scroll with Dual Charts */}
           <aside className="space-y-6 lg:sticky lg:top-20 max-h-[calc(100vh-100px)] overflow-y-auto pr-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
 
-            {/* 0. The head of the janma patrika — on the actual scroll this
-                is what comes before the charts: invocation, mangala shlokas,
-                and the sankalpa with this chart's values in the blanks.
-                Collapsed behind its invocation line until asked to unroll. */}
-            <PatroHead chart={activeChart} birth={activeBirth} collapsible />
-
             {/* 1. Dual Kundali Charts Widget (D1 Lagna & D9 Navamsha) */}
             <div className="rounded-[8px] border border-white/10 bg-[#161B2B] p-4 space-y-4">
               <div className="flex items-center justify-between border-b border-white/10 pb-2.5">
@@ -524,6 +518,12 @@ export function ReadingDashboard() {
                   </div>
                 </div>
               </div>
+
+              {/* The head of the janma patrika — inside the widget, exactly
+                  where the scroll puts it: invocation, mangala shlokas and the
+                  filled sankalpa immediately before the lagna chart. Collapsed
+                  behind its invocation line until asked to unroll. */}
+              <PatroHead chart={activeChart} birth={activeBirth} collapsible />
 
               {/* D1 Lagna Chart Display */}
               <div className="space-y-2">
