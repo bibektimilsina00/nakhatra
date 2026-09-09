@@ -6,6 +6,7 @@ BirthMoment: no database, no network, no clock beyond the `computed_at` stamp.
 
 from __future__ import annotations
 
+from dataclasses import replace
 from datetime import UTC, datetime
 
 from app.astrology_core import ephemeris
@@ -26,17 +27,50 @@ from app.astrology_core.constants import (
     SIGNS,
     SPECIAL_ASPECTS,
 )
-from app.astrology_core.dasha import build_dasha
-from app.astrology_core.models import BirthMoment, Chart, Dignity, House, Planet
+from app.astrology_core.dasha import build_dasha, build_tribhagi
+from app.astrology_core.models import BirthMoment, Chart, Dasha, Dignity, House, Planet
 from app.astrology_core.nakshatra import nakshatra_at
+from app.astrology_core.nakshatra import transit as nakshatra_transit
 from app.astrology_core.panchang import build_panchang
 from app.astrology_core.varga import build_all_vargas
+from app.astrology_core.yogini import build_yogini
 
 
-def build_chart(birth: BirthMoment) -> Chart:
+def build_chart(birth: BirthMoment, siddhanta: str = "surya") -> Chart:
+    """Cast a chart.
+
+    `siddhanta` picks which system the Sun and Moon come from, and defaults to
+    सूर्य सिद्धान्त because that is what a Nepali kundali is written in. Against
+    charts hand-cast in Parbat and Kaski it scores 39 of 42 checked values
+    where the modern ephemeris scores 29, and reproduces one of them exactly.
+
+    "drik" gives the modern ephemeris instead. It is the better astronomy — the
+    Surya Siddhanta Moon is about 1.4 degrees out — and it is kept as a
+    diagnostic: when a chart looks wrong, computing it both ways separates "the
+    two siddhantas disagree here" from "we have a bug". It is not a second
+    product mode, and Indian software agreeing with it proves nothing about
+    whether a jyotish in Nepal would.
+    """
     jd = ephemeris.julian_day(birth.local_datetime, birth.tz_name)
     ayan = ephemeris.ayanamsa(jd)
     raw = ephemeris.planet_positions(jd)
+    # Surya Siddhanta replaces the two luminaries; the star-planets stay drik.
+    raw.update(ephemeris.luminaries(jd, siddhanta))
+
+    # भुक्त and भभोग: how much of the janma nakshatra had passed, in time
+    # rather than in arc, because that is what a panchanga tabulates and what
+    # the dasha balance is computed from.
+    def moon_at(when: datetime) -> float:
+        moment = ephemeris.julian_day(when, birth.tz_name)
+        switched = ephemeris.luminaries(moment, siddhanta)
+        if "Moon" in switched:
+            return switched["Moon"].longitude
+        return ephemeris.planet_positions(moment)["Moon"].longitude
+
+    entered, leaves = nakshatra_transit(moon_at, birth.local_datetime)
+    bhukta = (birth.local_datetime - entered).total_seconds() / GHATI_SECONDS
+    bhabhoga = (leaves - entered).total_seconds() / GHATI_SECONDS
+    elapsed = bhukta / bhabhoga if bhabhoga else 0.0
 
     asc = ephemeris.ascendant(jd, birth.latitude, birth.longitude)
     lagna_sign = int(asc // DEGREES_PER_SIGN)
@@ -103,6 +137,7 @@ def build_chart(birth: BirthMoment) -> Chart:
         birth=birth,
         julian_day=jd,
         ayanamsa_name=ephemeris.AYANAMSA_NAME,
+        siddhanta=ephemeris.SIDDHANTA_NAMES[siddhanta],
         ayanamsa_value=ayan,
         lagna_sign_index=lagna_sign,
         lagna_sign=SIGNS[lagna_sign],
@@ -112,17 +147,60 @@ def build_chart(birth: BirthMoment) -> Chart:
         vargas=build_all_vargas(
             asc, {p.name: raw[p.name].longitude for p in planets}
         ),
-        dasha=build_dasha(raw["Moon"].longitude, birth.local_datetime),
+        dasha=_with_transit(
+            build_dasha(raw["Moon"].longitude, birth.local_datetime, elapsed=elapsed),
+            bhukta, bhabhoga,
+        ),
+        tribhagi=_with_transit(
+            build_tribhagi(raw["Moon"].longitude, birth.local_datetime, elapsed=elapsed),
+            bhukta, bhabhoga,
+        ),
+        yogini=_with_transit(
+            build_yogini(raw["Moon"].longitude, birth.local_datetime, elapsed=elapsed),
+            bhukta, bhabhoga,
+        ),
         panchang=build_panchang(
             sun_longitude=sun_longitude,
             moon_longitude=raw["Moon"].longitude,
+            ayanamsa=ayan,
             ascendant_sign_index=lagna_sign,
+            sun_speed=raw["Sun"].speed,
+            moon_speed=raw["Moon"].speed,
             local_datetime=birth.local_datetime,
+            julian_day=jd,
             sunrise=sunrise,
             sunset=sunset,
         ),
         avakhada=build_avakhada(raw["Moon"].longitude),
+        time_warnings=_time_warnings(birth, sunrise, sunset),
     )
+
+
+def _time_warnings(
+    birth: BirthMoment, sunrise: datetime | None, sunset: datetime | None
+) -> tuple[str, ...]:
+    """What about this birth moment is not actually pinned down.
+
+    Kept separate from the panchang's boundary warnings, which are about the
+    sky being close to a transition. These are about the *input*: a wall-clock
+    reading that no clock ever showed, or a latitude where the day has no
+    sunrise to turn on.
+    """
+    out: list[str] = []
+
+    anomaly = ephemeris.local_time_anomaly(birth.local_datetime, birth.tz_name)
+    if anomaly:
+        out.append(anomaly)
+
+    if sunrise is None or sunset is None:
+        out.append(
+            f"The Sun neither rose nor set at latitude {birth.latitude:.4f} on this "
+            f"date, so there is no sunrise for the Vedic day to turn on. The vara "
+            f"is taken from the local calendar date instead, which is a convention "
+            f"and not a reckoning any classical text provides for."
+        )
+
+    return tuple(out)
 
 
 # --- rules -----------------------------------------------------------------
@@ -197,3 +275,12 @@ def aspected_houses(name: str, house: int) -> tuple[int, ...]:
     """
     counts = (7, *SPECIAL_ASPECTS.get(name, ()))
     return tuple(sorted(((house - 1 + c - 1) % 12) + 1 for c in counts))
+
+
+#: A ghati is a sixtieth of a day.
+GHATI_SECONDS = 24 * 60 * 60 / 60
+
+
+def _with_transit(tree: Dasha, bhukta: float, bhabhoga: float) -> Dasha:
+    """Attach the two figures a kundali prints beside the balance."""
+    return replace(tree, bhukta_ghati=round(bhukta, 3), bhabhoga_ghati=round(bhabhoga, 3))

@@ -36,7 +36,7 @@ def test_lahiri_ayanamsa_at_j2000():
 
 def test_ayanamsa_precesses_forward():
     per_century = ephemeris.ayanamsa(J2000 + 36525) - ephemeris.ayanamsa(J2000)
-    assert per_century == pytest.approx(1.4, abs=0.1)   # ~50.3 arcsec/yr
+    assert per_century == pytest.approx(1.4, abs=0.1)  # ~50.3 arcsec/yr
 
 
 def test_ketu_is_opposite_rahu():
@@ -51,7 +51,7 @@ def test_nakshatra_boundaries():
     assert nakshatra_at(DEGREES_PER_NAKSHATRA - 1e-9).pada == 4
     assert nakshatra_at(DEGREES_PER_NAKSHATRA).name == "Bharani"
     assert nakshatra_at(359.999999).name == "Revati"
-    assert nakshatra_at(360.0).name == "Ashwini"     # wraps, never index 27
+    assert nakshatra_at(360.0).name == "Ashwini"  # wraps, never index 27
 
 
 def test_nakshatra_lords_follow_vimshottari_order():
@@ -70,3 +70,61 @@ def test_elapsed_fraction_spans_zero_to_one():
 
 def test_vimshottari_totals_120_years():
     assert sum(VIMSHOTTARI_YEARS.values()) == 120
+
+
+def test_positions_are_geocentric():
+    """The Moon must not depend on where the observer stands.
+
+    This was topocentric for one commit, on evidence from a single hand-cast
+    kundali. Across three of them the two conventions score 16/27 and 17/27 —
+    parallax is not constant (+53', +54' and -36' on those three), so it fixes
+    one chart and breaks another. `planet_positions` takes no observer for
+    exactly that reason, and this test is here so the choice stays deliberate.
+    """
+    import inspect
+
+    params = set(inspect.signature(ephemeris.planet_positions).parameters)
+    assert params == {"jd"}, (
+        f"planet_positions grew {sorted(params - {'jd'})} — if that is a "
+        "topocentric correction, read its docstring first: it was tried and "
+        "measured worse against four hand-cast kundalis."
+    )
+
+
+def test_surya_siddhantas_year_is_long_and_its_frame_slips():
+    """The known, unfixed limitation of using Surya Siddhanta uncorrected.
+
+    Its sidereal year is 365.258756 days against a true 365.256363 — long by
+    about three and a half minutes. So its zero point falls behind the star
+    frame at roughly 8.5 arcseconds a year: a quarter degree per millennium's
+    tenth, 14 arcminutes per century, 2.4 degrees per thousand years.
+
+    This is the text's, not ours. It is also the whole reason the living
+    tradition never used raw Surya Siddhanta: practitioners applied बीज (bija)
+    corrections to the mean motions to absorb exactly this. The bija stanzas
+    are not in Burgess's translation — they survive as twenty-one later verses
+    in a Bengali edition, between XIV.23 and XIV.24 — and no published set of
+    values has been found to implement, so none is applied here. Fitting one
+    to the four hand-cast charts would reproduce them and mean nothing.
+
+    The test exists so the limitation is a measured number in the suite rather
+    than a remark in a docstring. If someone applies a bija, this fails, and
+    the commit that changes it has to say which source the values came from.
+    """
+    from app.astrology_core.surya import CIVIL_DAYS, SUN_REVOLUTIONS
+
+    ss_year = CIVIL_DAYS / SUN_REVOLUTIONS
+    true_sidereal_year = 365.256363004
+    slip_arcsec_per_year = (ss_year - true_sidereal_year) / true_sidereal_year * 360 * 3600
+
+    assert ss_year == pytest.approx(365.258756, abs=1e-6)
+    assert slip_arcsec_per_year == pytest.approx(8.49, abs=0.05), (
+        "The Surya Siddhanta year length changed. That is the parameter the "
+        "whole system's frame rests on, so this is either a typo or a bija."
+    )
+
+    # Over the range of births the product actually serves, the slip stays
+    # under half a degree — small against Surya Siddhanta's own 1.4 degree
+    # Moon error, which is why it is documented rather than papered over.
+    century_slip = abs(slip_arcsec_per_year * 100 / 3600)
+    assert century_slip < 0.5, "a century of slip should stay under half a degree"

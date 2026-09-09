@@ -1209,6 +1209,13 @@ export interface components {
             /** Place Label */
             place_label: string;
             /**
+             * Siddhanta
+             * @description Which system computes the Sun and Moon, and therefore the panchang, the dashas and the avakhada. `surya` is सूर्य सिद्धान्त, what a Nepali kundali is cast from, and the default. `drik` is the modern ephemeris — better astronomy, and what AstroSage and AstroTalk publish, so use it to compare against those. The five star-planets are drik either way.
+             * @default surya
+             * @enum {string}
+             */
+            siddhanta: "surya" | "drik";
+            /**
              * Time
              * @example 08:30
              */
@@ -1241,6 +1248,35 @@ export interface components {
             /** File */
             file: string;
         };
+        /**
+         * BoundaryWarningOut
+         * @description A panchanga element close to changing.
+         *
+         *     Present because a traditional Nepali almanac's Moon runs 10-20 arcminutes
+         *     ahead of a modern ephemeris, which matters only near a boundary — and
+         *     there it decides the nakshatra, and with it the dasha lord and the name
+         *     syllable. A reading that says "Magha" flatly when Purva Phalguni is nine
+         *     minutes away is claiming more than the arithmetic supports.
+         */
+        BoundaryWarningOut: {
+            /** Current */
+            current: string;
+            /**
+             * Element
+             * @description tithi | karana | nakshatra | yoga
+             */
+            element: string;
+            /**
+             * Minutes
+             * @description Minutes from the birth moment until it changes.
+             */
+            minutes: number;
+            /**
+             * Upcoming
+             * @description What it becomes when it changes.
+             */
+            upcoming: string;
+        };
         /** ChartOut */
         ChartOut: {
             avakhada: components["schemas"]["AvakhadaOut"];
@@ -1272,8 +1308,18 @@ export interface components {
             panchang: components["schemas"]["PanchangOut"];
             /** Planets */
             planets: components["schemas"]["PlanetOut"][];
+            /**
+             * Siddhanta
+             * @description Which system the positions come from. Drik (दृक् सिद्धान्त) is modern and observational; most hand-cast Nepali panchangas follow सूर्य सिद्धान्त, whose Moon runs roughly a quarter degree ahead. That only changes anything near a boundary — see `panchang.near_boundary`.
+             * @default
+             */
+            siddhanta: string;
+            /** @description Vimshottari with a third removed — an 80-year cycle. */
+            tribhagi?: components["schemas"]["DashaOut"] | null;
             /** Vargas */
             vargas: components["schemas"]["VargaChartOut"][];
+            /** @description The eight yoginis over 36 years. `birth_lord` and each period's `lord` name a yogini, not a graha. */
+            yogini?: components["schemas"]["DashaOut"] | null;
         };
         /** ChatMessageIn */
         ChatMessageIn: {
@@ -1438,6 +1484,18 @@ export interface components {
         DashaOut: {
             /** Balance Years */
             balance_years: number;
+            /**
+             * Bhabhoga Ghati
+             * @description भभोग — ghatis the Moon takes to cross the whole nakshatra. The balance is the lord's years times (1 - bhukta/bhabhoga).
+             * @default 0
+             */
+            bhabhoga_ghati: number;
+            /**
+             * Bhukta Ghati
+             * @description भुक्त — ghatis of the janma nakshatra already elapsed at birth. Every Nepali kundali prints this beside the balance.
+             * @default 0
+             */
+            bhukta_ghati: number;
             /** Birth Lord */
             birth_lord: string;
             /** Periods */
@@ -1759,8 +1817,20 @@ export interface components {
             ascendant_lord: string;
             /** Ascendant Sign */
             ascendant_sign: string;
+            /**
+             * Ayana
+             * @description Uttarayana or Dakshinayana — the Sun's half of the year, by its sidereal sign.
+             * @default
+             */
+            ayana: string;
             /** Karana */
             karana: string;
+            /**
+             * Masa
+             * @description Solar month by the Sun's sidereal sign — Bhadra when it is in Leo. These are the Bikram Sambat month names.
+             * @default
+             */
+            masa: string;
             /** Moon Sign */
             moon_sign: string;
             /** Moon Sign Lord */
@@ -1772,10 +1842,33 @@ export interface components {
             /** Nakshatra Pada */
             nakshatra_pada: number;
             /**
+             * Near Boundary
+             * @description Elements within an hour of changing. Usually empty; when it is not, a traditional panchanga may well name the upcoming value instead.
+             */
+            near_boundary?: components["schemas"]["BoundaryWarningOut"][];
+            /**
              * Paksha
              * @description Shukla (waxing) or Krishna (waning)
              */
             paksha: string;
+            /**
+             * Ritu
+             * @description Season: two solar months to each of six.
+             * @default
+             */
+            ritu: string;
+            /**
+             * Samvatsara
+             * @description Name of the year in the sixty-year Jovian cycle, e.g. Vibhava.
+             * @default
+             */
+            samvatsara: string;
+            /**
+             * Shaka Samvat
+             * @description Shalivahana Shaka year.
+             * @default 0
+             */
+            shaka_samvat: number;
             /**
              * Sunrise
              * @description Local time. Null above the polar circles, where the Sun may neither rise nor set — a valid chart, not an error.
@@ -1797,6 +1890,12 @@ export interface components {
             vara: string;
             /** Vara Lord */
             vara_lord: string;
+            /**
+             * Vikram Samvat
+             * @description Bikram Sambat year. Rolls at Mesha Sankranti in mid-April, not on 1 January.
+             * @default 0
+             */
+            vikram_samvat: number;
             /**
              * Yoga
              * @description Nitya yoga — from Sun + Moon longitude

@@ -1,0 +1,571 @@
+{
+  "source": {
+    "title": "Astronomy and Mathematical Astrology",
+    "author": "Deepak Kapoor",
+    "edition": "Eighth Edition (English), July 2011",
+    "isbn": "81-901047-3-X",
+    "publisher": "Vinita Kapoor, Delhi",
+    "note": "Institute of Astrology, Bharatiya Vidya Bhawan. Every value below is printed in the book as a worked example; page numbers are the book's own, not the PDF's.",
+    "numbering": "Nakshatra and tithi numbers and names come from the book's own tables (nakshatra table pp.83-85, tithi table p.172), not only from the sentence quoted on each example."
+  },
+  "ayanamsa": {
+    "page": 56,
+    "quote": "By adding the yearly rate of precession of 50\".29 per year to the corrected value of 23 degrees 15 minutes as on 21st March 1956, we get the present ayanamsha of 24 degrees 00 minutes 56 seconds as on 1st January 2011.",
+    "instant_utc": "2011-01-01T00:00:00",
+    "expect": "24°00'56\"",
+    "tolerance_arcmin": 1.0,
+    "why_not_exact": "The book extrapolates in a straight line from the 1956 committee value; Swiss Ephemeris uses the refined Lahiri series. The two differ by ~17\", far below a pada. The tolerance is one arcminute, which is still tight enough that switching to Raman (~1.2 deg away), Fagan-Bradley (~50') or KP (~6') would fail."
+  },
+  "nakshatra": [
+    {
+      "page": 173,
+      "quote": "Hence Moon is in 18th nakshatra which is Jyeshtha in the 4th pada or part.",
+      "longitude": "236°43'",
+      "expect": {
+        "number": 18,
+        "name": "Jyeshtha",
+        "pada": 4
+      }
+    },
+    {
+      "page": 117,
+      "quote": "Consider Moon at 3°23°42' at birth in the Cancer sign... janma nakshatra is Ashlesha 3rd pada.",
+      "as_printed": "3s 23°42'",
+      "longitude": "113°42'",
+      "expect": {
+        "number": 9,
+        "name": "Ashlesha",
+        "pada": 3
+      }
+    },
+    {
+      "page": 118,
+      "quote": "Moon in nakshatra - Purva Phalguni. (The extent of P.Phalguni nakshatra is 4-13-20 to 4-26-40)",
+      "as_printed": "4s 17°32'",
+      "longitude": "137°32'",
+      "expect": {
+        "number": 11,
+        "name": "Purva Phalguni"
+      },
+      "expect_note": "The book prints the nakshatra and its lord here, not the pada. Nothing in this file is asserted that the page does not state."
+    }
+  ],
+  "tithi": [
+    {
+      "page": 172,
+      "quote": "This means that 4 tithis have passed and the 5th tithi is running.",
+      "as_printed": "Moon 2s 23°43', Sun 1s 0°3'",
+      "moon": "83°43'",
+      "sun": "30°03'",
+      "expect": {
+        "number": 5,
+        "name": "Panchami",
+        "paksha": "Shukla"
+      }
+    }
+  ],
+  "karana": [
+    {
+      "page": 174,
+      "quote": "8 Karana have passed and the 9th Karana is running, or the first karna of 5th tithi is running.",
+      "moon": "83°43'",
+      "sun": "30°03'",
+      "expect": {
+        "number": 9,
+        "name": "Bava"
+      },
+      "numbering": "Position 1 of the 60-karana cycle is the fixed Kintughna; positions 2-57 are the seven movable karanas repeating eight times; 58-60 are Shakuni, Chatushpad, Naga. Position 9 is therefore the first movable, Bava."
+    }
+  ],
+  "yoga": [
+    {
+      "page": 174,
+      "quote": "Thus 23 yogas have elapsed and 24th yoga called Shukla is running.",
+      "as_printed": "Sun 4s 23°34', Moon 5s 16°12'",
+      "sun": "143°34'",
+      "moon": "166°12'",
+      "expect": {
+        "number": 24,
+        "name": "Shukla"
+      }
+    }
+  ],
+  "vimshottari": {
+    "balance": {
+      "page": 118,
+      "quote": "Dasha balance at birth = 13.7 years. Converting into years, months and days we get, Balance of Venus dasha as 13 years, 8 months, 12 days.",
+      "moon": "137°32'",
+      "expect": {
+        "lord": "Venus",
+        "years": 13.7
+      }
+    },
+    "succession": {
+      "page": 123,
+      "quote": "Add date of birth of native 54-1-15; Venus upto 67-9-27; Sun upto 73-9-27; Moon upto 83-9-27; Mars upto 90-9-27... the present running dasha is of Rahu which has started on 27-9-1990 and will continue upto 27-9-2008.",
+      "birth_date": "1954-01-15",
+      "moon": "137°32'",
+      "expect": [
+        {
+          "lord": "Venus",
+          "ends": "1967-09-27"
+        },
+        {
+          "lord": "Sun",
+          "ends": "1973-09-27"
+        },
+        {
+          "lord": "Moon",
+          "ends": "1983-09-27"
+        },
+        {
+          "lord": "Mars",
+          "ends": "1990-09-27"
+        },
+        {
+          "lord": "Rahu",
+          "ends": "2008-09-27"
+        }
+      ],
+      "why_this_matters": "The book converts the fractional year to months and days at 30 days to the month, then adds the whole y-m-d to the birth date as calendar units. This engine multiplies by a fixed 365.25-day year. The two land on the same day, which is the point of pinning it: a change to DAYS_PER_YEAR would move these dates off the printed ones."
+    },
+    "subperiods": [
+      {
+        "page": 121,
+        "quote": "Rahu/Mars = 1y 0m 18d",
+        "path": [
+          "Rahu",
+          "Mars"
+        ],
+        "expect_days": 383,
+        "tolerance_days": 1
+      },
+      {
+        "page": 122,
+        "quote": "Moon/Rahu/Venus = 10 x 18 x 20 / 40 = 90 days or 3 months",
+        "path": [
+          "Moon",
+          "Rahu",
+          "Venus"
+        ],
+        "expect_days": 90,
+        "tolerance_days": 1
+      }
+    ],
+    "subperiod_note": "The book's shortcuts (antar in months = AxB/10, pratyantar in days = AxBxC/40) assume 30-day months, so a printed duration can sit a day either side of a real calendar span containing a leap day. One day of tolerance; anything larger is a bug, not a convention."
+  },
+  "sankalpa": {
+    "page": 80,
+    "quote": "The period when the Sun is transiting the signs of Capricorn to Gemini is known as the period of uttarayana Sun. The period in which the Sun is transiting the signs of Cancer to Sagittarius is known as dakshinayana Sun. ... Cancer and Leo: Varsha or rainy season. [p.79] Vikrami (Solar) +57 years, Shaka -78 years, both beginning at solar ingress in nirayana Aries.",
+    "cross_checked_against": "A kundali hand-cast in Parbat, Nepal for 17 Aug 2004 07:40, which states दक्षिण अयने, वर्षा ऋतौ, भाद्र मासे, सम्वत् २०६१, शक १९२६.",
+    "birth": {
+      "date": "2004-08-17",
+      "time": "07:40",
+      "tz_name": "Asia/Kathmandu",
+      "latitude": 28.22266,
+      "longitude": 83.6826
+    },
+    "expect": {
+      "ayana": "Dakshinayana",
+      "ritu": "Varsha",
+      "masa": "Bhadra",
+      "vikram_samvat": 2061,
+      "shaka_samvat": 1926
+    },
+    "expect_moon_note": "The 2004 chart's Moon lands 0.6 arcmin past the Magha boundary under topocentric — his printed 13°20' rounds to the boundary itself, so which nakshatra it falls in is decided by under a minute of recorded birth time. Not asserted here, because neither answer is defensible over the other."
+  },
+  "tribhagi": {
+    "source": "The त्रिभागी महादशा table printed on the same hand-cast kundali.",
+    "note": "Vimshottari with a third removed. Every period below is read from the printed table; they cumulate to 80, which is 120 x 2/3 and is what the table's last cell states.",
+    "expect_years": {
+      "Ketu": 4.6667,
+      "Venus": 13.3333,
+      "Sun": 4.0,
+      "Moon": 6.6667,
+      "Mars": 4.6667,
+      "Rahu": 12.0,
+      "Jupiter": 10.6667,
+      "Saturn": 12.6667,
+      "Mercury": 11.3333
+    },
+    "expect_total": 80.0
+  },
+  "yogini": {
+    "source": "The योगिनी महादशा table printed on the same hand-cast kundali.",
+    "quote": "Header भ उ सि सं म पि धा भ्रा over 5 6 7 8 1 2 3 4, cumulating 5 11 18 26 27 29 32 36.",
+    "birth_nakshatra_number": 10,
+    "note": "Magha is the tenth nakshatra and (10 + 3) mod 8 = 5, so she begins in the fifth yogini, Bhadrika — which is what the printed table starts with.",
+    "expect_sequence": [
+      "Bhadrika",
+      "Ulka",
+      "Siddha",
+      "Sankata",
+      "Mangala",
+      "Pingala",
+      "Dhanya",
+      "Bhramari"
+    ],
+    "expect_years": [
+      5,
+      6,
+      7,
+      8,
+      1,
+      2,
+      3,
+      4
+    ],
+    "expect_total": 36
+  },
+  "hand_cast_kundali_1975": {
+    "source": "Kundali hand-cast by Dharmadatta Timilsina, Deupur-9, Parbat, for a birth at Deupur-7 Lukepani, Parbat, Nepal.",
+    "why_this_one": "23 November 1975 in Nepal is the case rule 5 exists for: Kathmandu ran +5:30 until 1986, not +5:45. Computing it at +5:45 puts the birth 15 minutes out, which is about 3.75 degrees of ascendant.",
+    "birth": {
+      "date": "1975-11-23",
+      "time": "20:18",
+      "tz_name": "Asia/Kathmandu",
+      "latitude": 28.22266,
+      "longitude": 83.6826
+    },
+    "expect": {
+      "vara": "Sunday",
+      "ayana": "Dakshinayana",
+      "ritu": "Sharad",
+      "masa": "Mangsir",
+      "paksha": "Krishna",
+      "tithi_name": "Panchami",
+      "yoga": "Shukla",
+      "vikram_samvat": 2032,
+      "shaka_samvat": 1897,
+      "samvatsara": "Vibhava",
+      "nakshatra": "Pushya",
+      "nakshatra_pada": 1
+    },
+    "expect_lagna_sign": "Gemini",
+    "expect_moon_sign": "Cancer",
+    "expect_planet_signs": {
+      "Sun": "Scorpio",
+      "Moon": "Cancer",
+      "Mars": "Gemini",
+      "Mercury": "Scorpio",
+      "Jupiter": "Pisces",
+      "Venus": "Virgo",
+      "Saturn": "Cancer",
+      "Rahu": "Libra",
+      "Ketu": "Aries"
+    },
+    "planet_note": "Read off the जन्म लग्न कुण्डली lotus, whose cells are numbered by rashi: 1 Ketu, 3 Mars, 4 Moon+Saturn, 6 Venus, 7 Rahu, 8 Sun+Mercury, 12 Jupiter, the rest empty. All twelve cells agree.",
+    "known_divergence": {
+      "karana": "He has Gara, which belongs to tithi 21 while he names tithi 20; his own two values do not sit together there. This is the only value on the chart that सूर्य सिद्धान्त does not reproduce."
+    },
+    "expect_moon_nakshatra_note": "Topocentric. Geocentric gives Punarvasu pada 4 and is what this engine returned before 0.4.0.",
+    "siddhanta": "surya",
+    "expect_avakhada": {
+      "yoni": "Sheep",
+      "gana": "Deva",
+      "nadi": "Madhya",
+      "varna": "Brahmin",
+      "name_syllable": "Hu"
+    },
+    "avakhada_quote": "हु काराक्षरस्य अज योनीः मध्य नाडी देव गणः विप्र वर्णः — every one follows from the nakshatra, and all five are right under सूर्य सिद्धान्त."
+  },
+  "samvatsara": {
+    "source": "Three kundalis hand-cast in Parbat, in three different parts of the year.",
+    "rule": "The sixty-year cycle is Jupiter's. One samvatsara is one sign of Jupiter's mean motion, about 361.02 days — four days short of a solar year. So it is computed from Jupiter in surya.barhaspatya_year, not offset from the Shaka year.",
+    "why_not_an_offset": "A fixed offset from the Shaka year was used until 0.7.0 and fitted all of these charts, because the two reckonings only separate by a whole samvatsara every eighty-five years and these births span twenty-nine. Measured against Jupiter, that offset's lead runs 11 in 1900, 13 in 2004, 15 by 2200 — so it named the wrong year for births before about 1960 and after about 2085 while looking perfect on the charts it was fitted to. The phase constant that replaces it is anchored on the same charts but does not decay: it is the same number in any era.",
+    "anchors": [
+      {
+        "birth": "1975-11-23 20:18",
+        "expect": "Vibhava"
+      },
+      {
+        "birth": "2002-01-11 19:30",
+        "expect": "Jaya"
+      },
+      {
+        "birth": "2004-08-17 07:40",
+        "expect": "Hevilambi"
+      }
+    ],
+    "caveat": "Three documents in one tradition. The southern Ugadi reckoning, which ties the cycle to the solar year instead, names a different samvatsara for the same date — Shaka 1946 is Krodhi there and Pingala here."
+  },
+  "ayana_is_sayana": {
+    "source": "Four hand-cast Nepali kundalis. Three are Dakshinayana under either reading and cannot discriminate; the 11 Jan 2002 chart reads उत्तर अयने and is the one that settles it.",
+    "why": "Uttarayana is the Sun turning north — the solstice, around 22 December — not Makar Sankranti three weeks later. Read sidereally, every birth in that three-week gap lands on the wrong side of the year.",
+    "cases": [
+      {
+        "date": "1975-11-23",
+        "guru": "Dakshinayana",
+        "discriminates": false
+      },
+      {
+        "date": "1981-11-03",
+        "guru": "Dakshinayana",
+        "discriminates": false
+      },
+      {
+        "date": "2004-08-17",
+        "guru": "Dakshinayana",
+        "discriminates": false
+      },
+      {
+        "date": "2002-01-11",
+        "guru": "Uttarayana",
+        "discriminates": true,
+        "note": "sidereal Sun in Sagittarius (would give Dakshinayana), tropical Sun in Capricorn"
+      }
+    ],
+    "ritu_goes_the_other_way": "The ritu follows the *sidereal* Sun, and two charts prove it: 1975-11-23 and 1981-11-03 both read शरद, which is the sidereal sign; the tropical sign would make them हेमन्त."
+  },
+  "hand_cast_kundali_2002": {
+    "source": "Kundali hand-cast for a birth at Kapilvastu, Lumbini. Birth time confirmed by the subject.",
+    "birth": {
+      "date": "2002-01-11",
+      "time": "19:30",
+      "tz_name": "Asia/Kathmandu",
+      "latitude": 27.4823,
+      "longitude": 83.2778
+    },
+    "expect": {
+      "ayana": "Uttarayana",
+      "ritu": "Hemant",
+      "masa": "Poush",
+      "yoga": "Dhruva",
+      "vikram_samvat": 2058,
+      "shaka_samvat": 1923,
+      "samvatsara": "Jaya",
+      "nakshatra": "Mula",
+      "nakshatra_pada": 2
+    },
+    "expect_lagna_sign": "Cancer",
+    "expect_avakhada": {
+      "yoni": "Dog",
+      "gana": "Rakshasa",
+      "nadi": "Adi",
+      "name_syllable": "Yo"
+    },
+    "expect_dasha_lord": "Ketu",
+    "still_differs": "tithi and karana. He has Krishna Trayodashi and Vanija; we have Chaturdashi and Vishti. Trayodashi ends at 18:56:35 and his own ishta kaal (29gh 42p) points there, but at 18:56 the nakshatra is Mula pada 1, the Moon's navamsa is Aries and the syllable is Ye — none of which match him, and the syllable is the one the subject was named from. No single moment satisfies both halves of his chart; 19:30 satisfies more of it, and the subject confirms it."
+  },
+  "moon_convention": {
+    "decision": "surya",
+    "measured": {
+      "drik": "29/42",
+      "surya": "39/42",
+      "note": "scored against the hand-cast charts, not against any software"
+    },
+    "why": "सूर्य सिद्धान्त is the system Nepali kundalis are cast from, and it is not a fudge: the Sun and Moon come from revolutions in a Mahayuga and a manda epicycle, exactly as the text states. Against Swiss Ephemeris over 1970-2010 its Moon has an RMS of 1.43 degrees and its Sun 0.335 — which is the accuracy Surya Siddhanta is known to have, and the evidence that the implementation is right rather than tuned. It is worse astronomy and better astrology.",
+    "history": "Two wrong turns preceded this. A topocentric Moon was tried, on evidence from a single chart, and scored 17/27 against geocentric's 16 — parallax is not constant (+53', +54', -36' on three charts) so it fixed one and broke another. A constant +16 arcmin offset scored well and was rejected: fitted to three points and astronomically meaningless. Surya Siddhanta explains the same offset from first principles.",
+    "still_open": "The five star-planets stay drik in both modes. A Surya Siddhanta Mars needs the shighra correction, is a degree or two out, and never changes a rashi — nothing to gain, accuracy to lose. Everything that actually differs is a function of the Sun and Moon alone.",
+    "reference_policy": "AstroSage and AstroTalk are no longer used as references. They compute drik, and Nepali kundalis are cast in सूर्य सिद्धान्त; agreeing with them says nothing about whether a jyotish in Nepal would agree. The references for this engine are the four hand-cast kundalis in this file."
+  },
+  "boundary_warnings": {
+    "why": "Under सूर्य सिद्धान्त the charts no longer sit on the wrong side of these boundaries, so nothing is flagged. The mechanism stays: it is what surfaces a chart whose panchanga a different almanac would name differently.",
+    "expect": {
+      "1975-11-23": [],
+      "2004-08-17": [],
+      "2002-01-11": []
+    },
+    "note": "In each flagged case the guru names the *upcoming* value, because his Moon had already crossed. That is the whole disagreement, made visible."
+  },
+  "dasha_balance": {
+    "method": "time, not arc",
+    "why": "A panchanga states भुक्त and भभोग in ghatis and takes the balance as their ratio. That is a ratio of time, and the Moon does not cross a nakshatra at a constant speed, so it is not the fraction of the arc. Kapoor's worked example (p.118) uses arc and the two agree to a hundredth of a percent there, but the time figure is the one a guru writes down and the one a reader can check us against — so the chart now prints both.",
+    "expect": [
+      {
+        "chart": "1975-11-23 20:18 Parbat",
+        "guru_bhabhoga_ghati": 58.08,
+        "tolerance_ghati": 0.5,
+        "note": "Our bhabhoga is the strong check: it measures how fast our Moon crosses a nakshatra, independent of where it started."
+      },
+      {
+        "chart": "2002-01-11 19:30 Kapilvastu",
+        "guru_bhabhoga_ghati": 61.23,
+        "tolerance_ghati": 0.5
+      }
+    ],
+    "residual": "The balance itself is still about 40 days from each guru's, because our Moon sits 5 to 12 arcminutes from theirs — their bija corrections against ours. Fitting the apogee to close it improved those two numbers by a third and made the ephemeris worse against observation, so it was rejected. The gap is now visible in the bhukta figure rather than hidden in a date."
+  },
+  "vargas": {
+    "source": "Chapter XII, Divisional Charts (pp. 143-157). Each case is the book's own worked example: the body, the longitude the page states, and the divisional sign it arrives at.",
+    "why": "A varga rule is easy to implement plausibly and wrongly. The starting sign differs per varga and, within a varga, by whether the sign is odd/even or movable/fixed/dual — and a wrong starting sign still produces a chart that looks entirely reasonable. Only the book's own answers catch it.",
+    "note_on_d60": "The page computes D60 by hand as 'multiply the degrees by two, ignore the minutes': that resolves only 30 distinct shashtiamsas, not 60, so it is a hand-calculation shortcut rather than the rule. We use floor(2 x degrees), which agrees with the book's example (13°23', minutes under 30) and keeps all 60 divisions.",
+    "cases": [
+      {
+        "varga": "D2",
+        "name": "Hora",
+        "body": "Venus",
+        "sign": "Libra",
+        "degrees": "14°13'",
+        "expect": "Leo",
+        "page": 146,
+        "rule": "Odd signs: first half Leo, second half Cancer. Even signs reversed."
+      },
+      {
+        "varga": "D3",
+        "name": "Drekkana",
+        "body": "Saturn",
+        "sign": "Leo",
+        "degrees": "13°45'",
+        "expect": "Sagittarius",
+        "page": 147,
+        "rule": "1st third the sign itself, 2nd the 5th from it, 3rd the 9th."
+      },
+      {
+        "varga": "D4",
+        "name": "Chaturthamsa",
+        "body": "Ketu",
+        "sign": "Pisces",
+        "degrees": "14°13'",
+        "expect": "Gemini",
+        "page": 148,
+        "rule": "The sign itself, then the 4th, 7th, 10th from it."
+      },
+      {
+        "varga": "D7",
+        "name": "Saptamsa",
+        "body": "Sun",
+        "sign": "Scorpio",
+        "degrees": "23°58'",
+        "expect": "Libra",
+        "page": 149,
+        "rule": "Odd signs count from the sign itself; even signs from the 7th.",
+        "quote": "Assume Sun posited in Scorpio sign in the birth chart at 23°58' in the 6th division. As it is placed in an even sign the counting shall start from 7th from the sign i.e. from Taurus and 6th division will fall in Libra."
+      },
+      {
+        "varga": "D9",
+        "name": "Navamsa",
+        "body": "Rahu",
+        "sign": "Aquarius",
+        "degrees": "24°02'",
+        "expect": "Taurus",
+        "page": 151,
+        "rule": "Movable signs from themselves, fixed from the 9th, dual from the 5th. Rahu falls in the 8th navamsa."
+      },
+      {
+        "varga": "D9",
+        "name": "Navamsa",
+        "body": "Moon",
+        "sign": "Cancer",
+        "degrees": "22°12'",
+        "expect": "Capricorn",
+        "page": 151,
+        "rule": "The Moon falls in the 7th navamsa of a movable sign."
+      },
+      {
+        "varga": "D10",
+        "name": "Dasamsa",
+        "body": "Jupiter",
+        "sign": "Pisces",
+        "degrees": "5°45'",
+        "expect": "Sagittarius",
+        "page": 152,
+        "rule": "Odd signs count from the sign itself; even signs from the 9th. Jupiter falls in the 2nd division of an even sign."
+      },
+      {
+        "varga": "D12",
+        "name": "Dwadasamsa",
+        "body": "a planet",
+        "sign": "Aries",
+        "degrees": "12°34'",
+        "expect": "Virgo",
+        "page": 153,
+        "rule": "Twelve parts of 2°30', counted from the sign itself."
+      },
+      {
+        "varga": "D20",
+        "name": "Vimsamsa",
+        "body": "Jupiter",
+        "sign": "Libra",
+        "degrees": "11°56'",
+        "expect": "Scorpio",
+        "page": 155,
+        "rule": "Movable from Aries, fixed from Sagittarius, dual from Leo. Jupiter falls in the 8th division of a movable sign."
+      },
+      {
+        "varga": "D24",
+        "name": "Siddhamsa",
+        "body": "Rahu",
+        "sign": "Taurus",
+        "degrees": "3°43'",
+        "expect": "Virgo",
+        "page": 156,
+        "rule": "Odd signs from Leo, even from Cancer. Rahu falls in the 3rd division, counted from Cancer."
+      },
+      {
+        "varga": "D60",
+        "name": "Shashtiamsa",
+        "body": "Jupiter",
+        "sign": "Gemini",
+        "degrees": "13°23'",
+        "expect": "Leo",
+        "page": 157,
+        "rule": "Sixty parts of 0°30', counted from the sign itself.",
+        "quote": "Assume Jupiter in Gemini at 13°23'. Multiply by two and we get 26°46'. Ignore the minutes and divide the degrees by 12."
+      }
+    ]
+  },
+  "hand_cast_graha_sphuta_2004": {
+    "source": "The ग्रहाणां स्पष्टाः table of a kundali hand-cast in Deupur, Parbat, for a birth at Deupur-7 Lukepani, Parbat, Nepal. The table gives each graha to the विकला (arcsecond).",
+    "why": "Until now nothing tested a planet's degree. The panchanga fixtures pin the Sun and Moon, and the varga cases pin the division rules — but the five star-planets, and therefore every divisional chart built from them, rested on nothing. This is the only ground truth we have for them: a practitioner's own arcsecond-level table.",
+    "what_it_settles": "Whether the star-planets should come from Surya Siddhanta, as the Sun and Moon do. They should not. Against this table a Surya Siddhanta Jupiter lands in Virgo where the guru writes Leo, and against the 2002 chart a Surya Siddhanta Mars lands in Aquarius where the guru writes Pisces — each a wrong rashi, which is a worse error than any number of arcminutes. Drik reproduces every star-planet sign in both charts and their degrees to about a degree. The Sun and Moon keep Surya Siddhanta because that is what the tithi, nakshatra, yoga, karana and masa are reckoned from, and those match across all four charts.",
+    "birth": {
+      "date": "2004-08-17",
+      "time": "07:40",
+      "tz_name": "Asia/Kathmandu",
+      "latitude": 28.22266,
+      "longitude": 83.6826
+    },
+    "expect_lagna_sign": "Leo",
+    "tolerance_degrees": 1.5,
+    "grahas": [
+      {
+        "name": "Sun",
+        "sign": "Leo",
+        "degrees": "0°30'13\""
+      },
+      {
+        "name": "Mars",
+        "sign": "Leo",
+        "degrees": "9°43'28\""
+      },
+      {
+        "name": "Jupiter",
+        "sign": "Leo",
+        "degrees": "28°51'46\""
+      },
+      {
+        "name": "Venus",
+        "sign": "Gemini",
+        "degrees": "15°14'04\""
+      },
+      {
+        "name": "Saturn",
+        "sign": "Gemini",
+        "degrees": "28°51'51\""
+      },
+      {
+        "name": "Rahu",
+        "sign": "Aries",
+        "degrees": "11°32'26\""
+      },
+      {
+        "name": "Ketu",
+        "sign": "Libra",
+        "degrees": "11°32'26\""
+      }
+    ],
+    "excluded": {
+      "Mercury": "The table places Mercury at Cancer 29°55'52\", about 12.7° behind where it was, and marks it मार्गी (direct). Mercury was retrograde on 17 August 2004, six days from inferior conjunction — the position the table gives is roughly where Mercury reached at that conjunction. Both the longitude and the direction are the guru's, and this is recorded rather than matched. Surya Siddhanta does not rescue it either: it gives Leo 4°11', still 4.3° away."
+    },
+    "note_on_the_sun": "Our Surya Siddhanta Sun is 0.47° from this table where a drik Sun would be 0.08°. That tension is real and is left standing: the Sun's siddhanta was settled on the panchanga — tithi, nakshatra, yoga, karana, masa, samvatsara across four charts — which is far more evidence than one degree cell, and changing it to close 0.4° here would break those.",
+    "sankalpa_navamsa": {
+      "quote": "सिंह लग्नोदये कर्क नवमांशे सिंह राशिगते चान्द्रमसि",
+      "reads": "Leo rising, [the Moon] in the Cancer navamsa, the Moon being in the sign Leo.",
+      "why": "The varga cases check the sixteen division rules in isolation. This checks the other half — build_varga, which maps the lagna through the same division and counts houses from it. That assembly had nothing behind it, and this line of the sankalpa is the only outside statement of a divisional placement we hold for any of the four charts.",
+      "expect_lagna": "Leo",
+      "expect_moon_sign": "Leo",
+      "expect_moon_navamsa": "Cancer"
+    }
+  }
+}

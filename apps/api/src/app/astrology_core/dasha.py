@@ -28,6 +28,12 @@ from app.astrology_core.nakshatra import elapsed_fraction, nakshatra_at
 
 MAX_LEVEL = 3
 
+#: Tribhagi is vimshottari with a third taken off every period — the same
+#: nakshatra lords, the same order, a 80-year cycle instead of 120. Confirmed
+#: against a hand-cast Nepali kundali whose printed त्रिभागी table cumulates to
+#: exactly 80 and gives Venus 13y 4m against vimshottari's 20y.
+TRIBHAGI_SCALE = 2.0 / 3.0
+
 
 def _years_to_delta(years: float) -> timedelta:
     return timedelta(days=years * DAYS_PER_YEAR)
@@ -58,6 +64,8 @@ def _subdivide(
     sequence = _sequence_from(parent_lord)
     last = len(sequence) - 1
     for i, lord in enumerate(sequence):
+        # The child's share of its parent is a *ratio*, so it is unaffected by
+        # the scale — tribhagi subdivides in the same proportions.
         years = parent_years * VIMSHOTTARI_YEARS[lord] / 120.0
         child_end = end if i == last else cursor + _years_to_delta(years)
         periods.append(
@@ -73,7 +81,13 @@ def _subdivide(
     return tuple(periods)
 
 
-def build_dasha(moon_longitude: float, birth: datetime, cycles: int = 1) -> Dasha:
+def build_dasha(
+    moon_longitude: float,
+    birth: datetime,
+    cycles: int = 1,
+    scale: float = 1.0,
+    elapsed: float | None = None,
+) -> Dasha:
     """Full vimshottari tree.
 
     `birth` is the local birth moment, not just the date — a mahadasha boundary
@@ -83,10 +97,22 @@ def build_dasha(moon_longitude: float, birth: datetime, cycles: int = 1) -> Dash
     `cycles` is how many 120-year cycles to generate. One covers a human
     lifetime; the parameter exists so the bound is explicit rather than an
     accident of the loop.
+
+    `scale` multiplies every period. 1.0 is vimshottari; `TRIBHAGI_SCALE`
+    gives the 80-year tribhagi, which is the same scheme run faster and is
+    read alongside it rather than instead of it.
+
+    `elapsed` is how much of the janma nakshatra had passed at birth. A
+    panchanga measures that in *time* — भुक्त over भभोग, in ghatis — because
+    that is what it tabulates, and the Moon does not cross a nakshatra at a
+    constant speed. Passing it in keeps this module free of the ephemeris.
+    Left out, it falls back to the fraction of the arc, which is what Kapoor's
+    worked example uses and is within a hundredth of a percent here.
     """
     lord = nakshatra_at(moon_longitude).lord
-    total_years = float(VIMSHOTTARI_YEARS[lord])
-    elapsed = elapsed_fraction(moon_longitude)
+    total_years = float(VIMSHOTTARI_YEARS[lord]) * scale
+    if elapsed is None:
+        elapsed = elapsed_fraction(moon_longitude)
     balance_years = total_years * (1.0 - elapsed)
 
     # The mahadasha running at birth started before it; only the balance is lived.
@@ -96,7 +122,7 @@ def build_dasha(moon_longitude: float, birth: datetime, cycles: int = 1) -> Dash
     order = _sequence_from(lord)
     for i in range(9 * cycles):
         current = order[i % 9]
-        years = float(VIMSHOTTARI_YEARS[current])
+        years = float(VIMSHOTTARI_YEARS[current]) * scale
         end = cursor + _years_to_delta(years)
         periods.append(
             DashaPeriod(
@@ -110,3 +136,10 @@ def build_dasha(moon_longitude: float, birth: datetime, cycles: int = 1) -> Dash
         cursor = end
 
     return Dasha(birth_lord=lord, balance_years=balance_years, periods=tuple(periods))
+
+
+def build_tribhagi(
+    moon_longitude: float, birth: datetime, cycles: int = 1, elapsed: float | None = None
+) -> Dasha:
+    """The 80-year tribhagi, keyed to the same janma nakshatra."""
+    return build_dasha(moon_longitude, birth, cycles, scale=TRIBHAGI_SCALE, elapsed=elapsed)

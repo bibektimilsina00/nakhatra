@@ -20,6 +20,16 @@ def all_fixtures() -> list[dict]:
     return out
 
 
+def siddhanta_of(fixture: dict) -> str:
+    """Which system this fixture was verified against.
+
+    Defaults to drik: every fixture predating 0.6.0 was checked against
+    AstroTalk or a modern tool, so that is the system its expected values
+    belong to, whatever the product default happens to be.
+    """
+    return fixture.get("siddhanta", "drik")
+
+
 def birth_of(fixture: dict) -> BirthMoment:
     b = fixture["birth"]
     return BirthMoment(

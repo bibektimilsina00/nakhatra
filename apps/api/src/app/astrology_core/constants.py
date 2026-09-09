@@ -12,7 +12,12 @@ from typing import Final
 
 # Bump on ANY change to this file or to a calculation rule. Cached charts with
 # an older version are recomputed, never migrated in place.
-ENGINE_VERSION: Final = "0.3.0"
+#: 0.6.0 — सूर्य सिद्धान्त is now the default for the Sun and Moon, which is
+#: what a Nepali kundali is cast from. Against four hand-cast charts it scores
+#: 39/42 where the modern ephemeris scores 29/42. `build_chart(..., "drik")`
+#: still gives the modern positions, and every fixture states which system it
+#: was verified against.
+ENGINE_VERSION: Final = "0.7.1"
 
 DEGREES_PER_SIGN: Final = 30.0
 DEGREES_PER_NAKSHATRA: Final = 360.0 / 27.0      # 13°20'

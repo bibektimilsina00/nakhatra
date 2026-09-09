@@ -35,13 +35,21 @@ services:
     environment:
       - ENV=production
       - DATABASE_URL=postgresql://${POSTGRES_USER:-nakhatra}:${POSTGRES_PASSWORD:-nakhatrapassword}@nakhatra_postgres:5432/${POSTGRES_DB:-nakhatra}
+      # The LLM_* names the deploy actually writes, falling back to the
+      # AgentRouter ones so an environment that still has only those keeps
+      # working. Reading the key from AGENT_ROUTER_API_KEY while the base URL
+      # points at OpenRouter sends the wrong provider's key and 401s exactly
+      # like a bad key.
       - LLM_BASE_URL=${LLM_BASE_URL:-https://openrouter.ai/api}
-      - LLM_API_KEY=${AGENT_ROUTER_API_KEY}
-      - LLM_MODEL=${AGENT_ROUTER_MODEL:-gpt-4o-mini}
+      - LLM_API_KEY=${LLM_API_KEY:-$AGENT_ROUTER_API_KEY}
+      - LLM_MODEL=${LLM_MODEL:-google/gemini-3.6-flash}
       - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
       - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
       - CORS_ORIGINS=${CORS_ORIGINS:-[]}
       - JWT_SECRET=${JWT_SECRET}
+      # Voice: the API synthesises TTS itself; without this the endpoint 503s
+      # in production while working on every dev machine.
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
     depends_on:
       nakhatra_postgres:
         condition: service_healthy

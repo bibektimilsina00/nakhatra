@@ -85,12 +85,33 @@ export function BirthDetailsPanel({
   );
 }
 
+/** "18 minutes" / "1 hr 5 min" — a gap a reader can feel. */
+function formatGap(minutes: number): string {
+  const m = Math.round(minutes);
+  if (m < 60) return `${m} minute${m === 1 ? "" : "s"}`;
+  return `${Math.floor(m / 60)} hr ${m % 60} min`;
+}
+
 export function PanchangPanel({ panchang }: { panchang: Panchang }) {
   return (
     <Panel
       title="Panchang"
       note="The five limbs of the Vedic day, computed from the Sun and Moon at birth."
     >
+      {/* The almanac frame a Nepali kundali opens with. All of it is the Sun's
+          sidereal sign — Bhadra begins when the Sun enters Leo, so it cannot
+          come from a calendar. Rendered only when present, because a chart
+          computed before these existed does not carry them. */}
+      {panchang.masa && (
+        <p className="mb-4 border-l-2 border-gold/40 pl-3 text-[12.5px] leading-relaxed text-muted">
+          {panchang.masa} · {panchang.paksha} {panchang.tithi_name} · {panchang.vara}
+          <span className="mt-0.5 block text-dim">
+            {panchang.ayana} · {panchang.ritu} ritu · Vikram Samvat{" "}
+            {panchang.vikram_samvat} · Shaka {panchang.shaka_samvat}
+            {panchang.samvatsara ? ` · ${panchang.samvatsara} samvatsara` : ""}
+          </span>
+        </p>
+      )}
       <DetailList
         rows={[
           ["Tithi", `${panchang.paksha} ${panchang.tithi_name}`],
@@ -103,8 +124,35 @@ export function PanchangPanel({ panchang }: { panchang: Panchang }) {
           ["Ascendant", `${panchang.ascendant_sign} · ${panchang.ascendant_lord}`],
           ["Sunrise", clock(panchang.sunrise)],
           ["Sunset", clock(panchang.sunset)],
+          ...(panchang.masa
+            ? ([
+                ["Masa (solar)", panchang.masa],
+                ["Ritu", panchang.ritu],
+                ["Ayana", panchang.ayana],
+              ] as [string, string][])
+            : []),
         ]}
       />
+      {/* A traditional almanac's Moon runs 10-20 arcminutes ahead of a modern
+          ephemeris, which only matters near a boundary — and there it decides
+          the nakshatra, and with it the dasha lord and the name syllable.
+          Saying so is more honest than printing one value flatly. */}
+      {(panchang.near_boundary ?? []).length > 0 && (
+        <div className="mt-4 rounded-[6px] border border-gold/30 bg-gold/[0.06] p-3">
+          <p className="text-xs font-medium text-accent-ink">Close to changing</p>
+          <ul className="mt-1.5 space-y-1">
+            {(panchang.near_boundary ?? []).map((w) => (
+              <li key={w.element} className="text-xs leading-relaxed text-muted">
+                <span className="capitalize">{w.element}</span> becomes{" "}
+                <span className="text-fg">{w.upcoming}</span> {formatGap(w.minutes)} after
+                this birth time. An astrologer using a traditional panchang may
+                well name that one instead.
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
       <p className="mt-4 text-xs leading-relaxed text-dim">
         The Vedic day turns at sunrise, not midnight — a birth before dawn
         belongs to the previous vara.

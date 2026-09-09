@@ -2,11 +2,13 @@
 
 import { useState } from "react";
 
+import { DashaChakra, type DashaScheme } from "@/features/kundali/components/dasha-chakra";
 import {
   AvakhadaPanel,
   BirthDetailsPanel,
   PanchangPanel,
 } from "@/features/kundali/components/detail-tables";
+import { PatroHead } from "@/features/kundali/components/patro-head";
 import { NorthIndianChart } from "@/features/kundali/components/north-indian-chart";
 import { SouthIndianChart } from "@/features/kundali/components/south-indian-chart";
 import { Section, ViewMore, useReveal } from "@/features/kundali/components/section";
@@ -44,6 +46,11 @@ export function ChartView({
     <div className="space-y-16">
       <Header chart={chart} birth={birth} onReset={onReset} />
       <Jump />
+
+      {/* The document a family actually recognises: invocation, mangala
+          shlokas, and the sankalpa with this chart's values in the blanks —
+          laid out like the hand-written patros it was verified against. */}
+      <PatroHead chart={chart} birth={birth} />
 
       <Section
         id="chart"
@@ -120,6 +127,33 @@ export function ChartView({
       <PlanetTable planets={chart.planets} onPickHouse={setHouse} />
 
       <DashaTimeline periods={chart.dasha.periods} now={now} />
+      <Bhukta
+        bhukta={chart.dasha.bhukta_ghati ?? 0}
+        bhabhoga={chart.dasha.bhabhoga_ghati ?? 0}
+      />
+
+      {/* Two further schemes over the same janma nakshatra, read beside
+          vimshottari rather than instead of it. Rendered only when the chart
+          carries them, so an older cached chart still displays. */}
+      {chart.tribhagi && (
+        <DashaTimeline
+          periods={chart.tribhagi.periods}
+          now={now}
+          id="tribhagi"
+          title="Tribhagi Dasha"
+          note="Vimshottari with a third taken off every period — the same lords in the same order over 80 years instead of 120, so it moves faster and is read for closer timing."
+        />
+      )}
+
+      {chart.yogini && (
+        <DashaTimeline
+          periods={chart.yogini.periods}
+          now={now}
+          id="yogini"
+          title="Yogini Dasha"
+          note="Eight yoginis over 36 years, starting from the janma nakshatra. The periods are simply one through eight years, so the whole cycle repeats three times in a long life."
+        />
+      )}
 
       <VargaGrid vargas={chart.vargas} />
 
@@ -165,6 +199,8 @@ function Jump() {
     ["basic", "Birth & Panchang"],
     ["planets", "Planetary Positions"],
     ["dasha", "Vimshottari Dasha"],
+    ["tribhagi", "Tribhagi"],
+    ["yogini", "Yogini"],
     ["divisional-charts", "Divisional Charts"],
   ] as const;
   return (
@@ -190,8 +226,8 @@ function Missing() {
       <h3 className="font-display text-lg text-fg">Not built yet</h3>
       <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted">
         Ashtakvarga, KP (its own ayanamsa, Placidus cusps and sub-lords), Bhav
-        Chalit, Shadbala, Bhavbala and Yogini dasha are still to come. Each is a
-        separate calculation system with its own tables, and a wrong table
+        Chalit, Shadbala, Bhavbala and the Ghata Chakra are still to come. Each
+        is a separate calculation system with its own tables, and a wrong table
         produces numbers that look entirely plausible — so they are being built
         and verified one at a time rather than guessed at.
       </p>
@@ -225,13 +261,30 @@ function Header({
           {chart.ayanamsa_name} {chart.ayanamsa_value.toFixed(4)}° · whole-sign
           houses · engine v{chart.engine_version}
         </p>
+        {/* Naming the system lets a reader square this chart with a jyotish's
+            instead of assuming one of them is broken. Most hand-cast Nepali
+            panchangs follow सूर्य सिद्धान्त, whose Moon runs about a quarter
+            degree ahead of this one. */}
+        {chart.siddhanta && (
+          <p className="mt-0.5 text-xs text-dim">{chart.siddhanta}</p>
+        )}
       </div>
-      <button
-        onClick={onReset}
-        className="mx-auto rounded-full border border-line px-5 py-2 text-sm text-muted transition hover:border-accent-strong/50 hover:text-fg sm:mx-0"
-      >
-        New chart
-      </button>
+      <div className="mx-auto flex items-center gap-2 sm:mx-0">
+        {/* The chart is in sessionStorage by the time this renders, which is
+            what the /sky page reads. */}
+        <a
+          href="/sky"
+          className="rounded-full border border-accent-strong/40 px-5 py-2 text-sm text-accent-ink transition hover:border-accent-strong hover:text-fg"
+        >
+          ✦ Birth sky
+        </a>
+        <button
+          onClick={onReset}
+          className="rounded-full border border-line px-5 py-2 text-sm text-muted transition hover:border-accent-strong/50 hover:text-fg"
+        >
+          New chart
+        </button>
+      </div>
     </header>
   );
 }
@@ -269,6 +322,19 @@ function HousePanel({ chart, house }: { chart: Chart; house: number | null }) {
         )}
       </div>
     </Card>
+  );
+}
+
+/** भुक्त / भभोग — the two figures a kundali prints beside the balance, so a
+ *  reader can check our dasha against their jyotish's in the same units. */
+function Bhukta({ bhukta, bhabhoga }: { bhukta: number; bhabhoga: number }) {
+  if (!bhabhoga) return null;
+  return (
+    <p className="mt-2 text-xs text-dim">
+      भुक्त {bhukta.toFixed(2)} ghati of भभोग {bhabhoga.toFixed(2)} —{" "}
+      {((bhukta / bhabhoga) * 100).toFixed(1)}% of the janma nakshatra had
+      passed at birth, which is what sets the balance.
+    </p>
   );
 }
 
@@ -372,38 +438,34 @@ const SIGN_LORDS = [
   "Venus", "Mars", "Jupiter", "Saturn", "Saturn", "Jupiter",
 ];
 
-function DashaTimeline({ periods, now }: { periods: DashaPeriod[]; now: number }) {
+function DashaTimeline({
+  periods,
+  now,
+  id = "dasha",
+  title = "Vimshottari Dasha",
+  note = "A 120-year cycle keyed to the Moon's nakshatra. Bar widths are the real durations — Venus runs 20 years, the Sun 6.",
+}: {
+  periods: DashaPeriod[];
+  now: number;
+  id?: string;
+  title?: string;
+  note?: string;
+}) {
   const { visible, hidden, expanded, toggle } = useReveal(periods, 4);
-  const start = new Date(periods[0].start).getTime();
-  const end = new Date(periods[periods.length - 1].end).getTime();
-  const span = end - start;
+  const scheme: DashaScheme =
+    id === "tribhagi" ? "tribhagi" : id === "yogini" ? "yogini" : "vimshottari";
 
   return (
     <Section
-      id="dasha"
-      title="Vimshottari Dasha"
-      note="A 120-year cycle keyed to the Moon's nakshatra. Bar widths are the real durations — Venus runs 20 years, the Sun 6."
+      id={id}
+      title={title}
+      note={note}
     >
-      <div className="mb-6 flex h-12 overflow-hidden rounded-lg border border-line">
-        {periods.map((p) => {
-          const width =
-            ((new Date(p.end).getTime() - new Date(p.start).getTime()) / span) * 100;
-          const active = isActive(p, now);
-          return (
-            <div
-              key={`${p.lord}-${p.start}`}
-              style={{ width: `${width}%` }}
-              title={`${p.lord}  ${p.start} → ${p.end}`}
-              className={`flex items-center justify-center border-r border-line/70 text-2xs last:border-r-0 ${
-                active
-                  ? "bg-accent-strong/25 font-medium text-fg"
-                  : "bg-surface text-muted hover:bg-surface/60"
-              }`}
-            >
-              {width > 6 ? p.lord.slice(0, 3) : ""}
-            </div>
-          );
-        })}
+      {/* The chakra table a hand-written patro uses — one column per lord,
+          years and end date beneath — instead of a proportional bar, so it
+          can be read cell-for-cell against a guru's kundali. */}
+      <div className="mb-6">
+        <DashaChakra periods={periods} now={now} scheme={scheme} />
       </div>
 
       <div className="space-y-1.5">

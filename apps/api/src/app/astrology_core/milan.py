@@ -9,7 +9,6 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
-
 # --- CONSTANTS & TABLES ---
 
 # 1. VARNA (1 Point)
@@ -30,7 +29,8 @@ VARNA_NAMES = {4: "Brahmin", 3: "Kshatriya", 2: "Vaishya", 1: "Shudra"}
 
 # 2. VASHYA (2 Points)
 # Rashi Vashya classification
-# 1: Chatushpada (Quadruped), 2: Manav (Human), 3: Jalachara (Water), 4: Vanchara (Wild), 5: Keeta (Insect)
+# 1: Chatushpada (Quadruped), 2: Manav (Human), 3: Jalachara (Water),
+# 4: Vanchara (Wild), 5: Keeta (Insect)
 def get_vashya_type(rashi: int) -> str:
     if rashi in (1, 2):  # Aries, Taurus
         return "Chatushpada"
@@ -55,7 +55,8 @@ def get_vashya_type(rashi: int) -> str:
 # 13: Hasta(Buffalo), 14: Chitra(Tiger), 15: Swati(Buffalo), 16: Vishakha(Tiger),
 # 17: Anuradha(Deer), 18: Jyeshtha(Deer), 19: Moola(Dog), 20: Purva Ashadha(Monkey),
 # 21: Uttara Ashadha(Mongoose), 22: Shravana(Monkey), 23: Dhanishta(Lion),
-# 24: Shatabhisha(Horse), 25: Purva Bhadrapada(Lion), 26: Uttara Bhadrapada(Cow), 27: Revati(Elephant)
+# 24: Shatabhisha(Horse), 25: Purva Bhadrapada(Lion),
+# 26: Uttara Bhadrapada(Cow), 27: Revati(Elephant)
 NAKSHATRA_YONI: dict[int, str] = {
     1: "Horse", 2: "Elephant", 3: "Sheep", 4: "Serpent", 5: "Serpent",
     6: "Dog", 7: "Cat", 8: "Sheep", 9: "Cat", 10: "Rat",
@@ -95,9 +96,18 @@ PLANET_FRIENDS: dict[str, dict[str, int]] = {
     "Moon": {"Sun": 1, "Moon": 1, "Mercury": 1, "Mars": 0, "Jupiter": 0, "Venus": 0, "Saturn": 0},
     "Mars": {"Sun": 1, "Moon": 1, "Jupiter": 1, "Venus": 0, "Saturn": 0, "Mercury": -1},
     "Mercury": {"Sun": 1, "Venus": 1, "Mars": 0, "Jupiter": 0, "Saturn": 0, "Moon": -1},
-    "Jupiter": {"Sun": 1, "Moon": 1, "Mars": 1, "Mercury": -1, "Venus": -1, "Saturn": 0, "Jupiter": 1},
-    "Venus": {"Mercury": 1, "Saturn": 1, "Mars": 0, "Jupiter": 0, "Sun": -1, "Moon": -1, "Venus": 1},
-    "Saturn": {"Mercury": 1, "Venus": 1, "Jupiter": 0, "Sun": -1, "Moon": -1, "Mars": -1, "Saturn": 1},
+    "Jupiter": {
+        "Sun": 1, "Moon": 1, "Mars": 1, "Mercury": -1, "Venus": -1,
+        "Saturn": 0, "Jupiter": 1,
+    },
+    "Venus": {
+        "Mercury": 1, "Saturn": 1, "Mars": 0, "Jupiter": 0,
+        "Sun": -1, "Moon": -1, "Venus": 1,
+    },
+    "Saturn": {
+        "Mercury": 1, "Venus": 1, "Jupiter": 0, "Sun": -1,
+        "Moon": -1, "Mars": -1, "Saturn": 1,
+    },
 }
 
 
@@ -246,9 +256,7 @@ def calculate_gana(groom_nak_idx: int, bride_nak_idx: int) -> KutaResult:
     g_g = NAKSHATRA_GANA.get(groom_nak_idx, "Deva")
     b_g = NAKSHATRA_GANA.get(bride_nak_idx, "Deva")
 
-    if g_g == b_g:
-        pts = 6.0
-    elif g_g == "Deva" and b_g == "Manushya":
+    if g_g == b_g or g_g == "Deva" and b_g == "Manushya":
         pts = 6.0
     elif g_g == "Manushya" and b_g == "Deva":
         pts = 5.0
@@ -264,7 +272,6 @@ def calculate_gana(groom_nak_idx: int, bride_nak_idx: int) -> KutaResult:
 
 
 def calculate_bhakoot(groom_rashi: int, bride_rashi: int) -> KutaResult:
-    diff = abs(groom_rashi - bride_rashi)
     # Relative positions (1/1, 2/12, 3/11, 4/10, 5/9, 6/8, 7/7)
     rel = (groom_rashi - bride_rashi) % 12
     if rel == 0:
@@ -315,7 +322,9 @@ def analyze_manglik_dosha(mars_house: int, moon_mars_house: int | None = None) -
 
     is_manglik = len(houses) > 0
     if not is_manglik:
-        return ManglikAnalysis(is_manglik=False, manglik_houses=[], severity="None", is_canceled=False)
+        return ManglikAnalysis(
+            is_manglik=False, manglik_houses=[], severity="None", is_canceled=False
+        )
 
     severity = "High" if 7 in houses or 8 in houses else "Moderate"
     return ManglikAnalysis(
@@ -398,8 +407,14 @@ def match_kundalis(
             "cancellation_reason": bride_manglik.cancellation_reason,
         },
         "manglik_compatibility": {
-            "compatible": not (groom_manglik.is_manglik ^ bride_manglik.is_manglik) or manglik_canceled,
+            "compatible": not (groom_manglik.is_manglik ^ bride_manglik.is_manglik)
+            or manglik_canceled,
             "canceled": manglik_canceled,
-            "reason": cancellation_reason or ("Both Non-Manglik" if not groom_manglik.is_manglik and not bride_manglik.is_manglik else "One partner is Manglik while the other is not."),
+            "reason": cancellation_reason
+            or (
+                "Both Non-Manglik"
+                if not groom_manglik.is_manglik and not bride_manglik.is_manglik
+                else "One partner is Manglik while the other is not."
+            ),
         },
     }

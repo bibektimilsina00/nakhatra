@@ -44,7 +44,9 @@ export function SolarSystem() {
     const timers: number[] = [];
     const every = (fn: () => void, ms: number) => { timers.push(window.setInterval(fn, ms)); };
 
-    const IMG = "https://cdn.jsdelivr.net/gh/N3rson/Solar-System-3D@main/src/images/";
+    // Self-hosted — the same Solar-System-3D texture set the Birth Sky uses,
+    // served from public/planets instead of a third-party CDN.
+    const IMG = "/planets/";
     const loadTexture = new THREE.TextureLoader();
     const T = (f: string) => loadTexture.load(IMG + f);
 

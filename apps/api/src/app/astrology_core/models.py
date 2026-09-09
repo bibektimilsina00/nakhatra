@@ -87,6 +87,12 @@ class Dasha:
     birth_lord: str
     balance_years: float
     periods: tuple[DashaPeriod, ...] = ()
+    #: भुक्त and भभोग in ghatis — how much of the janma nakshatra had passed at
+    #: birth, and how long it takes to cross. Every Nepali kundali prints these
+    #: two, and the balance above is their ratio, so they are what a reader
+    #: checks us against.
+    bhukta_ghati: float = 0.0
+    bhabhoga_ghati: float = 0.0
 
     def active_at(self, when: date) -> tuple[DashaPeriod, ...]:
         """Chain from mahadasha down to the deepest period covering `when`."""
@@ -120,9 +126,23 @@ class Chart:
     panchang: Any
     avakhada: Any
     vargas: tuple[Any, ...] = field(default_factory=tuple)
+    #: The same janma nakshatra run through two further schemes, read beside
+    #: vimshottari rather than instead of it. Optional so nothing that builds
+    #: a Chart without them breaks.
+    tribhagi: Dasha | None = None
+    yogini: Dasha | None = None
+    #: Which siddhanta the positions come from. See `ephemeris.SIDDHANTA`.
+    siddhanta: str = ""
     # Populated in Phase 1. Present now so the shape the AI consumes is stable.
     yogas: tuple[Any, ...] = field(default_factory=tuple)
     doshas: tuple[Any, ...] = field(default_factory=tuple)
+    #: Things about the *input* that make this chart less certain than it
+    #: looks — an impossible or repeated wall-clock time, a latitude where the
+    #: Sun did not rise. Empty for almost every birth. These are not
+    #: astrological warnings; they say the moment itself is not pinned down,
+    #: and a confident chart drawn on an unpinned moment is the failure mode
+    #: this engine most needs to avoid.
+    time_warnings: tuple[str, ...] = field(default_factory=tuple)
 
     def planet(self, name: str) -> Planet:
         for p in self.planets:

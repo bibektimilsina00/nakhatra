@@ -55,17 +55,53 @@ function getPlanetCoordinates(house: number, index: number, totalCount: number) 
   return { x: targetX, y: targetY };
 }
 
+/** The two looks a chart is drawn in: the app's dark sky, or the parchment
+ *  and red-and-green ink of a hand-written patro. */
+const CHART_THEMES = {
+  dark: {
+    svgBg: "bg-[#090A10]",
+    fillA: "#090A10",
+    fillB: "#121626",
+    activeFill: "#1E2640",
+    activeStroke: "#E5A93C",
+    frame: "#E5A93C",
+    lagnaNum: "#F3C766",
+    num: "#CBD5E1",
+    planet: "#FFFFFF",
+    exalted: "#FDE68A",
+    retro: "#E5A93C",
+  },
+  patro: {
+    svgBg: "bg-[#f7efdc]",
+    fillA: "#f7efdc",
+    fillB: "#efe0c2",
+    activeFill: "#ecd9b0",
+    activeStroke: "#9B1C1C",
+    frame: "#9B1C1C",
+    lagnaNum: "#9B1C1C",
+    num: "#4a3a22",
+    planet: "#1a3a1a",
+    exalted: "#9B1C1C",
+    retro: "#9B1C1C",
+  },
+} as const;
+
+export type ChartTheme = keyof typeof CHART_THEMES;
+
 export function NorthIndianChart({
   chart,
   onSelectHouse,
   selectedHouse,
+  theme = "dark",
 }: {
   chart: Chart;
   onSelectHouse?: (house: number) => void;
   selectedHouse?: number | null;
+  theme?: ChartTheme;
 }) {
   const { language } = useTranslation();
   const [hovered, setHovered] = useState<number | null>(null);
+  const T = CHART_THEMES[theme];
 
   const planetsByHouse = new Map<number, typeof chart.planets>();
   for (const planet of chart.planets) {
@@ -77,18 +113,18 @@ export function NorthIndianChart({
   return (
     <svg
       viewBox={`-1 -1 ${S + 2} ${S + 2}`}
-      className="w-full max-w-[500px] select-none rounded-[8px] bg-[#090A10]"
+      className={`w-full max-w-[500px] select-none rounded-[8px] ${T.svgBg}`}
       role="img"
       aria-label="North Indian birth chart"
     >
       <defs>
-        <linearGradient id="darkChartFill" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#090A10" />
-          <stop offset="100%" stopColor="#121626" />
+        <linearGradient id={`chartFill-${theme}`} x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor={T.fillA} />
+          <stop offset="100%" stopColor={T.fillB} />
         </linearGradient>
       </defs>
 
-      <rect x="0" y="0" width={S} height={S} fill="url(#darkChartFill)" />
+      <rect x="0" y="0" width={S} height={S} fill={`url(#chartFill-${theme})`} />
 
       {/* House Polygon Highlights */}
       {Object.entries(HOUSE_POLYGONS).map(([key, polygon]) => {
@@ -98,8 +134,8 @@ export function NorthIndianChart({
           <polygon
             key={house}
             points={toPoints(polygon)}
-            fill={active ? "#1E2640" : "transparent"}
-            stroke={active ? "#E5A93C" : "transparent"}
+            fill={active ? T.activeFill : "transparent"}
+            stroke={active ? T.activeStroke : "transparent"}
             strokeWidth={active ? "1.5" : "0"}
             className="cursor-pointer transition-all duration-150"
             onMouseEnter={() => setHovered(house)}
@@ -110,7 +146,7 @@ export function NorthIndianChart({
       })}
 
       {/* Frame, diagonals, inner diamond lines */}
-      <g stroke="#E5A93C" strokeWidth="1.2" fill="none" pointerEvents="none">
+      <g stroke={T.frame} strokeWidth="1.2" fill="none" pointerEvents="none">
         <rect x="0" y="0" width={S} height={S} strokeWidth="1.8" />
         <line x1="0" y1="0" x2={S} y2={S} strokeOpacity="0.75" />
         <line x1={S} y1="0" x2="0" y2={S} strokeOpacity="0.75" />
@@ -132,7 +168,7 @@ export function NorthIndianChart({
               y={anchor.y}
               textAnchor="middle"
               fontSize="14"
-              fill={isLagna ? "#F3C766" : "#CBD5E1"}
+              fill={isLagna ? T.lagnaNum : T.num}
               fontWeight="700"
             >
               {signIndex === undefined ? "" : toLocalizedDigit(signIndex + 1, language)}
@@ -150,12 +186,12 @@ export function NorthIndianChart({
                   textAnchor="middle"
                   fontSize={planets.length >= 4 ? "11.5" : "13"}
                   fontWeight="800"
-                  fill={planet.dignity === "exalted" ? "#FDE68A" : "#FFFFFF"}
+                  fill={planet.dignity === "exalted" ? T.exalted : T.planet}
                   letterSpacing="0.3"
                 >
                   {abbrev}
                   {planet.retrograde && (
-                    <tspan fontSize="10" fill="#E5A93C" dy="-3" fontWeight="bold">
+                    <tspan fontSize="10" fill={T.retro} dy="-3" fontWeight="bold">
                       {language === "en" ? "℞" : " (व)"}
                     </tspan>
                   )}

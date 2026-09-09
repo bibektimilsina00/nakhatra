@@ -34,6 +34,21 @@ class BirthDetailsIn(BaseModel):
             ),
         ),
     ]
+    siddhanta: Annotated[
+        Literal["surya", "drik"],
+        Field(
+            default="surya",
+            description=(
+                "Which system computes the Sun and Moon, and therefore the "
+                "panchang, the dashas and the avakhada. `surya` is सूर्य "
+                "सिद्धान्त, what a Nepali kundali is cast from, and the "
+                "default. `drik` is the modern ephemeris — better astronomy, "
+                "and what AstroSage and AstroTalk publish, so use it to "
+                "compare against those. The five star-planets are drik either "
+                "way."
+            ),
+        ),
+    ] = "surya"
     latitude: Annotated[float, Field(ge=-90, le=90)]
     longitude: Annotated[float, Field(ge=-180, le=180, description="East positive")]
     place_label: Annotated[str, Field(min_length=1, max_length=200)]
@@ -107,6 +122,16 @@ class DashaOut(BaseModel):
     birth_lord: str
     balance_years: float
     periods: list[DashaPeriodOut]
+    bhukta_ghati: float = Field(
+        default=0.0,
+        description="भुक्त — ghatis of the janma nakshatra already elapsed at "
+        "birth. Every Nepali kundali prints this beside the balance.",
+    )
+    bhabhoga_ghati: float = Field(
+        default=0.0,
+        description="भभोग — ghatis the Moon takes to cross the whole nakshatra. "
+        "The balance is the lord's years times (1 - bhukta/bhabhoga).",
+    )
 
 
 class VargaPlacementOut(BaseModel):
@@ -129,6 +154,22 @@ class VargaChartOut(BaseModel):
     placements: list[VargaPlacementOut]
 
 
+class BoundaryWarningOut(BaseModel):
+    """A panchanga element close to changing.
+
+    Present because a traditional Nepali almanac's Moon runs 10-20 arcminutes
+    ahead of a modern ephemeris, which matters only near a boundary — and
+    there it decides the nakshatra, and with it the dasha lord and the name
+    syllable. A reading that says "Magha" flatly when Purva Phalguni is nine
+    minutes away is claiming more than the arithmetic supports.
+    """
+
+    element: str = Field(description="tithi | karana | nakshatra | yoga")
+    current: str
+    upcoming: str = Field(description="What it becomes when it changes.")
+    minutes: float = Field(description="Minutes from the birth moment until it changes.")
+
+
 class PanchangOut(BaseModel):
     """The five limbs of the Vedic calendar, plus the day boundary they hang off."""
 
@@ -147,6 +188,32 @@ class PanchangOut(BaseModel):
     vara_lord: str
     moon_sign: str
     moon_sign_lord: str
+    ayana: str = Field(
+        default="",
+        description="Uttarayana or Dakshinayana — the Sun's half of the year, "
+        "by its sidereal sign.",
+    )
+    ritu: str = Field(default="", description="Season: two solar months to each of six.")
+    masa: str = Field(
+        default="",
+        description="Solar month by the Sun's sidereal sign — Bhadra when it is "
+        "in Leo. These are the Bikram Sambat month names.",
+    )
+    vikram_samvat: int = Field(
+        default=0,
+        description="Bikram Sambat year. Rolls at Mesha Sankranti in mid-April, "
+        "not on 1 January.",
+    )
+    shaka_samvat: int = Field(default=0, description="Shalivahana Shaka year.")
+    samvatsara: str = Field(
+        default="",
+        description="Name of the year in the sixty-year Jovian cycle, e.g. Vibhava.",
+    )
+    near_boundary: list[BoundaryWarningOut] = Field(
+        default_factory=list,
+        description="Elements within an hour of changing. Usually empty; when it "
+        "is not, a traditional panchanga may well name the upcoming value instead.",
+    )
     ascendant_sign: str
     ascendant_lord: str
     sunrise: datetime | None = Field(
@@ -187,12 +254,31 @@ class ChartOut(BaseModel):
     julian_day: float
     ayanamsa_name: str
     ayanamsa_value: float
+    siddhanta: str = Field(
+        default="",
+        description="Which system the positions come from. Drik (दृक् सिद्धान्त) "
+        "is modern and observational; most hand-cast Nepali panchangas follow "
+        "सूर्य सिद्धान्त, whose Moon runs roughly a quarter degree ahead. That "
+        "only changes anything near a boundary — see `panchang.near_boundary`.",
+    )
     lagna_sign: str
     lagna_sign_index: int
     lagna_degree: float
     planets: list[PlanetOut]
     houses: list[HouseOut]
     dasha: DashaOut
+    #: Two further timing schemes over the same janma nakshatra, read beside
+    #: vimshottari rather than instead of it. Defaulted rather than required,
+    #: so an older client that does not know about them is unaffected.
+    tribhagi: DashaOut | None = Field(
+        default=None,
+        description="Vimshottari with a third removed — an 80-year cycle.",
+    )
+    yogini: DashaOut | None = Field(
+        default=None,
+        description="The eight yoginis over 36 years. `birth_lord` and each "
+        "period's `lord` name a yogini, not a graha.",
+    )
     panchang: PanchangOut
     avakhada: AvakhadaOut
     vargas: list[VargaChartOut]

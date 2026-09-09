@@ -111,8 +111,17 @@ def test_karana_covers_all_sixty_slots() -> None:
     names = {karana(0.0, i * 6.0 + 0.5) for i in range(60)}
     # Seven movable plus four fixed.
     assert names == {
-        "Kimstughna", "Bava", "Balava", "Kaulava", "Taitila", "Gara",
-        "Vanija", "Vishti", "Shakuni", "Chatushpada", "Naga",
+        "Kimstughna",
+        "Bava",
+        "Balava",
+        "Kaulava",
+        "Taitila",
+        "Gara",
+        "Vanija",
+        "Vishti",
+        "Shakuni",
+        "Chatushpada",
+        "Naga",
     }
 
 

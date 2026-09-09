@@ -489,6 +489,16 @@
             "title": "Place Label",
             "type": "string"
           },
+          "siddhanta": {
+            "default": "surya",
+            "description": "Which system computes the Sun and Moon, and therefore the panchang, the dashas and the avakhada. `surya` is \u0938\u0942\u0930\u094d\u092f \u0938\u093f\u0926\u094d\u0927\u093e\u0928\u094d\u0924, what a Nepali kundali is cast from, and the default. `drik` is the modern ephemeris \u2014 better astronomy, and what AstroSage and AstroTalk publish, so use it to compare against those. The five star-planets are drik either way.",
+            "enum": [
+              "surya",
+              "drik"
+            ],
+            "title": "Siddhanta",
+            "type": "string"
+          },
           "time": {
             "examples": [
               "08:30"
@@ -561,6 +571,38 @@
         "title": "Body_upload_photo_v1_practitioners_photo_post",
         "type": "object"
       },
+      "BoundaryWarningOut": {
+        "description": "A panchanga element close to changing.\n\nPresent because a traditional Nepali almanac's Moon runs 10-20 arcminutes\nahead of a modern ephemeris, which matters only near a boundary \u2014 and\nthere it decides the nakshatra, and with it the dasha lord and the name\nsyllable. A reading that says \"Magha\" flatly when Purva Phalguni is nine\nminutes away is claiming more than the arithmetic supports.",
+        "properties": {
+          "current": {
+            "title": "Current",
+            "type": "string"
+          },
+          "element": {
+            "description": "tithi | karana | nakshatra | yoga",
+            "title": "Element",
+            "type": "string"
+          },
+          "minutes": {
+            "description": "Minutes from the birth moment until it changes.",
+            "title": "Minutes",
+            "type": "number"
+          },
+          "upcoming": {
+            "description": "What it becomes when it changes.",
+            "title": "Upcoming",
+            "type": "string"
+          }
+        },
+        "required": [
+          "element",
+          "current",
+          "upcoming",
+          "minutes"
+        ],
+        "title": "BoundaryWarningOut",
+        "type": "object"
+      },
       "ChartOut": {
         "properties": {
           "avakhada": {
@@ -620,12 +662,40 @@
             "title": "Planets",
             "type": "array"
           },
+          "siddhanta": {
+            "default": "",
+            "description": "Which system the positions come from. Drik (\u0926\u0943\u0915\u094d \u0938\u093f\u0926\u094d\u0927\u093e\u0928\u094d\u0924) is modern and observational; most hand-cast Nepali panchangas follow \u0938\u0942\u0930\u094d\u092f \u0938\u093f\u0926\u094d\u0927\u093e\u0928\u094d\u0924, whose Moon runs roughly a quarter degree ahead. That only changes anything near a boundary \u2014 see `panchang.near_boundary`.",
+            "title": "Siddhanta",
+            "type": "string"
+          },
+          "tribhagi": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DashaOut"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Vimshottari with a third removed \u2014 an 80-year cycle."
+          },
           "vargas": {
             "items": {
               "$ref": "#/components/schemas/VargaChartOut"
             },
             "title": "Vargas",
             "type": "array"
+          },
+          "yogini": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DashaOut"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The eight yoginis over 36 years. `birth_lord` and each period's `lord` name a yogini, not a graha."
           }
         },
         "required": [
@@ -1035,6 +1105,18 @@
         "properties": {
           "balance_years": {
             "title": "Balance Years",
+            "type": "number"
+          },
+          "bhabhoga_ghati": {
+            "default": 0.0,
+            "description": "\u092d\u092d\u094b\u0917 \u2014 ghatis the Moon takes to cross the whole nakshatra. The balance is the lord's years times (1 - bhukta/bhabhoga).",
+            "title": "Bhabhoga Ghati",
+            "type": "number"
+          },
+          "bhukta_ghati": {
+            "default": 0.0,
+            "description": "\u092d\u0941\u0915\u094d\u0924 \u2014 ghatis of the janma nakshatra already elapsed at birth. Every Nepali kundali prints this beside the balance.",
+            "title": "Bhukta Ghati",
             "type": "number"
           },
           "birth_lord": {
@@ -1837,8 +1919,20 @@
             "title": "Ascendant Sign",
             "type": "string"
           },
+          "ayana": {
+            "default": "",
+            "description": "Uttarayana or Dakshinayana \u2014 the Sun's half of the year, by its sidereal sign.",
+            "title": "Ayana",
+            "type": "string"
+          },
           "karana": {
             "title": "Karana",
+            "type": "string"
+          },
+          "masa": {
+            "default": "",
+            "description": "Solar month by the Sun's sidereal sign \u2014 Bhadra when it is in Leo. These are the Bikram Sambat month names.",
+            "title": "Masa",
             "type": "string"
           },
           "moon_sign": {
@@ -1861,10 +1955,36 @@
             "title": "Nakshatra Pada",
             "type": "integer"
           },
+          "near_boundary": {
+            "description": "Elements within an hour of changing. Usually empty; when it is not, a traditional panchanga may well name the upcoming value instead.",
+            "items": {
+              "$ref": "#/components/schemas/BoundaryWarningOut"
+            },
+            "title": "Near Boundary",
+            "type": "array"
+          },
           "paksha": {
             "description": "Shukla (waxing) or Krishna (waning)",
             "title": "Paksha",
             "type": "string"
+          },
+          "ritu": {
+            "default": "",
+            "description": "Season: two solar months to each of six.",
+            "title": "Ritu",
+            "type": "string"
+          },
+          "samvatsara": {
+            "default": "",
+            "description": "Name of the year in the sixty-year Jovian cycle, e.g. Vibhava.",
+            "title": "Samvatsara",
+            "type": "string"
+          },
+          "shaka_samvat": {
+            "default": 0,
+            "description": "Shalivahana Shaka year.",
+            "title": "Shaka Samvat",
+            "type": "integer"
           },
           "sunrise": {
             "anyOf": [
@@ -1908,6 +2028,12 @@
           "vara_lord": {
             "title": "Vara Lord",
             "type": "string"
+          },
+          "vikram_samvat": {
+            "default": 0,
+            "description": "Bikram Sambat year. Rolls at Mesha Sankranti in mid-April, not on 1 January.",
+            "title": "Vikram Samvat",
+            "type": "integer"
           },
           "yoga": {
             "description": "Nitya yoga \u2014 from Sun + Moon longitude",

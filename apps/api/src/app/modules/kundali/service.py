@@ -11,7 +11,7 @@ from __future__ import annotations
 from datetime import datetime
 
 from app.astrology_core import build_chart
-from app.astrology_core.models import BirthMoment, Chart, DashaPeriod, Planet
+from app.astrology_core.models import BirthMoment, Chart, Dasha, DashaPeriod, Planet
 from app.core.errors import CalculationError
 from app.modules.kundali.schemas import (
     AvakhadaOut,
@@ -31,7 +31,7 @@ MAX_DASHA_DEPTH = 3
 
 
 def generate_chart(details: BirthDetailsIn, dasha_depth: int = DEFAULT_DASHA_DEPTH) -> ChartOut:
-    chart = build_chart(_birth_moment(details))
+    chart = build_chart(_birth_moment(details), details.siddhanta)
     return _to_schema(chart, dasha_depth=dasha_depth)
 
 
@@ -80,14 +80,27 @@ def _to_schema(chart: Chart, *, dasha_depth: int) -> ChartOut:
             )
             for h in chart.houses
         ],
-        dasha=DashaOut(
-            birth_lord=chart.dasha.birth_lord,
-            balance_years=chart.dasha.balance_years,
-            periods=[_period(p, dasha_depth) for p in chart.dasha.periods],
-        ),
+        dasha=_dasha(chart.dasha, dasha_depth),
+        # Two levels only for the secondary schemes: they are read for the
+        # mahadasha and antardasha, and carrying a third would roughly triple
+        # the payload for something nobody opens.
+        tribhagi=_dasha(chart.tribhagi, min(dasha_depth, 2)),
+        yogini=_dasha(chart.yogini, min(dasha_depth, 2)),
         panchang=PanchangOut.model_validate(chart.panchang, from_attributes=True),
         avakhada=AvakhadaOut.model_validate(chart.avakhada, from_attributes=True),
         vargas=[VargaChartOut.model_validate(v, from_attributes=True) for v in chart.vargas],
+    )
+
+
+def _dasha(tree: Dasha | None, depth: int) -> DashaOut | None:
+    if tree is None:
+        return None
+    return DashaOut(
+        birth_lord=tree.birth_lord,
+        balance_years=tree.balance_years,
+        bhukta_ghati=tree.bhukta_ghati,
+        bhabhoga_ghati=tree.bhabhoga_ghati,
+        periods=[_period(p, depth) for p in tree.periods],
     )
 
 

@@ -13,12 +13,12 @@ from app.astrology_core.chart import whole_sign_house
 from app.astrology_core.constants import DAYS_PER_YEAR, PLANETS, VIMSHOTTARI_YEARS
 from app.astrology_core.models import DashaPeriod
 
-from .conftest import birth_of
+from .conftest import birth_of, siddhanta_of
 
 
 @pytest.fixture
 def chart(fixture):
-    return build_chart(birth_of(fixture))
+    return build_chart(birth_of(fixture), siddhanta_of(fixture))
 
 
 def test_all_nine_grahas_present(chart):

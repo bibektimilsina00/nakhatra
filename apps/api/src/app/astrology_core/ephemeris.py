@@ -14,9 +14,27 @@ from zoneinfo import ZoneInfo
 
 import swisseph as swe
 
+from app.astrology_core import surya
 from app.astrology_core.constants import PLANETS
 
 AYANAMSA_NAME = "Lahiri (Chitrapaksha)"
+
+#: Which siddhanta the positions come from.
+#:
+#: दृक् सिद्धान्त — the modern observational system. Positions are Swiss
+#: Ephemeris, matched to where the bodies actually are.
+#:
+#: The other tradition is सूर्य सिद्धान्त, which most hand-cast Nepali
+#: panchangas follow. Its Moon runs about a quarter of a degree ahead of this
+#: one — measured at +18' and +14' against two kundalis cast in Parbat — which
+#: matters only near a boundary, and there it decides the nakshatra. Naming
+#: the system lets a reader square our answer with their jyotish's instead of
+#: assuming one of them is broken.
+SIDDHANTA_NAMES = {
+    "drik": "Drik (दृक् सिद्धान्त) — modern observational",
+    "surya": "Surya Siddhanta (सूर्य सिद्धान्त) — traditional panchanga",
+}
+SIDDHANTA = SIDDHANTA_NAMES["drik"]
 
 _SWE_PLANET = {
     "Sun": swe.SUN,
@@ -31,6 +49,8 @@ _SWE_PLANET = {
 
 _init_lock = threading.Lock()
 _initialised = False
+
+
 
 
 def _ensure_init() -> None:
@@ -84,6 +104,54 @@ def to_utc(local_datetime: datetime, tz_name: str) -> datetime:
     return local_datetime.replace(tzinfo=ZoneInfo(tz_name), fold=0).astimezone(UTC)
 
 
+def _offset_label(offset) -> str:
+    total = int(offset.total_seconds())
+    sign = "+" if total >= 0 else "-"
+    total = abs(total)
+    return f"UTC{sign}{total // 3600:02d}:{total % 3600 // 60:02d}"
+
+
+def local_time_anomaly(local_datetime: datetime, tz_name: str) -> str | None:
+    """Whether this wall-clock reading is impossible, or happened twice.
+
+    `to_utc` resolves both rather than refusing, because birth records really
+    do contain times that a clock never showed. But resolving silently is the
+    failure this engine exists to avoid: the chart comes out confident and up
+    to an hour wrong, which is fifteen degrees of ascendant. So the caller
+    gets told, and the chart carries the warning.
+
+    Both tests are the idioms PEP 495 defines for the purpose.
+    """
+    zone = ZoneInfo(tz_name)
+
+    # Nonexistent first. At a spring-forward gap the two folds *also* report
+    # different offsets, so testing for ambiguity first would misreport every
+    # skipped hour as a repeated one.
+    aware = local_datetime.replace(tzinfo=zone)
+    if aware.astimezone(UTC).astimezone(zone).replace(tzinfo=None) != local_datetime:
+        return (
+            f"{local_datetime:%Y-%m-%d %H:%M} never happened in {tz_name} — the "
+            f"clocks went forward over that hour. The chart resolves it anyway, "
+            f"but the recorded time cannot be what the clock read, so treat the "
+            f"birth time as uncertain by about an hour."
+        )
+
+    # Ambiguous: the same wall clock maps to two offsets, because the hour was
+    # repeated when the clocks went back.
+    first = local_datetime.replace(tzinfo=zone, fold=0).utcoffset()
+    second = local_datetime.replace(tzinfo=zone, fold=1).utcoffset()
+    if first != second:
+        return (
+            f"{local_datetime:%Y-%m-%d %H:%M} occurred twice in {tz_name} — the "
+            f"clocks went back, so this reading is one hour ambiguous. The chart "
+            f"uses the first occurrence ({_offset_label(first)}); the second is "
+            f"{_offset_label(second)}. If the birth was the later one, the "
+            f"ascendant moves about fifteen degrees."
+        )
+
+    return None
+
+
 def julian_day(local_datetime: datetime, tz_name: str) -> float:
     """Julian Day (UT) for a local birth moment."""
     utc = to_utc(local_datetime, tz_name)
@@ -104,6 +172,29 @@ class RawPosition:
 
 def planet_positions(jd: float) -> dict[str, RawPosition]:
     """Sidereal longitude and speed for all nine grahas.
+
+    **Geocentric.** Positions are as seen from the centre of the Earth, which
+    is what AstroSage, AstroTalk and effectively every other Vedic
+    implementation publishes.
+
+    This was briefly topocentric — corrected for the observer's own position,
+    which moves the apparent Moon by up to 57 arcminutes. It looked right on
+    one hand-cast kundali and was wrong. Measured across three of them the two
+    conventions score 16/27 and 17/27: parallax fixes one chart and breaks
+    another, because it is not a constant. It ran +53', +54' and **-36'** on
+    the three, changing sign.
+
+    What those charts actually show is their own Moon running a steady +10 to
+    +20 arcminutes ahead of a modern ephemeris — a traditional almanac's small
+    systematic bias, not a coordinate convention. That is not something to
+    reproduce: it would mean shipping a Moon we know to be wrong in order to
+    agree with an almanac that is also wrong, and it would be fitted to three
+    data points.
+
+    The consequence is honest and unavoidable: on a chart whose Moon sits
+    within ~20 arcminutes of a nakshatra boundary, we and a traditional
+    panchanga will name different nakshatras. `Panchang` carries no warning for
+    that yet; it should.
 
     Ketu is not computed: it is definitionally 180 degrees from Rahu and shares
     its speed. Computing it separately invites the two to disagree.
@@ -191,3 +282,30 @@ def _from_julian_day(jd: float) -> datetime:
 class EphemerisError(RuntimeError):
     """swisseph returned an error. Never swallow this — a wrong chart that looks
     right is worse than no chart."""
+
+
+def luminaries(jd: float, siddhanta: str) -> dict[str, RawPosition]:
+    """The Sun and Moon by the chosen system.
+
+    Only these two differ in practice. The tithi, nakshatra, yoga, karana, the
+    vimshottari dasha and the whole avakhada are functions of the Sun and Moon
+    alone, and a Surya Siddhanta Mars is a degree out — worse than the modern
+    one, and never enough to change a rashi. So the star-planets stay drik in
+    both modes and only these are switched.
+    """
+    if siddhanta not in SIDDHANTA_NAMES:
+        raise ValueError(
+            f"unknown siddhanta {siddhanta!r}; expected one of {sorted(SIDDHANTA_NAMES)}"
+        )
+    if siddhanta == "drik":
+        return {}
+    return {
+        "Sun": RawPosition(
+            longitude=surya.sun_longitude(jd),
+            speed=surya.daily_motion(jd, surya.sun_longitude),
+        ),
+        "Moon": RawPosition(
+            longitude=surya.moon_longitude(jd),
+            speed=surya.daily_motion(jd, surya.moon_longitude),
+        ),
+    }

@@ -189,6 +189,7 @@ export function LiveModeWorkspace() {
     longitude: 83.05,
     place_label: "Kapilbastu, Nepal",
     time_accuracy: "exact",
+    siddhanta: "surya",
   });
 
   const [activeChart, setActiveChart] = useState<Chart | null>(null);
