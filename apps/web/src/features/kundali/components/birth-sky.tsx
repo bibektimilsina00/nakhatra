@@ -67,6 +67,7 @@ export function BirthSky() {
 
   return (
     <AppShell
+      guest
       sidebar={false}
       bar={
         <div className="flex min-w-0 items-center gap-3">

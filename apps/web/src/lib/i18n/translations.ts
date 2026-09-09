@@ -334,6 +334,7 @@ export interface TranslationCatalog {
   dashLoadFailed: string;
   dashSignedInAs: string;
   dashSignOut: string;
+  dashSignIn: string;
   dashNavHome: string;
   dashNavNew: string;
   dashNavReading: string;
@@ -801,6 +802,7 @@ export const translations: Record<Language, TranslationCatalog> = {
     dashLoadFailed: "Could not open that chart. Please try again.",
     dashSignedInAs: "Signed in as",
     dashSignOut: "Sign out",
+    dashSignIn: "Sign in",
     dashNavHome: "Home",
     dashNavNew: "New kundali",
     dashNavReading: "Reading",
@@ -1267,6 +1269,7 @@ export const translations: Record<Language, TranslationCatalog> = {
     dashLoadFailed: "त्यो कुण्डली खोल्न सकिएन। फेरि प्रयास गर्नुहोस्।",
     dashSignedInAs: "साइन इन:",
     dashSignOut: "साइन आउट",
+    dashSignIn: "साइन इन",
     dashNavHome: "गृह",
     dashNavNew: "नयाँ कुण्डली",
     dashNavReading: "राशिफल",
@@ -1735,6 +1738,7 @@ export const translations: Record<Language, TranslationCatalog> = {
     dashLoadFailed: "वह कुंडली नहीं खुल सकी। कृपया फिर प्रयास करें।",
     dashSignedInAs: "साइन इन:",
     dashSignOut: "साइन आउट",
+    dashSignIn: "साइन इन",
     dashNavHome: "होम",
     dashNavNew: "नई कुंडली",
     dashNavReading: "रीडिंग",

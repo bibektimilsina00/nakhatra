@@ -61,7 +61,7 @@ export function CreateKundaliSection() {
         </div>
 
         <div className="lg:pt-2">
-          <KundaliPanel />
+          <KundaliPanel redirectOnCreate />
         </div>
       </div>
     </section>

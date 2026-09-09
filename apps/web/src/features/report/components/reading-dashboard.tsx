@@ -419,6 +419,7 @@ export function ReadingDashboard() {
 
   return (
     <AppShell
+      guest
       sidebar={false}
       // One bar, not two: the way back, whose chart this is, and which chart —
       // in the app bar itself, where the search would otherwise sit.

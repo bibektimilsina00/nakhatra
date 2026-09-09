@@ -1,7 +1,10 @@
 "use client";
 
 import { Suspense } from "react";
+import { useRouter } from "next/navigation";
 
+import { GeneratingScreen } from "@/features/kundali/components/generating-screen";
+import { saveKundaliToStorage } from "@/features/kundali/store/kundali-store";
 import { useCreateKundali } from "@/features/kundali/hooks/use-create-kundali";
 import { toRequestBody } from "@/features/kundali/api/kundali.api";
 import { BirthDetailsForm } from "@/features/kundali/components/birth-details-form";
@@ -12,10 +15,30 @@ import { ApiError, NetworkError } from "@/lib/api/errors";
  * The feature's composition point. `app/` only routes and lays out; it does not
  * know this exists beyond rendering it (docs/architecture.md §8).
  */
-export function KundaliPanel() {
+export function KundaliPanel({ redirectOnCreate = false }: {
+  /**
+   * The landing page sets this: a fresh kundali belongs on the reading page,
+   * shown the way a member sees it, not inlined into the marketing scroll.
+   * The chart is parked in the session store the reading page reads from.
+   */
+  redirectOnCreate?: boolean;
+}) {
   const mutation = useCreateKundali();
+  const router = useRouter();
 
   if (mutation.isSuccess && mutation.variables) {
+    if (redirectOnCreate) {
+      const birth = mutation.variables;
+      const chart = mutation.data;
+      return (
+        <GeneratingScreen
+          onComplete={() => {
+            saveKundaliToStorage(birth, chart);
+            router.push("/reading");
+          }}
+        />
+      );
+    }
     return (
       <ChartView
         chart={mutation.data}

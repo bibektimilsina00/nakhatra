@@ -28,6 +28,7 @@ export function AppShell({
   sidebar: withSidebar = true,
   bar,
   fill = false,
+  guest = false,
 }: {
   children: React.ReactNode;
   /** Pages that use the top-bar search pass a controlled value; others omit it. */
@@ -50,6 +51,13 @@ export function AppShell({
    * tall and the panes inside it the only things that scroll.
    */
   fill?: boolean;
+  /**
+   * Let a signed-out visitor stand here. The reading and sky pages set it:
+   * someone who cast a kundali from the landing page sees their chart like
+   * any member would, with a sign-in button where the account sits. Every
+   * other page keeps the bounce to /login.
+   */
+  guest?: boolean;
 }) {
   const { user, isSignedIn } = useSession();
   const hydrated = useAuthHydrated();
@@ -66,10 +74,12 @@ export function AppShell({
   // Gated on `hydrated`, or a signed-in visitor is bounced to /login on the
   // first render — before the persisted session has been read back.
   useEffect(() => {
-    if (hydrated && !isSignedIn) router.replace("/login");
-  }, [hydrated, isSignedIn, router]);
+    if (hydrated && !isSignedIn && !guest) router.replace("/login");
+  }, [hydrated, isSignedIn, guest, router]);
 
-  if (!hydrated || !isSignedIn || !user) return null;
+  if (!hydrated) return null;
+  if (!isSignedIn && !guest) return null;
+  if (isSignedIn && !user) return null;
 
   // Presence is not built yet (docs/astrologer-marketplace.md §4.4), and the
   // sidebar's "N online" came from the sample data. Zero until there is a
@@ -121,7 +131,7 @@ export function AppShell({
             whatever the top bar leaves rather than guessing its height. */}
         <div className={`flex min-w-0 flex-1 flex-col ${fill ? "h-dvh min-h-0" : "min-h-dvh"}`}>
           <AppNav
-            user={user}
+            user={user ?? null}
             query={search ? search.query : ownQuery}
             onQueryChange={search ? search.onQueryChange : setOwnQuery}
             onOpenMenu={withSidebar ? () => setDrawerOpen(true) : undefined}

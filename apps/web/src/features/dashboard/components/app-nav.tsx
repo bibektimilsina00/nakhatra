@@ -43,7 +43,8 @@ export function AppNav({
   onOpenMenu,
   leading,
 }: {
-  user: UserProfile;
+  /** Null renders the guest bar: a sign-in button where the account sits. */
+  user: UserProfile | null;
   query: string;
   onQueryChange: (value: string) => void;
   /** Omitted on sidebar-less pages — there is no drawer for it to open. */
@@ -147,6 +148,8 @@ export function AppNav({
             <LanguageMenu />
           </span>
 
+          {user ? (
+            <>
           {/* Notifications */}
           <div ref={bell} className="relative">
             <button
@@ -324,6 +327,15 @@ export function AppNav({
               </div>
             )}
           </div>
+            </>
+          ) : (
+            <Link
+              href="/login"
+              className="inline-flex items-center rounded-[8px] border border-brd px-5 py-1.5 text-[13.5px] text-mut transition-colors hover:border-brd2 hover:text-fg"
+            >
+              {t.dashSignIn}
+            </Link>
+          )}
         </div>
       </div>
     </header>
