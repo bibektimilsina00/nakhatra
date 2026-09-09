@@ -614,33 +614,6 @@ export function ReadingDashboard() {
                 </p>
               )}
 
-              {/* Chart Action Footer (Modern Icon Bar for Download & Share) */}
-              <div className="flex items-center justify-between border-t border-white/10 pt-3.5 mt-3">
-                <span className="text-[11px] font-bold text-[#94A3B8] uppercase tracking-wider">
-                  Kundali Actions
-                </span>
-
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={handleDownloadPdf}
-                    disabled={isExportingPdf}
-                    title={isExportingPdf ? t.pdfGenerating : t.downloadPdf}
-                    aria-label={t.downloadPdf}
-                    className="group relative flex size-9 items-center justify-center rounded-[8px] border border-[#E5A93C]/40 bg-[#090A10] text-[#E5A93C] transition-all duration-200 hover:border-[#E5A93C] hover:bg-[#E5A93C] hover:text-[#090A10] hover:shadow-md hover:shadow-[#E5A93C]/20 active:scale-95 disabled:opacity-50 cursor-pointer"
-                  >
-                    <Download className="size-4 transition-transform duration-200 group-hover:scale-110" />
-                  </button>
-
-                  <button
-                    onClick={handleSharePage}
-                    title={t.shareReading}
-                    aria-label={t.shareReading}
-                    className="group relative flex size-9 items-center justify-center rounded-[8px] border border-white/10 bg-[#090A10] text-[#CBD5E1] transition-all duration-200 hover:border-[#E5A93C] hover:bg-[#161B2B] hover:text-[#F3C766] hover:shadow-md active:scale-95 cursor-pointer"
-                  >
-                    <Share2 className="size-4 transition-transform duration-200 group-hover:scale-110" />
-                  </button>
-                </div>
-              </div>
             </div>
 
             {/* 2. Avakhada Chakra Panel */}
