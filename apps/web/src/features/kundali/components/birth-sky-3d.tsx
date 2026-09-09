@@ -45,15 +45,15 @@ const SIGNS_EN = [
 
 /** Display shells, innermost out. Not to scale — to be readable. */
 const SHELL: Record<string, { r: number; size: number }> = {
-  Moon: { r: 46, size: 4.2 },
-  Rahu: { r: 58, size: 2.6 },
-  Ketu: { r: 58, size: 2.6 },
-  Mercury: { r: 74, size: 3.0 },
-  Venus: { r: 90, size: 4.4 },
-  Sun: { r: 108, size: 9.5 },
-  Mars: { r: 126, size: 3.6 },
-  Jupiter: { r: 150, size: 7.5 },
-  Saturn: { r: 174, size: 6.5 },
+  Moon: { r: 46, size: 5.4 },
+  Rahu: { r: 58, size: 3.0 },
+  Ketu: { r: 58, size: 3.0 },
+  Mercury: { r: 74, size: 3.8 },
+  Venus: { r: 90, size: 5.2 },
+  Sun: { r: 108, size: 11 },
+  Mars: { r: 126, size: 4.4 },
+  Jupiter: { r: 150, size: 9 },
+  Saturn: { r: 174, size: 7.8 },
 };
 
 const RING_IN = 196;
@@ -129,7 +129,8 @@ export function BirthSky3D({
     const lagnaLon = chart.lagna_sign_index * 30 + chart.lagna_degree;
 
     /* ── light comes from where the Sun actually stood ───────────── */
-    scene.add(new THREE.AmbientLight(0x222233, 5));
+    scene.add(new THREE.AmbientLight(0x8899bb, 2.2));
+    scene.add(new THREE.HemisphereLight(0xaabbdd, 0x221a10, 1.4));
     const sunLight = new THREE.PointLight(0xfdffd3, 2600, 900, 1.6);
     sunLight.position.copy(at(lonOf("Sun"), SHELL.Sun.r));
     scene.add(sunLight);
@@ -157,15 +158,15 @@ export function BirthSky3D({
         void main() {
           float intensity = max(dot(vNormal, vSunDirection), 0.0);
           vec4 dayColor = texture2D(dayTexture, vUv);
-          vec4 nightColor = texture2D(nightTexture, vUv) * 0.25;
+          vec4 nightColor = texture2D(nightTexture, vUv) * 0.55;
           gl_FragColor = mix(nightColor, dayColor, intensity);
         }`,
     });
-    const earth = new THREE.Mesh(new THREE.SphereGeometry(8, 48, 32), earthMat);
+    const earth = new THREE.Mesh(new THREE.SphereGeometry(10, 48, 32), earthMat);
     earth.rotation.z = (23.44 * Math.PI) / 180;
     scene.add(earth);
     const earthAtmo = new THREE.Mesh(
-      new THREE.SphereGeometry(8.15, 48, 32),
+      new THREE.SphereGeometry(10.18, 48, 32),
       new THREE.MeshPhongMaterial({
         map: T("earth_atmosphere.jpg"), transparent: true, opacity: 0.4,
         depthTest: true, depthWrite: false,
@@ -174,7 +175,7 @@ export function BirthSky3D({
     earth.add(earthAtmo);
 
     /* ── the nine grahas, each at its engine longitude ───────────── */
-    type GrahaMesh = { name: string; mesh: THREE.Mesh; r: number; lon: number };
+    type GrahaMesh = { name: string; mesh: THREE.Mesh; r: number; lon: number; label: THREE.Sprite };
     const grahas: GrahaMesh[] = [];
 
     const material = (name: string): THREE.Material => {
@@ -217,7 +218,6 @@ export function BirthSky3D({
       );
       mesh.position.copy(at(lon, shell.r));
       scene.add(mesh);
-      grahas.push({ name: p.name, mesh, r: shell.size, lon });
 
       if (p.name === "Saturn") {
         const ring = new THREE.Mesh(
@@ -229,23 +229,26 @@ export function BirthSky3D({
         scene.add(ring);
       }
 
-      // orbit band, faint — a display shell, not an orbit claim
-      const band = new THREE.LineLoop(
-        new THREE.BufferGeometry().setFromPoints(
-          new THREE.EllipseCurve(0, 0, shell.r, shell.r, 0, 2 * Math.PI, false, 0).getPoints(120),
-        ),
-        new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.035 }),
-      );
-      band.rotation.x = Math.PI / 2;
-      scene.add(band);
+      // one faint gold shell each (the nodes share the lunar band)
+      if (p.name !== "Ketu") {
+        const band = new THREE.LineLoop(
+          new THREE.BufferGeometry().setFromPoints(
+            new THREE.EllipseCurve(0, 0, shell.r, shell.r, 0, 2 * Math.PI, false, 0).getPoints(140),
+          ),
+          new THREE.LineBasicMaterial({ color: 0xe5a93c, transparent: true, opacity: 0.05 }),
+        );
+        band.rotation.x = Math.PI / 2;
+        scene.add(band);
+      }
 
-      // label sprite over the sphere
+      // a name pill floating over the sphere, constant screen size
       const label = makeLabel(
         getPlanetAbbrev(p.name, language) + (p.retrograde ? " ℞" : ""),
-        PLANET_COLORS[p.name] ?? "#F8FAFC", 40,
+        PLANET_COLORS[p.name] ?? "#F8FAFC", 42, { pill: true },
       );
-      label.position.copy(at(lon, shell.r, shell.size + 6));
+      label.position.copy(at(lon, shell.r, shell.size + 7));
       scene.add(label);
+      grahas.push({ name: p.name, mesh, r: shell.size, lon, label });
     }
 
     /* ── the zodiac ring ─────────────────────────────────────────── */
@@ -260,27 +263,67 @@ export function BirthSky3D({
       flat(c);
       return c;
     };
-    circle(RING_IN, 0.35);
-    circle(RING_OUT, 0.35);
+    circle(RING_IN, 0.4);
+    circle(RING_OUT, 0.4);
+
+    // a soft glow across the ecliptic plane, so the wheel sits on light
+    {
+      const cnv = document.createElement("canvas");
+      cnv.width = cnv.height = 512;
+      const g = cnv.getContext("2d")!;
+      const grad = g.createRadialGradient(256, 256, 40, 256, 256, 256);
+      grad.addColorStop(0, "rgba(122,156,198,0)");
+      grad.addColorStop(0.72, "rgba(229,169,60,0)");
+      grad.addColorStop(0.88, "rgba(229,169,60,0.10)");
+      grad.addColorStop(1, "rgba(229,169,60,0)");
+      g.fillStyle = grad;
+      g.fillRect(0, 0, 512, 512);
+      const glow = new THREE.Mesh(
+        new THREE.CircleGeometry(RING_OUT + 4, 96),
+        new THREE.MeshBasicMaterial({
+          map: new THREE.CanvasTexture(cnv), transparent: true,
+          depthWrite: false, side: THREE.DoubleSide,
+        }),
+      );
+      glow.rotation.x = -Math.PI / 2;
+      glow.position.y = -0.5;
+      scene.add(glow);
+    }
 
     for (let i = 0; i < 12; i++) {
+      // alternating sector shading, as a printed wheel alternates its signs
+      const isLagnaSign = i === chart.lagna_sign_index;
+      const start = (i * 30 * Math.PI) / 180;
+      const sector = new THREE.Mesh(
+        new THREE.RingGeometry(RING_IN, RING_OUT, 24, 1, start, Math.PI / 6),
+        new THREE.MeshBasicMaterial({
+          color: 0xe5a93c,
+          transparent: true,
+          opacity: isLagnaSign ? 0.13 : i % 2 ? 0.02 : 0.045,
+          side: THREE.DoubleSide,
+          depthWrite: false,
+        }),
+      );
+      sector.rotation.x = -Math.PI / 2;
+      scene.add(sector);
+
       const spoke = new THREE.Line(
         new THREE.BufferGeometry().setFromPoints([at(i * 30, RING_IN), at(i * 30, RING_OUT)]),
-        new THREE.LineBasicMaterial({ color: 0xe5a93c, transparent: true, opacity: 0.35 }),
+        new THREE.LineBasicMaterial({ color: 0xe5a93c, transparent: true, opacity: 0.3 }),
       );
       scene.add(spoke);
-      const isLagnaSign = i === chart.lagna_sign_index;
+
       const label = makeLabel(
         getSignName(SIGNS_EN[i], language),
-        isLagnaSign ? "#F3C766" : "#C9D4E6", 34,
+        isLagnaSign ? "#F3C766" : "#E5C77A", 44,
       );
-      label.position.copy(at(i * 30 + 15, (RING_IN + RING_OUT) / 2, 3));
+      label.position.copy(at(i * 30 + 15, (RING_IN + RING_OUT) / 2, 4));
       scene.add(label);
 
       // whole-sign house number just inside the ring
       const houseNo = ((i - chart.lagna_sign_index + 12) % 12) + 1;
-      const num = makeLabel(toLocalizedDigit(houseNo, language), "#6E7A8C", 26);
-      num.position.copy(at(i * 30 + 15, RING_IN - 12, 1));
+      const num = makeLabel(toLocalizedDigit(houseNo, language), "#8a7a55", 30);
+      num.position.copy(at(i * 30 + 15, RING_IN - 14, 1));
       scene.add(num);
     }
 
@@ -308,12 +351,12 @@ export function BirthSky3D({
 
     /* ── the lagna beam ──────────────────────────────────────────── */
     const beam = new THREE.Line(
-      new THREE.BufferGeometry().setFromPoints([at(lagnaLon, 14), at(lagnaLon, RING_OUT + 6)]),
+      new THREE.BufferGeometry().setFromPoints([at(lagnaLon, 14), at(lagnaLon, RING_OUT + 24)]),
       new THREE.LineBasicMaterial({ color: 0xf3c766, transparent: true, opacity: 0.9 }),
     );
     scene.add(beam);
     const ascLabel = makeLabel(language === "en" ? "Asc" : "लग्न", "#F3C766", 36);
-    ascLabel.position.copy(at(lagnaLon, RING_OUT + 18, 2));
+    ascLabel.position.copy(at(lagnaLon, RING_OUT + 30, 6));
     scene.add(ascLabel);
 
     /* ── selection halo + aspect lines, driven from refs per frame ── */
@@ -342,8 +385,10 @@ export function BirthSky3D({
         const line = new THREE.Line(
           geo,
           new THREE.LineDashedMaterial({
-            color: new THREE.Color(PLANET_COLORS[name] ?? "#E5A93C"),
-            transparent: true, opacity: 0.5, dashSize: 4, gapSize: 3,
+            color: new THREE.Color(
+              name === "Moon" ? "#F3C766" : PLANET_COLORS[name] ?? "#E5A93C",
+            ),
+            transparent: true, opacity: 0.38, dashSize: 4, gapSize: 4,
           }),
         );
         line.computeLineDistances();
@@ -357,8 +402,8 @@ export function BirthSky3D({
     composer.addPass(new UnrealBloomPass(new THREE.Vector2(1, 1), 0.7, 0.4, 0.85));
 
     /* ── drag-orbit camera, as on the landing page ───────────────── */
-    const R_CAM = 380;
-    let az = Math.PI / 3.2, pol = 1.05, vAz = 0, vPol = 0;
+    const R_CAM = 460;
+    let az = Math.PI / 3.2, pol = 0.92, vAz = 0, vPol = 0;
     let dragging = false, dragged = false, lastX = 0, lastY = 0;
     const clampPol = (a: number) => Math.min(Math.PI - 0.2, Math.max(0.2, a));
 
@@ -461,6 +506,7 @@ export function BirthSky3D({
         rebuildAspects(aspRef.current ? sel : null);
       }
       const g = sel ? grahas.find((x) => x.name === sel) : null;
+      for (const x of grahas) x.label.visible = x.name !== sel;
       halo.visible = !!g;
       if (g) {
         halo.position.copy(g.mesh.position);
@@ -514,27 +560,50 @@ export function BirthSky3D({
   );
 }
 
-/** A text sprite from a canvas — Devanagari renders fine through fillText. */
-function makeLabel(text: string, color: string, px: number): THREE.Sprite {
+/** A text sprite from a canvas — Devanagari renders fine through fillText.
+ *  sizeAttenuation is off, so every label keeps a constant on-screen size no
+ *  matter where the camera orbits; `pill` bakes a dark rounded backing for
+ *  the planet tags. */
+function makeLabel(
+  text: string, color: string, px: number,
+  opts: { pill?: boolean } = {},
+): THREE.Sprite {
   const canvas = document.createElement("canvas");
   const ctx = canvas.getContext("2d")!;
   const font = `600 ${px}px Georgia, 'Noto Serif Devanagari', serif`;
   ctx.font = font;
-  const w = Math.ceil(ctx.measureText(text).width) + 12;
-  const h = px + 14;
+  const tw = Math.ceil(ctx.measureText(text).width);
+  const padX = opts.pill ? 16 : 6;
+  const padY = opts.pill ? 10 : 7;
+  const w = tw + padX * 2;
+  const h = px + padY * 2;
   canvas.width = w * 2;
   canvas.height = h * 2;
   ctx.scale(2, 2);
+  if (opts.pill) {
+    ctx.fillStyle = "rgba(9,10,16,0.78)";
+    ctx.strokeStyle = "rgba(229,169,60,0.35)";
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.roundRect(1, 1, w - 2, h - 2, h / 2);
+    ctx.fill();
+    ctx.stroke();
+  }
   ctx.font = font;
   ctx.fillStyle = color;
   ctx.textBaseline = "middle";
-  ctx.fillText(text, 6, h / 2);
+  ctx.fillText(text, padX, h / 2 + 1);
   const texture = new THREE.CanvasTexture(canvas);
   texture.colorSpace = THREE.SRGBColorSpace;
   const sprite = new THREE.Sprite(
-    new THREE.SpriteMaterial({ map: texture, transparent: true, depthWrite: false }),
+    new THREE.SpriteMaterial({
+      map: texture, transparent: true, depthWrite: false, sizeAttenuation: false,
+    }),
   );
-  const scale = 0.24;
-  sprite.scale.set(w * scale, h * scale, 1);
+  // With sizeAttenuation off the scale is in NDC-ish units; this constant
+  // lands a 40px glyph at roughly 13px on screen, tuned by screenshot.
+  const k = 0.00032;
+  sprite.scale.set(w * k, h * k, 1);
+  sprite.renderOrder = 10;
   return sprite;
 }
