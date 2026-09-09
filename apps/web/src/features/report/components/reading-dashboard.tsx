@@ -1261,121 +1261,136 @@ export function ReadingDashboard() {
 
       {/* The dasha, told plainly — the panel's chakra tables are for reading
           against a guru's; this is for the visitor who has never met one.
-          Themed like every other surface rather than pinned to the patro's
-          hexes, which rendered as a grey slab in the dark column. */}
+          Dressed as the kundali is: one sheet of parchment, red rules, the
+          guru's two inks, in either theme. */}
       {running.maha && (
-        <div className="mx-auto w-full max-w-5xl space-y-8 px-4 pb-16">
-          <div className="border-b border-brd pb-3">
-            <h2 className="flex items-center gap-2 font-serif text-lg font-bold text-fg">
-              <Clock className="size-5 text-acc" /> {t.dashaOverviewTitle}
-            </h2>
-          </div>
-
-          <div className="rounded-[8px] border border-brd bg-panel p-5">
-            <h3 className="mb-2 font-serif text-sm font-bold text-acc">{t.dashaOverviewWhatIs}</h3>
-            <p className="text-sm leading-[1.75] text-mid">{t.dashaOverviewWhatIsDesc}</p>
-          </div>
-
-          {/* What is running now: the mahadasha carries the accent, the
-              antardasha sits inside it as the smaller of the two. */}
-          <div>
-            <h3 className="mb-3 font-serif text-sm font-bold text-fg">{t.dashaOverviewYourCurrent}</h3>
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <PeriodCard
-                label={t.dashaOverviewMainPeriod}
-                lord={getPlanetName(running.maha.lord, language)}
-                start={running.maha.start}
-                end={running.maha.end}
-                span={`~${Math.round(
-                  (new Date(running.maha.end).getTime() - new Date(running.maha.start).getTime()) /
-                    (365.25 * 24 * 3600 * 1000),
-                )} ${t.dashaOverviewYears}`}
-                accent
-              />
-              {running.antar ? (
-                <PeriodCard
-                  label={t.dashaOverviewSubPeriod}
-                  lord={getPlanetName(running.antar.lord, language)}
-                  start={running.antar.start}
-                  end={running.antar.end}
-                  span={(() => {
-                    const months =
-                      (new Date(running.antar.end).getTime() -
-                        new Date(running.antar.start).getTime()) /
-                      (30.44 * 24 * 3600 * 1000);
-                    return months >= 12
-                      ? `~${Math.round(months / 12)} ${t.dashaOverviewYears}`
-                      : `~${Math.round(months)} ${
-                          language === "ne" ? "महिना" : language === "hi" ? "महीने" : "months"
-                        }`;
-                  })()}
-                />
-              ) : (
-                <div className="flex items-center rounded-[8px] border border-brd bg-panel p-5">
-                  <p className="text-sm italic text-mut">{t.dashaOverviewNoPeriod}</p>
-                </div>
-              )}
+        <div className="mx-auto w-full max-w-[1600px] px-6 pb-16 lg:px-10">
+          <div className="space-y-7 rounded-[8px] border-2 border-double border-red-800/50 bg-[#f7efdc] p-6 sm:p-8">
+            <div className="border-b-2 border-red-800/30 pb-3">
+              <h2 className="flex items-center gap-2 font-serif text-lg font-bold text-[#26221b]">
+                <Clock className="size-5 text-[#9B1C1C]" /> {t.dashaOverviewTitle}
+              </h2>
             </div>
-          </div>
 
-          {/* The whole 120 years, as a list that can be read down. */}
-          {activeChart.dasha?.periods && activeChart.dasha.periods.length > 0 && (
-            <div>
-              <h3 className="mb-3 font-serif text-sm font-bold text-fg">
-                {language === "ne"
-                  ? "तपाईंको जीवनका सबै महादशा अवधिहरू"
-                  : language === "hi"
-                    ? "आपके जीवन की सभी महादशा अवधियाँ"
-                    : "All Mahadasha Periods in Your Life"}
-              </h3>
-              <div className="overflow-hidden rounded-[8px] border border-brd bg-panel">
-                {activeChart.dasha.periods.map((p, idx) => {
-                  const isNow =
-                    new Date(p.start).getTime() <= todayMs && todayMs < new Date(p.end).getTime();
-                  const past = new Date(p.end).getTime() < todayMs;
-                  const years =
-                    (new Date(p.end).getTime() - new Date(p.start).getTime()) /
-                    (365.25 * 24 * 3600 * 1000);
-                  return (
-                    <div
-                      key={`${p.lord}-${p.start}`}
-                      className={`flex flex-wrap items-center gap-x-4 gap-y-1 px-4 py-3 sm:px-5 ${
-                        idx !== 0 ? "border-t border-brd" : ""
-                      } ${isNow ? "border-l-2 border-l-acc bg-acc/[0.08]" : ""}`}
-                    >
-                      <span
-                        className={`flex min-w-0 flex-1 items-center gap-2.5 font-serif text-sm font-bold ${
-                          isNow ? "text-fg" : past ? "text-dim" : "text-mid"
-                        }`}
-                      >
-                        {isNow && <span className="size-1.5 shrink-0 rounded-full bg-acc" />}
-                        <span className="truncate">{getPlanetName(p.lord, language)}</span>
-                        {isNow && (
-                          <span className="shrink-0 rounded-[4px] border border-acc/40 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-acc">
-                            {language === "ne" ? "हाल चालू" : language === "hi" ? "वर्तमान" : "Now"}
-                          </span>
-                        )}
-                      </span>
-                      <span
-                        className={`shrink-0 font-mono text-[11px] tabular-nums ${
-                          past ? "text-dim" : "text-mut"
-                        }`}
-                      >
-                        {p.start} → {p.end}
-                      </span>
-                      <span
-                        className={`w-[74px] shrink-0 text-right text-xs font-semibold tabular-nums ${
-                          isNow ? "text-acc" : past ? "text-dim" : "text-mid"
-                        }`}
-                      >
-                        ~{Math.round(years)} {t.dashaOverviewYears}
-                      </span>
+            {/* Side by side on wide screens: the explainer earns its column,
+                and the running pair sits beside it instead of below. */}
+            <div className="grid gap-6 lg:grid-cols-2">
+              <div className="rounded-[8px] border border-red-800/25 bg-[#efe3c8]/60 p-5">
+                <h3 className="mb-2 font-serif text-sm font-bold text-[#9B1C1C]">
+                  {t.dashaOverviewWhatIs}
+                </h3>
+                <p className="text-sm leading-[1.75] text-[#4a3a22]">
+                  {t.dashaOverviewWhatIsDesc}
+                </p>
+              </div>
+
+              {/* What is running now: the mahadasha carries the ink, the
+                  antardasha sits beside it as the smaller of the two. */}
+              <div>
+                <h3 className="mb-3 font-serif text-sm font-bold text-[#26221b]">
+                  {t.dashaOverviewYourCurrent}
+                </h3>
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  <PeriodCard
+                    label={t.dashaOverviewMainPeriod}
+                    lord={getPlanetName(running.maha.lord, language)}
+                    start={running.maha.start}
+                    end={running.maha.end}
+                    span={`~${Math.round(
+                      (new Date(running.maha.end).getTime() -
+                        new Date(running.maha.start).getTime()) /
+                        (365.25 * 24 * 3600 * 1000),
+                    )} ${t.dashaOverviewYears}`}
+                    accent
+                  />
+                  {running.antar ? (
+                    <PeriodCard
+                      label={t.dashaOverviewSubPeriod}
+                      lord={getPlanetName(running.antar.lord, language)}
+                      start={running.antar.start}
+                      end={running.antar.end}
+                      span={(() => {
+                        const months =
+                          (new Date(running.antar.end).getTime() -
+                            new Date(running.antar.start).getTime()) /
+                          (30.44 * 24 * 3600 * 1000);
+                        return months >= 12
+                          ? `~${Math.round(months / 12)} ${t.dashaOverviewYears}`
+                          : `~${Math.round(months)} ${
+                              language === "ne" ? "महिना" : language === "hi" ? "महीने" : "months"
+                            }`;
+                      })()}
+                    />
+                  ) : (
+                    <div className="flex items-center rounded-[8px] border border-red-800/25 bg-[#efe3c8]/60 p-5">
+                      <p className="text-sm italic text-[#7a6033]">{t.dashaOverviewNoPeriod}</p>
                     </div>
-                  );
-                })}
+                  )}
+                </div>
               </div>
             </div>
-          )}
+
+            {/* The whole 120 years, as a list that can be read down. */}
+            {activeChart.dasha?.periods && activeChart.dasha.periods.length > 0 && (
+              <div>
+                <h3 className="mb-3 font-serif text-sm font-bold text-[#26221b]">
+                  {language === "ne"
+                    ? "तपाईंको जीवनका सबै महादशा अवधिहरू"
+                    : language === "hi"
+                      ? "आपके जीवन की सभी महादशा अवधियाँ"
+                      : "All Mahadasha Periods in Your Life"}
+                </h3>
+                <div className="overflow-hidden rounded-[8px] border border-red-800/25">
+                  {activeChart.dasha.periods.map((p, idx) => {
+                    const isNow =
+                      new Date(p.start).getTime() <= todayMs && todayMs < new Date(p.end).getTime();
+                    const past = new Date(p.end).getTime() < todayMs;
+                    const years =
+                      (new Date(p.end).getTime() - new Date(p.start).getTime()) /
+                      (365.25 * 24 * 3600 * 1000);
+                    return (
+                      <div
+                        key={`${p.lord}-${p.start}`}
+                        className={`flex flex-wrap items-center gap-x-4 gap-y-1 px-4 py-3 sm:px-5 ${
+                          idx !== 0 ? "border-t border-red-800/15" : ""
+                        } ${isNow ? "border-l-2 border-l-[#9B1C1C] bg-[#efe3c8]" : "bg-[#fdf8ec]/40"}`}
+                      >
+                        <span
+                          className={`flex min-w-0 flex-1 items-center gap-2.5 font-serif text-sm font-bold ${
+                            isNow ? "text-[#9B1C1C]" : past ? "text-[#a38e63]" : "text-[#26221b]"
+                          }`}
+                        >
+                          {isNow && (
+                            <span className="size-1.5 shrink-0 rounded-full bg-[#9B1C1C]" />
+                          )}
+                          <span className="truncate">{getPlanetName(p.lord, language)}</span>
+                          {isNow && (
+                            <span className="shrink-0 rounded-[4px] border border-red-800/40 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-[#9B1C1C]">
+                              {language === "ne" ? "हाल चालू" : language === "hi" ? "वर्तमान" : "Now"}
+                            </span>
+                          )}
+                        </span>
+                        <span
+                          className={`shrink-0 font-mono text-[11px] tabular-nums ${
+                            past ? "text-[#a38e63]" : "text-[#7a6033]"
+                          }`}
+                        >
+                          {p.start} → {p.end}
+                        </span>
+                        <span
+                          className={`w-[76px] shrink-0 text-right text-xs font-semibold tabular-nums ${
+                            isNow ? "text-[#9B1C1C]" : past ? "text-[#a38e63]" : "text-[#4a3a22]"
+                          }`}
+                        >
+                          ~{Math.round(years)} {t.dashaOverviewYears}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       )}
 
@@ -1402,8 +1417,8 @@ export function ReadingDashboard() {
   );
 }
 
-/** One running period. The mahadasha takes the accent; the antardasha is the
- *  quieter of the pair, because it is the smaller span. */
+/** One running period, on the patro's paper: the mahadasha inked red
+ *  because it is the larger span, the antardasha quieter beside it. */
 function PeriodCard({
   label,
   lord,
@@ -1422,15 +1437,17 @@ function PeriodCard({
   return (
     <div
       className={`rounded-[8px] p-5 ${
-        accent ? "border-2 border-acc/50 bg-acc/[0.07]" : "border border-brd bg-panel"
+        accent
+          ? "border-2 border-red-800/50 bg-[#efe3c8]"
+          : "border border-red-800/25 bg-[#efe3c8]/60"
       }`}
     >
-      <p className="text-[10px] font-bold uppercase tracking-wider text-acc">{label}</p>
-      <p className="mt-1.5 font-serif text-2xl font-bold text-fg">{lord}</p>
-      <p className="mt-2 font-mono text-[11px] tabular-nums text-mut">
-        {start} <span className="text-dim">→</span> {end}
+      <p className="text-[10px] font-bold uppercase tracking-wider text-[#9B1C1C]">{label}</p>
+      <p className="mt-1.5 font-serif text-2xl font-bold text-[#26221b]">{lord}</p>
+      <p className="mt-2 font-mono text-[11px] tabular-nums text-[#7a6033]">
+        {start} <span className="text-[#a38e63]">→</span> {end}
       </p>
-      <p className="mt-1 text-xs font-semibold text-mid">{span}</p>
+      <p className="mt-1 text-xs font-semibold text-[#4a3a22]">{span}</p>
     </div>
   );
 }
