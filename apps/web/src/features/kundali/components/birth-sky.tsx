@@ -42,7 +42,7 @@ export function BirthSky() {
     () => (hydrated ? loadKundaliFromStorage() : null),
     [hydrated],
   );
-  const [selected, setSelected] = useState<string | null>("Moon");
+  const [selected, setSelected] = useState<string | null>(null);
   const [showNakshatras, setShowNakshatras] = useState(true);
   const [showAspects, setShowAspects] = useState(true);
 

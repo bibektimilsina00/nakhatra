@@ -412,11 +412,26 @@ export function BirthSky3D({
     composer.addPass(new RenderPass(scene, camera));
     composer.addPass(new UnrealBloomPass(new THREE.Vector2(1, 1), 0.42, 0.4, 0.85));
 
-    /* ── drag-orbit camera, as on the landing page ───────────────── */
-    const R_CAM = 460;
+    /* ── drag-orbit camera around a movable focus ─────────────────────
+       Why the landing page's planets look rich and a fixed wide shot does
+       not: there Jupiter fills real screen area; from a 460-unit overview
+       every graha here is a two-dozen-pixel dot, and no texture survives
+       that. So the wheel zooms, and selecting a graha flies the focus to it
+       until it fills the frame. */
+    const HOME_DIST = 440;
     let az = Math.PI / 3.2, pol = 0.92, vAz = 0, vPol = 0;
+    let dist = HOME_DIST, distTarget = HOME_DIST;
+    const focus = new THREE.Vector3(0, 0, 0);
+    const focusTarget = new THREE.Vector3(0, 0, 0);
     let dragging = false, dragged = false, lastX = 0, lastY = 0;
     const clampPol = (a: number) => Math.min(Math.PI - 0.2, Math.max(0.2, a));
+
+    const wheel = (e: WheelEvent) => {
+      e.preventDefault();
+      distTarget = Math.min(760, Math.max(34, distTarget * (1 + e.deltaY * 0.0012)));
+    };
+    canvas.addEventListener("wheel", wheel, { passive: false });
+    cleanup.push(() => canvas.removeEventListener("wheel", wheel));
 
     on(canvas, "pointerdown", (e) => {
       if (e.button !== 0) return;
@@ -468,6 +483,7 @@ export function BirthSky3D({
       if (dragged) return;
       const hit = pickAt(e.clientX, e.clientY);
       if (hit) onSelectRef.current(hit.name);
+      else if (selRef.current) onSelectRef.current(selRef.current); // toggle off
     });
 
     /* ── the chip that follows the selected graha ────────────────── */
@@ -492,6 +508,7 @@ export function BirthSky3D({
     }
 
     let raf = 0;
+    let lastSel: string | null = null;
     function animate() {
       raf = requestAnimationFrame(animate);
       resize();
@@ -506,19 +523,39 @@ export function BirthSky3D({
         az += vAz; pol = clampPol(pol + vPol);
         vAz *= 0.93; vPol *= 0.93;
       }
-      const hr = R_CAM * Math.sin(pol);
-      camera.position.set(hr * Math.sin(az), R_CAM * Math.cos(pol), hr * Math.cos(az));
-      camera.lookAt(0, 0, 0);
 
       // toggles + selection, from refs so React never rebuilds the scene
       nakGroup.visible = nakRef.current;
       const sel = selRef.current;
+
+      // the camera's focus glides to the selected graha and closes in on it;
+      // deselecting sends it home to the whole wheel
+      const selG = sel ? grahas.find((x) => x.name === sel) : null;
+      if (selG) {
+        focusTarget.copy(selG.mesh.position);
+        distTarget = Math.min(distTarget, Math.max(30, selG.r * 8));
+      } else {
+        focusTarget.set(0, 0, 0);
+        if (lastSel !== null) distTarget = HOME_DIST;
+      }
+      if (lastSel !== (sel ?? null) && selG) distTarget = Math.max(32, selG.r * 8);
+      lastSel = sel ?? null;
+      focus.lerp(focusTarget, 0.06);
+      dist += (distTarget - dist) * 0.06;
+
+      const hr = dist * Math.sin(pol);
+      camera.position.set(
+        focus.x + hr * Math.sin(az),
+        focus.y + dist * Math.cos(pol),
+        focus.z + hr * Math.cos(az),
+      );
+      camera.lookAt(focus);
       if ((aspRef.current ? sel : null) !== aspectsFor) {
         rebuildAspects(aspRef.current ? sel : null);
       }
       const g = sel ? grahas.find((x) => x.name === sel) : null;
       for (const x of grahas) x.label.visible = x.name !== sel;
-      halo.visible = !!g;
+      halo.visible = !!g && dist > (g?.r ?? 1) * 14;
       if (g) {
         halo.position.copy(g.mesh.position);
         halo.scale.setScalar((g.r + 2.5) / 6);
@@ -565,7 +602,7 @@ export function BirthSky3D({
         />
       </div>
       <p className="pointer-events-none absolute bottom-2 right-3 z-10 text-[10px] text-white/40">
-        drag to orbit · click a graha
+        drag to orbit · scroll to zoom · click a graha to visit it
       </p>
     </div>
   );
