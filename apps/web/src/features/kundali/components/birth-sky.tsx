@@ -66,48 +66,47 @@ export function BirthSky() {
   const selectedPlanet = chart.planets.find((p) => p.name === selected) ?? null;
 
   return (
-    <AppShell sidebar={false}>
-      <main className="mx-auto w-full max-w-[1500px] px-4 py-6 lg:px-8">
-        {/* Header */}
-        <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => router.back()}
-              aria-label="Back"
-              className="flex size-8 items-center justify-center rounded-[8px] border border-white/10 bg-[#161B2B] text-[#94A3B8] transition hover:border-[#E5A93C]/50 hover:text-[#F3C766]"
-            >
-              <ArrowLeft className="size-4" />
-            </button>
-            <div>
-              <h1 className="font-serif text-lg font-bold text-[#F8FAFC]">
-                {sk ? "जन्मकालीन आकाश" : "The Sky at Birth"}
-                <Sparkles className="ml-2 inline size-4 text-[#E5A93C]" />
-              </h1>
-              <p className="text-[11px] text-[#94A3B8]">
-                {birth.name} · {birth.date} · {birth.time} ·{" "}
-                {birth.place_label.split("(")[0]}
-              </p>
-            </div>
-          </div>
-
-          {/* Toggles */}
-          <div className="flex items-center gap-2 text-[10px] font-bold">
-            <Toggle
-              on={showNakshatras}
-              onClick={() => setShowNakshatras((v) => !v)}
-              label={sk ? "नक्षत्र" : "Nakshatras"}
-            />
-            <Toggle
-              on={showAspects}
-              onClick={() => setShowAspects((v) => !v)}
-              label={sk ? "दृष्टि" : "Aspects"}
-            />
+    <AppShell
+      sidebar={false}
+      bar={
+        <div className="flex min-w-0 items-center gap-3">
+          <button
+            onClick={() => router.back()}
+            aria-label="Back"
+            className="flex size-8 shrink-0 items-center justify-center rounded-[8px] border border-white/10 bg-[#161B2B] text-[#94A3B8] transition hover:border-[#E5A93C]/50 hover:text-[#F3C766]"
+          >
+            <ArrowLeft className="size-4" />
+          </button>
+          <div className="min-w-0">
+            <p className="truncate font-serif text-[14px] font-bold text-[#F8FAFC]">
+              {sk ? "जन्मकालीन आकाश" : "The Sky at Birth"}
+              <Sparkles className="ml-1.5 inline size-3.5 text-[#E5A93C]" />
+            </p>
+            <p className="truncate text-[11px] text-[#94A3B8]">
+              {birth.name} · {birth.date} · {birth.time} ·{" "}
+              {birth.place_label.split("(")[0]}
+            </p>
           </div>
         </div>
-
+      }
+    >
+      <main className="mx-auto w-full max-w-[1500px] px-4 py-6 lg:px-8">
         <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-start">
           {/* The wheel */}
           <div className="relative overflow-hidden rounded-[12px] border border-white/10 bg-[#090A10] p-2 sm:p-6">
+            {/* view toggles live on the sky itself */}
+            <div className="absolute right-3 top-3 z-10 flex items-center gap-2 text-[10px] font-bold">
+              <Toggle
+                on={showNakshatras}
+                onClick={() => setShowNakshatras((v) => !v)}
+                label={sk ? "नक्षत्र" : "Nakshatras"}
+              />
+              <Toggle
+                on={showAspects}
+                onClick={() => setShowAspects((v) => !v)}
+                label={sk ? "दृष्टि" : "Aspects"}
+              />
+            </div>
             <BirthSky3D
               chart={chart}
               selected={selected}
