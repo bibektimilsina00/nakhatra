@@ -1,8 +1,6 @@
 "use client";
 
-import { RotateCw, TriangleAlert } from "lucide-react";
 
-import { useTranslation } from "@/lib/i18n/language-context";
 
 /**
  * Which reading you are actually looking at.
@@ -29,47 +27,14 @@ export function ReadingStatus({
   source: "llm" | "rule_engine" | undefined;
   onRetry: () => void;
 }) {
-  const { t } = useTranslation();
-
   // Nothing while it works — the shimmering cards are the loading state.
-  if (isPending) return null;
-
-  // A 200 carrying `rule_engine` is the server's own fallback: the model was
-  // reached and its answer was unusable. To the reader that is the same
-  // outcome as an error, so it reads the same and offers the same retry.
-  if (isError || source === "rule_engine") {
-    return (
-      <Bar>
-        <TriangleAlert className="size-4 shrink-0 text-acc" />
-        <span className="min-w-0 flex-1">
-          <span className="block text-[13px] font-medium text-fg">{t.readingCalculated}</span>
-          <span className="mt-0.5 block text-[11.5px] leading-[1.6] text-dim">
-            {t.readingCalculatedNote}
-          </span>
-        </span>
-        <button
-          type="button"
-          onClick={onRetry}
-          className="inline-flex shrink-0 items-center gap-1.5 rounded-[8px] border border-white/12 px-3 py-1.5 text-[12px] text-mut transition-colors hover:border-brd2 hover:text-fg"
-        >
-          <RotateCw className="size-3.5" />
-          {t.milanRetry}
-        </button>
-      </Bar>
-    );
-  }
-
+  // The rule-engine fallback used to announce itself with a banner in the
+  // error case; removed by request. The calculated reading simply shows,
+  // banner-free — every placement in it is the engine's either way. The
+  // props stay so call sites need not change.
+  void isPending; void isError; void source; void onRetry;
   return null;
 }
-
-function Bar({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="mb-6 flex items-center gap-3 rounded-[8px] border border-acc/30 bg-[#1A150B] px-4 py-3">
-      {children}
-    </div>
-  );
-}
-
 
 /** Placeholder cards while the model writes. Nothing is shown until it does. */
 export function ReadingSkeleton({ count = 3 }: { count?: number }) {
