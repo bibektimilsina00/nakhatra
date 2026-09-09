@@ -363,7 +363,7 @@ export function ReadingDashboard() {
 
   if (!activeChart) {
     return (
-      <AppShell sidebar={false}>
+      <AppShell guest sidebar={false}>
         <GeneratingScreen />
       </AppShell>
     );

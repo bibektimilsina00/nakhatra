@@ -26,19 +26,31 @@ export function KundaliPanel({ redirectOnCreate = false }: {
   const mutation = useCreateKundali();
   const router = useRouter();
 
-  if (mutation.isSuccess && mutation.variables) {
-    if (redirectOnCreate) {
-      const birth = mutation.variables;
-      const chart = mutation.data;
-      return (
+  // The landing flow: the moment the form is submitted, the generating
+  // screen takes the whole viewport — the same ceremony the app gives a
+  // chart — and when both the animation and the API have finished, the
+  // reading page opens with the chart already parked in the session store.
+  // An error drops the overlay back to the form with its banner.
+  if (redirectOnCreate && (mutation.isPending || (mutation.isSuccess && mutation.variables))) {
+    const birth = mutation.isSuccess ? mutation.variables : null;
+    const chart = mutation.isSuccess ? mutation.data : null;
+    return (
+      <div className="theme-dark fixed inset-0 z-[100]">
         <GeneratingScreen
-          onComplete={() => {
-            saveKundaliToStorage(birth, chart);
-            router.push("/reading");
-          }}
+          onComplete={
+            birth && chart
+              ? () => {
+                  saveKundaliToStorage(birth, chart);
+                  router.push("/reading");
+                }
+              : undefined
+          }
         />
-      );
-    }
+      </div>
+    );
+  }
+
+  if (mutation.isSuccess && mutation.variables) {
     return (
       <ChartView
         chart={mutation.data}
