@@ -31,7 +31,7 @@
       "time_accuracy": "exact",
       "tz_name": "Asia/Kathmandu"
     },
-    "computed_at": "2026-09-09T06:38:10.581804+00:00",
+    "computed_at": "2026-09-09T06:50:08.733689+00:00",
     "dasha": {
       "balance_years": 12.764202510703273,
       "bhabhoga_ghati": 65.564,
@@ -5864,7 +5864,7 @@
       ]
     },
     "doshas": [],
-    "engine_version": "0.7.0",
+    "engine_version": "0.7.1",
     "houses": [
       {
         "lord": "Mercury",
@@ -6205,6 +6205,7 @@
       }
     ],
     "siddhanta": "Drik (\u0926\u0943\u0915\u094d \u0938\u093f\u0926\u094d\u0927\u093e\u0928\u094d\u0924) \u2014 modern observational",
+    "time_warnings": [],
     "tribhagi": {
       "balance_years": 8.50946834046885,
       "bhabhoga_ghati": 65.564,
@@ -14609,6 +14610,6 @@
     }
   },
   "name": "retrograde_mercury",
-  "verified_against": "Independent reimplementation (tests/astrology/independent.py): UTC offset from the IANA database via zoneinfo, Julian Day per Meeus ch.7, ascendant by spherical trigonometry per Meeus ch.12/22 \u2014 agreeing within 0.25 arcmin and 0.01s. This fixture is a synthetic probe, not a real birth, so no hand-cast kundali exists for it or can; what it asserts is Mercury retrograde on 25 April 2023, and that is what was independently confirmed. Planetary longitudes are not independently confirmed here \u2014 they rest on test_invariants.py and the hand-cast graha sphuta table in test_textbook.py. Re-frozen unchanged at engine 0.6.1: the Moon epicycle correction is inside Surya Siddhanta and this fixture is drik, so every value here is byte-identical to 0.6.0 and only the version stamp moved. Engine 0.7.0: the samvatsara now follows Jupiter (surya.barhaspatya_year) instead of a fixed offset from the Shaka year. Nothing else in this chart moved.",
+  "verified_against": "Independent reimplementation (tests/astrology/independent.py): UTC offset from the IANA database via zoneinfo, Julian Day per Meeus ch.7, ascendant by spherical trigonometry per Meeus ch.12/22 \u2014 agreeing within 0.25 arcmin and 0.01s. This fixture is a synthetic probe, not a real birth, so no hand-cast kundali exists for it or can; what it asserts is Mercury retrograde on 25 April 2023, and that is what was independently confirmed. Planetary longitudes are not independently confirmed here \u2014 they rest on test_invariants.py and the hand-cast graha sphuta table in test_textbook.py. Re-frozen unchanged at engine 0.6.1: the Moon epicycle correction is inside Surya Siddhanta and this fixture is drik, so every value here is byte-identical to 0.6.0 and only the version stamp moved. Engine 0.7.0: the samvatsara now follows Jupiter (surya.barhaspatya_year) instead of a fixed offset from the Shaka year. Nothing else in this chart moved. Engine 0.7.1 adds an empty time_warnings field; no computed value changed.",
   "why": "Mercury retrograde 21 Apr - 14 May 2023. Exercises the retro flag and Mercury's 12-deg retro combustion orb."
 }

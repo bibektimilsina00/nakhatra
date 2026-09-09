@@ -136,6 +136,13 @@ class Chart:
     # Populated in Phase 1. Present now so the shape the AI consumes is stable.
     yogas: tuple[Any, ...] = field(default_factory=tuple)
     doshas: tuple[Any, ...] = field(default_factory=tuple)
+    #: Things about the *input* that make this chart less certain than it
+    #: looks — an impossible or repeated wall-clock time, a latitude where the
+    #: Sun did not rise. Empty for almost every birth. These are not
+    #: astrological warnings; they say the moment itself is not pinned down,
+    #: and a confident chart drawn on an unpinned moment is the failure mode
+    #: this engine most needs to avoid.
+    time_warnings: tuple[str, ...] = field(default_factory=tuple)
 
     def planet(self, name: str) -> Planet:
         for p in self.planets:

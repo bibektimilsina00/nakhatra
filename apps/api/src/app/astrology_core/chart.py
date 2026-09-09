@@ -172,7 +172,35 @@ def build_chart(birth: BirthMoment, siddhanta: str = "surya") -> Chart:
             sunset=sunset,
         ),
         avakhada=build_avakhada(raw["Moon"].longitude),
+        time_warnings=_time_warnings(birth, sunrise, sunset),
     )
+
+
+def _time_warnings(
+    birth: BirthMoment, sunrise: datetime | None, sunset: datetime | None
+) -> tuple[str, ...]:
+    """What about this birth moment is not actually pinned down.
+
+    Kept separate from the panchang's boundary warnings, which are about the
+    sky being close to a transition. These are about the *input*: a wall-clock
+    reading that no clock ever showed, or a latitude where the day has no
+    sunrise to turn on.
+    """
+    out: list[str] = []
+
+    anomaly = ephemeris.local_time_anomaly(birth.local_datetime, birth.tz_name)
+    if anomaly:
+        out.append(anomaly)
+
+    if sunrise is None or sunset is None:
+        out.append(
+            f"The Sun neither rose nor set at latitude {birth.latitude:.4f} on this "
+            f"date, so there is no sunrise for the Vedic day to turn on. The vara "
+            f"is taken from the local calendar date instead, which is a convention "
+            f"and not a reckoning any classical text provides for."
+        )
+
+    return tuple(out)
 
 
 # --- rules -----------------------------------------------------------------

@@ -31,7 +31,7 @@
       "time_accuracy": "exact",
       "tz_name": "Asia/Kathmandu"
     },
-    "computed_at": "2026-09-09T06:38:10.488980+00:00",
+    "computed_at": "2026-09-09T06:50:08.643660+00:00",
     "dasha": {
       "balance_years": 1.775345444040287,
       "bhabhoga_ghati": 55.915,
@@ -5864,7 +5864,7 @@
       ]
     },
     "doshas": [],
-    "engine_version": "0.7.0",
+    "engine_version": "0.7.1",
     "houses": [
       {
         "lord": "Moon",
@@ -6206,6 +6206,7 @@
       }
     ],
     "siddhanta": "Drik (\u0926\u0943\u0915\u094d \u0938\u093f\u0926\u094d\u0927\u093e\u0928\u094d\u0924) \u2014 modern observational",
+    "time_warnings": [],
     "tribhagi": {
       "balance_years": 1.1835636293601912,
       "bhabhoga_ghati": 55.915,
@@ -14610,6 +14611,6 @@
     }
   },
   "name": "nepal_pre_1986",
-  "verified_against": "Independent reimplementation (tests/astrology/independent.py): UTC offset from the IANA database via zoneinfo, Julian Day per Meeus ch.7, ascendant by spherical trigonometry per Meeus ch.12/22 \u2014 agreeing within 0.25 arcmin and 0.01s. This fixture is a synthetic probe, not a real birth, so no hand-cast kundali exists for it or can; what it asserts is Asia/Kathmandu at +5:30:00, and that is what was independently confirmed. Planetary longitudes are not independently confirmed here \u2014 they rest on test_invariants.py and the hand-cast graha sphuta table in test_textbook.py. Re-frozen unchanged at engine 0.6.1: the Moon epicycle correction is inside Surya Siddhanta and this fixture is drik, so every value here is byte-identical to 0.6.0 and only the version stamp moved. Engine 0.7.0: the samvatsara now follows Jupiter (surya.barhaspatya_year) instead of a fixed offset from the Shaka year. Nothing else in this chart moved.",
+  "verified_against": "Independent reimplementation (tests/astrology/independent.py): UTC offset from the IANA database via zoneinfo, Julian Day per Meeus ch.7, ascendant by spherical trigonometry per Meeus ch.12/22 \u2014 agreeing within 0.25 arcmin and 0.01s. This fixture is a synthetic probe, not a real birth, so no hand-cast kundali exists for it or can; what it asserts is Asia/Kathmandu at +5:30:00, and that is what was independently confirmed. Planetary longitudes are not independently confirmed here \u2014 they rest on test_invariants.py and the hand-cast graha sphuta table in test_textbook.py. Re-frozen unchanged at engine 0.6.1: the Moon epicycle correction is inside Surya Siddhanta and this fixture is drik, so every value here is byte-identical to 0.6.0 and only the version stamp moved. Engine 0.7.0: the samvatsara now follows Jupiter (surya.barhaspatya_year) instead of a fixed offset from the Shaka year. Nothing else in this chart moved. Engine 0.7.1 adds an empty time_warnings field; no computed value changed.",
   "why": "Kathmandu was +5:30 before 1986, not +5:45. A stored offset is 15 min wrong here \u2014 about 3.75 deg of ascendant motion."
 }

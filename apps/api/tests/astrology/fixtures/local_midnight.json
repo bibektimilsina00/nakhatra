@@ -31,7 +31,7 @@
       "time_accuracy": "exact",
       "tz_name": "Asia/Kathmandu"
     },
-    "computed_at": "2026-09-09T06:38:10.305466+00:00",
+    "computed_at": "2026-09-09T06:50:08.463860+00:00",
     "dasha": {
       "balance_years": 7.031967648821972,
       "bhabhoga_ghati": 64.146,
@@ -5864,7 +5864,7 @@
       ]
     },
     "doshas": [],
-    "engine_version": "0.7.0",
+    "engine_version": "0.7.1",
     "houses": [
       {
         "lord": "Jupiter",
@@ -6206,6 +6206,7 @@
       }
     ],
     "siddhanta": "Drik (\u0926\u0943\u0915\u094d \u0938\u093f\u0926\u094d\u0927\u093e\u0928\u094d\u0924) \u2014 modern observational",
+    "time_warnings": [],
     "tribhagi": {
       "balance_years": 4.687978432547981,
       "bhabhoga_ghati": 64.146,
@@ -14610,6 +14611,6 @@
     }
   },
   "name": "local_midnight",
-  "verified_against": "Independent reimplementation (tests/astrology/independent.py): UTC offset from the IANA database via zoneinfo, Julian Day per Meeus ch.7, ascendant by spherical trigonometry per Meeus ch.12/22 \u2014 agreeing within 0.25 arcmin and 0.01s. This fixture is a synthetic probe, not a real birth, so no hand-cast kundali exists for it or can; what it asserts is 00:00 local time, exercising the date rollover into UTC, and that is what was independently confirmed. Planetary longitudes are not independently confirmed here \u2014 they rest on test_invariants.py and the hand-cast graha sphuta table in test_textbook.py. Re-frozen unchanged at engine 0.6.1: the Moon epicycle correction is inside Surya Siddhanta and this fixture is drik, so every value here is byte-identical to 0.6.0 and only the version stamp moved. Engine 0.7.0: the samvatsara now follows Jupiter (surya.barhaspatya_year) instead of a fixed offset from the Shaka year. Nothing else in this chart moved.",
+  "verified_against": "Independent reimplementation (tests/astrology/independent.py): UTC offset from the IANA database via zoneinfo, Julian Day per Meeus ch.7, ascendant by spherical trigonometry per Meeus ch.12/22 \u2014 agreeing within 0.25 arcmin and 0.01s. This fixture is a synthetic probe, not a real birth, so no hand-cast kundali exists for it or can; what it asserts is 00:00 local time, exercising the date rollover into UTC, and that is what was independently confirmed. Planetary longitudes are not independently confirmed here \u2014 they rest on test_invariants.py and the hand-cast graha sphuta table in test_textbook.py. Re-frozen unchanged at engine 0.6.1: the Moon epicycle correction is inside Surya Siddhanta and this fixture is drik, so every value here is byte-identical to 0.6.0 and only the version stamp moved. Engine 0.7.0: the samvatsara now follows Jupiter (surya.barhaspatya_year) instead of a fixed offset from the Shaka year. Nothing else in this chart moved. Engine 0.7.1 adds an empty time_warnings field; no computed value changed.",
   "why": "00:00 local. Catches date-rollover errors in the UTC conversion."
 }

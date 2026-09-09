@@ -104,6 +104,54 @@ def to_utc(local_datetime: datetime, tz_name: str) -> datetime:
     return local_datetime.replace(tzinfo=ZoneInfo(tz_name), fold=0).astimezone(UTC)
 
 
+def _offset_label(offset) -> str:
+    total = int(offset.total_seconds())
+    sign = "+" if total >= 0 else "-"
+    total = abs(total)
+    return f"UTC{sign}{total // 3600:02d}:{total % 3600 // 60:02d}"
+
+
+def local_time_anomaly(local_datetime: datetime, tz_name: str) -> str | None:
+    """Whether this wall-clock reading is impossible, or happened twice.
+
+    `to_utc` resolves both rather than refusing, because birth records really
+    do contain times that a clock never showed. But resolving silently is the
+    failure this engine exists to avoid: the chart comes out confident and up
+    to an hour wrong, which is fifteen degrees of ascendant. So the caller
+    gets told, and the chart carries the warning.
+
+    Both tests are the idioms PEP 495 defines for the purpose.
+    """
+    zone = ZoneInfo(tz_name)
+
+    # Nonexistent first. At a spring-forward gap the two folds *also* report
+    # different offsets, so testing for ambiguity first would misreport every
+    # skipped hour as a repeated one.
+    aware = local_datetime.replace(tzinfo=zone)
+    if aware.astimezone(UTC).astimezone(zone).replace(tzinfo=None) != local_datetime:
+        return (
+            f"{local_datetime:%Y-%m-%d %H:%M} never happened in {tz_name} — the "
+            f"clocks went forward over that hour. The chart resolves it anyway, "
+            f"but the recorded time cannot be what the clock read, so treat the "
+            f"birth time as uncertain by about an hour."
+        )
+
+    # Ambiguous: the same wall clock maps to two offsets, because the hour was
+    # repeated when the clocks went back.
+    first = local_datetime.replace(tzinfo=zone, fold=0).utcoffset()
+    second = local_datetime.replace(tzinfo=zone, fold=1).utcoffset()
+    if first != second:
+        return (
+            f"{local_datetime:%Y-%m-%d %H:%M} occurred twice in {tz_name} — the "
+            f"clocks went back, so this reading is one hour ambiguous. The chart "
+            f"uses the first occurrence ({_offset_label(first)}); the second is "
+            f"{_offset_label(second)}. If the birth was the later one, the "
+            f"ascendant moves about fifteen degrees."
+        )
+
+    return None
+
+
 def julian_day(local_datetime: datetime, tz_name: str) -> float:
     """Julian Day (UT) for a local birth moment."""
     utc = to_utc(local_datetime, tz_name)
