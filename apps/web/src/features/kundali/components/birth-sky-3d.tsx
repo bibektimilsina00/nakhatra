@@ -106,12 +106,19 @@ export function BirthSky3D({
   onSelect,
   showNakshatras,
   showAspects,
+  className = "relative h-[76vh] min-h-[500px] w-full overflow-hidden rounded-[12px]",
+  wheelZoom = true,
 }: {
   chart: Chart;
   selected: string | null;
   onSelect: (name: string) => void;
   showNakshatras: boolean;
   showAspects: boolean;
+  /** The landing hero stretches the sky full-bleed; the app keeps the card. */
+  className?: string;
+  /** Off for full-bleed embeds, where hijacking the wheel would trap the
+   *  page's own scroll. */
+  wheelZoom?: boolean;
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const chipRef = useRef<HTMLDivElement>(null);
@@ -123,10 +130,12 @@ export function BirthSky3D({
   const nakRef = useRef(showNakshatras);
   const aspRef = useRef(showAspects);
   const onSelectRef = useRef(onSelect);
+  const wheelZoomRef = useRef(wheelZoom);
   useEffect(() => { selRef.current = selected; }, [selected]);
   useEffect(() => { nakRef.current = showNakshatras; }, [showNakshatras]);
   useEffect(() => { aspRef.current = showAspects; }, [showAspects]);
   useEffect(() => { onSelectRef.current = onSelect; }, [onSelect]);
+  useEffect(() => { wheelZoomRef.current = wheelZoom; }, [wheelZoom]);
 
   useEffect(() => {
     if (!canvasRef.current || !chipRef.current || !panelRef.current) return;
@@ -642,6 +651,7 @@ export function BirthSky3D({
     const clampPol = (a: number) => Math.min(Math.PI - 0.2, Math.max(0.2, a));
 
     const wheel = (e: WheelEvent) => {
+      if (!wheelZoomRef.current) return; // let the page scroll
       e.preventDefault();
       distTarget = Math.min(760, Math.max(34, distTarget * (1 + e.deltaY * 0.0012)));
     };
@@ -810,7 +820,7 @@ export function BirthSky3D({
   }, [chart, language]);
 
   return (
-    <div className="relative h-[76vh] min-h-[500px] w-full overflow-hidden rounded-[12px] sm:h-[86vh]">
+    <div className={className}>
       <canvas ref={canvasRef} className="absolute inset-0 h-full w-full cursor-grab" />
       <div
         ref={panelRef}
@@ -824,7 +834,9 @@ export function BirthSky3D({
         />
       </div>
       <p className="pointer-events-none absolute bottom-2 right-3 z-10 text-[10px] text-white/40">
-        drag to orbit · scroll to zoom · click a graha to visit it
+        {wheelZoom
+          ? "drag to orbit · scroll to zoom · click a graha to visit it"
+          : "drag to orbit · click a graha to visit it"}
       </p>
     </div>
   );

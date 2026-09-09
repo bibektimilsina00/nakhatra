@@ -1,6 +1,6 @@
 "use client";
 
-import { SolarSystem } from "@/features/marketing/components/solar-system";
+import { HeroSky } from "@/features/marketing/components/hero-sky";
 import {
   ChartCaption, LiveChart, useChartFocus,
 } from "@/features/marketing/components/live-chart";
@@ -24,7 +24,7 @@ export function Hero() {
 
   return (
     <section id="top" className="theme-dark grain relative min-h-screen overflow-hidden bg-[#070810]">
-      <SolarSystem />
+      <HeroSky />
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_78%_62%_at_50%_46%,transparent_0%,rgba(7,8,16,.5)_58%,#070810_90%)]" />
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-ink to-transparent" />
 
