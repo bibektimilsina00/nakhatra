@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { ArrowLeft, Eye, EyeOff, Sparkles } from "lucide-react";
 
 import { AppShell } from "@/features/dashboard/components/app-shell";
-import { BirthSky3D, PLANET_COLORS } from "@/features/kundali/components/birth-sky-3d";
+import { BirthSky3D, MoonPhase3D, PLANET_COLORS } from "@/features/kundali/components/birth-sky-3d";
 import { loadKundaliFromStorage } from "@/features/kundali/store/kundali-store";
 import type { BirthDetailsIn, Chart, Planet } from "@/features/kundali/types";
 import { useTranslation } from "@/lib/i18n/language-context";
@@ -150,40 +150,6 @@ export function BirthSky() {
   );
 }
 
-/* ------------------------------------------------------------ moon phase */
-
-/**
- * The Moon lit as the tithi says it was. Waxing tithis (Shukla 1-15) grow the
- * light from the right; waning shrink it. The terminator is an ellipse whose
- * width follows the phase — the standard flat-map of lunation, drawn from the
- * engine's tithi_index alone.
- */
-function MoonPhase({ cx, cy, r, tithiIndex }: { cx: number; cy: number; r: number; tithiIndex: number }) {
-  const phase = ((tithiIndex + 0.5) / 30) * 2 * Math.PI; // 0 new → π full
-  const lit = (1 - Math.cos(phase)) / 2; // 0..1 illuminated
-  const waxing = tithiIndex < 15;
-  const term = r * Math.abs(1 - 2 * lit); // terminator half-width
-  const bulge = lit > 0.5;
-
-  // Two half-discs: dark base, lit overlay built from a semicircle plus a
-  // terminator ellipse arc.
-  const side = waxing ? 1 : -1;
-  const path = [
-    `M${cx} ${cy - r}`,
-    `A${r} ${r} 0 0 ${waxing ? 1 : 0} ${cx} ${cy + r}`,
-    `A${term} ${r} 0 0 ${bulge === waxing ? 0 : 1} ${cx} ${cy - r}`,
-    "Z",
-  ].join(" ");
-
-  return (
-    <g>
-      <circle cx={cx} cy={cy} r={r + 6} fill="#E8ECF4" opacity="0.06" />
-      <circle cx={cx} cy={cy} r={r} fill="#1B2233" stroke="#7A9CC6" strokeOpacity="0.3" strokeWidth="0.6" />
-      <path d={path} fill="#E8ECF4" opacity="0.92" transform={side === -1 ? `scale(-1,1) translate(${-2 * cx},0)` : undefined} />
-    </g>
-  );
-}
-
 /* ------------------------------------------------------------- side cards */
 
 function Card({ title, children }: { title: React.ReactNode; children: React.ReactNode }) {
@@ -259,9 +225,7 @@ function MoonCard({ chart }: { chart: Chart }) {
   return (
     <Card title={sk ? "चन्द्रमा र तिथि" : "Moon & Tithi"}>
       <div className="flex items-center gap-4">
-        <svg viewBox="0 0 64 64" className="size-14 shrink-0">
-          <MoonPhase cx={32} cy={32} r={24} tithiIndex={p.tithi_index} />
-        </svg>
+        <MoonPhase3D tithiIndex={p.tithi_index} className="size-16 shrink-0" />
         <div className="min-w-0 flex-1">
           <Row k={sk ? "तिथि" : "Tithi"} v={`${p.paksha} ${p.tithi_name}`} />
           <Row k={sk ? "चन्द्र राशि" : "Moon sign"} v={getSignName(p.moon_sign, language)} />

@@ -848,3 +848,66 @@ function makeLabel(
   sprite.renderOrder = 10;
   return sprite;
 }
+
+/**
+ * The Moon as a lit body, for the Moon-and-tithi card: the real moon texture
+ * on a sphere, with a directional light standing where the Sun stood for
+ * this tithi — so the phase is an actual shadow, terminator curving over the
+ * craters, not a drawn crescent. Phase angle = (tithi + ½) x 12°: new Moon
+ * lit from behind, Purnima from the viewer, Shukla from the right and
+ * Krishna from the left.
+ */
+export function MoonPhase3D({ tithiIndex, className }: { tithiIndex: number; className?: string }) {
+  const ref = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const canvas = ref.current;
+    if (!canvas) return;
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+    renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(30, 1, 0.1, 50);
+    camera.position.set(0, 0, 8);
+
+    const loader = new THREE.TextureLoader();
+    const maxAniso = renderer.capabilities.getMaxAnisotropy();
+    const map = loader.load("/planets/moonmap.jpg");
+    const bump = loader.load("/planets/moonbump.jpg");
+    map.anisotropy = maxAniso;
+    bump.anisotropy = maxAniso;
+    const moon = new THREE.Mesh(
+      new THREE.SphereGeometry(2, 96, 64),
+      new THREE.MeshPhongMaterial({ map, bumpMap: bump, bumpScale: 0.35, shininess: 2 }),
+    );
+    scene.add(moon);
+
+    // a whisper of earthshine so the dark limb stays readable
+    scene.add(new THREE.AmbientLight(0x8899bb, 0.45));
+    const phase = ((tithiIndex + 0.5) / 30) * Math.PI * 2;
+    const sun = new THREE.DirectionalLight(0xfff6d8, 9);
+    sun.position.set(Math.sin(phase) * 10, 0, -Math.cos(phase) * 10);
+    scene.add(sun);
+
+    const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let raf = 0;
+    const frame = () => {
+      const size = canvas.clientWidth;
+      if (size && canvas.width !== size * renderer.getPixelRatio()) {
+        renderer.setSize(size, size, false);
+        camera.aspect = 1;
+        camera.updateProjectionMatrix();
+      }
+      if (!still) moon.rotation.y += 0.0012;
+      renderer.render(scene, camera);
+      raf = requestAnimationFrame(frame);
+    };
+    frame();
+
+    return () => {
+      cancelAnimationFrame(raf);
+      renderer.dispose();
+    };
+  }, [tithiIndex]);
+
+  return <canvas ref={ref} className={className} aria-hidden="true" />;
+}
