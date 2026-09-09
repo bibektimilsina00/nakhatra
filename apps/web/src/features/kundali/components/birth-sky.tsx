@@ -92,8 +92,8 @@ export function BirthSky() {
     >
       <main className="mx-auto w-full max-w-[1500px] px-4 py-6 lg:px-8">
         <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-start">
-          {/* The wheel */}
-          <div className="relative overflow-hidden rounded-[12px] border border-white/10 bg-[#090A10] p-2 sm:p-6">
+          {/* The wheel — edge to edge, the chrome floats over it */}
+          <div className="relative overflow-hidden rounded-[12px] border border-white/10 bg-[#090A10]">
             {/* view toggles live on the sky itself */}
             <div className="absolute right-3 top-3 z-10 flex items-center gap-2 text-[10px] font-bold">
               <Toggle
@@ -114,24 +114,31 @@ export function BirthSky() {
               showNakshatras={showNakshatras}
               showAspects={showAspects}
             />
-            {/* Planet legend chips */}
-            <div className="mt-2 flex flex-wrap justify-center gap-1.5 pb-2">
+            {/* Planet tiles — floating over the sky, faces from the real maps */}
+            <div className="absolute bottom-3 left-1/2 z-10 flex w-max max-w-[96%] -translate-x-1/2 flex-wrap justify-center gap-1.5">
               {chart.planets.map((p) => (
                 <button
                   key={p.name}
                   onClick={() => setSelected((s) => (s === p.name ? null : p.name))}
-                  className={`flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[10px] font-bold transition ${
+                  className={`flex size-[54px] flex-col items-center justify-center gap-1 rounded-[10px] border backdrop-blur-md transition ${
                     selected === p.name
-                      ? "border-[#E5A93C] bg-[#E5A93C]/15 text-[#F3C766]"
-                      : "border-white/10 bg-[#161B2B] text-[#94A3B8] hover:border-white/25 hover:text-[#F8FAFC]"
+                      ? "border-[#E5A93C] bg-[#E5A93C]/15"
+                      : "border-white/10 bg-[#0B0E18]/75 hover:border-white/30"
                   }`}
+                  title={getPlanetName(p.name, language)}
                 >
                   <span
-                    className="inline-block size-2 rounded-full"
-                    style={{ background: PLANET_COLORS[p.name] ?? "#F8FAFC" }}
+                    className="size-6 rounded-full border border-white/20 bg-cover bg-center"
+                    style={planetFace(p.name)}
                   />
-                  {getPlanetName(p.name, language)}
-                  {p.retrograde && <span className="text-[#E5A93C]">℞</span>}
+                  <span
+                    className={`max-w-[50px] truncate text-[8px] font-bold leading-none ${
+                      selected === p.name ? "text-[#F3C766]" : "text-[#94A3B8]"
+                    }`}
+                  >
+                    {getPlanetName(p.name, language)}
+                    {p.retrograde && <span className="text-[#E5A93C]"> ℞</span>}
+                  </span>
                 </button>
               ))}
             </div>
@@ -304,4 +311,25 @@ function moonElongation(chart: Chart): number {
     return pl ? pl.sign_index * 30 + pl.degree_in_sign : 0;
   };
   return (lon("Moon") - lon("Sun") + 360) % 360;
+}
+
+/** The face each chip wears — a slice of the very texture its sphere wears
+ *  in the scene. The nodes have no surface, so they wear their smoke. */
+function planetFace(name: string): React.CSSProperties {
+  const MAP: Record<string, string> = {
+    Sun: "sun.jpg",
+    Moon: "moonmap.jpg",
+    Mars: "marsmap.jpg",
+    Mercury: "mercurymap.jpg",
+    Jupiter: "jupiter.jpg",
+    Venus: "venusmap.jpg",
+    Saturn: "saturnmap.jpg",
+  };
+  if (MAP[name]) return { backgroundImage: `url(/planets/${MAP[name]})` };
+  return {
+    background:
+      name === "Rahu"
+        ? "radial-gradient(circle at 35% 35%, #8B7BC7, #141026 75%)"
+        : "radial-gradient(circle at 35% 35%, #C77B58, #1c0f08 75%)",
+  };
 }

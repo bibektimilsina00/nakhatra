@@ -288,12 +288,41 @@ export function BirthSky3D({
     const material = (name: string): THREE.Material => {
       switch (name) {
         case "Sun": {
-          // Outside tone mapping, or ACES rolls the clipped core to pink.
-          const sun = new THREE.MeshStandardMaterial({
-            emissive: 0xffdf8a, emissiveMap: T("sun.jpg"), emissiveIntensity: 1.35,
+          // The matte reference look — the source project's sun with its
+          // bloom slider at zero. Its yellow is the texture clipped at 1.9x
+          // intensity; rendered live, that brightness would re-trigger our
+          // bloom. So the clip is baked into the texture (min(1, tex x 1.9 x
+          // tint) per pixel) and shown at 0.82 — the exact reference hue at
+          // a luminance the bloom threshold ignores, so only the Sun changes
+          // and the rest of the scene keeps its glow. Black base colour so
+          // the scene's fill light cannot wash the disc.
+          const mat = new THREE.MeshStandardMaterial({
+            color: 0x000000,
+            emissive: 0xffffff,
+            emissiveIntensity: 0.82,
           });
-          sun.toneMapped = false;
-          return sun;
+          const img = new Image();
+          img.onload = () => {
+            const cnv = document.createElement("canvas");
+            cnv.width = img.width;
+            cnv.height = img.height;
+            const g = cnv.getContext("2d")!;
+            g.drawImage(img, 0, 0);
+            const data = g.getImageData(0, 0, cnv.width, cnv.height);
+            const px = data.data;
+            for (let i = 0; i < px.length; i += 4) {
+              px[i] = Math.min(255, px[i] * 1.9);            // R x tint 1.0
+              px[i + 1] = Math.min(255, px[i + 1] * 1.85);   // G x tint 0.97
+              px[i + 2] = Math.min(255, px[i + 2] * 1.06);   // B x tint 0.56
+            }
+            g.putImageData(data, 0, 0);
+            const baked = new THREE.CanvasTexture(cnv);
+            baked.anisotropy = maxAniso;
+            mat.emissiveMap = baked;
+            mat.needsUpdate = true;
+          };
+          img.src = IMG + "sun.jpg";
+          return mat;
         }
         case "Moon":
           return new THREE.MeshPhongMaterial({
@@ -781,7 +810,7 @@ export function BirthSky3D({
   }, [chart, language]);
 
   return (
-    <div className="relative h-[62vh] min-h-[420px] w-full overflow-hidden rounded-[10px] sm:h-[70vh]">
+    <div className="relative h-[72vh] min-h-[480px] w-full overflow-hidden rounded-[12px] sm:h-[80vh]">
       <canvas ref={canvasRef} className="absolute inset-0 h-full w-full cursor-grab" />
       <div
         ref={panelRef}
