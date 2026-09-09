@@ -51,59 +51,46 @@ export function ChatMessageBubble({
 
   if (isUser) {
     return (
-      <div className="flex flex-col items-end space-y-1.5 ml-auto max-w-[85%] sm:max-w-[78%] animate-fade-in group">
-        <div className="relative rounded-[14px] rounded-tr-[2px] bg-gradient-to-r from-acc via-[#F3C766] to-acc p-3.5 sm:p-4 text-xs sm:text-sm font-semibold text-onacc shadow-[0_4px_25px_rgba(229,169,60,0.22)] border border-acc2/60 leading-relaxed transition-all">
+      <div className="group ml-auto flex max-w-[85%] animate-fade-in flex-col items-end space-y-1 sm:max-w-[78%]">
+        <div className="relative rounded-[12px] rounded-br-[4px] border border-acc/30 bg-acc/10 px-4 py-3 text-xs leading-relaxed text-fg sm:text-sm">
           <p className="whitespace-pre-wrap">{message.text}</p>
-
-          {/* Floating Copy Action on Hover */}
           <button
             onClick={handleCopy}
-            className="absolute -left-8 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity p-1.5 rounded-[6px] bg-panel border border-brd text-mut hover:text-acc2 text-[10px]"
+            className="absolute -left-8 top-1/2 -translate-y-1/2 rounded-[6px] p-1.5 text-mut opacity-0 transition-opacity hover:text-fg group-hover:opacity-100"
             title="Copy message"
           >
             {copied ? <Check className="size-3 text-emerald-400" /> : <Copy className="size-3" />}
           </button>
         </div>
-        <span className="text-[10px] font-medium text-mut/60 px-1">{message.timestamp}</span>
+        <span className="px-1 text-[9px] text-dim">{message.timestamp}</span>
       </div>
     );
   }
 
   return (
     <div className="flex flex-col items-start space-y-2 max-w-[92%] sm:max-w-[88%] animate-fade-in group">
-      {/* Header Avatar & Metadata Bar */}
-      <div className="flex items-center justify-between w-full px-1">
+      {/* Who is speaking, and the quiet tools */}
+      <div className="flex w-full items-center justify-between px-1">
         <div className="flex items-center gap-2">
-          <div className="relative size-6 rounded-full bg-gradient-to-br from-acc to-acc2 text-onacc flex items-center justify-center font-serif text-[11px] font-bold shadow-md ring-2 ring-acc/30">
-            <span>🕉️</span>
-          </div>
-          <span className="text-xs font-serif font-bold text-acc tracking-wide">
-            {masterAstrologerLabel}
+          <span className="grid size-6 shrink-0 place-items-center rounded-full bg-inset font-serif text-[11px] font-bold text-acc">
+            ॐ
           </span>
-          <span className="text-[10px] text-mut/60">• {message.timestamp}</span>
+          <span className="font-serif text-xs font-bold text-acc2">{masterAstrologerLabel}</span>
+          <span className="text-[9px] text-dim">{message.timestamp}</span>
         </div>
-
-        {/* Quick Action Tools: Speak Audio & Copy */}
-        <div className="flex items-center gap-1 opacity-80 group-hover:opacity-100 transition-opacity">
+        <div className="flex items-center gap-0.5 opacity-0 transition-opacity group-hover:opacity-100">
           <button
             onClick={handleToggleAudio}
-            className={`p-1.5 rounded-[6px] border text-[11px] transition-all cursor-pointer ${
-              isPlayingAudio
-                ? "bg-acc/20 border-acc text-acc2"
-                : "bg-inset border-brd text-mut hover:text-fg hover:border-brd2"
+            className={`cursor-pointer rounded-[6px] p-1.5 transition ${
+              isPlayingAudio ? "text-acc2" : "text-mut hover:text-fg"
             }`}
             title={isPlayingAudio ? "Stop Audio" : "Listen Audio"}
           >
-            {isPlayingAudio ? (
-              <VolumeX className="size-3.5 text-amber-300 animate-pulse" />
-            ) : (
-              <Volume2 className="size-3.5 text-mut" />
-            )}
+            {isPlayingAudio ? <VolumeX className="size-3.5 animate-pulse" /> : <Volume2 className="size-3.5" />}
           </button>
-
           <button
             onClick={handleCopy}
-            className="p-1.5 rounded-[6px] bg-inset border border-brd text-mut hover:text-fg hover:border-brd2 text-[11px] transition-all cursor-pointer"
+            className="cursor-pointer rounded-[6px] p-1.5 text-mut transition hover:text-fg"
             title="Copy Astrologer Response"
           >
             {copied ? <Check className="size-3.5 text-emerald-400" /> : <Copy className="size-3.5" />}
@@ -111,29 +98,22 @@ export function ChatMessageBubble({
         </div>
       </div>
 
-      {/* Main Astrologer Message Card Body with Markdown */}
-      <div className="w-full rounded-[14px] rounded-tl-[2px] border border-brd bg-gradient-to-br from-[#161B2B] via-[#121625] to-[#0D0F19] p-4 sm:p-5 text-xs sm:text-sm leading-relaxed text-fg shadow-xl space-y-3 relative">
+      <div className="relative w-full space-y-3 rounded-[12px] rounded-tl-[4px] border border-brd bg-panel px-4 py-3.5 text-xs leading-relaxed text-fg sm:text-sm">
         <MarkdownRenderer content={message.text} />
-
-        {/* Grounded Message Bubbles */}
         {message.astrologicalBasis && (
-          <div className="mt-3.5 flex flex-wrap items-center gap-2 border-t border-brd pt-3 text-[11px]">
-            <span className="text-acc font-semibold flex items-center gap-1">
-              <span>📍</span> {groundedInChartLabel}:
-            </span>
-            <button
-              onClick={() => {
-                if (onHighlightHouse) {
-                  const house = message.text.includes("7th") ? 7 : 10;
-                  onHighlightHouse(house);
-                }
-              }}
-              className="rounded-[8px] bg-inset border border-acc/40 px-2.5 py-1 text-acc2 hover:bg-acc/15 hover:border-acc transition shadow-sm font-medium flex items-center gap-1.5 active:scale-95 cursor-pointer"
-            >
-              <Sparkles className="size-3 text-acc" />
-              <span>{message.astrologicalBasis}</span>
-            </button>
-          </div>
+          <button
+            onClick={() => {
+              if (onHighlightHouse) {
+                const house = message.text.includes("7th") ? 7 : 10;
+                onHighlightHouse(house);
+              }
+            }}
+            title={groundedInChartLabel}
+            className="mt-1 flex cursor-pointer items-center gap-1.5 rounded-full border border-brd bg-inset px-2.5 py-1 text-[10px] font-medium text-mid transition hover:border-acc/50 hover:text-acc2 active:scale-95"
+          >
+            <Sparkles className="size-3 text-acc" />
+            <span className="truncate">{message.astrologicalBasis}</span>
+          </button>
         )}
       </div>
     </div>

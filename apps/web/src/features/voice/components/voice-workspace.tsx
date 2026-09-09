@@ -575,7 +575,7 @@ export function LiveModeWorkspace() {
               sender: "astrologer",
               text,
               timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-              astrologicalBasis: `${getSignName(activeChart.lagna_sign, selectedLanguageRef.current)} Ascendant · OpenAI Realtime`,
+              astrologicalBasis: `${getSignName(activeChart.lagna_sign, selectedLanguageRef.current)} ${selectedLanguageRef.current === "en" ? "Ascendant" : "लग्न"}`,
             },
           ]);
         }
@@ -1313,7 +1313,7 @@ onClick={() => setupMicAnalyzer()}
           <aside className="h-full min-h-0 space-y-4 overflow-y-auto border-r border-brd bg-inset p-5">
             
             {/* Seeker Profile & D1 Chart Reference Card */}
-            <div className="space-y-4 rounded-[12px] border border-white/[0.09] bg-panel p-5">
+            <div className="space-y-4 rounded-[12px] border border-brd bg-panel p-5">
               <div className="flex items-center justify-between border-b border-brd pb-3">
                 <div className="flex items-center gap-2.5">
                   <div className="size-8 rounded-full bg-gradient-to-br from-acc to-acc2 text-onacc flex items-center justify-center font-bold text-xs shadow-md">
@@ -1332,7 +1332,7 @@ onClick={() => setupMicAnalyzer()}
               </div>
               
               {/* Illuminated North Indian Chart Container */}
-              <div className="relative mx-auto w-full max-w-[290px] rounded-[10px] border border-white/[0.08] bg-app p-2.5">
+              <div className="relative mx-auto w-full max-w-[290px] rounded-[10px] border border-brd bg-app p-2.5">
                 <NorthIndianChart
                   chart={activeChart}
                   selectedHouse={highlightedHouse}
@@ -1345,8 +1345,8 @@ onClick={() => setupMicAnalyzer()}
             </div>
 
             {/* Quick Dasha & Active Time Lords Widget */}
-            <div className="space-y-3 rounded-[12px] border border-white/[0.09] bg-panel p-4">
-              <div className="flex items-center justify-between border-b border-white/[0.07] pb-2.5">
+            <div className="space-y-3 rounded-[12px] border border-brd bg-panel p-4">
+              <div className="flex items-center justify-between border-b border-brd pb-2.5">
                 <h3 className="text-[12.5px] font-semibold text-fg">{t.activeTimeLords}</h3>
                 <span className="text-[10px] uppercase tracking-[0.1em] text-dim">
                   {t.vimshottariLabel}
@@ -1368,7 +1368,7 @@ onClick={() => setupMicAnalyzer()}
                 />
               </div>
 
-              <div className="flex items-center justify-between border-t border-white/[0.07] pt-2.5 text-[11.5px] text-dim">
+              <div className="flex items-center justify-between border-t border-brd pt-2.5 text-[11.5px] text-dim">
                 <span>{t.ascendantPlacementLabel}</span>
                 <span className="font-medium text-fg">
                   {getSignName(activeChart.lagna_sign, selectedLanguage)} ·{" "}
@@ -1380,7 +1380,7 @@ onClick={() => setupMicAnalyzer()}
           </aside>
 
           {/* RIGHT COLUMN (62% width) - Interactive Live Chat Desk */}
-          <main className="flex flex-col flex-1 min-h-0 h-full bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[#131728] via-[#090A10] to-[#090A10] overflow-hidden">
+          <main className="flex flex-col flex-1 min-h-0 h-full bg-app overflow-hidden">
             
             {/* Streamed Chat Feed */}
             <div ref={chatScrollRef} className="flex min-h-0 flex-1 flex-col gap-5 overflow-y-auto scroll-smooth p-4 sm:p-6">
@@ -1407,7 +1407,7 @@ onClick={() => setupMicAnalyzer()}
                       <button
                         key={chip.title}
                         onClick={() => handleSend(chip.query)}
-                        className="group flex items-start gap-3 rounded-[10px] border border-white/[0.09] bg-panel p-3.5 text-left transition-colors hover:border-acc/40 hover:bg-inset"
+                        className="group flex items-start gap-3 rounded-[10px] border border-brd bg-panel p-3.5 text-left transition-colors hover:border-acc/40 hover:bg-inset"
                       >
                         <span className="text-[15px] leading-none">{chip.icon}</span>
                         <span className="min-w-0 flex-1">
@@ -1426,9 +1426,9 @@ onClick={() => setupMicAnalyzer()}
               {/* Thinking / Analyzing Indicator */}
               {isThinking && (
                 <div className="flex items-center gap-3 p-4 rounded-[14px] border border-brd bg-panel/90 backdrop-blur-md max-w-xs animate-pulse">
-                  <div className="size-6 rounded-full bg-gradient-to-br from-acc to-acc2 text-onacc flex items-center justify-center font-bold text-xs">
-                    <span>🕉️</span>
-                  </div>
+                  <span className="grid size-6 place-items-center rounded-full bg-inset font-serif text-[11px] font-bold text-acc">
+                    ॐ
+                  </span>
                   <div className="flex items-center gap-1.5 text-xs text-acc2 font-medium">
                     <span className="size-2 rounded-full bg-acc animate-bounce" />
                     <span className="size-2 rounded-full bg-acc2 animate-bounce delay-150" />
@@ -1440,7 +1440,7 @@ onClick={() => setupMicAnalyzer()}
             </div>
 
             {realtimeError && (
-              <div className="mx-4 mb-2 flex shrink-0 items-center gap-2.5 rounded-[8px] border border-acc/30 bg-[#1A150B] px-3.5 py-2.5">
+              <div className="mx-4 mb-2 flex shrink-0 items-center gap-2.5 rounded-[8px] border border-acc/30 bg-inset px-3.5 py-2.5">
                 <TriangleAlert className="size-4 shrink-0 text-acc" />
                 <span className="min-w-0 flex-1 text-[12px] leading-[1.6] text-mut">
                   {t.voiceFellBack}
@@ -1466,7 +1466,7 @@ onClick={() => setupMicAnalyzer()}
                 <button
                   key={chip.title}
                   onClick={() => handleSend(chip.query)}
-                  className="group inline-flex shrink-0 cursor-pointer items-center gap-1.5 rounded-full border border-white/[0.09] bg-panel px-3.5 py-1.5 text-xs text-mut transition-colors hover:border-acc/40 hover:text-fg"
+                  className="group inline-flex shrink-0 cursor-pointer items-center gap-1.5 rounded-full border border-brd bg-panel px-3.5 py-1.5 text-xs text-mut transition-colors hover:border-acc/40 hover:text-fg"
                 >
                   <span className="text-xs">{chip.icon}</span>
                   <span className="font-medium text-[11px] sm:text-xs">{chip.title}</span>
@@ -1487,7 +1487,7 @@ onClick={() => setupMicAnalyzer()}
                 <button
                   type="button"
                   onClick={() => toggleLiveVoiceMode(true)}
-                  className="grid size-11 shrink-0 place-items-center rounded-[8px] border border-acc/50 bg-gradient-to-br from-[#161B2B] to-[#2A1F0D] text-acc2 hover:border-acc hover:shadow-[0_0_20px_rgba(229,169,60,0.35)] hover:scale-105 transition group cursor-pointer active:scale-95"
+                  className="group grid size-11 shrink-0 cursor-pointer place-items-center rounded-[8px] bg-acc text-onacc transition hover:bg-acc2 active:scale-95"
                   title={
                     selectedLanguage === "ne"
                       ? "प्रत्यक्ष एआई भ्वाइस परामर्श सुरु गर्नुहोस्"
@@ -1496,10 +1496,7 @@ onClick={() => setupMicAnalyzer()}
                       : "Talk to Live AI Astrologer (Realtime Voice Mode)"
                   }
                 >
-                  <div className="relative">
-                    <Headphones className="size-5 text-acc2 group-hover:scale-110 transition-transform" />
-                    <span className="absolute -top-1 -right-1 size-2 rounded-full bg-acc animate-ping" />
-                  </div>
+                  <Headphones className="size-5 transition-transform group-hover:scale-110" />
                 </button>
 
                 {/* Button 2: Speech-to-Text Dictation Mic (fills inputQuery field) */}
@@ -1553,7 +1550,7 @@ onClick={() => setupMicAnalyzer()}
                 <button
                   type="submit"
                   disabled={!inputQuery.trim() || isThinking}
-                  className="rounded-[8px] bg-gradient-to-r from-acc to-acc2 hover:from-acc2 hover:to-acc px-6 py-3 text-xs sm:text-sm font-bold text-onacc transition shadow-lg disabled:opacity-40 cursor-pointer active:scale-95 shrink-0"
+                  className="rounded-[8px] bg-acc px-6 py-3 text-xs font-bold text-onacc transition hover:bg-acc2 disabled:opacity-40 cursor-pointer active:scale-95 shrink-0 sm:text-sm"
                 >
                   {isThinking ? "..." : t.sendQuery}
                 </button>
