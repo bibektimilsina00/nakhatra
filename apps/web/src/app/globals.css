@@ -101,11 +101,15 @@ html[data-theme="light"] {
   --t-mid: #4a3a22;
   --t-mut: #7a6033;
   --t-dim: #a38e63;
-  --t-acc: #9B1C1C;
-  --t-acc2: #B01F1F;
-  --t-onacc: #f7efdc;
-  --t-brd: rgba(155, 28, 28, 0.22);
-  --t-brd2: rgba(155, 28, 28, 0.40);
+  /* The brand gold stays primary in daylight too — deepened so it reads on
+     parchment where the dark theme's bright gold would wash out. The patro
+     paper components and the chart inks keep their traditional red; this is
+     the app's accent, not the guru's pen. */
+  --t-acc: #B07A10;
+  --t-acc2: #8F6206;
+  --t-onacc: #fdf8ec;
+  --t-brd: rgba(176, 122, 16, 0.30);
+  --t-brd2: rgba(176, 122, 16, 0.50);
 }
 
 
