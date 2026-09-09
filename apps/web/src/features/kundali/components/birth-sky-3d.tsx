@@ -383,10 +383,10 @@ export function BirthSky3D({
         scene.add(band);
       }
 
-      // a name pill floating over the sphere, constant screen size
+      // the name floating bare over the sphere, constant screen size
       const label = makeLabel(
         getPlanetAbbrev(p.name, language) + (p.retrograde ? " ℞" : ""),
-        PLANET_COLORS[p.name] ?? "#F8FAFC", 42, { pill: true },
+        PLANET_COLORS[p.name] ?? "#F8FAFC", 42,
       );
       label.position.copy(at(lon, shell.r, shell.size + 7));
       scene.add(label);
