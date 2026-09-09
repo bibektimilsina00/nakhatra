@@ -190,7 +190,7 @@ export function BirthSky3D({
         case "Sun": {
           // Outside tone mapping, or ACES rolls the clipped core to pink.
           const sun = new THREE.MeshStandardMaterial({
-            emissive: 0xfff2c0, emissiveMap: T("sun.jpg"), emissiveIntensity: 1.6,
+            emissive: 0xffdf8a, emissiveMap: T("sun.jpg"), emissiveIntensity: 1.35,
           });
           sun.toneMapped = false;
           return sun;
@@ -410,7 +410,7 @@ export function BirthSky3D({
     /* ── bloom ───────────────────────────────────────────────────── */
     const composer = new EffectComposer(renderer);
     composer.addPass(new RenderPass(scene, camera));
-    composer.addPass(new UnrealBloomPass(new THREE.Vector2(1, 1), 0.55, 0.4, 0.85));
+    composer.addPass(new UnrealBloomPass(new THREE.Vector2(1, 1), 0.42, 0.4, 0.85));
 
     /* ── drag-orbit camera, as on the landing page ───────────────── */
     const R_CAM = 460;
