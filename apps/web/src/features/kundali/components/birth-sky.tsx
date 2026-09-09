@@ -109,6 +109,7 @@ export function BirthSky() {
               />
             </div>
             <BirthSky3D
+              className="relative h-[calc(100dvh-92px)] min-h-[520px] w-full overflow-hidden rounded-[12px]"
               chart={chart}
               selected={selected}
               onSelect={(name) => setSelected((s) => (s === name ? null : name))}

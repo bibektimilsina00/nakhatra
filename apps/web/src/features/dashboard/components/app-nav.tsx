@@ -143,7 +143,7 @@ export function AppNav({
           {/* Literally the marketing header's picker. Its own outside-click
               handler cannot see this bar's state, so closing on mousedown here
               is what keeps two panels from being open at once. */}
-          <span onMouseDown={() => setOpen(null)}>
+          <span className="flex items-center gap-1.5" onMouseDown={() => setOpen(null)}>
             <ThemeToggle />
             <LanguageMenu />
           </span>
