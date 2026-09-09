@@ -85,7 +85,7 @@ export const YOGATARA: { name: string; ra: number; dec: number; star: string; br
   { name: "Vishakha", ra: 222.72, dec: -16.04, star: "Zubenelgenubi (α Librae)" },
   { name: "Anuradha", ra: 240.08, dec: -22.62, star: "Dschubba (δ Scorpii)" },
   { name: "Jyeshtha", ra: 247.35, dec: -26.43, star: "Antares", bright: true },   // Antares
-  { name: "Moola", ra: 263.4, dec: -37.1, star: "Shaula (λ Scorpii)" },
+  { name: "Mula", ra: 263.4, dec: -37.1, star: "Shaula (λ Scorpii)" },
   { name: "Purva Ashadha", ra: 275.25, dec: -29.83, star: "Kaus Media (δ Sagittarii)" },
   { name: "Uttara Ashadha", ra: 283.82, dec: -26.3, star: "Nunki (σ Sagittarii)" },
   { name: "Shravana", ra: 297.7, dec: 8.87, star: "Altair", bright: true },      // Altair

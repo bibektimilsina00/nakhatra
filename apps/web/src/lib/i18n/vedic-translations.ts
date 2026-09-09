@@ -113,7 +113,7 @@ export const NAKSHATRA_TRANSLATIONS: Record<string, Record<Language, string>> = 
   Vishakha: { en: "Vishakha", ne: "विशाखा", hi: "विशाखा" },
   Anuradha: { en: "Anuradha", ne: "अनुराधा", hi: "अनुराधा" },
   Jyeshtha: { en: "Jyeshtha", ne: "ज्येष्ठा", hi: "ज्येष्ठा" },
-  Moola: { en: "Moola", ne: "मूल", hi: "मूल" },
+  Mula: { en: "Mula", ne: "मूल", hi: "मूल" },
   "Purva Ashadha": { en: "Purva Ashadha", ne: "पूर्वाषाढा", hi: "पूर्वाषाढा" },
   "Uttara Ashadha": { en: "Uttara Ashadha", ne: "उत्तराषाढा", hi: "उत्तराषाढा" },
   Shravana: { en: "Shravana", ne: "श्रवण", hi: "श्रवण" },
@@ -124,7 +124,17 @@ export const NAKSHATRA_TRANSLATIONS: Record<string, Record<Language, string>> = 
   Revati: { en: "Revati", ne: "रेवती", hi: "रेवती" },
 };
 
+/** The engine spells the nineteenth nakshatra "Mula"; charts cast before
+ *  these tables agreed carry "Moola". Both resolve. */
+const NAKSHATRA_ALIASES: Record<string, string> = { Moola: "Mula", Mula: "Mula" };
+
+export function canonicalNakshatra(name: string | null | undefined): string {
+  const raw = (name ?? "").trim();
+  return NAKSHATRA_ALIASES[raw] ?? raw;
+}
+
 export function getNakshatraName(nakshatra: string, lang: Language): string {
+  nakshatra = canonicalNakshatra(nakshatra);
   return NAKSHATRA_TRANSLATIONS[nakshatra]?.[lang] || nakshatra;
 }
 
@@ -464,7 +474,7 @@ const NAKSHATRA_ORDER = [
   "Ashwini", "Bharani", "Krittika", "Rohini", "Mrigashira", "Ardra",
   "Punarvasu", "Pushya", "Ashlesha", "Magha", "Purva Phalguni",
   "Uttara Phalguni", "Hasta", "Chitra", "Swati", "Vishakha", "Anuradha",
-  "Jyeshtha", "Moola", "Purva Ashadha", "Uttara Ashadha", "Shravana",
+  "Jyeshtha", "Mula", "Purva Ashadha", "Uttara Ashadha", "Shravana",
   "Dhanishta", "Shatabhisha", "Purva Bhadrapada", "Uttara Bhadrapada", "Revati",
 ];
 
@@ -489,7 +499,7 @@ export function getNameSyllable(
   lang: Language,
 ): string {
   if (lang === "en") return romanised;
-  const i = NAKSHATRA_ORDER.indexOf((nakshatra ?? "").trim());
+  const i = NAKSHATRA_ORDER.indexOf(canonicalNakshatra(nakshatra));
   const pada = (charan ?? 0) - 1;
   if (i < 0 || pada < 0 || pada > 3) return romanised;
   return NAME_SYLLABLE_DEV[i][pada] ?? romanised;
