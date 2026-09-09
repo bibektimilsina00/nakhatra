@@ -43,7 +43,7 @@ export function BirthSky() {
     [hydrated],
   );
   const [selected, setSelected] = useState<string | null>(null);
-  const [showNakshatras, setShowNakshatras] = useState(true);
+  const [showNakshatras, setShowNakshatras] = useState(false);
   const [showAspects, setShowAspects] = useState(true);
 
   useEffect(() => {
@@ -225,7 +225,7 @@ function MoonCard({ chart }: { chart: Chart }) {
   return (
     <Card title={sk ? "चन्द्रमा र तिथि" : "Moon & Tithi"}>
       <div className="flex items-center gap-4">
-        <MoonPhase3D tithiIndex={p.tithi_index} className="size-16 shrink-0" />
+        <MoonPhase3D phaseDeg={moonElongation(chart)} className="size-16 shrink-0" />
         <div className="min-w-0 flex-1">
           <Row k={sk ? "तिथि" : "Tithi"} v={`${p.paksha} ${p.tithi_name}`} />
           <Row k={sk ? "चन्द्र राशि" : "Moon sign"} v={getSignName(p.moon_sign, language)} />
@@ -280,4 +280,14 @@ function Toggle({ on, onClick, label }: { on: boolean; onClick: () => void; labe
       {label}
     </button>
   );
+}
+
+/** The chart's exact Sun–Moon elongation — the angle the tithi is 12° slices
+ *  of. Display arithmetic on two engine longitudes, not astrology. */
+function moonElongation(chart: Chart): number {
+  const lon = (name: string) => {
+    const pl = chart.planets.find((x) => x.name === name);
+    return pl ? pl.sign_index * 30 + pl.degree_in_sign : 0;
+  };
+  return (lon("Moon") - lon("Sun") + 360) % 360;
 }

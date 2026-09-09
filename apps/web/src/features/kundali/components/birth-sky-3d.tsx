@@ -851,13 +851,13 @@ function makeLabel(
 
 /**
  * The Moon as a lit body, for the Moon-and-tithi card: the real moon texture
- * on a sphere, with a directional light standing where the Sun stood for
- * this tithi — so the phase is an actual shadow, terminator curving over the
- * craters, not a drawn crescent. Phase angle = (tithi + ½) x 12°: new Moon
- * lit from behind, Purnima from the viewer, Shukla from the right and
- * Krishna from the left.
+ * on a sphere, with a directional light standing where the Sun stood — so
+ * the phase is an actual shadow, terminator curving over the craters, not a
+ * drawn crescent. `phaseDeg` is the chart's exact Sun–Moon elongation (a
+ * tithi is 12° of it): 0 lights from behind (Amavasya), 180 from the viewer
+ * (Purnima), Shukla from the right and Krishna from the left.
  */
-export function MoonPhase3D({ tithiIndex, className }: { tithiIndex: number; className?: string }) {
+export function MoonPhase3D({ phaseDeg, className }: { phaseDeg: number; className?: string }) {
   const ref = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -883,7 +883,7 @@ export function MoonPhase3D({ tithiIndex, className }: { tithiIndex: number; cla
 
     // a whisper of earthshine so the dark limb stays readable
     scene.add(new THREE.AmbientLight(0x8899bb, 0.45));
-    const phase = ((tithiIndex + 0.5) / 30) * Math.PI * 2;
+    const phase = (phaseDeg * Math.PI) / 180;
     const sun = new THREE.DirectionalLight(0xfff6d8, 9);
     sun.position.set(Math.sin(phase) * 10, 0, -Math.cos(phase) * 10);
     scene.add(sun);
@@ -907,7 +907,7 @@ export function MoonPhase3D({ tithiIndex, className }: { tithiIndex: number; cla
       cancelAnimationFrame(raf);
       renderer.dispose();
     };
-  }, [tithiIndex]);
+  }, [phaseDeg]);
 
   return <canvas ref={ref} className={className} aria-hidden="true" />;
 }
