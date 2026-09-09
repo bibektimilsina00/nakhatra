@@ -36,6 +36,12 @@ class RealtimeSessionRequest(BaseModel):
     birth: BirthDetailsIn
     language: Language = "en"
     voice: Voice = "ash"
+    provider: str | None = Field(
+        default=None,
+        description="Pin the realtime provider. The browser sends 'openai' "
+        "when a Gemini session was granted but failed to connect — billing "
+        "and regional availability are only discoverable at connect time.",
+    )
 
 
 class RealtimeSessionResponse(BaseModel):
@@ -46,6 +52,12 @@ class RealtimeSessionResponse(BaseModel):
     )
     model: str | None = None
     instructions: str | None = None
+    provider: str = Field(
+        default="openai",
+        description="Which realtime stack the token belongs to: 'openai' "
+        "(WebRTC) or 'gemini' (Live API WebSocket). Old clients ignore it "
+        "and keep working, since they predate the Gemini path entirely.",
+    )
     fallback: str | None = Field(
         default=None,
         description="Set to 'media_recorder_whisper' when the client should fall "

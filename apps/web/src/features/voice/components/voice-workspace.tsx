@@ -11,7 +11,8 @@ import { getPlanetName, getSignName } from "@/lib/i18n/vedic-translations";
 import type { Chart, BirthDetailsIn } from "@/features/kundali/types";
 import type { ChatMessage } from "@/features/chat/types";
 import { speakText, stopSpeech } from "@/lib/utils/audio-speaker";
-import { OpenAIRealtimeWebRTCClient } from "@/lib/utils/openai-realtime-webrtc";
+import { OpenAIRealtimeWebRTCClient, type RealtimeWebRTCCallbacks } from "@/lib/utils/openai-realtime-webrtc";
+import { GeminiLiveClient } from "@/lib/utils/gemini-live-client";
 import { ASTROLOGER_VOICES } from "@/lib/constants/voices";
 import { CustomVoiceSelector } from "@/features/voice/components/voice-selector";
 import { authHeaders } from "@/features/auth/store/auth-store";
@@ -156,7 +157,7 @@ export function LiveModeWorkspace() {
   const mediaStreamRef = useRef<MediaStream | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const recognitionRef = useRef<any>(null);
-  const webrtcClientRef = useRef<OpenAIRealtimeWebRTCClient | null>(null);
+  const webrtcClientRef = useRef<OpenAIRealtimeWebRTCClient | GeminiLiveClient | null>(null);
   const activeSessionRef = useRef<boolean>(false);
   const accumulatedTranscriptRef = useRef<string>("");
   const lastSpeakingTimestampRef = useRef<number>(0);
@@ -533,7 +534,26 @@ export function LiveModeWorkspace() {
     addDebugLog("WEBRTC_CONNECTING", "Initializing OpenAI Realtime WebRTC native audio stream...");
 
     setRealtimeError(null);
-    const client = new OpenAIRealtimeWebRTCClient({
+    // One mint decides the provider: Gemini when the server has its key
+    // (about a third of gpt-realtime's price), OpenAI WebRTC otherwise.
+    let grant: { client_secret?: string | null; model?: string | null; provider?: string; instructions?: string | null } = {};
+    try {
+      const grantRes = await fetch("/api/v1/realtime-session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", ...authHeaders() },
+        body: JSON.stringify({
+          chart: activeChart,
+          birth: activeBirth,
+          language: selectedLanguageRef.current,
+          voice: selectedVoiceRef.current,
+        }),
+      });
+      if (grantRes.ok) grant = await grantRes.json();
+    } catch {
+      // the client's own failure path reports it
+    }
+
+    const callbacks: RealtimeWebRTCCallbacks = {
       onStateChange: (state) => {
         addDebugLog("WEBRTC_STATE", `State: ${state}`);
         if (state === "speaking") updateVoiceState("speaking");
@@ -588,17 +608,60 @@ export function LiveModeWorkspace() {
       },
       onError: (err) => {
         addDebugLog("WEBRTC_ERROR", err);
-        // The client reconnects transport drops on its own; reaching here means
-        // it gave up or the service refused. Say so instead of going quiet, and
-        // hand turn-taking back to the Whisper pipeline.
+        // The client gave up or the service refused. Say so instead of
+        // going quiet; the orb offers the retry.
         setRealtimeError(err);
         updateWebRTCActive(false);
         updateVoiceState("paused");
       },
-    });
+    };
 
+    let client: OpenAIRealtimeWebRTCClient | GeminiLiveClient =
+      grant.provider === "gemini"
+        ? new GeminiLiveClient(callbacks)
+        : new OpenAIRealtimeWebRTCClient(callbacks);
     webrtcClientRef.current = client;
-    const success = await client.connect(activeChart, activeBirth, selectedLanguageRef.current, selectedVoiceRef.current);
+    let success = await client.connect(
+      activeChart,
+      activeBirth,
+      selectedLanguageRef.current,
+      selectedVoiceRef.current,
+      grant.client_secret ? (grant as { client_secret: string; model: string }) : undefined,
+    );
+
+    // A Gemini grant can be refused only at connect time (billing, region).
+    // Rather than stranding the caller, mint again with the provider pinned
+    // to OpenAI and carry on.
+    if (!success && grant.provider === "gemini") {
+      addDebugLog("GEMINI_FELL_BACK", "Gemini session refused; retrying on OpenAI");
+      client.disconnect();
+      client = new OpenAIRealtimeWebRTCClient(callbacks);
+      webrtcClientRef.current = client;
+      let openaiGrant: { client_secret?: string | null; model?: string | null } | undefined;
+      try {
+        const res = await fetch("/api/v1/realtime-session", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", ...authHeaders() },
+          body: JSON.stringify({
+            chart: activeChart,
+            birth: activeBirth,
+            language: selectedLanguageRef.current,
+            voice: selectedVoiceRef.current,
+            provider: "openai",
+          }),
+        });
+        if (res.ok) openaiGrant = await res.json();
+      } catch {
+        // the connect below reports the failure
+      }
+      success = await client.connect(
+        activeChart,
+        activeBirth,
+        selectedLanguageRef.current,
+        selectedVoiceRef.current,
+        openaiGrant?.client_secret ? (openaiGrant as { client_secret: string; model: string }) : undefined,
+      );
+    }
     if (success) {
       updateWebRTCActive(true);
       updateVoiceState("listening");

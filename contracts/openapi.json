@@ -2739,6 +2739,18 @@
             "title": "Language",
             "type": "string"
           },
+          "provider": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Pin the realtime provider. The browser sends 'openai' when a Gemini session was granted but failed to connect \u2014 billing and regional availability are only discoverable at connect time.",
+            "title": "Provider"
+          },
           "voice": {
             "default": "ash",
             "enum": [
@@ -2810,6 +2822,12 @@
               }
             ],
             "title": "Model"
+          },
+          "provider": {
+            "default": "openai",
+            "description": "Which realtime stack the token belongs to: 'openai' (WebRTC) or 'gemini' (Live API WebSocket). Old clients ignore it and keep working, since they predate the Gemini path entirely.",
+            "title": "Provider",
+            "type": "string"
           }
         },
         "title": "RealtimeSessionResponse",

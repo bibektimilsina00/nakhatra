@@ -34,6 +34,7 @@ class Settings(BaseSettings):
     # OpenRouter equivalent, so this is a second provider rather than the same
     # key under another name.
     OPENAI_API_KEY: str = ""
+    GEMINI_API_KEY: str = ""
     TTS_CACHE_DIR: str = ""
     #: Where profile photographs are written. Empty means a directory beside
     #: the database, which is right for one machine and wrong for several.

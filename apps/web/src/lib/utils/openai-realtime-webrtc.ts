@@ -71,6 +71,7 @@ export class OpenAIRealtimeWebRTCClient {
     birth: BirthDetailsIn,
     language: "en" | "ne" | "hi" = "en",
     voice: string = "ash",
+    grant?: { client_secret?: string | null; model?: string | null },
   ): Promise<boolean> {
     this.closedByUs = false;
     this.lastArgs = { chart, birth, language, voice };
@@ -82,18 +83,20 @@ export class OpenAIRealtimeWebRTCClient {
         `Requesting ephemeral session key (${language.toUpperCase()}, voice: ${voice})`,
       );
 
-      const tokenRes = await fetch("/api/v1/realtime-session", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", ...authHeaders() },
-        body: JSON.stringify({ chart, birth, language, voice }),
-      });
-
-      const tokenData = await tokenRes.json();
-      if (!tokenRes.ok || !tokenData.client_secret) {
-        this.callbacks.onDebugLog?.(
-          "WEBRTC_UNAVAILABLE",
-          tokenData.error || tokenData.detail || "Realtime ephemeral key not available",
-        );
+      // The workspace mints once and hands the grant in; the fetch below
+      // remains for reconnects, where lastArgs is all that survives.
+      let tokenData = grant as { client_secret?: string | null; model?: string | null };
+      if (!tokenData?.client_secret) {
+        const tokenRes = await fetch("/api/v1/realtime-session", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", ...authHeaders() },
+          body: JSON.stringify({ chart, birth, language, voice }),
+        });
+        tokenData = await tokenRes.json();
+        if (!tokenRes.ok) tokenData = { ...tokenData, client_secret: null };
+      }
+      if (!tokenData.client_secret) {
+        this.callbacks.onDebugLog?.("WEBRTC_UNAVAILABLE", "Realtime ephemeral key not available");
         return false;
       }
 

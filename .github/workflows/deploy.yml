@@ -195,6 +195,7 @@ jobs:
             OPEN_ROUTER_BASE_URL="${{ secrets.OPEN_ROUTER_BASE_URL }}"
             OPEN_ROUTER_MODEL="${{ secrets.OPEN_ROUTER_MODEL }}"
             OPENAI_API_KEY="${{ secrets.OPENAI_API_KEY }}"
+            GEMINI_API_KEY="${{ secrets.GEMINI_API_KEY }}"
             LLM_BASE_URL="${{ secrets.LLM_BASE_URL }}"
             LLM_API_KEY="${{ secrets.LLM_API_KEY }}"
             LLM_MODEL="${{ secrets.LLM_MODEL }}"

@@ -148,10 +148,17 @@ def test_transcription_without_a_key_says_so(
     assert res.json()["error"]["code"] == "voice_unavailable"
 
 
+async def _none_session(instructions: str):
+    return None
+
+
 def test_realtime_falls_back_when_no_key_is_configured(
     headers: dict, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     monkeypatch.setattr(service, "_api_key", lambda: None)
+    # Gemini must be absent too, or this test mints a real token when the
+    # developer's own .env has a key.
+    monkeypatch.setattr(service, "_gemini_session", _none_session)
     chart = client.post(
         "/v1/kundali",
         json={

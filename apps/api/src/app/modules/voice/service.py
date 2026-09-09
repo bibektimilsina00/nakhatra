@@ -11,6 +11,7 @@ import asyncio
 import logging
 
 import httpx
+from datetime import datetime, timedelta, timezone
 
 from app.core.config import get_settings
 from app.core.errors import AppError
@@ -212,6 +213,54 @@ async def transcribe(audio: bytes, filename: str, language: str | None) -> Trans
 # --- Realtime session ---
 
 
+GEMINI_LIVE_MODEL = "gemini-3.1-flash-live-preview"
+
+
+async def _gemini_session(instructions: str) -> RealtimeSessionResponse | None:
+    """Mint a Gemini Live ephemeral token, or None to use the OpenAI path.
+
+    Gemini is preferred when its key exists because the Live API is roughly a
+    third of gpt-realtime's price per minute. The token is single-use and
+    short-lived — the account key never reaches a browser, same rule as the
+    OpenAI mint. The browser's setup message carries the model, voice and
+    instructions, so this side only vouches for identity.
+    """
+    key = get_settings().GEMINI_API_KEY
+    if not key:
+        return None
+
+    now = datetime.now(timezone.utc)
+    body = {
+        "uses": 1,
+        # A minute to open the socket, half an hour of conversation.
+        "newSessionExpireTime": (now + timedelta(minutes=1)).isoformat().replace("+00:00", "Z"),
+        "expireTime": (now + timedelta(minutes=30)).isoformat().replace("+00:00", "Z"),
+    }
+    async with httpx.AsyncClient(timeout=TIMEOUT) as client:
+        try:
+            res = await client.post(
+                "https://generativelanguage.googleapis.com/v1beta/auth_tokens",
+                headers={"x-goog-api-key": key, "Content-Type": "application/json"},
+                json=body,
+            )
+        except httpx.HTTPError as exc:
+            logger.warning("gemini token request failed: %s", exc)
+            return None
+    if res.status_code != 200:
+        logger.warning("gemini token refused: %s %s", res.status_code, res.text[:200])
+        return None
+    token = res.json().get("name")
+    if not token:
+        logger.warning("gemini token response missing name: %s", res.text[:200])
+        return None
+    return RealtimeSessionResponse(
+        client_secret=token,
+        model=GEMINI_LIVE_MODEL,
+        instructions=instructions,
+        provider="gemini",
+    )
+
+
 async def create_realtime_session(req: RealtimeSessionRequest) -> RealtimeSessionResponse:
     """Mint an ephemeral key for the browser's WebRTC connection.
 
@@ -219,6 +268,12 @@ async def create_realtime_session(req: RealtimeSessionRequest) -> RealtimeSessio
     this endpoint exists: the account key must never reach a browser.
     """
     instructions = prompts.build_realtime_prompt(req.chart, req.birth, req.language)
+
+    if req.provider != "openai":
+        gemini = await _gemini_session(instructions)
+        if gemini is not None:
+            return gemini
+
     key = _api_key()
     if not key:
         # Instructions are returned either way: the client shows them in its
