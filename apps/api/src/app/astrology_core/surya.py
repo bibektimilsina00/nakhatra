@@ -47,6 +47,32 @@ from __future__ import annotations
 import math
 from typing import Final
 
+# What is deliberately NOT corrected here
+# ---------------------------------------
+# This system's sidereal year is 365.258756 days against a true 365.256363 —
+# long by about three and a half minutes. Its zero point therefore falls
+# behind the star frame at ~8.5 arcseconds a year: 14 arcminutes per century,
+# 2.4 degrees per millennium. Measured against Swiss Ephemeris the Sun's bias
+# runs -0.10 degrees in the 1900s, -0.34 in the 2000s, -0.46 by the 2050s.
+#
+# That is the text's limitation, and it is exactly why the living tradition
+# never used raw Surya Siddhanta: practitioners applied बीज (bija) corrections
+# to the mean motions to absorb it. Kapoor notes the text itself "spoke of
+# bija corrections to be applied", and Graha Laghava (Ganesha Daivajna, 1520),
+# a bija-corrected derivative, carries a Sun error of 0 degrees 0 minutes —
+# the drift below, already removed.
+#
+# No bija is applied here because none could be sourced. The stanzas are not
+# in Burgess's translation; they survive as twenty-one later verses in a
+# Bengali edition between XIV.23 and XIV.24, and no published table of values
+# has been found. A bija fitted to the four hand-cast charts would reproduce
+# them and prove nothing, which is the one thing this engine must not do.
+#
+# It is left uncorrected on evidence, not by default: raw Surya Siddhanta is
+# what matches all four charts on every panchanga value we can check. If a
+# guru names the almanac he casts from, that settles it and this changes.
+# `test_surya_siddhantas_year_is_long_and_its_frame_slips` holds the number.
+
 #: Civil (savana) days in a Mahayuga of 4,320,000 years.
 CIVIL_DAYS: Final = 1_577_917_828
 

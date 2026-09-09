@@ -89,3 +89,42 @@ def test_positions_are_geocentric():
         "topocentric correction, read its docstring first: it was tried and "
         "measured worse against four hand-cast kundalis."
     )
+
+
+def test_surya_siddhantas_year_is_long_and_its_frame_slips():
+    """The known, unfixed limitation of using Surya Siddhanta uncorrected.
+
+    Its sidereal year is 365.258756 days against a true 365.256363 — long by
+    about three and a half minutes. So its zero point falls behind the star
+    frame at roughly 8.5 arcseconds a year: a quarter degree per millennium's
+    tenth, 14 arcminutes per century, 2.4 degrees per thousand years.
+
+    This is the text's, not ours. It is also the whole reason the living
+    tradition never used raw Surya Siddhanta: practitioners applied बीज (bija)
+    corrections to the mean motions to absorb exactly this. The bija stanzas
+    are not in Burgess's translation — they survive as twenty-one later verses
+    in a Bengali edition, between XIV.23 and XIV.24 — and no published set of
+    values has been found to implement, so none is applied here. Fitting one
+    to the four hand-cast charts would reproduce them and mean nothing.
+
+    The test exists so the limitation is a measured number in the suite rather
+    than a remark in a docstring. If someone applies a bija, this fails, and
+    the commit that changes it has to say which source the values came from.
+    """
+    from app.astrology_core.surya import CIVIL_DAYS, SUN_REVOLUTIONS
+
+    ss_year = CIVIL_DAYS / SUN_REVOLUTIONS
+    true_sidereal_year = 365.256363004
+    slip_arcsec_per_year = (ss_year - true_sidereal_year) / true_sidereal_year * 360 * 3600
+
+    assert ss_year == pytest.approx(365.258756, abs=1e-6)
+    assert slip_arcsec_per_year == pytest.approx(8.49, abs=0.05), (
+        "The Surya Siddhanta year length changed. That is the parameter the "
+        "whole system's frame rests on, so this is either a typo or a bija."
+    )
+
+    # Over the range of births the product actually serves, the slip stays
+    # under half a degree — small against Surya Siddhanta's own 1.4 degree
+    # Moon error, which is why it is documented rather than papered over.
+    century_slip = abs(slip_arcsec_per_year * 100 / 3600)
+    assert century_slip < 0.5, "a century of slip should stay under half a degree"
