@@ -118,6 +118,28 @@ export function BirthSky() {
             />
             {/* Planet tiles — floating over the sky, faces from the real maps */}
             <div className="absolute bottom-3 left-1/2 z-10 flex w-max max-w-[96%] -translate-x-1/2 flex-wrap justify-center gap-1.5">
+              <button
+                key="Earth"
+                onClick={() => setSelected((s) => (s === "Earth" ? null : "Earth"))}
+                className={`flex size-[54px] flex-col items-center justify-center gap-1 rounded-[10px] border backdrop-blur-md transition ${
+                  selected === "Earth"
+                    ? "border-[#E5A93C] bg-[#E5A93C]/15"
+                    : "border-white/10 bg-[#0B0E18]/75 hover:border-white/30"
+                }`}
+                title={sk ? "पृथ्वी" : "Earth"}
+              >
+                <span
+                  className="size-6 rounded-full border border-white/20 bg-cover bg-center"
+                  style={planetFace("Earth")}
+                />
+                <span
+                  className={`max-w-[50px] truncate text-[8px] font-bold leading-none ${
+                    selected === "Earth" ? "text-[#F3C766]" : "text-[#94A3B8]"
+                  }`}
+                >
+                  {sk ? "पृथ्वी" : "Earth"}
+                </span>
+              </button>
               {chart.planets.map((p) => (
                 <button
                   key={p.name}
@@ -149,7 +171,18 @@ export function BirthSky() {
           {/* Detail panel */}
           <aside className="space-y-4 lg:sticky lg:top-20">
             <MoonCard chart={chart} />
-            {selectedPlanet ? (
+            {selected === "Earth" ? (
+              <div className="rounded-[8px] border border-brd bg-panel p-4">
+                <h3 className="mb-2 border-b border-brd pb-2 font-serif text-xs font-bold uppercase tracking-wider text-fg">
+                  {sk ? "पृथ्वी" : "Earth"}
+                </h3>
+                <p className="text-[12px] leading-relaxed text-mut">
+                  {sk
+                    ? "यही ठाउँबाट सारा कुण्डली देखिन्छ — हरेक ग्रहको स्थिति पृथ्वीबाट हेरिएको हो। जन्मस्थान यही गोलामा छ।"
+                    : "The one place the whole chart is seen from — every graha's position is as viewed from here. The birthplace sits on this globe."}
+                </p>
+              </div>
+            ) : selectedPlanet ? (
               <PlanetCard planet={selectedPlanet} />
             ) : (
               <div className="rounded-[8px] border border-white/10 bg-[#161B2B] p-4 text-[12px] text-[#94A3B8]">
@@ -319,6 +352,7 @@ function moonElongation(chart: Chart): number {
  *  in the scene. The nodes have no surface, so they wear their smoke. */
 function planetFace(name: string): React.CSSProperties {
   const MAP: Record<string, string> = {
+    Earth: "earth_daymap.jpg",
     Sun: "sun.jpg",
     Moon: "moonmap.jpg",
     Mars: "marsmap.jpg",

@@ -280,6 +280,14 @@ export function BirthSky3D({
     );
     earth.add(earthAtmo);
 
+    // The Earth is where the whole chart is seen from — it belongs among the
+    // visitable bodies. A static pivot keeps the entry shape uniform.
+    const earthPivot = new THREE.Group();
+    scene.add(earthPivot);
+    const earthLabel = makeLabel(language === "en" ? "Earth" : "पृथ्वी", "#7FB2E5", 42);
+    earthLabel.position.set(0, 17, 0);
+    scene.add(earthLabel);
+
     /* ── shadow-planet dressing ──────────────────────────────────── */
     const nodeFx: { shell: THREE.ShaderMaterial; glow: THREE.SpriteMaterial; phase: number }[] = [];
     function dressNode(mesh: THREE.Mesh, size: number, hex: string, parent: THREE.Object3D) {
@@ -454,6 +462,8 @@ export function BirthSky3D({
         dressNode(mesh, shell.size, PLANET_COLORS[p.name], pivot);
       }
     }
+
+    grahas.push({ name: "Earth", mesh: earth, r: 10, lon: 0, label: earthLabel, pivot: earthPivot });
 
     /* ── the nodal axis: Rahu and Ketu are one serpent, always opposite ──
        A faint dotted line from each node toward the Earth, stopping short of
@@ -718,8 +728,9 @@ export function BirthSky3D({
     let dist = HOME_DIST, distTarget = HOME_DIST;
     const focus = new THREE.Vector3(0, 0, 0);
     const focusTarget = new THREE.Vector3(0, 0, 0);
-    let dragging = false, dragged = false, lastX = 0, lastY = 0;
+    let dragging = false, dragged = false, panning = false, lastX = 0, lastY = 0;
     const clampPol = (a: number) => Math.min(Math.PI - 0.2, Math.max(0.2, a));
+    const _pr = new THREE.Vector3(), _pu = new THREE.Vector3(), _pf = new THREE.Vector3();
 
     const wheel = (e: WheelEvent) => {
       if (!wheelZoomRef.current) return; // let the page scroll
@@ -729,8 +740,18 @@ export function BirthSky3D({
     canvas.addEventListener("wheel", wheel, { passive: false });
     cleanup.push(() => canvas.removeEventListener("wheel", wheel));
 
+    // right-click belongs to the pan, not the browser menu
+    on(canvas, "contextmenu", (e) => e.preventDefault());
     on(interactTarget, "pointerdown", (e) => {
-      if (e.button !== 0 || uiTarget(e)) return;
+      if (uiTarget(e)) return;
+      // pan on the right button or shift-drag; orbit on a plain left drag
+      if (e.button === 2 || (e.button === 0 && e.shiftKey)) {
+        panning = true; dragged = true;
+        lastX = e.clientX; lastY = e.clientY;
+        canvas.style.cursor = "move";
+        return;
+      }
+      if (e.button !== 0) return;
       dragging = true; dragged = false;
       lastX = e.clientX; lastY = e.clientY;
       vAz = vPol = 0;
@@ -751,12 +772,20 @@ export function BirthSky3D({
       }
       const dx = e.clientX - lastX, dy = e.clientY - lastY;
       lastX = e.clientX; lastY = e.clientY;
+      if (panning) {
+        // slide the focus along the camera's own right and up
+        camera.matrixWorld.extractBasis(_pr, _pu, _pf);
+        const k = dist * 0.0011;
+        focus.addScaledVector(_pr, -dx * k).addScaledVector(_pu, dy * k);
+        focusTarget.copy(focus);
+        return;
+      }
       if (Math.abs(dx) + Math.abs(dy) > 2) dragged = true;
       vAz = -dx * 0.005; vPol = -dy * 0.005;
       az += vAz; pol = clampPol(pol + vPol);
     });
     on(interactTarget, "pointerup", () => {
-      dragging = false;
+      dragging = false; panning = false;
       canvas.style.cursor = "grab";
       if (globalInteract) document.body.style.userSelect = "";
       setTimeout(() => { dragged = false; }, 0);
@@ -822,7 +851,7 @@ export function BirthSky3D({
 
       if (!still) {
         earth.rotateY(0.0016);
-        for (const g of grahas) g.mesh.rotateY(g.name === "Sun" ? 0.0008 : 0.003);
+        for (const g of grahas) { if (g.name !== "Earth") g.mesh.rotateY(g.name === "Sun" ? 0.0008 : 0.003); }
         if (orbitsRef.current) {
           for (const g of grahas) g.pivot.rotation.y += ORBIT_RATE[g.name] ?? 0;
           ascPivot.rotation.y += 0.0011; // the whole zodiac rises in a day
@@ -852,9 +881,11 @@ export function BirthSky3D({
       if (selG) {
         selG.mesh.getWorldPosition(focusTarget);
         distTarget = Math.min(distTarget, Math.max(30, selG.r * 8));
-      } else {
+      } else if (lastSel !== null) {
+        // returning from a visit goes home; otherwise the focus stays where a
+        // pan left it instead of being dragged back every frame
         focusTarget.set(0, 0, 0);
-        if (lastSel !== null) distTarget = HOME_DIST;
+        distTarget = HOME_DIST;
       }
       if (lastSel !== (sel ?? null) && selG) distTarget = Math.max(32, selG.r * 8);
       lastSel = sel ?? null;
@@ -945,8 +976,8 @@ export function BirthSky3D({
       {hint && (
       <p className="pointer-events-none absolute bottom-2 right-3 z-10 text-[10px] text-white/40">
         {wheelZoom
-          ? "drag to orbit · scroll to zoom · click a graha to visit it"
-          : "drag to orbit · click a graha to visit it"}
+          ? "drag to orbit · right-drag to pan · scroll to zoom · click a graha to visit it"
+          : "drag to orbit · right-drag to pan · click a graha to visit it"}
       </p>
       )}
     </div>
