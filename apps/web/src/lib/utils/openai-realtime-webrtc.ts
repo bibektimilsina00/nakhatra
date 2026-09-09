@@ -246,6 +246,7 @@ export class OpenAIRealtimeWebRTCClient {
     if (!event?.type) return;
 
     switch (event.type) {
+      case "response.output_audio_transcript.delta": // GA name
       case "response.audio_transcript.delta":
         // The microphone closes for the duration. Two things follow from it:
         // the astrologer cannot hear itself or the room while it talks, and the
@@ -259,6 +260,7 @@ export class OpenAIRealtimeWebRTCClient {
         this.callbacks.onTranscriptDelta?.((event.delta as string) || "");
         break;
 
+      case "response.output_audio_transcript.done": // GA name
       case "response.audio_transcript.done":
         this.assistantIsSpeaking = false;
         this.callbacks.onTranscriptComplete?.(this.currentAssistantTranscript);
