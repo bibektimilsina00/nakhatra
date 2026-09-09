@@ -130,6 +130,7 @@ export function BirthSky3D({
   subtleRing = false,
   avoidSelector,
   planetLabels = true,
+  hint = true,
 }: {
   chart: Chart;
   selected: string | null;
@@ -158,6 +159,8 @@ export function BirthSky3D({
   avoidSelector?: string;
   /** Off in the hero: the planets speak for themselves as a backdrop. */
   planetLabels?: boolean;
+  /** The corner usage hint; off for non-interactive previews. */
+  hint?: boolean;
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const chipRef = useRef<HTMLDivElement>(null);
@@ -939,11 +942,13 @@ export function BirthSky3D({
           className="whitespace-nowrap rounded-[6px] border border-white/15 bg-[#0B0E18]/90 px-2 py-1 font-mono text-[10px] leading-none text-[#F3C766] backdrop-blur-md"
         />
       </div>
+      {hint && (
       <p className="pointer-events-none absolute bottom-2 right-3 z-10 text-[10px] text-white/40">
         {wheelZoom
           ? "drag to orbit · scroll to zoom · click a graha to visit it"
           : "drag to orbit · click a graha to visit it"}
       </p>
+      )}
     </div>
   );
 }

@@ -8,6 +8,7 @@ import { ReportSectionCard } from "@/features/report/components/report-section-c
 import { SectionIcon } from "@/features/report/components/section-icon";
 import { useRouter } from "next/navigation";
 import { exportElementToPdf } from "@/lib/utils/pdf-exporter";
+import { BirthSky3D } from "@/features/kundali/components/birth-sky-3d";
 import { DashaChakra } from "@/features/kundali/components/dasha-chakra";
 import { NorthIndianChart } from "@/features/kundali/components/north-indian-chart";
 import { PatroHead } from "@/features/kundali/components/patro-head";
@@ -48,6 +49,7 @@ import {
   RotateCcw,
   RotateCw,
   Orbit,
+  Maximize2,
   Gem,
   Activity,
 } from "lucide-react";
@@ -625,21 +627,12 @@ export function ReadingDashboard() {
                 <h3 className="font-serif text-xs font-bold uppercase tracking-wider text-[#26221b] flex items-center gap-1.5">
                   <Orbit className="size-3.5 text-[#9B1C1C]" /> {t.planetaryPositionsTitle}
                 </h3>
-                <div className="flex items-center gap-3">
-                  <button
-                    onClick={() => router.push("/sky")}
-                    className="flex items-center gap-1 rounded-[6px] border border-red-800/50 bg-[#efe3c8] px-2 py-1 text-[10px] font-bold text-[#9B1C1C] transition hover:bg-[#9B1C1C] hover:text-[#f7efdc]"
-                  >
-                    <Sparkles className="size-3" />
-                    {language === "en" ? "Birth Sky" : "जन्म आकाश"}
-                  </button>
-                  <button
-                    onClick={() => setShowFullPlanets(!showFullPlanets)}
-                    className="text-[10px] font-bold text-[#9B1C1C] hover:underline"
-                  >
-                    {showFullPlanets ? t.compactLabel : t.fullDetailsLabel}
-                  </button>
-                </div>
+                <button
+                  onClick={() => setShowFullPlanets(!showFullPlanets)}
+                  className="text-[10px] font-bold text-[#9B1C1C] hover:underline"
+                >
+                  {showFullPlanets ? t.compactLabel : t.fullDetailsLabel}
+                </button>
               </div>
 
               <div className="overflow-x-auto">
@@ -1024,6 +1017,43 @@ export function ReadingDashboard() {
                 </div>
               </div>
             )}
+
+            {/* Birth Sky preview — the real scene, stilled; the whole card
+                opens the full sky. Always night, whatever the theme: it is
+                the sky. */}
+            <button
+              type="button"
+              onClick={() => router.push("/sky")}
+              aria-label={language === "en" ? "Open the Birth Sky" : "जन्म आकाश खोल्नुहोस्"}
+              className="group relative block h-[300px] w-full overflow-hidden rounded-[8px] border border-brd bg-[#090A10] text-left"
+            >
+              <div className="pointer-events-none absolute inset-0">
+                <BirthSky3D
+                  chart={activeChart}
+                  selected={null}
+                  onSelect={() => {}}
+                  showNakshatras={false}
+                  showAspects={false}
+                  hint={false}
+                  className="absolute inset-0 h-full w-full"
+                />
+              </div>
+              <div className="pointer-events-none absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 bg-gradient-to-t from-black/75 via-black/30 to-transparent px-4 pb-3 pt-10">
+                <span className="min-w-0">
+                  <span className="block font-serif text-[13.5px] font-bold text-[#F8FAFC]">
+                    {language === "en" ? "The Sky at Birth" : "जन्मकालीन आकाश"}
+                  </span>
+                  <span className="mt-0.5 block truncate text-[11px] text-[#94A3B8]">
+                    {language === "en"
+                      ? "Every graha at its true degree — open to explore in 3D"
+                      : "हरेक ग्रह आफ्नै वास्तविक अंशमा — 3D मा घुमाएर हेर्नुहोस्"}
+                  </span>
+                </span>
+                <span className="flex size-8 shrink-0 items-center justify-center rounded-[8px] border border-white/20 bg-[#0B0E18]/80 text-[#F3C766] transition group-hover:border-[#E5A93C] group-hover:bg-[#E5A93C] group-hover:text-[#090A10]">
+                  <Maximize2 className="size-4" />
+                </span>
+              </div>
+            </button>
 
             {/* 2. Category Navigation Pills */}
             <div className="flex gap-2 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
