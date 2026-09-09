@@ -128,7 +128,7 @@ export class GeminiLiveClient {
                 responseModalities: ["AUDIO"],
                 speechConfig: {
                   voiceConfig: {
-                    prebuiltVoiceConfig: { voiceName: GEMINI_VOICES[voice] ?? "Charon" },
+                    prebuiltVoiceConfig: { voiceName: GEMINI_VOICES[voice] ?? voice },
                   },
                 },
               },

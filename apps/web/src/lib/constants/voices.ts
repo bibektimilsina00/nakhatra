@@ -107,3 +107,99 @@ export const ASTROLOGER_VOICES: AstrologerVoice[] = [
     },
   },
 ];
+
+/**
+ * Gemini Live's own cast, offered when the session runs on Gemini so the
+ * choice is the real voice rather than an OpenAI persona mapped sideways.
+ * A curated eight of the model's larger set; ids are Gemini's voice names.
+ */
+export const GEMINI_ASTROLOGER_VOICES: AstrologerVoice[] = [
+  {
+    id: "Charon",
+    name: "Charon",
+    title: "Deep & Informative",
+    gender: "male",
+    description: {
+      en: "Deep, grounded male tone",
+      ne: "गहिरो, स्थिर पुरुष स्वर",
+      hi: "गहरा, स्थिर पुरुष स्वर",
+    },
+  },
+  {
+    id: "Fenrir",
+    name: "Fenrir",
+    title: "Warm & Energetic",
+    gender: "male",
+    description: {
+      en: "Warm, lively male tone",
+      ne: "न्यानो, जोसिलो पुरुष स्वर",
+      hi: "गर्म, जीवंत पुरुष स्वर",
+    },
+  },
+  {
+    id: "Orus",
+    name: "Orus",
+    title: "Firm & Steady",
+    gender: "male",
+    description: {
+      en: "Firm, steady male tone",
+      ne: "दृढ, स्थिर पुरुष स्वर",
+      hi: "दृढ़, स्थिर पुरुष स्वर",
+    },
+  },
+  {
+    id: "Puck",
+    name: "Puck",
+    title: "Bright & Upbeat",
+    gender: "male",
+    description: {
+      en: "Bright, upbeat male tone",
+      ne: "उज्यालो, हँसिलो पुरुष स्वर",
+      hi: "उज्ज्वल, प्रसन्न पुरुष स्वर",
+    },
+  },
+  {
+    id: "Kore",
+    name: "Kore",
+    title: "Serene & Firm",
+    gender: "female",
+    description: {
+      en: "Serene, assured female tone",
+      ne: "शान्त, आत्मविश्वासी महिला स्वर",
+      hi: "शांत, आश्वस्त महिला स्वर",
+    },
+  },
+  {
+    id: "Aoede",
+    name: "Aoede",
+    title: "Breezy & Warm",
+    gender: "female",
+    description: {
+      en: "Breezy, warm female tone",
+      ne: "हल्का, न्यानो महिला स्वर",
+      hi: "हल्का, गर्म महिला स्वर",
+    },
+  },
+  {
+    id: "Leda",
+    name: "Leda",
+    title: "Youthful & Clear",
+    gender: "female",
+    description: {
+      en: "Youthful, clear female tone",
+      ne: "युवा, स्पष्ट महिला स्वर",
+      hi: "युवा, स्पष्ट महिला स्वर",
+    },
+  },
+  {
+    id: "Zephyr",
+    name: "Zephyr",
+    title: "Bright & Friendly",
+    gender: "female",
+    description: {
+      en: "Bright, friendly female tone",
+      ne: "उज्यालो, मैत्री महिला स्वर",
+      hi: "उज्ज्वल, मैत्रीपूर्ण महिला स्वर",
+    },
+  },
+];

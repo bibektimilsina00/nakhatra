@@ -35,7 +35,10 @@ class RealtimeSessionRequest(BaseModel):
     chart: ChartOut
     birth: BirthDetailsIn
     language: Language = "en"
-    voice: Voice = "ash"
+    # Wider than the TTS Voice literal on purpose: Gemini sessions name
+    # voices from Gemini's own cast (Charon, Kore, ...). Widening accepts
+    # every old value, so no shipped client breaks.
+    voice: str = Field(default="ash", max_length=32, pattern=r"^[A-Za-z]+$")
     provider: str | None = Field(
         default=None,
         description="Pin the realtime provider. The browser sends 'openai' "

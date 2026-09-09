@@ -13,7 +13,7 @@ import type { ChatMessage } from "@/features/chat/types";
 import { speakText, stopSpeech } from "@/lib/utils/audio-speaker";
 import { OpenAIRealtimeWebRTCClient, type RealtimeWebRTCCallbacks } from "@/lib/utils/openai-realtime-webrtc";
 import { GeminiLiveClient } from "@/lib/utils/gemini-live-client";
-import { ASTROLOGER_VOICES } from "@/lib/constants/voices";
+import { ASTROLOGER_VOICES, GEMINI_ASTROLOGER_VOICES } from "@/lib/constants/voices";
 import { CustomVoiceSelector } from "@/features/voice/components/voice-selector";
 import { authHeaders } from "@/features/auth/store/auth-store";
 import { useAskAstrologer } from "@/features/chat/hooks/use-ask-astrologer";
@@ -232,6 +232,7 @@ export function LiveModeWorkspace() {
   const selectedLanguageRef = useRef<"en" | "ne" | "hi">(globalLang);
 
   const [selectedVoice, setSelectedVoice] = useState<string>("onyx");
+  const [liveProvider, setLiveProvider] = useState<string>("openai");
   const selectedVoiceRef = useRef<string>("onyx");
 
   const handleVoiceChange = (newVoice: string) => {
@@ -549,6 +550,7 @@ export function LiveModeWorkspace() {
         }),
       });
       if (grantRes.ok) grant = await grantRes.json();
+      setLiveProvider(grant.provider ?? "openai");
     } catch {
       // the client's own failure path reports it
     }
@@ -634,6 +636,7 @@ export function LiveModeWorkspace() {
     // to OpenAI and carry on.
     if (!success && grant.provider === "gemini") {
       addDebugLog("GEMINI_FELL_BACK", "Gemini session refused; retrying on OpenAI");
+      setLiveProvider("openai");
       client.disconnect();
       client = new OpenAIRealtimeWebRTCClient(callbacks);
       webrtcClientRef.current = client;
@@ -1210,6 +1213,7 @@ onClick={() => setupMicAnalyzer()}
                     selectedVoice={selectedVoice}
                     onSelectVoice={(vId) => handleVoiceChange(vId)}
                     language={selectedLanguage}
+                    voices={liveProvider === "gemini" ? GEMINI_ASTROLOGER_VOICES : undefined}
                   />
 
                   {/* Mute / Unmute Button */}

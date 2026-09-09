@@ -261,6 +261,15 @@ async def _gemini_session(instructions: str) -> RealtimeSessionResponse | None:
     )
 
 
+_OPENAI_REALTIME_VOICES = frozenset(
+    {"alloy", "ash", "ballad", "cedar", "coral", "echo", "marin", "sage", "shimmer", "verse"}
+)
+
+
+def _openai_voice(voice: str) -> str:
+    return voice if voice in _OPENAI_REALTIME_VOICES else "cedar"
+
+
 async def create_realtime_session(req: RealtimeSessionRequest) -> RealtimeSessionResponse:
     """Mint an ephemeral key for the browser's WebRTC connection.
 
@@ -320,10 +329,12 @@ async def create_realtime_session(req: RealtimeSessionRequest) -> RealtimeSessio
                         "interrupt_response": False,
                     },
                 },
-                # onyx is a TTS-only voice — the Realtime API rejects it, and that
-                # rejection is exactly how "live voice" silently became the slow
-                # whisper pipeline. cedar is its deep-male counterpart there.
-                "output": {"voice": {"onyx": "cedar"}.get(req.voice, req.voice), "speed": 1.0},
+                # Only names OpenAI's Realtime API knows may pass: onyx is
+                # TTS-only (that rejection is how live voice once silently
+                # became the slow whisper pipeline), and a Gemini name lands
+                # here when a Gemini session falls back. Everything else
+                # becomes cedar, the house deep-male voice.
+                "output": {"voice": _openai_voice(req.voice), "speed": 1.0},
             },
         }
 

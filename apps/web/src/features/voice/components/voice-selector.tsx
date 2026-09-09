@@ -19,6 +19,7 @@ interface CustomVoiceSelectorProps {
   onSelectVoice: (voiceId: string) => void;
   language: Language;
   className?: string;
+  voices?: AstrologerVoice[];
 }
 
 export function CustomVoiceSelector({
@@ -26,13 +27,14 @@ export function CustomVoiceSelector({
   onSelectVoice,
   language,
   className = "",
+  voices = ASTROLOGER_VOICES,
 }: CustomVoiceSelectorProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [previewingVoiceId, setPreviewingVoiceId] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const currentVoiceObj =
-    ASTROLOGER_VOICES.find((v) => v.id === selectedVoice) || ASTROLOGER_VOICES[0];
+    voices.find((v) => v.id === selectedVoice) || voices[0];
 
   // Closes on an outside click or Escape. It used to handle only the first,
   // and kept the listener attached even while closed.
@@ -134,7 +136,7 @@ export function CustomVoiceSelector({
 
           {/* Voice Items List */}
           <div className="mt-1.5 max-h-72 overflow-y-auto space-y-1 pr-0.5 [scrollbar-width:thin] [scrollbar-color:#E5A93C/30_transparent]">
-            {ASTROLOGER_VOICES.map((voice) => {
+            {voices.map((voice) => {
               const isSelected = voice.id === selectedVoice;
               const isPreviewing = previewingVoiceId === voice.id;
 
