@@ -107,33 +107,22 @@ export function BirthSky3D({
     const loader = new THREE.TextureLoader();
     const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
     renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-    // Filmic tone mapping is most of what "high quality" means here: without
-    // it the bloom clips and every texture reads flat.
-    renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.1;
+    // Colour pipeline deliberately mirrors the landing page's solar system —
+    // no tone mapping, no texture colorSpace tagging — so the same files
+    // render the same colours there and here. Tagging them sRGB and adding
+    // ACES was "more correct" and made the Sun redden and every planet drift
+    // from the look the rest of the site established.
     const maxAniso = renderer.capabilities.getMaxAnisotropy();
-    /** A colour texture: sRGB and fully anisotropic, or it looks washed out
-     *  and smears at grazing angles. */
     const T = (f: string) => {
       const t = loader.load(IMG + f);
-      t.colorSpace = THREE.SRGBColorSpace;
       t.anisotropy = maxAniso;
       return t;
     };
-    /** A data texture (bump/normal): linear, never sRGB. */
-    const D = (f: string) => {
-      const t = loader.load(IMG + f);
-      t.anisotropy = maxAniso;
-      return t;
-    };
+    const D = T;
 
     const scene = new THREE.Scene();
-    {
-      const cube = new THREE.CubeTextureLoader().setPath(IMG)
-        .load(["3.jpg", "1.jpg", "2.jpg", "2.jpg", "4.jpg", "2.jpg"]);
-      cube.colorSpace = THREE.SRGBColorSpace;
-      scene.background = cube;
-    }
+    scene.background = new THREE.CubeTextureLoader().setPath(IMG)
+      .load(["3.jpg", "1.jpg", "2.jpg", "2.jpg", "4.jpg", "2.jpg"]);
 
     const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 2000);
 
@@ -151,23 +140,40 @@ export function BirthSky3D({
     const lagnaLon = chart.lagna_sign_index * 30 + chart.lagna_degree;
 
     /* ── light comes from where the Sun actually stood ───────────── */
-    scene.add(new THREE.AmbientLight(0x8899bb, 2.2));
-    scene.add(new THREE.HemisphereLight(0xaabbdd, 0x221a10, 1.4));
+    scene.add(new THREE.AmbientLight(0xffffff, 0.9));
+    scene.add(new THREE.HemisphereLight(0xdddddd, 0x222222, 0.6));
     const sunLight = new THREE.PointLight(0xfdffd3, 2600, 900, 1.6);
     sunLight.position.copy(at(lonOf("Sun"), SHELL.Sun.r));
     scene.add(sunLight);
 
     /* ── the Earth, home of the moment ───────────────────────────── */
-    const earthMat = new THREE.MeshPhongMaterial({
-      map: T("earth_daymap.jpg"),
-      normalMap: D("earth_normalmap.jpg"),
-      normalScale: new THREE.Vector2(0.8, 0.8),
-      specularMap: D("earth_specularmap.jpg"),
-      specular: new THREE.Color(0x333333),
-      shininess: 18,
-      emissiveMap: T("earth_nightmap.jpg"),
-      emissive: new THREE.Color(0x887755),
-      emissiveIntensity: 0.55,
+    // The landing page's own day/night terminator shader, unchanged, so the
+    // Earth here is the Earth there.
+    const earthMat = new THREE.ShaderMaterial({
+      uniforms: {
+        dayTexture: { value: T("earth_daymap.jpg") },
+        nightTexture: { value: T("earth_nightmap.jpg") },
+        sunPosition: { value: sunLight.position },
+      },
+      vertexShader: `
+        varying vec3 vNormal; varying vec2 vUv; varying vec3 vSunDirection;
+        uniform vec3 sunPosition;
+        void main() {
+          vUv = uv;
+          vec4 worldPosition = modelMatrix * vec4(position, 1.0);
+          vNormal = normalize(modelMatrix * vec4(normal, 0.0)).xyz;
+          vSunDirection = normalize(sunPosition - worldPosition.xyz);
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }`,
+      fragmentShader: `
+        uniform sampler2D dayTexture; uniform sampler2D nightTexture;
+        varying vec3 vNormal; varying vec2 vUv; varying vec3 vSunDirection;
+        void main() {
+          float intensity = max(dot(vNormal, vSunDirection), 0.0);
+          vec4 dayColor = texture2D(dayTexture, vUv);
+          vec4 nightColor = texture2D(nightTexture, vUv) * 0.35;
+          gl_FragColor = mix(nightColor, dayColor, intensity);
+        }`,
     });
     const earth = new THREE.Mesh(new THREE.SphereGeometry(10, 96, 64), earthMat);
     earth.rotation.z = (23.44 * Math.PI) / 180;
@@ -410,7 +416,7 @@ export function BirthSky3D({
     /* ── bloom ───────────────────────────────────────────────────── */
     const composer = new EffectComposer(renderer);
     composer.addPass(new RenderPass(scene, camera));
-    composer.addPass(new UnrealBloomPass(new THREE.Vector2(1, 1), 0.42, 0.4, 0.85));
+    composer.addPass(new UnrealBloomPass(new THREE.Vector2(1, 1), 0.6, 0.4, 0.85));
 
     /* ── drag-orbit camera around a movable focus ─────────────────────
        Why the landing page's planets look rich and a fixed wide shot does
