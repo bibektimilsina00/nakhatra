@@ -96,6 +96,20 @@ const YOGATARA: { name: string; ra: number; dec: number; bright?: boolean }[] = 
   { name: "Revati", ra: 18.43, dec: 7.58 },
 ];
 
+/** Ambient revolution rates (radians per frame), echoing the geocentric
+ *  hierarchy the way the old solar system echoed the heliocentric one. */
+const ORBIT_RATE: Record<string, number> = {
+  Moon: 0.0035,
+  Mercury: 0.0016,
+  Venus: 0.0013,
+  Sun: 0.001,
+  Mars: 0.0006,
+  Jupiter: 0.00025,
+  Saturn: 0.00012,
+  Rahu: -0.00008,
+  Ketu: -0.00008,
+};
+
 const RING_IN = 196;
 const RING_OUT = 234;
 const NAK_R = 186;
@@ -108,6 +122,7 @@ export function BirthSky3D({
   showAspects,
   className = "relative h-[76vh] min-h-[500px] w-full overflow-hidden rounded-[12px]",
   wheelZoom = true,
+  animateOrbits = false,
 }: {
   chart: Chart;
   selected: string | null;
@@ -119,6 +134,11 @@ export function BirthSky3D({
   /** Off for full-bleed embeds, where hijacking the wheel would trap the
    *  page's own scroll. */
   wheelZoom?: boolean;
+  /** Ambient revolution, for the landing hero: each graha rides its shell at
+   *  a rate echoing the real hierarchy — the Moon quickest, Saturn slowest,
+   *  the nodes creeping retrograde. Never for a birth chart, whose positions
+   *  are the whole point. */
+  animateOrbits?: boolean;
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const chipRef = useRef<HTMLDivElement>(null);
@@ -131,11 +151,13 @@ export function BirthSky3D({
   const aspRef = useRef(showAspects);
   const onSelectRef = useRef(onSelect);
   const wheelZoomRef = useRef(wheelZoom);
+  const orbitsRef = useRef(animateOrbits);
   useEffect(() => { selRef.current = selected; }, [selected]);
   useEffect(() => { nakRef.current = showNakshatras; }, [showNakshatras]);
   useEffect(() => { aspRef.current = showAspects; }, [showAspects]);
   useEffect(() => { onSelectRef.current = onSelect; }, [onSelect]);
   useEffect(() => { wheelZoomRef.current = wheelZoom; }, [wheelZoom]);
+  useEffect(() => { orbitsRef.current = animateOrbits; }, [animateOrbits]);
 
   useEffect(() => {
     if (!canvasRef.current || !chipRef.current || !panelRef.current) return;
@@ -238,7 +260,7 @@ export function BirthSky3D({
 
     /* ── shadow-planet dressing ──────────────────────────────────── */
     const nodeFx: { shell: THREE.ShaderMaterial; glow: THREE.SpriteMaterial; phase: number }[] = [];
-    function dressNode(mesh: THREE.Mesh, size: number, hex: string) {
+    function dressNode(mesh: THREE.Mesh, size: number, hex: string, parent: THREE.Object3D) {
       const color = new THREE.Color(hex);
       // rim-only fresnel shell — smoke catching light at the silhouette
       const shell = new THREE.ShaderMaterial({
@@ -264,7 +286,7 @@ export function BirthSky3D({
       });
       const rimMesh = new THREE.Mesh(new THREE.SphereGeometry(size * 1.18, 48, 32), shell);
       rimMesh.position.copy(mesh.position);
-      scene.add(rimMesh);
+      parent.add(rimMesh);
 
       // soft halo behind it
       const cnv = document.createElement("canvas");
@@ -284,14 +306,14 @@ export function BirthSky3D({
       const sprite = new THREE.Sprite(glow);
       sprite.scale.setScalar(size * 4.2);
       sprite.position.copy(mesh.position);
-      scene.add(sprite);
+      parent.add(sprite);
 
       nodeFx.push({ shell, glow, phase: nodeFx.length * Math.PI });
     }
 
 
     /* ── the nine grahas, each at its engine longitude ───────────── */
-    type GrahaMesh = { name: string; mesh: THREE.Mesh; r: number; lon: number; label: THREE.Sprite };
+    type GrahaMesh = { name: string; mesh: THREE.Mesh; r: number; lon: number; label: THREE.Sprite; pivot: THREE.Group };
     const grahas: GrahaMesh[] = [];
 
     const material = (name: string): THREE.Material => {
@@ -364,20 +386,25 @@ export function BirthSky3D({
       const shell = SHELL[p.name];
       if (!shell) continue;
       const lon = p.sign_index * 30 + p.degree_in_sign;
+      const pivot = new THREE.Group();
+      scene.add(pivot);
       const mesh = new THREE.Mesh(
         new THREE.SphereGeometry(shell.size, 72, 48), material(p.name),
       );
       mesh.position.copy(at(lon, shell.r));
-      scene.add(mesh);
+      pivot.add(mesh);
 
       if (p.name === "Saturn") {
         const ring = new THREE.Mesh(
           new THREE.RingGeometry(shell.size + 1.6, shell.size + 4.6, 96),
-          new THREE.MeshStandardMaterial({ map: T("saturn_ring.png"), side: THREE.DoubleSide }),
+          new THREE.MeshStandardMaterial({
+            map: T("saturn_ring.png"), side: THREE.DoubleSide,
+            emissiveMap: T("saturn_ring.png"), emissive: 0xbbaa88, emissiveIntensity: 0.4,
+          }),
         );
         ring.position.copy(mesh.position);
         ring.rotation.x = -0.45 * Math.PI;
-        scene.add(ring);
+        pivot.add(ring);
       }
 
       // one faint gold shell each (the nodes share the lunar band)
@@ -398,11 +425,11 @@ export function BirthSky3D({
         PLANET_COLORS[p.name] ?? "#F8FAFC", 42,
       );
       label.position.copy(at(lon, shell.r, shell.size + 7));
-      scene.add(label);
-      grahas.push({ name: p.name, mesh, r: shell.size, lon, label });
+      pivot.add(label);
+      grahas.push({ name: p.name, mesh, r: shell.size, lon, label, pivot });
 
       if (p.name === "Rahu" || p.name === "Ketu") {
-        dressNode(mesh, shell.size, PLANET_COLORS[p.name]);
+        dressNode(mesh, shell.size, PLANET_COLORS[p.name], pivot);
       }
     }
 
@@ -424,7 +451,7 @@ export function BirthSky3D({
           }),
         );
         line.computeLineDistances();
-        scene.add(line);
+        node.pivot.add(line);
       }
     }
 
@@ -615,7 +642,7 @@ export function BirthSky3D({
       for (const h of p.aspects_houses) {
         const target = ((chart.lagna_sign_index + h - 1) % 12) * 30 + 15;
         const geo = new THREE.BufferGeometry().setFromPoints([
-          g.mesh.position.clone(), at(target, RING_IN - 4),
+          g.mesh.getWorldPosition(new THREE.Vector3()), at(target, RING_IN - 4),
         ]);
         const line = new THREE.Line(
           geo,
@@ -741,6 +768,9 @@ export function BirthSky3D({
       if (!still) {
         earth.rotateY(0.0016);
         for (const g of grahas) g.mesh.rotateY(g.name === "Sun" ? 0.0008 : 0.003);
+        if (orbitsRef.current) {
+          for (const g of grahas) g.pivot.rotation.y += ORBIT_RATE[g.name] ?? 0;
+        }
         // the shadow planets breathe — slow, out of phase with each other
         const t = performance.now() * 0.0012;
         for (const fx of nodeFx) {
@@ -764,7 +794,7 @@ export function BirthSky3D({
       // deselecting sends it home to the whole wheel
       const selG = sel ? grahas.find((x) => x.name === sel) : null;
       if (selG) {
-        focusTarget.copy(selG.mesh.position);
+        selG.mesh.getWorldPosition(focusTarget);
         distTarget = Math.min(distTarget, Math.max(30, selG.r * 8));
       } else {
         focusTarget.set(0, 0, 0);
@@ -789,7 +819,7 @@ export function BirthSky3D({
       for (const x of grahas) x.label.visible = x.name !== sel;
       halo.visible = !!g && dist > (g?.r ?? 1) * 14;
       if (g) {
-        halo.position.copy(g.mesh.position);
+        g.mesh.getWorldPosition(halo.position);
         halo.scale.setScalar((g.r + 2.5) / 6);
         halo.lookAt(camera.position);
         // chip follows it on screen

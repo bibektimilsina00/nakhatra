@@ -62,6 +62,7 @@ export function HeroSky() {
       showNakshatras={false}
       showAspects={false}
       wheelZoom={false}
+      animateOrbits
       className="absolute inset-0 h-full w-full overflow-hidden"
     />
   );
