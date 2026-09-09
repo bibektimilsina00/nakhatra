@@ -31,7 +31,7 @@
       "time_accuracy": "exact",
       "tz_name": "Asia/Kathmandu"
     },
-    "computed_at": "2026-09-08T19:43:44.156837+00:00",
+    "computed_at": "2026-09-09T05:30:07.770230+00:00",
     "dasha": {
       "balance_years": 5.648281214794409,
       "bhabhoga_ghati": 53.925,
@@ -5864,7 +5864,7 @@
       ]
     },
     "doshas": [],
-    "engine_version": "0.6.0",
+    "engine_version": "0.6.1",
     "houses": [
       {
         "lord": "Moon",
@@ -14611,6 +14611,6 @@
     }
   },
   "name": "nepal_post_1986",
-  "verified_against": "Independent reimplementation (tests/astrology/independent.py): UTC offset from the IANA database via zoneinfo, Julian Day per Meeus ch.7, ascendant by spherical trigonometry per Meeus ch.12/22 \u2014 agreeing within 0.25 arcmin and 0.01s. This fixture is a synthetic probe, not a real birth, so no hand-cast kundali exists for it or can; what it asserts is Asia/Kathmandu at +5:45:00, and that is what was independently confirmed. Planetary longitudes are not independently confirmed here \u2014 they rest on test_invariants.py and the hand-cast graha sphuta table in test_textbook.py.",
+  "verified_against": "Independent reimplementation (tests/astrology/independent.py): UTC offset from the IANA database via zoneinfo, Julian Day per Meeus ch.7, ascendant by spherical trigonometry per Meeus ch.12/22 \u2014 agreeing within 0.25 arcmin and 0.01s. This fixture is a synthetic probe, not a real birth, so no hand-cast kundali exists for it or can; what it asserts is Asia/Kathmandu at +5:45:00, and that is what was independently confirmed. Planetary longitudes are not independently confirmed here \u2014 they rest on test_invariants.py and the hand-cast graha sphuta table in test_textbook.py. Re-frozen unchanged at engine 0.6.1: the Moon epicycle correction is inside Surya Siddhanta and this fixture is drik, so every value here is byte-identical to 0.6.0 and only the version stamp moved.",
   "why": "Same city after the 1986 change to +5:45. Diff against nepal_pre_1986."
 }

@@ -17,7 +17,7 @@ from typing import Final
 #: 39/42 where the modern ephemeris scores 29/42. `build_chart(..., "drik")`
 #: still gives the modern positions, and every fixture states which system it
 #: was verified against.
-ENGINE_VERSION: Final = "0.6.0"
+ENGINE_VERSION: Final = "0.6.1"
 
 DEGREES_PER_SIGN: Final = 30.0
 DEGREES_PER_NAKSHATRA: Final = 360.0 / 27.0      # 13°20'

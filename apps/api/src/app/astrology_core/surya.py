@@ -70,7 +70,7 @@ SUN_APOGEE: Final = 77.0 + 17.0 / 60.0
 
 #: Manda epicycle circumferences, in degrees, at the ends of the even and odd
 #: quadrants (SS II.34-38). The value between them is interpolated.
-MOON_EPICYCLE: Final = (32.0, 31.6)
+MOON_EPICYCLE: Final = (32.0, 31.0 + 40.0 / 60.0)
 SUN_EPICYCLE: Final = (14.0, 13.0 + 40.0 / 60.0)
 
 

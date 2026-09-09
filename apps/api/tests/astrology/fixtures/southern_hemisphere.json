@@ -31,7 +31,7 @@
       "time_accuracy": "exact",
       "tz_name": "Australia/Sydney"
     },
-    "computed_at": "2026-09-08T19:43:44.461096+00:00",
+    "computed_at": "2026-09-09T05:30:08.038363+00:00",
     "dasha": {
       "balance_years": 4.413999787747798,
       "bhabhoga_ghati": 53.399,
@@ -5864,7 +5864,7 @@
       ]
     },
     "doshas": [],
-    "engine_version": "0.6.0",
+    "engine_version": "0.6.1",
     "houses": [
       {
         "lord": "Saturn",
@@ -14610,6 +14610,6 @@
     }
   },
   "name": "southern_hemisphere",
-  "verified_against": "Independent reimplementation (tests/astrology/independent.py): UTC offset from the IANA database via zoneinfo, Julian Day per Meeus ch.7, ascendant by spherical trigonometry per Meeus ch.12/22 \u2014 agreeing within 0.25 arcmin and 0.01s. This fixture is a synthetic probe, not a real birth, so no hand-cast kundali exists for it or can; what it asserts is Australia/Sydney at +11:00 with negative latitude, and that is what was independently confirmed. Planetary longitudes are not independently confirmed here \u2014 they rest on test_invariants.py and the hand-cast graha sphuta table in test_textbook.py.",
+  "verified_against": "Independent reimplementation (tests/astrology/independent.py): UTC offset from the IANA database via zoneinfo, Julian Day per Meeus ch.7, ascendant by spherical trigonometry per Meeus ch.12/22 \u2014 agreeing within 0.25 arcmin and 0.01s. This fixture is a synthetic probe, not a real birth, so no hand-cast kundali exists for it or can; what it asserts is Australia/Sydney at +11:00 with negative latitude, and that is what was independently confirmed. Planetary longitudes are not independently confirmed here \u2014 they rest on test_invariants.py and the hand-cast graha sphuta table in test_textbook.py. Re-frozen unchanged at engine 0.6.1: the Moon epicycle correction is inside Surya Siddhanta and this fixture is drik, so every value here is byte-identical to 0.6.0 and only the version stamp moved.",
   "why": "Negative latitude. Catches sign errors in ascendant math."
 }
