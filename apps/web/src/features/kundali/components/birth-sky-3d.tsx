@@ -187,6 +187,60 @@ export function BirthSky3D({
     );
     earth.add(earthAtmo);
 
+    /* ── shadow-planet dressing ──────────────────────────────────── */
+    const nodeFx: { shell: THREE.ShaderMaterial; glow: THREE.SpriteMaterial; phase: number }[] = [];
+    function dressNode(mesh: THREE.Mesh, size: number, hex: string) {
+      const color = new THREE.Color(hex);
+      // rim-only fresnel shell — smoke catching light at the silhouette
+      const shell = new THREE.ShaderMaterial({
+        uniforms: { uColor: { value: color }, uPow: { value: 2.2 }, uGain: { value: 1.0 } },
+        vertexShader: `
+          varying vec3 vN; varying vec3 vV;
+          void main() {
+            vec4 wp = modelMatrix * vec4(position, 1.0);
+            vN = normalize(mat3(modelMatrix) * normal);
+            vV = normalize(cameraPosition - wp.xyz);
+            gl_Position = projectionMatrix * viewMatrix * wp;
+          }`,
+        fragmentShader: `
+          uniform vec3 uColor; uniform float uPow; uniform float uGain;
+          varying vec3 vN; varying vec3 vV;
+          void main() {
+            float rim = pow(1.0 - abs(dot(normalize(vN), normalize(vV))), uPow);
+            gl_FragColor = vec4(uColor, rim * uGain);
+          }`,
+        transparent: true,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+      });
+      const rimMesh = new THREE.Mesh(new THREE.SphereGeometry(size * 1.18, 48, 32), shell);
+      rimMesh.position.copy(mesh.position);
+      scene.add(rimMesh);
+
+      // soft halo behind it
+      const cnv = document.createElement("canvas");
+      cnv.width = cnv.height = 128;
+      const g2 = cnv.getContext("2d")!;
+      const grad2 = g2.createRadialGradient(64, 64, 4, 64, 64, 64);
+      grad2.addColorStop(0, hex + "99");
+      grad2.addColorStop(0.35, hex + "44");
+      grad2.addColorStop(1, hex + "00");
+      g2.fillStyle = grad2;
+      g2.fillRect(0, 0, 128, 128);
+      const glow = new THREE.SpriteMaterial({
+        map: new THREE.CanvasTexture(cnv),
+        transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+        opacity: 0.85,
+      });
+      const sprite = new THREE.Sprite(glow);
+      sprite.scale.setScalar(size * 4.2);
+      sprite.position.copy(mesh.position);
+      scene.add(sprite);
+
+      nodeFx.push({ shell, glow, phase: nodeFx.length * Math.PI });
+    }
+
+
     /* ── the nine grahas, each at its engine longitude ───────────── */
     type GrahaMesh = { name: string; mesh: THREE.Mesh; r: number; lon: number; label: THREE.Sprite };
     const grahas: GrahaMesh[] = [];
@@ -216,12 +270,14 @@ export function BirthSky3D({
         case "Saturn":
           return new THREE.MeshPhongMaterial({ map: T("saturnmap.jpg") });
         default:
-          // The nodes are points, not bodies — smoky, faintly self-lit.
+          // The nodes are chhaya grahas — shadows, not bodies. A near-black
+          // core; the presence comes from the rim shader and glow added
+          // after the mesh is built.
           return new THREE.MeshStandardMaterial({
-            color: name === "Rahu" ? 0x4b3f78 : 0x6e4630,
-            emissive: name === "Rahu" ? 0x8b7bc7 : 0xc77b58,
-            emissiveIntensity: 0.35,
-            roughness: 0.9,
+            color: name === "Rahu" ? 0x141026 : 0x1c0f08,
+            emissive: name === "Rahu" ? 0x2a2050 : 0x3a1c0e,
+            emissiveIntensity: 0.5,
+            roughness: 1.0,
           });
       }
     };
@@ -266,6 +322,32 @@ export function BirthSky3D({
       label.position.copy(at(lon, shell.r, shell.size + 7));
       scene.add(label);
       grahas.push({ name: p.name, mesh, r: shell.size, lon, label });
+
+      if (p.name === "Rahu" || p.name === "Ketu") {
+        dressNode(mesh, shell.size, PLANET_COLORS[p.name]);
+      }
+    }
+
+    /* ── the nodal axis: Rahu and Ketu are one serpent, always opposite ──
+       A faint dotted line from each node toward the Earth, stopping short of
+       it — the axis reads without skewering the globe. */
+    {
+      const rahu = grahas.find((g) => g.name === "Rahu");
+      const ketu = grahas.find((g) => g.name === "Ketu");
+      for (const node of [rahu, ketu]) {
+        if (!node) continue;
+        const inner = node.mesh.position.clone().setLength(16);
+        const outer = node.mesh.position.clone().setLength(SHELL.Rahu.r - node.r - 2);
+        const line = new THREE.Line(
+          new THREE.BufferGeometry().setFromPoints([inner, outer]),
+          new THREE.LineDashedMaterial({
+            color: new THREE.Color(PLANET_COLORS[node.name]),
+            transparent: true, opacity: 0.3, dashSize: 2, gapSize: 3,
+          }),
+        );
+        line.computeLineDistances();
+        scene.add(line);
+      }
     }
 
     /* ── the zodiac ring ─────────────────────────────────────────── */
@@ -522,6 +604,13 @@ export function BirthSky3D({
       if (!still) {
         earth.rotateY(0.0016);
         for (const g of grahas) g.mesh.rotateY(g.name === "Sun" ? 0.0008 : 0.003);
+        // the shadow planets breathe — slow, out of phase with each other
+        const t = performance.now() * 0.0012;
+        for (const fx of nodeFx) {
+          const b = 0.75 + 0.25 * Math.sin(t + fx.phase);
+          fx.shell.uniforms.uGain.value = b;
+          fx.glow.opacity = 0.45 + 0.25 * b;
+        }
       }
 
       // momentum after release
