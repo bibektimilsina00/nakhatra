@@ -2,11 +2,13 @@
 
 import { useState } from "react";
 
+import { DashaChakra, type DashaScheme } from "@/features/kundali/components/dasha-chakra";
 import {
   AvakhadaPanel,
   BirthDetailsPanel,
   PanchangPanel,
 } from "@/features/kundali/components/detail-tables";
+import { PatroHead } from "@/features/kundali/components/patro-head";
 import { NorthIndianChart } from "@/features/kundali/components/north-indian-chart";
 import { SouthIndianChart } from "@/features/kundali/components/south-indian-chart";
 import { Section, ViewMore, useReveal } from "@/features/kundali/components/section";
@@ -44,6 +46,11 @@ export function ChartView({
     <div className="space-y-16">
       <Header chart={chart} birth={birth} onReset={onReset} />
       <Jump />
+
+      {/* The document a family actually recognises: invocation, mangala
+          shlokas, and the sankalpa with this chart's values in the blanks —
+          laid out like the hand-written patros it was verified against. */}
+      <PatroHead chart={chart} birth={birth} />
 
       <Section
         id="chart"
@@ -435,9 +442,8 @@ function DashaTimeline({
   note?: string;
 }) {
   const { visible, hidden, expanded, toggle } = useReveal(periods, 4);
-  const start = new Date(periods[0].start).getTime();
-  const end = new Date(periods[periods.length - 1].end).getTime();
-  const span = end - start;
+  const scheme: DashaScheme =
+    id === "tribhagi" ? "tribhagi" : id === "yogini" ? "yogini" : "vimshottari";
 
   return (
     <Section
@@ -445,26 +451,11 @@ function DashaTimeline({
       title={title}
       note={note}
     >
-      <div className="mb-6 flex h-12 overflow-hidden rounded-lg border border-line">
-        {periods.map((p) => {
-          const width =
-            ((new Date(p.end).getTime() - new Date(p.start).getTime()) / span) * 100;
-          const active = isActive(p, now);
-          return (
-            <div
-              key={`${p.lord}-${p.start}`}
-              style={{ width: `${width}%` }}
-              title={`${p.lord}  ${p.start} → ${p.end}`}
-              className={`flex items-center justify-center border-r border-line/70 text-2xs last:border-r-0 ${
-                active
-                  ? "bg-accent-strong/25 font-medium text-fg"
-                  : "bg-surface text-muted hover:bg-surface/60"
-              }`}
-            >
-              {width > 6 ? p.lord.slice(0, 3) : ""}
-            </div>
-          );
-        })}
+      {/* The chakra table a hand-written patro uses — one column per lord,
+          years and end date beneath — instead of a proportional bar, so it
+          can be read cell-for-cell against a guru's kundali. */}
+      <div className="mb-6">
+        <DashaChakra periods={periods} now={now} scheme={scheme} />
       </div>
 
       <div className="space-y-1.5">
