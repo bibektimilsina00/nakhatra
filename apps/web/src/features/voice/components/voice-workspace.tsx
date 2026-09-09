@@ -155,7 +155,6 @@ export function LiveModeWorkspace() {
 
   const audioContextRef = useRef<AudioContext | null>(null);
   const mediaStreamRef = useRef<MediaStream | null>(null);
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const recognitionRef = useRef<any>(null);
   const webrtcClientRef = useRef<OpenAIRealtimeWebRTCClient | null>(null);
@@ -168,7 +167,6 @@ export function LiveModeWorkspace() {
   // Stale-closure-free refs for audio & VAD loop
   const voiceStateRef = useRef<"listening" | "thinking" | "speaking" | "paused">("paused");
   const isWebRTCActiveRef = useRef<boolean>(false);
-  const shouldTranscribeRef = useRef<boolean>(false);
 
   const updateVoiceState = (state: "listening" | "thinking" | "speaking" | "paused") => {
     voiceStateRef.current = state;
@@ -256,59 +254,6 @@ export function LiveModeWorkspace() {
     // helpers are recreated every render; depending on them would loop.
   }, [globalLang]);
 
-  // Transcribe recorded MediaRecorder audio blob using OpenAI Whisper API
-  const transcribeAudioBlob = async (audioBlob: Blob) => {
-    if (!audioBlob || audioBlob.size < 400) {
-      addDebugLog("WHISPER_SKIP", "Audio buffer too small for transcription");
-      if (activeSessionRef.current) {
-        updateVoiceState("listening");
-        startMediaRecorder();
-      }
-      return;
-    }
-
-    addDebugLog("WHISPER_TRANSCRIBE_START", `Sending ${Math.round(audioBlob.size / 1024)}KB audio to OpenAI Whisper (${selectedLanguageRef.current})...`);
-    setIsThinking(true);
-    updateVoiceState("thinking");
-
-    try {
-      const formData = new FormData();
-      formData.append("file", audioBlob, "speech.webm");
-      formData.append("language", selectedLanguageRef.current);
-
-      const res = await fetch("/api/v1/transcribe", {
-        method: "POST",
-        // Whisper is billed per minute; the endpoint is authenticated. The
-        // Content-Type is left to the browser so the multipart boundary is set.
-        headers: authHeaders(),
-        body: formData,
-      });
-
-      const data = await res.json();
-      setIsThinking(false);
-
-      if (data.text && data.text.trim()) {
-        addDebugLog("WHISPER_TRANSCRIBE_SUCCESS", `Transcribed: "${data.text}"`);
-        setInterimTranscript(data.text);
-        handleSend(data.text);
-      } else {
-        addDebugLog("WHISPER_NO_SPEECH", "No speech recognized in audio buffer");
-        if (activeSessionRef.current) {
-          updateVoiceState("listening");
-          startMediaRecorder();
-        }
-      }
-    } catch (err: any) {
-      console.error("Whisper transcription error:", err);
-      addDebugLog("WHISPER_ERROR", err?.message || "Whisper API request failed");
-      setIsThinking(false);
-      if (activeSessionRef.current) {
-        updateVoiceState("listening");
-        startMediaRecorder();
-      }
-    }
-  };
-
   const lastLoggedSilenceMsRef = useRef<number>(0);
   const speechDetectedLoggedRef = useRef<boolean>(false);
 
@@ -347,10 +292,6 @@ export function LiveModeWorkspace() {
 
       addDebugLog("MIC_HARDWARE_CONNECTED", "Hardware Mic Connected & Web Audio Analyser Active");
 
-      // Only in fallback mode. While the realtime session is up it owns the
-      // turn-taking, and a MediaRecorder buffering in parallel is a second
-      // transcription pipeline nobody reads plus a buffer that never drains.
-      if (!isWebRTCActiveRef.current) startMediaRecorder();
 
       const updateLevel = () => {
         if (!mediaStreamRef.current || !mediaStreamRef.current.active) return;
@@ -395,29 +336,6 @@ export function LiveModeWorkspace() {
           const currentVoiceState = voiceStateRef.current;
           const currentWebRTC = isWebRTCActiveRef.current;
 
-          // 800ms Hardware Silence VAD Trigger
-          if (
-            silentMs >= 800 &&
-            !isSubmittingRef.current &&
-            !currentWebRTC &&
-            (currentVoiceState === "listening" || currentVoiceState === "paused")
-          ) {
-            isSubmittingRef.current = true;
-            userSpokeRef.current = false;
-            lastSpeakingTimestampRef.current = 0;
-            shouldTranscribeRef.current = true;
-
-            addDebugLog(
-              "VAD_HARDWARE_SILENCE_TRIGGER",
-              "800ms silence threshold reached. Stopping MediaRecorder to transcribe speech with Whisper AI..."
-            );
-
-            if (mediaRecorderRef.current && mediaRecorderRef.current.state === "recording") {
-              try { mediaRecorderRef.current.stop(); } catch (e) {}
-            } else if (accumulatedTranscriptRef.current.trim()) {
-              handleSend(accumulatedTranscriptRef.current.trim());
-            }
-          }
         }
 
         requestAnimationFrame(updateLevel);
@@ -428,60 +346,6 @@ export function LiveModeWorkspace() {
       console.warn("Microphone stream request error:", err);
       addDebugLog("MIC_ERROR", err?.message || "Failed to access microphone hardware");
       setMicPermissionError("Microphone access required. Please allow mic permissions in your browser URL bar.");
-    }
-  };
-
-  // Start native MediaRecorder chunk collection
-  const startMediaRecorder = () => {
-    if (!mediaStreamRef.current || !mediaStreamRef.current.active) return;
-    if (typeof MediaRecorder === "undefined") return;
-
-    try {
-      if (mediaRecorderRef.current && mediaRecorderRef.current.state !== "inactive") {
-        try { mediaRecorderRef.current.stop(); } catch (e) {}
-      }
-
-      audioChunksRef.current = [];
-      shouldTranscribeRef.current = false;
-
-      const options = MediaRecorder.isTypeSupported("audio/webm")
-        ? { mimeType: "audio/webm" }
-        : MediaRecorder.isTypeSupported("audio/mp4")
-        ? { mimeType: "audio/mp4" }
-        : undefined;
-
-      const recorder = new MediaRecorder(mediaStreamRef.current, options);
-      
-      recorder.ondataavailable = (e) => {
-        if (e.data && e.data.size > 0) {
-          audioChunksRef.current.push(e.data);
-        }
-      };
-
-      recorder.onstop = () => {
-        setIsRecordingMedia(false);
-        const audioBlob = new Blob(audioChunksRef.current, { type: options?.mimeType || "audio/webm" });
-        audioChunksRef.current = [];
-
-        if (shouldTranscribeRef.current) {
-          shouldTranscribeRef.current = false;
-          transcribeAudioBlob(audioBlob);
-        } else {
-          addDebugLog("MEDIA_RECORDER_RESET", "MediaRecorder buffer cleared for new session");
-        }
-      };
-
-      recorder.start(250);
-      mediaRecorderRef.current = recorder;
-      setIsRecordingMedia(true);
-      isSubmittingRef.current = false;
-      if (activeSessionRef.current && !isThinking) {
-        updateVoiceState("listening");
-      }
-      addDebugLog("MEDIA_RECORDER_START", "Native MediaRecorder active & collecting audio chunks");
-    } catch (err: any) {
-      console.warn("MediaRecorder start error:", err);
-      addDebugLog("MEDIA_RECORDER_ERROR", err?.message || "MediaRecorder failed to start");
     }
   };
 
@@ -618,65 +482,33 @@ export function LiveModeWorkspace() {
           setHighlightedHouse(data.highlight_house);
         }
 
-        // Voice playback handling in Live Voice Mode
-        if (activeSessionRef.current && !isWebRTCActiveRef.current) {
-          updateVoiceState("speaking");
-          addDebugLog("TTS_START", `Playing audio response via speaker engine (${selectedLanguageRef.current})...`);
-          
-          let hasEnded = false;
-          const finishPlayback = () => {
-            if (hasEnded) return;
-            hasEnded = true;
-            addDebugLog("TTS_END", `Playback complete. Resuming mic listening loop.`);
-            if (activeSessionRef.current && !isMicMuted) {
-              updateVoiceState("listening");
-              startMediaRecorder();
-            } else {
-              updateVoiceState("paused");
-            }
-          };
-
-          // Failsafe timer (max 25s or 120ms per character) to ensure voice state NEVER stalls
-          const maxDurationMs = Math.max(4000, Math.min(25000, data.text.length * 120));
-          const failsafeTimer = setTimeout(() => {
-            addDebugLog("TTS_TIMEOUT_FAILSAFE", "Playback safety timeout reached. Resuming mic loop.");
-            finishPlayback();
-          }, maxDurationMs);
-
-          speakText(data.text, {
-            language: selectedLanguageRef.current,
-            voice: selectedVoiceRef.current,
-            onStart: () => updateVoiceState("speaking"),
-            onEnd: () => {
-              clearTimeout(failsafeTimer);
-              finishPlayback();
-            },
-          });
-        } else if (activeSessionRef.current) {
-          updateVoiceState("listening");
-          startMediaRecorder();
-        }
+        // In live mode the realtime session is the only voice. A typed
+        // question while it is down gets its answer on screen, unspoken —
+        // the whisper/TTS fallback used to answer *alongside* the realtime
+        // session, which is why callers heard two astrologers.
+        if (activeSessionRef.current) updateVoiceState("listening");
       } else {
         addDebugLog("EMPTY_AI_RESPONSE", "No response text received from AI engine");
-        if (activeSessionRef.current) {
-          updateVoiceState("listening");
-          startMediaRecorder();
-        }
+        if (activeSessionRef.current) updateVoiceState("listening");
       }
     } catch (err: any) {
       console.error("Failed to fetch AI Astrologer response", err);
       addDebugLog("API_ERROR", err?.message || "Chat completion failed");
       setIsThinking(false);
-      if (activeSessionRef.current) {
-        updateVoiceState("listening");
-        startMediaRecorder();
-      }
+      if (activeSessionRef.current) updateVoiceState("listening");
     }
   };
 
   // Start OpenAI Realtime WebRTC Session
   const startOpenAIRealtimeWebRTC = async () => {
     if (!activeChart || !activeBirth) return;
+    // One live session, ever. Restarts (language or voice change) come
+    // through here too, so the old peer connection is torn down first —
+    // stacking a second one left both answering, audibly doubled.
+    if (webrtcClientRef.current) {
+      webrtcClientRef.current.disconnect();
+      webrtcClientRef.current = null;
+    }
     
     addDebugLog("WEBRTC_CONNECTING", "Initializing OpenAI Realtime WebRTC native audio stream...");
 
@@ -741,8 +573,7 @@ export function LiveModeWorkspace() {
         // hand turn-taking back to the Whisper pipeline.
         setRealtimeError(err);
         updateWebRTCActive(false);
-        updateVoiceState("listening");
-        startMediaRecorder();
+        updateVoiceState("paused");
       },
     });
 
@@ -754,9 +585,9 @@ export function LiveModeWorkspace() {
       addDebugLog("WEBRTC_LIVE", `Realtime Voice Session Active in ${selectedLanguageRef.current.toUpperCase()}`);
     } else {
       updateWebRTCActive(false);
-      updateVoiceState("listening");
-      addDebugLog("WEBRTC_FALLBACK", "Using Native Voice Engine");
-      startMediaRecorder();
+      updateVoiceState("paused");
+      setRealtimeError("Live voice could not connect. Check your connection and tap the orb to retry.");
+      addDebugLog("WEBRTC_UNAVAILABLE", "Realtime session refused; live voice stays down");
     }
   };
 
@@ -782,9 +613,6 @@ export function LiveModeWorkspace() {
         webrtcClientRef.current = null;
       }
       updateWebRTCActive(false);
-      if (mediaRecorderRef.current && mediaRecorderRef.current.state !== "inactive") {
-        try { mediaRecorderRef.current.stop(); } catch (e) {}
-      }
       if (mediaStreamRef.current) {
         mediaStreamRef.current.getTracks().forEach((track) => track.stop());
         mediaStreamRef.current = null;
@@ -809,14 +637,6 @@ export function LiveModeWorkspace() {
 
       webrtcClientRef.current?.disconnect();
       webrtcClientRef.current = null;
-
-      const recorder = mediaRecorderRef.current;
-      if (recorder && recorder.state !== "inactive") {
-        try {
-          recorder.stop();
-        } catch {}
-      }
-      mediaRecorderRef.current = null;
 
       mediaStreamRef.current?.getTracks().forEach((track) => track.stop());
       mediaStreamRef.current = null;
@@ -843,7 +663,6 @@ export function LiveModeWorkspace() {
     } else {
       activeSessionRef.current = true;
       updateVoiceState("listening");
-      startMediaRecorder();
     }
   };
 
@@ -960,10 +779,7 @@ export function LiveModeWorkspace() {
                 {mediaStreamRef.current?.active ? "MediaStream Connected" : "Mic Stream Inactive"}
               </p>
               <button
-                onClick={() => {
-                  setupMicAnalyzer();
-                  startMediaRecorder();
-                }}
+onClick={() => setupMicAnalyzer()}
                 className="mt-1 rounded-[8px] bg-acc/20 border border-acc/40 text-acc2 px-2 py-0.5 text-[10px] font-bold hover:bg-acc/30 transition"
               >
                 ▶️ Start Mic Hardware
@@ -1173,7 +989,7 @@ export function LiveModeWorkspace() {
                         handleInterrupt();
                       } else if (interimTranscript.trim()) {
                         handleSend(interimTranscript);
-                      } else {
+                      } else if (!webrtcClientRef.current) {
                         activeSessionRef.current = true;
                         updateVoiceState("listening");
                         startOpenAIRealtimeWebRTC();
