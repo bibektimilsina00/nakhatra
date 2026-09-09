@@ -97,3 +97,25 @@ export function convertAdToBs(
     return { year: bsYear, month: adMonth, day: adDay, label };
   }
 }
+
+/**
+ * An ISO date as the reader counts years. Nepali and Hindi get Bikram
+ * Sambat in Devanagari digits — a Nepali reader thinks in BS, and a dasha
+ * that ends "2026-12-07" means little beside a patro that says २०८३.
+ * English keeps the ISO date it was given.
+ */
+export function formatDateFor(iso: string, lang: "en" | "ne" | "hi"): string {
+  if (lang === "en" || !iso) return iso;
+  const [y, m, d] = iso.slice(0, 10).split("-").map(Number);
+  if (!y || !m || !d) return iso;
+  try {
+    const bs = convertAdToBs(y, m, d);
+    const pad = (n: number) => String(n).padStart(2, "0");
+    return `${bs.year}-${pad(bs.month)}-${pad(bs.day)}`.replace(
+      /[0-9]/g,
+      (c) => "०१२३४५६७८९"[Number(c)],
+    );
+  } catch {
+    return iso;
+  }
+}

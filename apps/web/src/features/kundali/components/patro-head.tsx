@@ -22,6 +22,7 @@ import { toLocalizedDigit } from "@/lib/i18n/vedic-translations";
 import {
   AVAKHADA_TRANSLATIONS,
   getNakshatraName,
+  getNameSyllable,
   getSignName,
 } from "@/lib/i18n/vedic-translations";
 import type { BirthDetailsIn, Chart } from "@/features/kundali/types";
@@ -202,7 +203,7 @@ function SanskritPatro({ chart, birth }: { chart: Chart; birth: BirthDetailsIn }
         अस्य होराशास्त्रप्रमाणेन{" "}
         <Fill>{getNakshatraName(p.nakshatra, language)}</Fill> नक्षत्रस्य{" "}
         <Fill>{CHARAN_DEV[(a.charan ?? 1) - 1] ?? n(a.charan)}</Fill> चरणत्वेन{" "}
-        <Fill>{a.name_syllable}</Fill> काराक्षरस्य{" "}
+        <Fill>{getNameSyllable(a.name_syllable, a.nakshatra, a.charan, language)}</Fill> काराक्षरस्य{" "}
         {yoniNe && (
           <>
             <Fill>{bareDev(yoniNe)}</Fill> योनिः{" "}

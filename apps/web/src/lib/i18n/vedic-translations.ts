@@ -421,3 +421,76 @@ export function getLocalizedAuspiciousElements(lagnaSign: string, lang: Language
   const signEntry = map[lagnaSign] || map.Cancer;
   return signEntry[lang] || signEntry.en;
 }
+
+// ── dignity and avastha ────────────────────────────────────────────────
+
+export const DIGNITY_TRANSLATIONS: Record<string, Record<Language, string>> = {
+  exalted: { en: "Exalted", ne: "उच्च", hi: "उच्च" },
+  debilitated: { en: "Debilitated", ne: "नीच", hi: "नीच" },
+  moolatrikona: { en: "Moolatrikona", ne: "मूलत्रिकोण", hi: "मूलत्रिकोण" },
+  own: { en: "Own sign", ne: "स्वगृही", hi: "स्वगृही" },
+  friend: { en: "Friendly", ne: "मित्र", hi: "मित्र" },
+  neutral: { en: "Neutral", ne: "सम", hi: "सम" },
+  enemy: { en: "Enemy", ne: "शत्रु", hi: "शत्रु" },
+};
+
+/** Baladi avastha — the graha's age within its sign. */
+export const AVASTHA_TRANSLATIONS: Record<string, Record<Language, string>> = {
+  Bala: { en: "Bala (infant)", ne: "बाल", hi: "बाल" },
+  Kumara: { en: "Kumara (child)", ne: "कुमार", hi: "कुमार" },
+  Yuva: { en: "Yuva (youth)", ne: "युवा", hi: "युवा" },
+  Vriddha: { en: "Vriddha (old)", ne: "वृद्ध", hi: "वृद्ध" },
+  Mrita: { en: "Mrita (dead)", ne: "मृत", hi: "मृत" },
+};
+
+export function getDignity(value: string | null | undefined, lang: Language): string {
+  if (!value) return "";
+  return DIGNITY_TRANSLATIONS[value]?.[lang] ?? value;
+}
+
+export function getAvastha(value: string | null | undefined, lang: Language): string {
+  if (!value) return "";
+  return AVASTHA_TRANSLATIONS[value]?.[lang] ?? value;
+}
+
+// ── the naming syllable ────────────────────────────────────────────────
+//
+// The engine sends a romanised syllable ("Li"), and romanisation is lossy:
+// Purva Phalguni's second pada is टा and Swati's fourth is ता, both written
+// "Ta". So the Devanagari is looked up by nakshatra and pada — the same
+// coordinates the engine used — rather than by translating the string.
+
+const NAKSHATRA_ORDER = [
+  "Ashwini", "Bharani", "Krittika", "Rohini", "Mrigashira", "Ardra",
+  "Punarvasu", "Pushya", "Ashlesha", "Magha", "Purva Phalguni",
+  "Uttara Phalguni", "Hasta", "Chitra", "Swati", "Vishakha", "Anuradha",
+  "Jyeshtha", "Moola", "Purva Ashadha", "Uttara Ashadha", "Shravana",
+  "Dhanishta", "Shatabhisha", "Purva Bhadrapada", "Uttara Bhadrapada", "Revati",
+];
+
+const NAME_SYLLABLE_DEV: string[][] = [
+  ["चु", "चे", "चो", "ला"], ["ली", "लू", "ले", "लो"], ["अ", "इ", "उ", "ए"],
+  ["ओ", "वा", "वी", "वू"], ["वे", "वो", "का", "की"], ["कु", "घ", "ङ", "छ"],
+  ["के", "को", "हा", "ही"], ["हु", "हे", "हो", "डा"], ["डी", "डू", "डे", "डो"],
+  ["मा", "मी", "मू", "मे"], ["मो", "टा", "टी", "टू"], ["टे", "टो", "पा", "पी"],
+  ["पू", "ष", "ण", "ठ"], ["पे", "पो", "रा", "री"], ["रु", "रे", "रो", "ता"],
+  ["ती", "तू", "ते", "तो"], ["ना", "नी", "नू", "ने"], ["नो", "या", "यी", "यू"],
+  ["ये", "यो", "भा", "भी"], ["भू", "धा", "फा", "ढा"], ["भे", "भो", "जा", "जी"],
+  ["जु", "जे", "जो", "घा"], ["गा", "गी", "गु", "गे"], ["गो", "सा", "सी", "सू"],
+  ["से", "सो", "दा", "दी"], ["दू", "थ", "झ", "ञ"], ["दे", "दो", "च", "ची"],
+];
+
+/** The naming syllable in the reader's script: Devanagari for ne/hi, the
+ *  engine's own romanisation for English. `charan` is 1-based. */
+export function getNameSyllable(
+  romanised: string,
+  nakshatra: string | null | undefined,
+  charan: number | null | undefined,
+  lang: Language,
+): string {
+  if (lang === "en") return romanised;
+  const i = NAKSHATRA_ORDER.indexOf((nakshatra ?? "").trim());
+  const pada = (charan ?? 0) - 1;
+  if (i < 0 || pada < 0 || pada > 3) return romanised;
+  return NAME_SYLLABLE_DEV[i][pada] ?? romanised;
+}

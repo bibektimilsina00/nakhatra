@@ -54,7 +54,11 @@ import {
   Activity,
 } from "lucide-react";
 
+import { formatDateFor } from "@/lib/utils/date-converter";
 import {
+  getAvastha,
+  getDignity,
+  getNameSyllable,
   toLocalizedDigit,
   getPlanetName,
   getPlanetAbbrev,
@@ -449,7 +453,7 @@ export function ReadingDashboard() {
                   {activeBirth.name}&apos;s Kundali
                 </span>
                 <span className="block truncate text-[11px] text-dim">
-                  {activeBirth.date} · {activeBirth.time} · {activeBirth.place_label.split("(")[0]}
+                  {formatDateFor(activeBirth.date, language)} · {activeBirth.time} · {activeBirth.place_label.split("(")[0]}
                 </span>
               </span>
             }
@@ -607,7 +611,7 @@ export function ReadingDashboard() {
                             {getPlanetName(p.name, language)} {p.retrograde && <span className="text-[#9B1C1C]">{language === "en" ? "℞" : " (व)"}</span>}
                           </span>
                           <span className="text-[#9B1C1C]">{p.degree_in_sign ? fmtDeg(p.degree_in_sign, language) : ""}</span>
-                          <span className="text-[#7a6033] uppercase text-[9px]">{p.dignity ?? p.avastha}</span>
+                          <span className="text-[#7a6033] uppercase text-[9px]">{getDignity(p.dignity, language) || getAvastha(p.avastha, language)}</span>
                         </div>
                       ))}
                     </div>
@@ -680,7 +684,7 @@ export function ReadingDashboard() {
                               {getNakshatraName(p.nakshatra.name, language)}
                               <span className="text-[#b8a173]"> · {toLocalizedDigit(p.nakshatra.pada, language)}</span>
                             </td>
-                            <td className="py-1 text-[#7a6033]">{p.dignity ?? p.avastha ?? "—"}</td>
+                            <td className="py-1 text-[#7a6033]">{getDignity(p.dignity, language) || getAvastha(p.avastha, language) || "—"}</td>
                           </>
                         )}
                       </tr>
@@ -752,7 +756,12 @@ export function ReadingDashboard() {
                 </div>
                 <div className="flex justify-between border-b border-brd pb-1">
                   <span className="text-[#4a3a22]">{t.nameSyllableLabel}</span>
-                  <span className="font-bold text-[#9B1C1C]">{activeChart.avakhada?.name_syllable || "Yo"}</span>
+                  <span className="font-bold text-[#9B1C1C]">{getNameSyllable(
+                      activeChart.avakhada?.name_syllable ?? "",
+                      activeChart.avakhada?.nakshatra,
+                      activeChart.avakhada?.charan,
+                      language,
+                    ) || "—"}</span>
                 </div>
                 <div className="flex justify-between border-b border-brd pb-1">
                   <span className="text-[#4a3a22]">{t.ganaLabel}</span>
@@ -1136,7 +1145,7 @@ export function ReadingDashboard() {
               {activeBirth.name}&apos;s Complete Janma Kundali Report
             </h1>
             <p className="text-sm text-mut mt-1">
-              {activeBirth.date} · {activeBirth.time} · {activeBirth.place_label}
+              {formatDateFor(activeBirth.date, language)} · {activeBirth.time} · {activeBirth.place_label}
             </p>
             {activeChart && (
               <p className="text-xs text-acc mt-1">
@@ -1294,8 +1303,8 @@ export function ReadingDashboard() {
                   <PeriodCard
                     label={t.dashaOverviewMainPeriod}
                     lord={getPlanetName(running.maha.lord, language)}
-                    start={running.maha.start}
-                    end={running.maha.end}
+                    start={formatDateFor(running.maha.start, language)}
+                    end={formatDateFor(running.maha.end, language)}
                     span={`~${Math.round(
                       (new Date(running.maha.end).getTime() -
                         new Date(running.maha.start).getTime()) /
@@ -1307,8 +1316,8 @@ export function ReadingDashboard() {
                     <PeriodCard
                       label={t.dashaOverviewSubPeriod}
                       lord={getPlanetName(running.antar.lord, language)}
-                      start={running.antar.start}
-                      end={running.antar.end}
+                      start={formatDateFor(running.antar.start, language)}
+                      end={formatDateFor(running.antar.end, language)}
                       span={(() => {
                         const months =
                           (new Date(running.antar.end).getTime() -
@@ -1375,7 +1384,7 @@ export function ReadingDashboard() {
                             past ? "text-[#a38e63]" : "text-[#7a6033]"
                           }`}
                         >
-                          {p.start} → {p.end}
+                          {formatDateFor(p.start, language)} → {formatDateFor(p.end, language)}
                         </span>
                         <span
                           className={`w-[76px] shrink-0 text-right text-xs font-semibold tabular-nums ${

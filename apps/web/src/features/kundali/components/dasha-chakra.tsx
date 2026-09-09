@@ -3,6 +3,7 @@
 import { useTranslation } from "@/lib/i18n/language-context";
 import { YOGINI_DEV, isSanskrit } from "@/lib/i18n/patro-sanskrit";
 import { getPlanetAbbrev, toLocalizedDigit } from "@/lib/i18n/vedic-translations";
+import { convertAdToBs } from "@/lib/utils/date-converter";
 import type { DashaPeriod } from "@/features/kundali/types";
 
 export type DashaScheme = "vimshottari" | "tribhagi" | "yogini";
@@ -38,7 +39,7 @@ export function DashaChakra({
   };
   const rows: [string, string][] = [
     ["वर्ष", "Years"],
-    ["साल (ई.)", "Ends (AD)"],
+    [sk ? "साल (वि.सं.)" : "साल", "Ends (AD)"],
     ["महिना", "Month"],
     ["गते", "Day"],
   ];
@@ -89,12 +90,24 @@ export function DashaChakra({
                 {periods.map((p) => {
                   const end = new Date(p.end);
                   const years = spanYears(p);
-                  const cell = [
-                    years,
-                    end.getFullYear(),
-                    end.getMonth() + 1,
-                    end.getDate(),
-                  ][rowIdx];
+                  // A patro counts in Bikram Sambat; the Devanagari view
+                  // follows it rather than printing Gregorian in Nepali
+                  // numerals, which is neither one calendar nor the other.
+                  const [ey, em, ed] = sk
+                    ? (() => {
+                        try {
+                          const bs = convertAdToBs(
+                            end.getFullYear(),
+                            end.getMonth() + 1,
+                            end.getDate(),
+                          );
+                          return [bs.year, bs.month, bs.day];
+                        } catch {
+                          return [end.getFullYear(), end.getMonth() + 1, end.getDate()];
+                        }
+                      })()
+                    : [end.getFullYear(), end.getMonth() + 1, end.getDate()];
+                  const cell = [years, ey, em, ed][rowIdx];
                   return (
                     <td
                       key={`${p.lord}-${p.start}-${pair[1]}`}

@@ -1,4 +1,5 @@
 import type { Chart, BirthDetailsIn } from "@/features/kundali/types";
+import { formatDateFor } from "@/lib/utils/date-converter";
 import type { ReportSection } from "@/features/report/types";
 
 export function generateDynamicAstrologyReport(
@@ -367,14 +368,14 @@ export function generateDynamicAstrologyReport(
     reasoning: isNe
       ? [
           {
-            placement: `${currentDashaName} (${dashaPeriod?.start?.slice(0, 10) || ""} देखि ${dashaPeriod?.end?.slice(0, 10) || ""})`,
+            placement: `${currentDashaName} (${formatDateFor(dashaPeriod?.start?.slice(0, 10) || "", "ne")} देखि ${formatDateFor(dashaPeriod?.end?.slice(0, 10) || "", "ne")})`,
             explanation: `तपाइँको ${nakshatra} चन्द्र नक्षत्रबाट गणना गरिएको मुख्य विंशोत्तरी महादशा समयरेखा।`
           }
         ]
       : isHi
       ? [
           {
-            placement: `${currentDashaName} (${dashaPeriod?.start?.slice(0, 10) || ""} से ${dashaPeriod?.end?.slice(0, 10) || ""})`,
+            placement: `${currentDashaName} (${formatDateFor(dashaPeriod?.start?.slice(0, 10) || "", "hi")} से ${formatDateFor(dashaPeriod?.end?.slice(0, 10) || "", "hi")})`,
             explanation: `आपके ${nakshatra} चंद्र नक्षत्र से परिकलित मुख्य विंशोत्तरी महादशा समयरेखा।`
           }
         ]

@@ -9,6 +9,7 @@ import {BirthSky3D, MoonPhase3D, PLANET_COLORS, YOGATARA } from "@/features/kund
 import { loadKundaliFromStorage } from "@/features/kundali/store/kundali-store";
 import type { BirthDetailsIn, Chart, Planet } from "@/features/kundali/types";
 import { useTranslation } from "@/lib/i18n/language-context";
+import { formatDateFor } from "@/lib/utils/date-converter";
 import {
   KARANA_DEV,
   PAKSHA_DEV,
@@ -18,6 +19,8 @@ import {
   dev,
 } from "@/lib/i18n/patro-sanskrit";
 import {
+  getAvastha,
+  getDignity,
   getNakshatraName,
   getPlanetName,
   getSignName,
@@ -85,7 +88,7 @@ export function BirthSky() {
               <Sparkles className="ml-1.5 inline size-3.5 text-[#E5A93C]" />
             </p>
             <p className="truncate text-[11px] text-[#94A3B8]">
-              {birth.name} · {birth.date} · {birth.time} ·{" "}
+              {birth.name} · {formatDateFor(birth.date, language)} · {birth.time} ·{" "}
               {birth.place_label.split("(")[0]}
             </p>
           </div>
@@ -264,8 +267,8 @@ function PlanetCard({ planet }: { planet: Planet }) {
       />
       <Row k={sk ? "नक्षत्र स्वामी" : "Nakshatra lord"} v={getPlanetName(planet.nakshatra.lord, language)} />
       <Row k={sk ? "भाव" : "House"} v={n(planet.house)} />
-      {planet.dignity && <Row k={sk ? "स्थिति" : "Dignity"} v={planet.dignity} />}
-      {planet.avastha && <Row k={sk ? "अवस्था" : "Avastha"} v={planet.avastha} />}
+      {planet.dignity && <Row k={sk ? "स्थिति" : "Dignity"} v={getDignity(planet.dignity, language)} />}
+      {planet.avastha && <Row k={sk ? "अवस्था" : "Avastha"} v={getAvastha(planet.avastha, language)} />}
       {planet.aspects_houses && planet.aspects_houses.length > 0 && (
         <Row
           k={sk ? "दृष्टि (भाव)" : "Aspects houses"}
