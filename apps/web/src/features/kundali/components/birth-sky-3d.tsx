@@ -38,6 +38,10 @@ export const PLANET_COLORS: Record<string, string> = {
   Ketu: "#C77B58",
 };
 
+/** U+FE0E pins the glyphs to text presentation, so they take our gold tint
+ *  instead of rendering as colour emoji. */
+const SIGN_GLYPHS = ["\u2648\uFE0E", "\u2649\uFE0E", "\u264A\uFE0E", "\u264B\uFE0E", "\u264C\uFE0E", "\u264D\uFE0E", "\u264E\uFE0E", "\u264F\uFE0E", "\u2650\uFE0E", "\u2651\uFE0E", "\u2652\uFE0E", "\u2653\uFE0E"];
+
 const SIGNS_EN = [
   "Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo",
   "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces",
@@ -419,6 +423,10 @@ export function BirthSky3D({
       label.position.copy(at(i * 30 + 15, (RING_IN + RING_OUT) / 2, 4));
       scene.add(label);
 
+      const medallion = makeMedallion(SIGN_GLYPHS[i], isLagnaSign ? "#F3C766" : "#E5C77A");
+      medallion.position.copy(at(i * 30 + 15, (RING_IN + RING_OUT) / 2, 16));
+      scene.add(medallion);
+
       // whole-sign house number just inside the ring
       const houseNo = ((i - chart.lagna_sign_index + 12) % 12) + 1;
       const num = makeLabel(toLocalizedDigit(houseNo, language), "#8a7a55", 30);
@@ -701,6 +709,45 @@ export function BirthSky3D({
       </p>
     </div>
   );
+}
+
+/** A rashi glyph on an engraved disc — dark ground, gold rim, constant
+ *  screen size like every other label. */
+function makeMedallion(glyph: string, color: string): THREE.Sprite {
+  const size = 112;
+  const canvas = document.createElement("canvas");
+  canvas.width = canvas.height = size * 2;
+  const ctx = canvas.getContext("2d")!;
+  ctx.scale(2, 2);
+  const c = size / 2;
+  ctx.beginPath();
+  ctx.arc(c, c, c - 3, 0, Math.PI * 2);
+  ctx.fillStyle = "rgba(9,10,16,0.82)";
+  ctx.fill();
+  ctx.lineWidth = 2.5;
+  ctx.strokeStyle = "rgba(229,169,60,0.55)";
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.arc(c, c, c - 9, 0, Math.PI * 2);
+  ctx.lineWidth = 1;
+  ctx.strokeStyle = "rgba(229,169,60,0.25)";
+  ctx.stroke();
+  ctx.font = `600 ${size * 0.52}px 'Apple Symbols', 'Segoe UI Symbol', Georgia, serif`;
+  ctx.fillStyle = color;
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText(glyph, c, c + 2);
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.colorSpace = THREE.SRGBColorSpace;
+  const sprite = new THREE.Sprite(
+    new THREE.SpriteMaterial({
+      map: texture, transparent: true, depthWrite: false, sizeAttenuation: false,
+    }),
+  );
+  const k = 0.00030;
+  sprite.scale.set(size * k, size * k, 1);
+  sprite.renderOrder = 9;
+  return sprite;
 }
 
 /** A text sprite from a canvas — Devanagari renders fine through fillText.
