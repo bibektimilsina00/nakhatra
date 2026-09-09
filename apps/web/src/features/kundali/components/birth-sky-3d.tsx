@@ -222,8 +222,8 @@ export function BirthSky3D({
       cnv.width = cnv.height = 128;
       const g2 = cnv.getContext("2d")!;
       const grad2 = g2.createRadialGradient(64, 64, 4, 64, 64, 64);
-      grad2.addColorStop(0, hex + "99");
-      grad2.addColorStop(0.35, hex + "44");
+      grad2.addColorStop(0, hex + "77");
+      grad2.addColorStop(0.35, hex + "2e");
       grad2.addColorStop(1, hex + "00");
       g2.fillStyle = grad2;
       g2.fillRect(0, 0, 128, 128);
@@ -498,7 +498,7 @@ export function BirthSky3D({
     /* ── bloom ───────────────────────────────────────────────────── */
     const composer = new EffectComposer(renderer);
     composer.addPass(new RenderPass(scene, camera));
-    composer.addPass(new UnrealBloomPass(new THREE.Vector2(1, 1), 0.6, 0.4, 0.85));
+    composer.addPass(new UnrealBloomPass(new THREE.Vector2(1, 1), 0.5, 0.4, 0.85));
 
     /* ── drag-orbit camera around a movable focus ─────────────────────
        Why the landing page's planets look rich and a fixed wide shot does
@@ -607,9 +607,9 @@ export function BirthSky3D({
         // the shadow planets breathe — slow, out of phase with each other
         const t = performance.now() * 0.0012;
         for (const fx of nodeFx) {
-          const b = 0.75 + 0.25 * Math.sin(t + fx.phase);
+          const b = 0.6 + 0.2 * Math.sin(t + fx.phase);
           fx.shell.uniforms.uGain.value = b;
-          fx.glow.opacity = 0.45 + 0.25 * b;
+          fx.glow.opacity = 0.32 + 0.18 * b;
         }
       }
 
