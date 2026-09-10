@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 
+import { RashiGlyph } from "@/features/rasifal/components/rashi-glyph";
+
 import {
   bandLabel,
   colourName,
@@ -27,23 +29,31 @@ export function RashiCard({ day }: { day: RashiDay }) {
         : "border-brd";
 
   return (
-    <article className={`flex flex-col rounded-[12px] border bg-card p-5 ${tone}`}>
+    <article className={`flex flex-col rounded-[12px] border bg-card p-4.5 ${tone}`}>
       <header className="flex items-start justify-between gap-3 border-b border-brd pb-3">
-        <div className="min-w-0">
-          <h3 className="font-serif text-[16px] font-bold leading-tight text-paper">
+        <div className="flex min-w-0 items-center gap-2.5">
+          <span className="grid size-9 shrink-0 place-items-center rounded-full border border-gold/30 bg-gold/[0.08] text-gold">
+            <RashiGlyph index={day.sign_index} className="size-5" />
+          </span>
+          <div className="min-w-0">
+          <h3 className="font-serif text-[17px] font-bold leading-tight text-paper">
             {getSignName(day.sign, language)}
           </h3>
-          {/* The naming syllables, as a panchanga prints them under the sign. */}
-          <p className="mt-1 truncate text-[10.5px] tracking-wide text-faint">
-            {RASHI_SYLLABLES[day.sign_index].join(" ")}
-          </p>
+            {/* The naming syllables, as a panchanga prints them under the sign. */}
+            <p className="mt-0.5 truncate text-[11.5px] tracking-wide text-faint">
+              {RASHI_SYLLABLES[day.sign_index].join(" ")}
+            </p>
+          </div>
         </div>
         <div className="shrink-0 text-right">
-          <span className="block text-[13px] leading-none text-gold" aria-hidden>
+          <span
+            className="block text-[14px] leading-none text-gold"
+            aria-label={`${day.rating} / 5`}
+          >
             {"★".repeat(day.rating)}
-            <span className="text-faint/60">{"★".repeat(5 - day.rating)}</span>
+            <span className="text-faint/50">{"☆".repeat(5 - day.rating)}</span>
           </span>
-          <span className="mt-1 block text-[10px] font-semibold text-muted">
+          <span className="mt-1 block text-[11px] font-semibold text-muted">
             {bandLabel(day.band ?? "", day.rating, language)}
           </span>
         </div>
@@ -51,34 +61,34 @@ export function RashiCard({ day }: { day: RashiDay }) {
 
       {/* The written reading when the writer has been round; the composed one
           from the findings while it has not. Never a blank card. */}
-      <p className="mt-3 text-[13px] leading-[1.85] text-muted">
+      <p className="mt-3 text-[14px] leading-[1.75] text-paper/90">
         {day.reading?.summary || readingFor(day, language)}
       </p>
 
       {day.reading && (
-        <dl className="mt-3.5 flex-1 space-y-2.5">
+        <dl className="mt-3 flex-1 space-y-2">
           {(["career", "love", "finance", "health"] as const).map((k) =>
             day.reading?.[k] ? (
               <div key={k}>
-                <dt className="text-[10px] font-semibold uppercase tracking-wider text-gold">
+                <dt className="text-[10.5px] font-semibold uppercase tracking-wider text-gold">
                   {SECTION_LABELS[k][language]}
                 </dt>
-                <dd className="mt-0.5 text-[12px] leading-[1.7] text-muted">{day.reading[k]}</dd>
+                <dd className="mt-0.5 text-[13px] leading-[1.65] text-muted">{day.reading[k]}</dd>
               </div>
             ) : null,
           )}
           {day.reading.remedy && (
-            <div className="rounded-[8px] border border-gold/25 bg-gold/[0.06] px-3 py-2">
-              <dt className="text-[10px] font-semibold uppercase tracking-wider text-gold">
+            <div className="rounded-[8px] border border-gold/25 bg-gold/[0.06] px-3 py-2.5">
+              <dt className="text-[10.5px] font-semibold uppercase tracking-wider text-gold">
                 {SECTION_LABELS.remedy[language]}
               </dt>
-              <dd className="mt-0.5 text-[12px] leading-[1.7] text-paper">{day.reading.remedy}</dd>
+              <dd className="mt-0.5 text-[13px] leading-[1.65] text-paper">{day.reading.remedy}</dd>
             </div>
           )}
         </dl>
       )}
 
-      <dl className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-1.5 border-t border-brd pt-3 text-[11.5px]">
+      <dl className="mt-3.5 flex flex-wrap items-center gap-x-5 gap-y-1.5 border-t border-brd pt-3 text-[12.5px]">
         <div className="flex items-center gap-1.5">
           <dt className="text-faint">{language === "en" ? "Lucky colour" : "शुभ रङ"}:</dt>
           <dd className="font-semibold text-paper">{colourName(day.lucky_colour, language)}</dd>

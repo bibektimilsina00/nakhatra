@@ -7,6 +7,7 @@ import {
   bandLabel,
 } from "@/features/rasifal/rasifal-i18n";
 import type { RashiPeriod } from "@/features/rasifal/types";
+import { RashiGlyph } from "@/features/rasifal/components/rashi-glyph";
 import { useTranslation } from "@/lib/i18n/language-context";
 import { getSignName, toLocalizedDigit } from "@/lib/i18n/vedic-translations";
 import { formatDateFor } from "@/lib/utils/date-converter";
@@ -31,18 +32,23 @@ export function RashiPeriodCard({
   return (
     <article className={`flex flex-col rounded-[12px] border bg-card p-5 ${tone}`}>
       <header className="flex items-start justify-between gap-3 border-b border-brd pb-3">
-        <div className="min-w-0">
-          <h3 className="font-serif text-[16px] font-bold leading-tight text-paper">
+        <div className="flex min-w-0 items-center gap-2.5">
+          <span className="grid size-9 shrink-0 place-items-center rounded-full border border-gold/30 bg-gold/[0.08] text-gold">
+            <RashiGlyph index={period.sign_index} className="size-5" />
+          </span>
+          <div className="min-w-0">
+          <h3 className="font-serif text-[17px] font-bold leading-tight text-paper">
             {getSignName(period.sign, language)}
           </h3>
-          <p className="mt-1 truncate text-[10.5px] tracking-wide text-faint">
-            {RASHI_SYLLABLES[period.sign_index].join(" ")}
-          </p>
+            <p className="mt-0.5 truncate text-[11.5px] tracking-wide text-faint">
+              {RASHI_SYLLABLES[period.sign_index].join(" ")}
+            </p>
+          </div>
         </div>
         <div className="shrink-0 text-right">
           <span className="block text-[13px] leading-none text-gold" aria-hidden>
             {"★".repeat(period.rating)}
-            <span className="text-faint/60">{"★".repeat(5 - period.rating)}</span>
+            <span className="text-faint/50">{"☆".repeat(5 - period.rating)}</span>
           </span>
           <span className="mt-1 block text-[10px] font-semibold text-muted">
             {bandLabel(period.band ?? "", period.rating, language)}
@@ -50,7 +56,7 @@ export function RashiPeriodCard({
         </div>
       </header>
 
-      <p className="mt-3 flex-1 text-[13px] leading-[1.85] text-muted">
+      <p className="mt-3 flex-1 text-[14px] leading-[1.75] text-paper/90">
         {periodReadingFor(period, span, language)}
       </p>
 
