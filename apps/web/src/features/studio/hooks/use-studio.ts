@@ -3,9 +3,16 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import {
+  beginYoutubeConnect,
+  disconnectYoutube,
+  fetchStudioConfig,
   fetchStudioFile,
+  fetchStudioSlide,
   fetchStudioStatus,
+  publishStudioDay,
+  saveStudioSettings,
   startStudioRender,
+  type StudioSettings,
 } from "@/features/studio/api/studio-api";
 
 /** The render's progress. Polled while it runs, left alone once it stops. */
@@ -13,7 +20,7 @@ export function useStudioStatus(date: string) {
   return useQuery({
     queryKey: ["studio", date],
     queryFn: () => fetchStudioStatus(date),
-    refetchInterval: (q) => (q.state.data?.running ? 3000 : false),
+    refetchInterval: (q) => (q.state.data?.running || q.state.data?.publishing ? 3000 : false),
     staleTime: 0,
   });
 }
@@ -23,6 +30,52 @@ export function useStartRender(date: string) {
   return useMutation({
     mutationFn: () => startStudioRender(date),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["studio", date] }),
+  });
+}
+
+export function usePublishDay(date: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: () => publishStudioDay(date),
+    onSettled: () => qc.invalidateQueries({ queryKey: ["studio", date] }),
+  });
+}
+
+export function useStudioConfig() {
+  return useQuery({ queryKey: ["studio-config"], queryFn: fetchStudioConfig, staleTime: 30_000 });
+}
+
+export function useSaveSettings() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (patch: Partial<StudioSettings>) => saveStudioSettings(patch),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["studio-config"] }),
+  });
+}
+
+export function useYoutubeConnect() {
+  const qc = useQueryClient();
+  const connect = useMutation({
+    mutationFn: beginYoutubeConnect,
+    onSuccess: ({ url }) => {
+      window.location.assign(url);
+    },
+  });
+  const disconnect = useMutation({
+    mutationFn: disconnectYoutube,
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["studio-config"] }),
+  });
+  return { connect, disconnect };
+}
+
+/** One slide, as HTML for a srcdoc iframe. Cached hard: a slide for a date
+ *  only changes when the settings do, and saving them invalidates it. */
+export function useStudioSlide(date: string, part: "1" | "2", i: number, enabled: boolean) {
+  return useQuery({
+    queryKey: ["studio-slide", date, part, i],
+    queryFn: () => fetchStudioSlide(date, part, i),
+    enabled,
+    staleTime: 10 * 60_000,
   });
 }
 
