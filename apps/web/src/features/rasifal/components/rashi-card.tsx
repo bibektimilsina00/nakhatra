@@ -35,8 +35,8 @@ export function RashiCard({ day }: { day: RashiDay }) {
     <article className={`flex flex-col rounded-[12px] border bg-card p-4.5 ${tone}`}>
       <header className="flex items-start justify-between gap-3 border-b border-brd pb-3">
         <div className="flex min-w-0 items-center gap-2.5">
-          <span className="grid size-9 shrink-0 place-items-center rounded-full border border-gold/30 bg-gold/[0.08] text-gold">
-            <RashiGlyph index={day.sign_index} className="size-5" />
+          <span className="grid size-10 shrink-0 place-items-center rounded-full border border-gold/25 bg-gradient-to-br from-gold/[0.18] to-gold/[0.04] text-gold shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]">
+            <RashiGlyph index={day.sign_index} className="size-[22px]" />
           </span>
           <div className="min-w-0">
           <h3 className="font-serif text-[17px] font-bold leading-tight text-paper">
