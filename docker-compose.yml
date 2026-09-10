@@ -71,8 +71,19 @@ services:
       - AGENT_ROUTER_BASE_URL=${AGENT_ROUTER_BASE_URL}
       - AGENT_ROUTER_MODEL=${AGENT_ROUTER_MODEL}
       - OPENAI_API_KEY=${OPENAI_API_KEY}
+      # The rasifal studio: the Nepali voice, and the secret the slide route
+      # demands. Unset STUDIO_KEY leaves /studio/rasifal a 404 and the
+      # Generate button refusing to start — which is the safe way round.
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - STUDIO_KEY=${STUDIO_KEY}
+    volumes:
+      # Rendered videos. A volume rather than the container filesystem so a
+      # deploy in the middle of the morning does not take the day's post with
+      # it.
+      - nakhatra_studio:/data/studio
     depends_on:
       - nakhatra_api
 
 volumes:
   nakhatra_pgdata:
+  nakhatra_studio:

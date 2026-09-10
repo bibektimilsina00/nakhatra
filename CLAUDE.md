@@ -119,6 +119,9 @@ make contract   # regenerate contracts/openapi.json
 make contract-check  # CI: fail if the spec drifted from the code
 
 # apps/web        (Phase 1)  npm test · npm run lint · npm run generate:api
+# apps/web        npm run tiktok   # the day's two rasifal videos, from a
+#                 *built* site (`next dev` never fires load, so the shots come
+#                 out blank). Same job behind a button at /admin/studio.
 # apps/mobile     flutter test · flutter analyze · dart run tool/check_layers.dart
 ```
 

@@ -200,6 +200,7 @@ jobs:
             LLM_API_KEY="${{ secrets.LLM_API_KEY }}"
             LLM_MODEL="${{ secrets.LLM_MODEL }}"
             JWT_SECRET="${{ secrets.JWT_SECRET }}"
+            STUDIO_KEY="${{ secrets.STUDIO_KEY }}"
             GOOGLE_CLIENT_ID="${{ secrets.NEXT_PUBLIC_GOOGLE_CLIENT_ID }}"
             GOOGLE_CLIENT_SECRET="${{ secrets.GOOGLE_CLIENT_SECRET }}"
             CORS_ORIGINS='["https://nakhatra.com","https://www.nakhatra.com"]'
