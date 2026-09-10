@@ -3,8 +3,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import {
-  beginYoutubeConnect,
-  disconnectYoutube,
+  beginConnect,
+  disconnectChannel,
   fetchStudioConfig,
   fetchStudioFile,
   fetchStudioSlide,
@@ -53,16 +53,18 @@ export function useSaveSettings() {
   });
 }
 
-export function useYoutubeConnect() {
+/** Connecting leaves the site for the channel's consent screen; the callback
+ *  brings the admin back to this page with a word in the query string. */
+export function useChannelConnect(channel: string) {
   const qc = useQueryClient();
   const connect = useMutation({
-    mutationFn: beginYoutubeConnect,
+    mutationFn: () => beginConnect(channel),
     onSuccess: ({ url }) => {
       window.location.assign(url);
     },
   });
   const disconnect = useMutation({
-    mutationFn: disconnectYoutube,
+    mutationFn: () => disconnectChannel(channel),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["studio-config"] }),
   });
   return { connect, disconnect };

@@ -1,6 +1,7 @@
 import { readFileSync, statSync } from "node:fs";
 
 import { SITE_URL } from "@/lib/seo/site";
+import { newState, takeState } from "@/lib/studio-oauth";
 
 /**
  * YouTube, for the studio.
@@ -25,33 +26,9 @@ const SCOPES = [
 const clientId = () => process.env.GOOGLE_CLIENT_ID || "";
 const clientSecret = () => process.env.GOOGLE_CLIENT_SECRET || "";
 
+export { newState, takeState };
+
 export const redirectUri = () => `${SITE_URL}/api/studio/connect/youtube/callback`;
-
-/**
- * The `state` the consent screen hands back. The callback arrives as a plain
- * browser navigation with no bearer token, so this is what proves the
- * connection was started by an admin on this page a moment ago.
- */
-// On `globalThis`: the route that mints a state and the callback that
-// checks it are bundled separately, and a module-level Map is one Map per
-// bundle. See the same note in `studio.ts`.
-const pending = ((globalThis as unknown as { __studioOAuth?: Map<string, number> }).__studioOAuth ??=
-  new Map<string, number>());
-
-export function newState(): string {
-  const state = crypto.randomUUID();
-  pending.set(state, Date.now());
-  // Ten minutes is longer than any consent screen takes and shorter than
-  // anything worth stealing.
-  for (const [s, at] of pending) if (Date.now() - at > 10 * 60_000) pending.delete(s);
-  return state;
-}
-
-export function takeState(state: string): boolean {
-  const ok = pending.has(state);
-  pending.delete(state);
-  return ok;
-}
 
 export function authUrl(state: string): string {
   const q = new URLSearchParams({

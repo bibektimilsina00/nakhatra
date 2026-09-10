@@ -34,23 +34,40 @@ const card = "rounded-[10px] border border-brd bg-panel p-4";
 
 function PublishLine({ label, state }: { label: string; state?: PartPublish }) {
   if (!state) return null;
-  return "videoId" in state ? (
+  if (!("videoId" in state)) {
+    return (
+      <span className="flex items-start gap-1.5 text-[12.5px] text-rose-300">
+        <TriangleAlert className="mt-0.5 size-3.5 shrink-0" /> {label} · {state.error}
+      </span>
+    );
+  }
+  // YouTube has a watchable URL; a TikTok direct post has only its publish
+  // id until the account makes it public, so it says how it went instead.
+  return state.url ? (
     <a
       href={state.url}
       target="_blank"
       rel="noreferrer"
-      className="inline-flex items-center gap-1.5 text-[12.5px] text-emerald-300 hover:underline"
+      className="flex items-center gap-1.5 text-[12.5px] text-emerald-300 hover:underline"
     >
       <Check className="size-3.5" /> {label} · {state.url} <ExternalLink className="size-3" />
     </a>
   ) : (
-    <span className="inline-flex items-start gap-1.5 text-[12.5px] text-rose-300">
-      <TriangleAlert className="mt-0.5 size-3.5 shrink-0" /> {label} · {state.error}
+    <span className="flex items-center gap-1.5 text-[12.5px] text-emerald-300">
+      <Check className="size-3.5" /> {label} · {state.note ?? "posted"}
     </span>
   );
 }
 
-function Part({ date, part, publish }: { date: string; part: "1" | "2"; publish?: PartPublish }) {
+function Part({
+  date,
+  part,
+  publish,
+}: {
+  date: string;
+  part: "1" | "2";
+  publish: { youtube?: PartPublish; tiktok?: PartPublish };
+}) {
   const video = `rasifal-${date}-part${part}.mp4`;
   const caption = `rasifal-${date}-part${part}-caption.txt`;
   const { data: url } = useStudioFile(date, video, true);
@@ -90,8 +107,9 @@ function Part({ date, part, publish }: { date: string; part: "1" | "2"; publish?
         )}
       </div>
 
-      <div className="mt-2.5">
-        <PublishLine label="YouTube" state={publish} />
+      <div className="mt-2.5 grid gap-1">
+        <PublishLine label="TikTok" state={publish.tiktok} />
+        <PublishLine label="YouTube" state={publish.youtube} />
       </div>
 
       {text && (
@@ -133,7 +151,10 @@ export function StudioPage() {
 
   const running = status.data?.running ?? false;
   const done = (status.data?.files ?? []).filter((f) => f.name.endsWith(".mp4")).length === 2;
-  const youtubeOn = config.data?.settings.youtube.enabled && config.data?.connections.youtube.connected;
+  const live = [
+    config.data?.settings.tiktok.enabled && config.data?.connections.tiktok.connected ? "TikTok" : null,
+    config.data?.settings.youtube.enabled && config.data?.connections.youtube.connected ? "YouTube" : null,
+  ].filter(Boolean) as string[];
   const s = config.data?.settings;
 
   return (
@@ -172,11 +193,9 @@ export function StudioPage() {
                 <p className="mt-0.5 font-semibold text-fg">{s.voice}</p>
               </div>
               <div className={`${card} !p-3`}>
-                <span className="text-mut">YouTube</span>
+                <span className="text-mut">Posts to</span>
                 <p className="mt-0.5 font-semibold text-fg">
-                  {config.data?.connections.youtube.connected
-                    ? `${config.data.connections.youtube.channel} · ${s.youtube.enabled ? `public at ${s.youtube.publishTime}` : "off"}`
-                    : "Not connected"}
+                  {live.length ? live.join(" · ") : "Nowhere yet"}
                 </p>
               </div>
             </div>
@@ -204,9 +223,9 @@ export function StudioPage() {
               {done && !running && (
                 <button
                   type="button"
-                  disabled={!youtubeOn || publish.isPending || status.data?.publishing}
+                  disabled={!live.length || publish.isPending || status.data?.publishing}
                   onClick={() => publish.mutate()}
-                  title={youtubeOn ? "Upload to the connected channels" : "Connect YouTube and switch it on below"}
+                  title={live.length ? `Upload to ${live.join(" and ")}` : "Connect a channel below and switch it on"}
                   className="cursor-pointer rounded-[8px] border border-brd px-4 py-2 text-[14px] font-medium text-fg hover:border-acc disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   {publish.isPending || status.data?.publishing ? "Publishing…" : "Publish now"}
@@ -236,8 +255,22 @@ export function StudioPage() {
           {/* ── Output ─────────────────────────────────────────────── */}
           {done && (
             <div className="mt-4 grid gap-4 sm:grid-cols-2">
-              <Part date={date} part="1" publish={status.data?.publish.youtube?.part1} />
-              <Part date={date} part="2" publish={status.data?.publish.youtube?.part2} />
+              <Part
+                date={date}
+                part="1"
+                publish={{
+                  youtube: status.data?.publish.youtube?.part1,
+                  tiktok: status.data?.publish.tiktok?.part1,
+                }}
+              />
+              <Part
+                date={date}
+                part="2"
+                publish={{
+                  youtube: status.data?.publish.youtube?.part2,
+                  tiktok: status.data?.publish.tiktok?.part2,
+                }}
+              />
             </div>
           )}
 
