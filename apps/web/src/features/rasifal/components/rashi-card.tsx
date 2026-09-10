@@ -1,8 +1,10 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 
 import { RashiGlyph } from "@/features/rasifal/components/rashi-glyph";
+import { slugFor } from "@/features/rasifal/signs";
 
 import {
   bandLabel,
@@ -39,8 +41,12 @@ export function RashiCard({ day }: { day: RashiDay }) {
             <RashiGlyph index={day.sign_index} className="size-[22px]" />
           </span>
           <div className="min-w-0">
+          {/* A link, so each sign's own page is one click and one crawl
+              away from the page everyone arrives at. */}
           <h3 className="font-serif text-[17px] font-bold leading-tight text-paper">
-            {getSignName(day.sign, language)}
+            <Link href={`/rasifal/${slugFor(day.sign)}`} className="hover:text-gold2">
+              {getSignName(day.sign, language)}
+            </Link>
           </h3>
             {/* The naming syllables, as a panchanga prints them under the sign. */}
             <p className="mt-0.5 truncate text-[11.5px] tracking-wide text-faint">

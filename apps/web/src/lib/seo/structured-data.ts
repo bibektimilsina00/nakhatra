@@ -1,5 +1,5 @@
 import { marketing } from "@/lib/i18n/marketing";
-import { SITE_NAME, SITE_URL, SUPPORT_EMAIL, abs } from "@/lib/seo/site";
+import { SITE_ALT_NAMES, SITE_NAME, SITE_URL, SUPPORT_EMAIL, abs } from "@/lib/seo/site";
 
 /**
  * JSON-LD for the landing page.
@@ -22,6 +22,7 @@ export function organizationLd(): Json {
     "@type": "Organization",
     "@id": ORGANIZATION_ID,
     name: SITE_NAME,
+    alternateName: SITE_ALT_NAMES,
     url: SITE_URL,
     logo: {
       "@type": "ImageObject",
@@ -44,6 +45,7 @@ export function websiteLd(): Json {
     "@type": "WebSite",
     "@id": WEBSITE_ID,
     name: SITE_NAME,
+    alternateName: SITE_ALT_NAMES,
     url: SITE_URL,
     inLanguage: ["en", "ne", "hi"],
     publisher: { "@id": ORGANIZATION_ID },
@@ -95,6 +97,35 @@ export function faqLd(): Json {
       name: question,
       acceptedAnswer: { "@type": "Answer", text: stripTags(answer) },
     })),
+  };
+}
+
+/**
+ * One day's rasifal for one sign, as an article.
+ *
+ * `datePublished` is the day the reading is for, not the moment the page was
+ * rendered — the reading for the 25th is the same article however many
+ * times the page is rebuilt. No `dateModified`: a claim that the text was
+ * revised is a claim a crawler will compare against the text.
+ */
+export function rasifalArticleLd(opts: {
+  path: string;
+  headline: string;
+  description: string;
+  date: string;
+  language: string;
+}): Json {
+  return {
+    "@type": "Article",
+    "@id": `${abs(opts.path)}#article`,
+    headline: opts.headline,
+    description: opts.description,
+    datePublished: opts.date,
+    inLanguage: opts.language,
+    mainEntityOfPage: abs(opts.path),
+    author: { "@id": ORGANIZATION_ID },
+    publisher: { "@id": ORGANIZATION_ID },
+    isPartOf: { "@id": WEBSITE_ID },
   };
 }
 

@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 
+import { SIGN_ROUTES } from "@/features/rasifal/signs";
 import { SITE_URL } from "@/lib/seo/site";
 
 /**
@@ -23,6 +24,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "daily",
       priority: 0.9,
     },
+    // One page per sign: "mesh rashifal" is its own search, and it wants its
+    // own URL to land on.
+    ...SIGN_ROUTES.map((r) => ({
+      url: `${SITE_URL}/rasifal/${r.slug}`,
+      changeFrequency: "daily" as const,
+      priority: 0.8,
+    })),
     {
       // The calendar people look up by habit.
       url: `${SITE_URL}/patro`,

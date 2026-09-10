@@ -11,6 +11,10 @@ export const SITE_URL = (
 ).replace(/\/$/, "");
 
 export const SITE_NAME = "Nakhatra";
+/** The word the name comes from, and what people type when they mean it.
+ *  A nakshatra is a lunar mansion; the site is named for it with the s
+ *  dropped, which is not how anyone spells it into a search box. */
+export const SITE_ALT_NAMES = ["Nakshatra", "नक्षत्र", "Nakshatra Jyotish"];
 export const SUPPORT_EMAIL = "support@nakhatra.com";
 
 /** Absolute URL for a path. Crawlers ignore relative `og:image` and canonicals. */
