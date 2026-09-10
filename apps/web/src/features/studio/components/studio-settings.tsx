@@ -315,8 +315,10 @@ function ChannelCard({
   const snack = useSnack();
   const { connect, disconnect } = useChannelConnect(channel);
   const posted = (p?: PartPublish) => Boolean(p && "videoId" in p);
-  const up = [publish?.part1, publish?.part2].filter(posted).length;
-  const both = up === 2;
+  // Kept for the button's meaning, not for the page: pressing Publish on a
+  // day already up there means post it again, and nothing on the card says
+  // so — every report of what happened is a snackbar.
+  const both = posted(publish?.part1) && posted(publish?.part2);
 
   return (
     <div className="rounded-[8px] border border-brd bg-inset p-3.5">
@@ -389,14 +391,6 @@ function ChannelCard({
         >
           {busy ? "Publishing…" : "Publish"}
         </button>
-
-        {/* Whether the day is already up there — a word, so the card can be
-            read at a glance. What happened when it went up is a snackbar. */}
-        {up > 0 && (
-          <span className="text-[11.5px] text-emerald-300/90">
-            {up === 2 ? "both parts posted" : "one part posted"}
-          </span>
-        )}
       </div>
 
 
