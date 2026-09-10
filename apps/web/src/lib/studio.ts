@@ -12,6 +12,7 @@ import { homedir } from "node:os";
 import { join } from "node:path";
 
 import { API_URL } from "@/lib/api/proxy";
+import { keyFor, r2Configured, r2Get, r2List, r2Put } from "@/lib/studio-r2";
 import { tiktokConfigured, tiktokPost, tiktokRefresh } from "@/lib/studio-tiktok";
 import { youtubeUpload } from "@/lib/studio-youtube";
 
@@ -273,8 +274,14 @@ export function startRender(date: string): { started: boolean; reason?: string }
       finishedAt: Date.now(),
       error: code === 0 ? undefined : `render exited with code ${code}`,
     };
-    // The films are the point; the upload is what they are for.
-    if (code === 0) publishDay(date).catch(() => undefined);
+    // The films are the point; the upload is what they are for. The bucket
+    // comes first so that what is published and what is archived are the
+    // same two files.
+    if (code === 0) {
+      void archive(date)
+        .then(() => publishDay(date))
+        .catch(() => undefined);
+    }
   });
   child.on("error", (err) => {
     state.job = { ...state.job!, finishedAt: Date.now(), error: err.message };
@@ -285,31 +292,98 @@ export function startRender(date: string): { started: boolean; reason?: string }
 
 export type StudioFile = { name: string; size: number };
 
-/** What is on disk for a day. The mp4s are what the job is for; the captions
- *  sit beside them so the post can be assembled from this page alone. */
-export function filesFor(date: string): StudioFile[] {
+const KEEP = (name: string) => name.endsWith(".mp4") || name.endsWith("-caption.txt");
+
+/** What is on the volume for a day. */
+function localFiles(date: string): StudioFile[] {
   const dir = dirFor(date);
   if (!existsSync(dir)) return [];
   return readdirSync(dir)
-    .filter((n) => n.endsWith(".mp4") || n.endsWith("-caption.txt"))
-    .sort()
+    .filter(KEEP)
     .map((name) => ({ name, size: statSync(join(dir, name)).size }));
 }
 
-/** Both films exist. */
-export const isRendered = (date: string) =>
-  filesFor(date).filter((f) => f.name.endsWith(".mp4")).length === 2;
-
-/** Every day that has anything, newest first. */
-export function renderedDays(limit = 30): string[] {
-  if (!existsSync(STUDIO_OUT)) return [];
-  return readdirSync(STUDIO_OUT)
-    .filter((n) => /^rasifal-\d{4}-\d{2}-\d{2}$/.test(n))
-    .map((n) => n.slice("rasifal-".length))
-    .sort()
-    .reverse()
-    .slice(0, limit);
+/**
+ * A day's films and captions, whether they are still on this box or only in
+ * the bucket. The volume is a cache — a container replaced overnight has an
+ * empty one — so the bucket is asked as well and the two are merged.
+ */
+export async function filesFor(date: string): Promise<StudioFile[]> {
+  const seen = new Map(localFiles(date).map((f) => [f.name, f]));
+  if (r2Configured()) {
+    try {
+      for (const o of await r2List(`rasifal-${date}/`)) {
+        const name = o.key.slice(`rasifal-${date}/`.length);
+        if (KEEP(name) && !seen.has(name)) seen.set(name, { name, size: o.size });
+      }
+    } catch (err) {
+      logger("r2 list failed", err);
+    }
+  }
+  return [...seen.values()].sort((a, b) => a.name.localeCompare(b.name));
 }
+
+/** Both films exist. */
+export async function isRendered(date: string): Promise<boolean> {
+  return (await filesFor(date)).filter((f) => f.name.endsWith(".mp4")).length === 2;
+}
+
+/** One file's bytes, from the volume if it is still there and the bucket if
+ *  it is not. What the file route serves and what an upload sends. */
+export async function readStudioFile(date: string, name: string): Promise<Buffer | null> {
+  const path = join(dirFor(date), name);
+  if (existsSync(path)) return readFileSync(path);
+  if (!r2Configured()) return null;
+  return r2Get(keyFor(date, name));
+}
+
+/** Every day that has anything, newest first — on the volume or in the
+ *  bucket. */
+export async function renderedDays(limit = 30): Promise<string[]> {
+  const days = new Set<string>();
+  if (existsSync(STUDIO_OUT)) {
+    for (const n of readdirSync(STUDIO_OUT)) {
+      if (/^rasifal-\d{4}-\d{2}-\d{2}$/.test(n)) days.add(n.slice("rasifal-".length));
+    }
+  }
+  if (r2Configured()) {
+    try {
+      for (const o of await r2List("rasifal-")) {
+        const day = o.key.match(/^rasifal-(\d{4}-\d{2}-\d{2})\//)?.[1];
+        if (day) days.add(day);
+      }
+    } catch (err) {
+      logger("r2 list failed", err);
+    }
+  }
+  return [...days].sort().reverse().slice(0, limit);
+}
+
+/**
+ * Put a finished day in the bucket.
+ *
+ * After the render, not during it: a part that failed halfway is not worth
+ * keeping, and the renderer has no business knowing where the archive is.
+ * A bucket that refuses is logged and shrugged off — the films are on the
+ * volume either way, and the morning's post does not depend on this.
+ */
+async function archive(date: string): Promise<void> {
+  if (!r2Configured()) return;
+  for (const file of localFiles(date)) {
+    try {
+      await r2Put(
+        keyFor(date, file.name),
+        readFileSync(join(dirFor(date), file.name)),
+        file.name.endsWith(".mp4") ? "video/mp4" : "text/plain; charset=utf-8",
+      );
+    } catch (err) {
+      logger(`r2 put ${file.name} failed`, err);
+    }
+  }
+}
+
+const logger = (message: string, err: unknown) =>
+  console.error(`studio: ${message}:`, err instanceof Error ? err.message : err);
 
 // ─── Publishing ──────────────────────────────────────────────────────────────
 
@@ -402,9 +476,16 @@ export async function publishDay(date: string, req: PublishRequest = {}): Promis
     for (const part of parts) {
       const key = `part${part}` as const;
       const mp4 = join(dirFor(date), `rasifal-${date}-part${part}.mp4`);
-      const captionFile = join(dirFor(date), `rasifal-${date}-part${part}-caption.txt`);
-      if (!existsSync(mp4)) continue;
-      const caption = existsSync(captionFile) ? readFileSync(captionFile, "utf8") : "";
+      // The upload wants a path, so a day that only exists in the bucket is
+      // brought back to the volume first.
+      if (!existsSync(mp4)) {
+        const bytes = await readStudioFile(date, `rasifal-${date}-part${part}.mp4`);
+        if (!bytes) continue;
+        mkdirSync(dirFor(date), { recursive: true });
+        writeFileSync(mp4, bytes);
+      }
+      const captionBytes = await readStudioFile(date, `rasifal-${date}-part${part}-caption.txt`);
+      const caption = captionBytes ? captionBytes.toString("utf8") : "";
       const title = (caption.split("\n")[0] || `Rasifal ${date} · part ${part}`).slice(0, 100);
 
       if (conns.youtube && wanted("youtube", isDone(pub.youtube?.[key]))) {
@@ -485,8 +566,11 @@ export function startClock() {
     if (!s.daily.enabled) return;
     const now = nepalNow();
     if (now.hhmm !== s.daily.time) return;
-    if (isRendered(now.date) || (state.job && !state.job.finishedAt)) return;
-    startRender(now.date);
+    if (state.job && !state.job.finishedAt) return;
+    // The bucket may know about a day this container has never rendered.
+    void isRendered(now.date).then((done) => {
+      if (!done && !(state.job && !state.job.finishedAt)) startRender(now.date);
+    });
   }, 60_000);
   state.clock.unref();
 }
