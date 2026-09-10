@@ -1,4 +1,5 @@
 import {
+  clearPublishErrors,
   forbidden,
   isAdmin,
   isPublishing,
@@ -40,4 +41,18 @@ export async function POST(req: Request) {
       { status: 500 },
     );
   }
+}
+
+/** Dismiss a channel's failures for a day. Only failures: a record of
+ *  something that actually posted is not the reader's to delete. */
+export async function DELETE(req: Request) {
+  if (!(await isAdmin(req))) return forbidden();
+  const p = new URL(req.url).searchParams;
+  const channel = p.get("channel");
+  return Response.json({
+    publish: clearPublishErrors(
+      p.get("date") || todayInNepal(),
+      CHANNELS.includes(channel as Channel) ? (channel as Channel) : undefined,
+    ),
+  });
 }

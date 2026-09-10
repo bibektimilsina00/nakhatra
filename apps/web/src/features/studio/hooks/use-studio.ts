@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import {
   beginConnect,
+  clearStudioErrors,
   disconnectChannel,
   fetchStudioConfig,
   fetchStudioFile,
@@ -40,6 +41,15 @@ export function usePublishDay(date: string) {
   return useMutation({
     mutationFn: (req: PublishRequest = {}) => publishStudioDay(date, req),
     onSettled: () => qc.invalidateQueries({ queryKey: ["studio", date] }),
+  });
+}
+
+/** Dismiss what a channel failed at, for the day on show. */
+export function useClearErrors(date: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (channel: string) => clearStudioErrors(date, channel),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["studio", date] }),
   });
 }
 

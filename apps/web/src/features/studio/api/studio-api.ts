@@ -84,6 +84,12 @@ export const publishStudioDay = (date: string, req: PublishRequest = {}) =>
     body: JSON.stringify({ date, ...req }),
   });
 
+/** Dismiss a channel's failures for a day. */
+export const clearStudioErrors = (date: string, channel: string) =>
+  call<{ publish: PublishState }>(`/api/studio/publish?date=${date}&channel=${channel}`, {
+    method: "DELETE",
+  });
+
 export const fetchStudioConfig = () => call<StudioConfig>("/api/studio/settings");
 
 export const saveStudioSettings = (patch: Partial<StudioSettings>) =>
