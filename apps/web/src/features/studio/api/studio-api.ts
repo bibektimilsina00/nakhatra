@@ -72,8 +72,17 @@ export const fetchStudioStatus = (date: string) => call<StudioStatus>(`/api/stud
 export const startStudioRender = (date: string) =>
   call<{ date: string }>("/api/studio/generate", { method: "POST", body: JSON.stringify({ date }) });
 
-export const publishStudioDay = (date: string) =>
-  call<{ publish: PublishState }>("/api/studio/publish", { method: "POST", body: JSON.stringify({ date }) });
+export interface PublishRequest {
+  channel?: "youtube" | "tiktok";
+  part?: "1" | "2";
+  force?: boolean;
+}
+
+export const publishStudioDay = (date: string, req: PublishRequest = {}) =>
+  call<{ publish: PublishState }>("/api/studio/publish", {
+    method: "POST",
+    body: JSON.stringify({ date, ...req }),
+  });
 
 export const fetchStudioConfig = () => call<StudioConfig>("/api/studio/settings");
 

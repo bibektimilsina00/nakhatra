@@ -12,6 +12,7 @@ import {
   publishStudioDay,
   saveStudioSettings,
   startStudioRender,
+  type PublishRequest,
   type StudioSettings,
 } from "@/features/studio/api/studio-api";
 
@@ -33,10 +34,11 @@ export function useStartRender(date: string) {
   });
 }
 
+/** Publish everything switched on, or one channel and one part by name. */
 export function usePublishDay(date: string) {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: () => publishStudioDay(date),
+    mutationFn: (req: PublishRequest = {}) => publishStudioDay(date, req),
     onSettled: () => qc.invalidateQueries({ queryKey: ["studio", date] }),
   });
 }
