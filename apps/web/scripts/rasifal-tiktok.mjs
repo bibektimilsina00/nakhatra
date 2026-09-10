@@ -87,7 +87,17 @@ const seconds = (file) =>
  * a direction, not read out.
  */
 const VOICE = arg("voice", "Aoede");
-const TTS_MODEL = "gemini-3.1-flash-tts-preview";
+
+/**
+ * Tried in order.
+ *
+ * Every TTS model in this line is preview, and preview means a daily cap per
+ * project per model — a hundred requests, where a day of rasifal is fourteen.
+ * The two models hold separate buckets, so when the first is spent the second
+ * finishes the morning rather than the render dying at slide six with half a
+ * film on disk. Same voices, slightly plainer reading.
+ */
+const TTS_MODELS = [arg("model", "gemini-3.1-flash-tts-preview"), "gemini-2.5-flash-preview-tts"];
 const DIRECTION =
   "एक न्यानो, स्पष्ट र भरोसालाग्दो नेपाली समाचारवाचक शैलीमा, बिस्तारै र " +
   "स्वाभाविक लयमा भन्नुहोस्:\n\n";
@@ -106,8 +116,24 @@ const geminiKey = () => {
 const PCM_RATE = 24000;
 
 async function speak(text, file) {
+  let last;
+  for (const model of TTS_MODELS) {
+    try {
+      return await synth(model, text, file);
+    } catch (err) {
+      last = err;
+      // Only a spent quota is worth another model's bucket; a bad request
+      // would fail the same way twice.
+      if (!String(err.message).includes("429")) throw err;
+      process.stdout.write(`${model} is out of quota for today\n`);
+    }
+  }
+  throw last;
+}
+
+async function synth(model, text, file) {
   const res = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/${TTS_MODEL}:generateContent`,
+    `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
     {
       method: "POST",
       headers: { "Content-Type": "application/json", "x-goog-api-key": geminiKey() },
