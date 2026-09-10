@@ -180,7 +180,7 @@ export function SiteHeader() {
               </div>
             </div>
 
-            <span title="Coming soon" className="cursor-default rounded-[6px] px-3 py-2 text-[13.5px] text-faint">{nav.rasifal} <span className={`ml-1 rounded-[3px] border border-brd px-1 py-px font-mono text-[9px] ${badge}`}>{nav.soon}</span></span>
+            <Link href="/rasifal" className="rounded-[6px] px-3 py-2 text-[13.5px] text-mid transition-colors hover:text-fg">{nav.rasifal}</Link>
 
             <Link href="/consultations" className="rounded-[6px] px-3 py-2 text-[13.5px] text-muted transition-colors hover:text-paper">{nav.consultation}</Link>
 
@@ -286,7 +286,7 @@ export function SiteHeader() {
                   </span>
                 </a></div>
             <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-brd pt-4 text-[13.5px]">
-              <span className="cursor-default text-faint" title="Coming soon">{nav.rasifal} <span className={`ml-1 rounded-[3px] border border-brd px-1 py-px font-mono text-[9px] ${badge}`}>{nav.soon}</span></span>
+              <Link href="/rasifal">{nav.rasifal}</Link>
               <span className="cursor-default text-faint" title="Coming soon">{nav.patro} <span className={`ml-1 rounded-[3px] border border-brd px-1 py-px font-mono text-[9px] ${badge}`}>{nav.soon}</span></span>
               <Link href="/consultations" className="text-muted transition-colors hover:text-paper">{nav.consultation}</Link>
               <Link href="/login" className="text-muted transition-colors hover:text-paper">

@@ -1,0 +1,45 @@
+"""Wire contract for the daily rasifal.
+
+Computed facts only. The sentence a reader sees is composed by the client in
+their own language, the same way the milan kootas are — the engine names the
+graha, the house and the murti, and never writes prose.
+"""
+
+from __future__ import annotations
+
+from datetime import date
+
+from pydantic import BaseModel, Field
+
+
+class TransitOut(BaseModel):
+    name: str = Field(description="Graha, e.g. 'Saturn'.")
+    sign: str
+    house: int = Field(description="1-12, counted inclusively from the janma rashi.")
+    favourable: bool
+    obstructed: bool = Field(
+        description="Favourable by house, but blocked by a graha in its vedha house."
+    )
+    retrograde: bool
+
+
+class RashiDayOut(BaseModel):
+    sign: str
+    sign_index: int
+    lord: str
+    score: float
+    rating: int = Field(ge=1, le=5)
+    murti: str = Field(description="Swarna, Rajata, Tamra or Loha.")
+    murti_house: int
+    supports: list[str] = Field(description="Grahas helping today, strongest first.")
+    strains: list[str] = Field(description="Grahas hindering today.")
+    lucky_number: int
+    lucky_colour: str = Field(description="Colour key, not a word: 'white', 'red', ...")
+    transits: list[TransitOut]
+
+
+class RasifalOut(BaseModel):
+    for_date: date
+    weekday_lord: str
+    engine_version: str
+    signs: list[RashiDayOut]

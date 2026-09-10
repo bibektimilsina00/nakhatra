@@ -1,0 +1,147 @@
+"use client";
+
+import { useMemo, useState } from "react";
+
+import { AppShell } from "@/features/dashboard/components/app-shell";
+import { RashiCard } from "@/features/rasifal/components/rashi-card";
+import { useRasifal } from "@/features/rasifal/hooks/use-rasifal";
+import { useTranslation } from "@/lib/i18n/language-context";
+import { formatDateFor } from "@/lib/utils/date-converter";
+
+/**
+ * Aajako Rasifal.
+ *
+ * Twelve readings of one sky. The engine judges each sign by gochara from
+ * that rashi — murti nirnaya, the transit houses, and vedha — and the text is
+ * composed here from those findings, so every sentence traces to something
+ * calculated rather than to a model's imagination.
+ */
+export function RasifalPage() {
+  const { language } = useTranslation();
+  const [offset, setOffset] = useState(0);
+
+  // Dates are formed in Nepal's own day, not the browser's: a reader in
+  // Sydney asking for "today" means today in Kathmandu.
+  const iso = useMemo(() => {
+    if (offset === 0) return undefined;
+    const now = new Date();
+    const nepal = new Date(now.getTime() + (5 * 60 + 45) * 60000 + now.getTimezoneOffset() * 60000);
+    nepal.setDate(nepal.getDate() + offset);
+    return nepal.toISOString().slice(0, 10);
+  }, [offset]);
+
+  const { data, isPending, isError, refetch } = useRasifal(iso);
+
+  const title =
+    language === "ne" ? "आजको राशिफल" : language === "hi" ? "आज का राशिफल" : "Today's Rasifal";
+  const sub =
+    language === "ne"
+      ? "नेपालकै समयमा गोचर गणना गरी बनाइएको — बाह्रै राशिको दैनिक फल।"
+      : language === "hi"
+        ? "नेपाल के समय पर गोचर गणना से बना — बारहों राशियों का दैनिक फल।"
+        : "Computed by gochara in Nepal's own time — the day for all twelve signs.";
+
+  const dayLabel = (n: number) =>
+    n === 0
+      ? language === "ne" ? "आज" : language === "hi" ? "आज" : "Today"
+      : n === -1
+        ? language === "ne" ? "हिजो" : language === "hi" ? "कल" : "Yesterday"
+        : language === "ne" ? "भोलि" : language === "hi" ? "कल" : "Tomorrow";
+
+  return (
+    <AppShell guest>
+      <main className="mx-auto w-full max-w-[1180px] px-5 pb-24 pt-10 sm:px-8">
+        <header className="max-w-2xl">
+          <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-acc">
+            {language === "en" ? "Gochara" : "गोचर"}
+          </span>
+          <h1 className="mt-3 font-serif text-[26px] font-bold leading-tight text-fg sm:text-[32px]">
+            {title}
+          </h1>
+          <p className="mt-3 text-[14.5px] leading-[1.7] text-mut">{sub}</p>
+        </header>
+
+        <div className="mt-6 flex flex-wrap items-center gap-2">
+          {[-1, 0, 1].map((n) => (
+            <button
+              key={n}
+              type="button"
+              onClick={() => setOffset(n)}
+              className={`cursor-pointer rounded-full border px-4 py-1.5 text-[12.5px] font-medium transition ${
+                offset === n
+                  ? "border-acc bg-acc text-onacc"
+                  : "border-brd text-mid hover:border-acc/50 hover:text-acc2"
+              }`}
+            >
+              {dayLabel(n)}
+            </button>
+          ))}
+          {data && (
+            <span className="ml-1 text-[12px] text-mut">
+              {formatDateFor(data.for_date, language)}
+            </span>
+          )}
+        </div>
+
+        {isPending && (
+          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {Array.from({ length: 12 }).map((_, i) => (
+              <div
+                key={i}
+                className="h-[230px] animate-pulse rounded-[12px] border border-brd bg-panel"
+              />
+            ))}
+          </div>
+        )}
+
+        {isError && (
+          <div className="mt-8 rounded-[12px] border border-brd bg-panel p-6 text-center">
+            <p className="text-[13.5px] text-mid">
+              {language === "ne"
+                ? "राशिफल ल्याउन सकिएन।"
+                : language === "hi"
+                  ? "राशिफल नहीं लाया जा सका।"
+                  : "The rasifal could not be loaded."}
+            </p>
+            <button
+              type="button"
+              onClick={() => refetch()}
+              className="mt-3 cursor-pointer rounded-[8px] border border-brd px-4 py-2 text-[12.5px] font-medium text-mid transition hover:border-acc/50 hover:text-acc2"
+            >
+              {language === "ne" ? "फेरि प्रयास" : language === "hi" ? "पुनः प्रयास" : "Try again"}
+            </button>
+          </div>
+        )}
+
+        {data && (
+          <>
+            <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {data.signs.map((day) => (
+                <RashiCard key={day.sign} day={day} />
+              ))}
+            </div>
+
+            {/* What produced these, said plainly — the reference sites explain
+                their method, and this one actually has one. */}
+            <section className="mt-8 rounded-[12px] border border-brd bg-inset p-5">
+              <h2 className="text-[13px] font-semibold text-fg">
+                {language === "ne"
+                  ? "यो राशिफल कसरी गणना गरिएको हो?"
+                  : language === "hi"
+                    ? "यह राशिफल कैसे गणना किया गया है?"
+                    : "How this rasifal is calculated"}
+              </h2>
+              <p className="mt-2 text-[12.5px] leading-[1.8] text-mut">
+                {language === "ne"
+                  ? "हरेक राशिका लागि आजका नौ ग्रह त्यही राशिबाट भाव गन्ती गरी राखिन्छ। शास्त्रीय गोचर तालिकाअनुसार कुन ग्रह अनुकूल छ हेरिन्छ, वेध (अवरोध) जाँचिन्छ — अनुकूल ग्रह पनि वेधले रोक्छ — र चन्द्रमाको भावले मूर्ति निर्णय (स्वर्ण, रजत, ताम्र, लोह) तय गर्छ। लाहिरी अयनांश, नेपालकै समय। कुनै पनि वाक्य अनुमानले लेखिएको छैन।"
+                  : language === "hi"
+                    ? "प्रत्येक राशि के लिए आज के नौ ग्रह उसी राशि से भाव गिनकर रखे जाते हैं। शास्त्रीय गोचर तालिका से अनुकूलता देखी जाती है, वेध जाँचा जाता है — अनुकूल ग्रह भी वेध से रुकता है — और चंद्रमा का भाव मूर्ति निर्णय (स्वर्ण, रजत, ताम्र, लोह) तय करता है। लाहिरी अयनांश, नेपाल का समय।"
+                    : "For each sign, today's nine grahas are placed in houses counted from that rashi. Each is weighed against the classical gochara table, vedha is checked — a favourable graha blocked in its vedha house does not deliver — and the Moon's house sets the murti (Swarna, Rajata, Tamra, Loha). Lahiri ayanamsa, Nepal's own time. No sentence here is guessed."}
+              </p>
+            </section>
+          </>
+        )}
+      </main>
+    </AppShell>
+  );
+}

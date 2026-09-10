@@ -701,6 +701,30 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/rasifal": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The day's rasifal
+         * @description All twelve rashis judged by gochara for one day.
+         *
+         *     Deliberately unauthenticated: this is the same public sky for everyone and
+         *     carries no birth data, so it costs nothing to give away and is the page
+         *     most likely to bring someone to the product.
+         */
+        get: operations["rasifal_v1_rasifal_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/realtime-session": {
         parameters: {
             query?: never;
@@ -2248,6 +2272,59 @@ export interface components {
             /** Full Name */
             full_name: string;
         };
+        /** RashiDayOut */
+        RashiDayOut: {
+            /** Lord */
+            lord: string;
+            /**
+             * Lucky Colour
+             * @description Colour key, not a word: 'white', 'red', ...
+             */
+            lucky_colour: string;
+            /** Lucky Number */
+            lucky_number: number;
+            /**
+             * Murti
+             * @description Swarna, Rajata, Tamra or Loha.
+             */
+            murti: string;
+            /** Murti House */
+            murti_house: number;
+            /** Rating */
+            rating: number;
+            /** Score */
+            score: number;
+            /** Sign */
+            sign: string;
+            /** Sign Index */
+            sign_index: number;
+            /**
+             * Strains
+             * @description Grahas hindering today.
+             */
+            strains: string[];
+            /**
+             * Supports
+             * @description Grahas helping today, strongest first.
+             */
+            supports: string[];
+            /** Transits */
+            transits: components["schemas"]["TransitOut"][];
+        };
+        /** RasifalOut */
+        RasifalOut: {
+            /** Engine Version */
+            engine_version: string;
+            /**
+             * For Date
+             * Format: date
+             */
+            for_date: string;
+            /** Signs */
+            signs: components["schemas"]["RashiDayOut"][];
+            /** Weekday Lord */
+            weekday_lord: string;
+        };
         /**
          * RateIn
          * @description What a practitioner charges, per medium.
@@ -2596,6 +2673,30 @@ export interface components {
         TranscriptResponse: {
             /** Text */
             text: string;
+        };
+        /** TransitOut */
+        TransitOut: {
+            /** Favourable */
+            favourable: boolean;
+            /**
+             * House
+             * @description 1-12, counted inclusively from the janma rashi.
+             */
+            house: number;
+            /**
+             * Name
+             * @description Graha, e.g. 'Saturn'.
+             */
+            name: string;
+            /**
+             * Obstructed
+             * @description Favourable by house, but blocked by a graha in its vedha house.
+             */
+            obstructed: boolean;
+            /** Retrograde */
+            retrograde: boolean;
+            /** Sign */
+            sign: string;
         };
         /** UserLoginIn */
         UserLoginIn: {
@@ -4121,6 +4222,38 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PractitionerDetail"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    rasifal_v1_rasifal_get: {
+        parameters: {
+            query?: {
+                /** @description Date to read, in Nepal time. Defaults to today in Kathmandu. */
+                on?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RasifalOut"];
                 };
             };
             /** @description Validation Error */

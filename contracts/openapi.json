@@ -2775,6 +2775,121 @@
         "title": "ProfileUpdateIn",
         "type": "object"
       },
+      "RashiDayOut": {
+        "properties": {
+          "lord": {
+            "title": "Lord",
+            "type": "string"
+          },
+          "lucky_colour": {
+            "description": "Colour key, not a word: 'white', 'red', ...",
+            "title": "Lucky Colour",
+            "type": "string"
+          },
+          "lucky_number": {
+            "title": "Lucky Number",
+            "type": "integer"
+          },
+          "murti": {
+            "description": "Swarna, Rajata, Tamra or Loha.",
+            "title": "Murti",
+            "type": "string"
+          },
+          "murti_house": {
+            "title": "Murti House",
+            "type": "integer"
+          },
+          "rating": {
+            "maximum": 5.0,
+            "minimum": 1.0,
+            "title": "Rating",
+            "type": "integer"
+          },
+          "score": {
+            "title": "Score",
+            "type": "number"
+          },
+          "sign": {
+            "title": "Sign",
+            "type": "string"
+          },
+          "sign_index": {
+            "title": "Sign Index",
+            "type": "integer"
+          },
+          "strains": {
+            "description": "Grahas hindering today.",
+            "items": {
+              "type": "string"
+            },
+            "title": "Strains",
+            "type": "array"
+          },
+          "supports": {
+            "description": "Grahas helping today, strongest first.",
+            "items": {
+              "type": "string"
+            },
+            "title": "Supports",
+            "type": "array"
+          },
+          "transits": {
+            "items": {
+              "$ref": "#/components/schemas/TransitOut"
+            },
+            "title": "Transits",
+            "type": "array"
+          }
+        },
+        "required": [
+          "sign",
+          "sign_index",
+          "lord",
+          "score",
+          "rating",
+          "murti",
+          "murti_house",
+          "supports",
+          "strains",
+          "lucky_number",
+          "lucky_colour",
+          "transits"
+        ],
+        "title": "RashiDayOut",
+        "type": "object"
+      },
+      "RasifalOut": {
+        "properties": {
+          "engine_version": {
+            "title": "Engine Version",
+            "type": "string"
+          },
+          "for_date": {
+            "format": "date",
+            "title": "For Date",
+            "type": "string"
+          },
+          "signs": {
+            "items": {
+              "$ref": "#/components/schemas/RashiDayOut"
+            },
+            "title": "Signs",
+            "type": "array"
+          },
+          "weekday_lord": {
+            "title": "Weekday Lord",
+            "type": "string"
+          }
+        },
+        "required": [
+          "for_date",
+          "weekday_lord",
+          "engine_version",
+          "signs"
+        ],
+        "title": "RasifalOut",
+        "type": "object"
+      },
       "RateIn": {
         "description": "What a practitioner charges, per medium.\n\nA rate of zero withdraws that medium rather than making it free: the\ndirectory will not offer a consultation the practitioner has not priced,\nand \"free\" is a decision nobody has asked for.",
         "properties": {
@@ -3543,6 +3658,47 @@
           "text"
         ],
         "title": "TranscriptResponse",
+        "type": "object"
+      },
+      "TransitOut": {
+        "properties": {
+          "favourable": {
+            "title": "Favourable",
+            "type": "boolean"
+          },
+          "house": {
+            "description": "1-12, counted inclusively from the janma rashi.",
+            "title": "House",
+            "type": "integer"
+          },
+          "name": {
+            "description": "Graha, e.g. 'Saturn'.",
+            "title": "Name",
+            "type": "string"
+          },
+          "obstructed": {
+            "description": "Favourable by house, but blocked by a graha in its vedha house.",
+            "title": "Obstructed",
+            "type": "boolean"
+          },
+          "retrograde": {
+            "title": "Retrograde",
+            "type": "boolean"
+          },
+          "sign": {
+            "title": "Sign",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "sign",
+          "house",
+          "favourable",
+          "obstructed",
+          "retrograde"
+        ],
+        "title": "TransitOut",
         "type": "object"
       },
       "UserLoginIn": {
@@ -6231,6 +6387,59 @@
         "summary": "Public Profile",
         "tags": [
           "practitioners"
+        ]
+      }
+    },
+    "/v1/rasifal": {
+      "get": {
+        "description": "All twelve rashis judged by gochara for one day.\n\nDeliberately unauthenticated: this is the same public sky for everyone and\ncarries no birth data, so it costs nothing to give away and is the page\nmost likely to bring someone to the product.",
+        "operationId": "rasifal_v1_rasifal_get",
+        "parameters": [
+          {
+            "description": "Date to read, in Nepal time. Defaults to today in Kathmandu.",
+            "in": "query",
+            "name": "on",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Date to read, in Nepal time. Defaults to today in Kathmandu.",
+              "title": "On"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RasifalOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "The day's rasifal",
+        "tags": [
+          "rasifal"
         ]
       }
     },
