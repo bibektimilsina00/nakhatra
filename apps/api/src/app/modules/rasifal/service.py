@@ -9,6 +9,8 @@ from __future__ import annotations
 from datetime import date, datetime
 from zoneinfo import ZoneInfo
 
+from sqlmodel import Session
+
 from app.astrology_core import rasifal
 from app.modules.rasifal import writer
 from app.modules.rasifal.schemas import (
@@ -31,11 +33,16 @@ def today_in_nepal() -> date:
     return datetime.now(NEPAL).date()
 
 
-async def for_date(day: date, language: str = "ne") -> RasifalOut:
+def for_date(day: date, language: str = "ne", session: Session | None = None) -> RasifalOut:
+    """The day, as published.
+
+    Reads the written rashifal from the database and never calls the model —
+    that happens once a day in the job. A date with no publication yet still
+    returns its full findings, so the page shows ratings, transits and lucky
+    numbers rather than nothing.
+    """
     computed = rasifal.compute(day)
-    # Prose is a bonus, never a requirement: an empty mapping here simply
-    # means the cards render from their findings.
-    written = await writer.readings_for(computed, language)
+    written = writer.published(session, day, language) if session is not None else {}
     return RasifalOut(
         for_date=computed.for_date,
         weekday_lord=computed.weekday_lord,

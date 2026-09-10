@@ -7,6 +7,7 @@ from typing import Annotated, Literal
 
 from fastapi import APIRouter, Query
 
+from app.core.db import SessionDep
 from app.core.errors import ValidationError
 from app.modules.rasifal import service
 from app.modules.rasifal.schemas import PeriodRasifalOut, RasifalOut
@@ -19,7 +20,8 @@ _WINDOW = timedelta(days=366)
 
 
 @router.get("/rasifal", response_model=RasifalOut, summary="The day's rasifal")
-async def rasifal(
+def rasifal(
+    session: SessionDep,
     on: Annotated[
         date | None,
         Query(description="Date to read, in Nepal time. Defaults to today in Kathmandu."),
@@ -39,7 +41,7 @@ async def rasifal(
     day = on or today
     if abs(day - today) > _WINDOW:
         raise ValidationError("That date is outside the range this reads.")
-    return await service.for_date(day, language)
+    return service.for_date(day, language, session)
 
 
 @router.get(

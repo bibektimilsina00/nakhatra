@@ -1,6 +1,11 @@
 "use client";
 
+import Link from "next/link";
 import { useMemo, useState } from "react";
+
+import { bsMonthName, WEEKDAY_FULL } from "@/features/patro/patro-i18n";
+import { num } from "@/features/patro/patro-i18n";
+import { convertAdToBs } from "@/lib/utils/date-converter";
 
 import { SiteFooter } from "@/features/marketing/components/site-footer";
 import { SiteHeader } from "@/features/marketing/components/site-header";
@@ -8,6 +13,8 @@ import { RashiCard } from "@/features/rasifal/components/rashi-card";
 import { RashiPeriodCard } from "@/features/rasifal/components/rashi-period-card";
 import { spanLabel } from "@/features/rasifal/rasifal-i18n";
 import type { Span } from "@/features/rasifal/types";
+import { usePatro } from "@/features/patro/hooks/use-patro";
+import { PAKSHA, tithiName } from "@/features/patro/patro-i18n";
 import { useRasifal, useRasifalPeriod } from "@/features/rasifal/hooks/use-rasifal";
 import { useTranslation } from "@/lib/i18n/language-context";
 import { formatDateFor } from "@/lib/utils/date-converter";
@@ -36,6 +43,13 @@ export function RasifalPage() {
   }, [offset]);
 
   const daily = useRasifal(span === "daily" ? iso : undefined, language);
+  const patroToday = usePatro(daily.data?.for_date ?? "", 1);
+  const tithiToday = patroToday.data?.days?.[0]
+    ? `${PAKSHA[patroToday.data.days[0].paksha]?.[language] ?? ""} ${tithiName(
+        patroToday.data.days[0].tithi.name,
+        language,
+      )}`.trim()
+    : null;
   const period = useRasifalPeriod(
     span === "daily" ? "weekly" : span,
     iso,
@@ -45,6 +59,27 @@ export function RasifalPage() {
   // One set of flags, whichever span is showing.
   const active = span === "daily" ? daily : period;
   const { isPending, isError, refetch } = active;
+
+  // The Bikram Sambat day this page is about — the first thing a Nepali
+  // reader checks, and it was nowhere on the page.
+  const bsToday = useMemo(() => {
+    const iso = daily.data?.for_date ?? new Date().toISOString().slice(0, 10);
+    const bs = convertAdToBs(
+      Number(iso.slice(0, 4)),
+      Number(iso.slice(5, 7)),
+      Number(iso.slice(8, 10)),
+    );
+    const wd = new Date(iso + "T12:00:00").getDay();
+    return {
+      year: num(bs.year, language),
+      month: bsMonthName(bs.month, language),
+      day: num(bs.day, language),
+      weekday:
+        WEEKDAY_FULL[
+          ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"][wd]
+        ][language],
+    };
+  }, [daily.data, language]);
   const data = daily.data;
 
   // The heading follows the tab: a page titled "today's rasifal" while
@@ -83,32 +118,69 @@ export function RasifalPage() {
     <div className="min-h-dvh bg-ink font-sys antialiased">
       <SiteHeader />
       <main className="mx-auto w-full max-w-[1180px] px-5 pb-24 pt-28 sm:px-8 sm:pt-32">
-        <header className="max-w-2xl">
-          <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-gold">
-            {language === "en" ? "Gochara" : "गोचर"}
-          </span>
-          <h1 className="mt-3 font-serif text-[30px] font-bold leading-tight text-paper sm:text-[40px]">
-            {title}
-          </h1>
-          <p className="mt-3 text-[15px] leading-[1.75] text-muted">{sub}</p>
+        <header className="flex flex-wrap items-start justify-between gap-x-8 gap-y-5">
+          <div className="max-w-2xl">
+            <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-gold">
+              {language === "en" ? "Gochara" : "गोचर"}
+            </span>
+            <h1 className="mt-3 font-serif text-[30px] font-bold leading-tight text-paper sm:text-[40px]">
+              {title}
+            </h1>
+            <p className="mt-3 text-[15px] leading-[1.75] text-muted">{sub}</p>
+          </div>
+
+        {/* The day the page is speaking about on the left, the span it covers
+            on the right — a reader should have to work out neither. */}
+          <div className="flex flex-col items-end gap-3">
+            <div className="flex items-stretch gap-4">
+            <div>
+              <span className="block text-[10.5px] font-semibold uppercase tracking-wider text-gold">
+                {language === "en" ? "Today" : "आज"}
+              </span>
+              <p className="mt-1 font-serif text-[20px] font-bold leading-tight text-paper">
+                {bsToday.month} {bsToday.day}, {bsToday.year}
+              </p>
+              <p className="mt-0.5 text-[11.5px] text-faint">
+                {bsToday.weekday}
+                {daily.data ? ` · ${daily.data.for_date}` : ""}
+              </p>
+            </div>
+            {tithiToday && (
+              <div className="border-l border-brd pl-4">
+                <span className="block text-[10.5px] font-semibold uppercase tracking-wider text-gold">
+                  {language === "en" ? "Tithi" : "तिथि"}
+                </span>
+                <p className="mt-1 font-serif text-[16px] font-bold leading-tight text-paper">
+                  {tithiToday}
+                </p>
+                <Link
+                  href="/patro"
+                  className="mt-1 inline-flex items-center gap-1 text-[11.5px] font-medium text-gold2 hover:underline"
+                >
+                  {language === "en" ? "Nepali Patro" : "नेपाली पात्रो"} →
+                </Link>
+              </div>
+            )}
+          </div>
+
+          <div className="flex items-center self-end overflow-hidden rounded-[8px] border border-brd bg-card">
+            {(["daily", "weekly", "monthly"] as Span[]).map((s, i) => (
+              <button
+                key={s}
+                type="button"
+                onClick={() => setSpan(s)}
+                className={`cursor-pointer px-4 py-2 text-[12.5px] font-medium transition ${
+                  i > 0 ? "border-l border-brd" : ""
+                } ${span === s ? "bg-gold text-ink" : "text-muted hover:text-paper"}`}
+              >
+                {spanLabel(s, language)}
+              </button>
+              ))}
+            </div>
+          </div>
         </header>
 
-        <div className="mt-6 flex flex-wrap items-center gap-1.5 rounded-full border border-brd bg-card p-1 sm:w-fit">
-          {(["daily", "weekly", "monthly"] as Span[]).map((s) => (
-            <button
-              key={s}
-              type="button"
-              onClick={() => setSpan(s)}
-              className={`cursor-pointer rounded-full px-4 py-1.5 text-[12.5px] font-medium transition ${
-                span === s ? "bg-gold text-ink" : "text-muted hover:text-paper"
-              }`}
-            >
-              {spanLabel(s, language)}
-            </button>
-          ))}
-        </div>
-
-        <div className={`mt-4 flex-wrap items-center gap-2 ${span === "daily" ? "flex" : "hidden"}`}>
+        <div className={`mt-5 flex-wrap items-center gap-2 ${span === "daily" ? "flex" : "hidden"}`}>
           {[-1, 0, 1].map((n) => (
             <button
               key={n}

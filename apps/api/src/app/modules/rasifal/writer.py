@@ -1,10 +1,9 @@
-"""The writer: computed findings in, Nepali rashifal out.
+"""The daily publication: written once, read by everyone.
 
-One call per day per language, for all twelve signs at once — the model can
-see what it has already said and vary the next, which is the only reliable way
-to stop twelve cards reading as one template. The result is cached on disk,
-because a day's sky does not change and re-paying for the same twelve
-paragraphs on every page load would be absurd.
+Calculate once, generate once, save once, serve many times. The engine decides
+the astrology; this asks the model to say what it means, validates what comes
+back, and publishes it to the database. A user request never reaches the model
+— it reads the row.
 
 Nothing astrological is decided here. The rating, the lucky number and colour,
 the syllables and the transits all come from `astrology_core` and pass through
@@ -13,26 +12,28 @@ untouched; this fills in prose and nothing else.
 
 from __future__ import annotations
 
-import asyncio
 import json
 import logging
 import re
+import uuid
+from dataclasses import asdict
 from datetime import date
-from pathlib import Path
 
 from pydantic import BaseModel, ValidationError
+from sqlmodel import Session
 
 from app.astrology_core.rasifal import Rasifal
-from app.core.config import get_settings
 from app.integrations.llm import get_client, model_name, tuning
-from app.modules.rasifal import prompts
+from app.modules.rasifal import prompts, repository
+from app.modules.rasifal.models import DailyRashifal
 
 logger = logging.getLogger(__name__)
 
 MAX_TOKENS = 8000
+SIGNS_EXPECTED = 12
 
 
-class _Reading(BaseModel):
+class Reading(BaseModel):
     sign: str
     summary: str = ""
     career: str = ""
@@ -44,42 +45,13 @@ class _Reading(BaseModel):
 
 
 class _Readings(BaseModel):
-    signs: list[_Reading]
-
-
-def _cache_path(on: date, language: str) -> Path:
-    settings = get_settings()
-    root = Path(getattr(settings, "CACHE_DIR", "data/cache")) / "rasifal"
-    root.mkdir(parents=True, exist_ok=True)
-    return root / f"{on.isoformat()}_{language}.json"
-
-
-def _load(on: date, language: str) -> dict[str, _Reading] | None:
-    path = _cache_path(on, language)
-    if not path.exists():
-        return None
-    try:
-        raw = json.loads(path.read_text("utf-8"))
-        return {k: _Reading(**v) for k, v in raw.items()}
-    except (OSError, ValueError, ValidationError):
-        # A half-written or stale-shaped cache is not worth a failed page.
-        return None
-
-
-def _store(on: date, language: str, readings: dict[str, _Reading]) -> None:
-    try:
-        _cache_path(on, language).write_text(
-            json.dumps({k: v.model_dump() for k, v in readings.items()}, ensure_ascii=False),
-            encoding="utf-8",
-        )
-    except OSError as exc:
-        logger.warning("could not cache rasifal for %s/%s: %s", on, language, exc)
+    signs: list[Reading]
 
 
 _FENCE = re.compile(r"^```(?:json)?\s*|\s*```$", re.MULTILINE)
 
 
-def _parse(text: str) -> _Readings | None:
+def parse(text: str) -> _Readings | None:
     """The model was told to return bare JSON; models fence it anyway."""
     cleaned = _FENCE.sub("", text).strip()
     start, end = cleaned.find("{"), cleaned.rfind("}")
@@ -92,46 +64,52 @@ def _parse(text: str) -> _Readings | None:
         return None
 
 
-#: Days already being written, so twelve simultaneous visitors do not each
-#: commission their own copy of the same twelve paragraphs.
-_in_flight: set[tuple[date, str]] = set()
+def published(session: Session, on: date, language: str) -> dict[str, Reading]:
+    """The day's readings if it has been published, else nothing.
 
-
-async def readings_for(day: Rasifal, language: str) -> dict[str, _Reading]:
-    """The twelve written readings, if they are ready.
-
-    Never waits for the model. Writing a day takes the better part of a
-    minute, and nobody should hold a calendar page open that long — so a miss
-    returns nothing, starts the work in the background, and the next visitor
-    (or a reload a minute later) gets the prose. The cards render from their
-    computed findings meanwhile, which is a far better failure than a blank
-    screen or a spinner.
+    This is the whole of the user request path. It never calls the model.
     """
-    cached = _load(day.for_date, language)
-    if cached is not None:
-        return cached
-
-    key = (day.for_date, language)
-    if key not in _in_flight:
-        _in_flight.add(key)
-        task = asyncio.create_task(_write_and_cache(day, language))
-        # Without a reference the loop may collect the task mid-flight.
-        _pending.add(task)
-        task.add_done_callback(_pending.discard)
-    return {}
-
-
-_pending: set[asyncio.Task] = set()
-
-
-async def _write_and_cache(day: Rasifal, language: str) -> None:
+    row = repository.get(session, on.isoformat(), language)
+    if row is None:
+        return {}
     try:
-        await _generate(day, language)
-    finally:
-        _in_flight.discard((day.for_date, language))
+        raw = json.loads(row.content_json)
+        return {k: Reading(**v) for k, v in raw.items()}
+    except (ValueError, ValidationError) as exc:
+        # A row that cannot be read is a row worth regenerating, not a 500.
+        logger.warning("daily_rashifal %s/%s is unreadable: %s", on, language, exc)
+        return {}
 
 
-async def _generate(day: Rasifal, language: str) -> dict[str, _Reading]:
+def _findings(day: Rasifal) -> dict:
+    """Exactly what the writer was told, kept beside what it wrote."""
+    return {
+        "for_date": day.for_date.isoformat(),
+        "weekday_lord": day.weekday_lord,
+        "signs": [asdict(s) for s in day.signs],
+    }
+
+
+async def generate(
+    session: Session,
+    day: Rasifal,
+    language: str,
+    *,
+    overwrite: bool = False,
+) -> dict[str, Reading]:
+    """Write the day and publish it. Idempotent.
+
+    Returns the published readings — the ones already in the table if this
+    date was written before and `overwrite` is not set, so a job run twice
+    costs one generation, not two.
+    """
+    on = day.for_date.isoformat()
+    if not overwrite:
+        existing = published(session, day.for_date, language)
+        if existing:
+            logger.info("rasifal %s/%s already published; nothing to do", on, language)
+            return existing
+
     system, user = prompts.build_prompt(day, language)
     try:
         response = await get_client().messages.create(
@@ -141,26 +119,42 @@ async def _generate(day: Rasifal, language: str) -> dict[str, _Reading]:
             messages=[{"role": "user", "content": user}],
             **tuning(),
         )
-    except Exception as exc:  # noqa: BLE001 — any failure means "no prose today"
-        logger.warning("rasifal writer unavailable: %s", exc)
+    except Exception as exc:  # noqa: BLE001 — any failure means "not today"
+        logger.error("rasifal writer unavailable for %s/%s: %s", on, language, exc)
         return {}
 
     # A refusal has no content to read (CLAUDE.md: check stop_reason first).
     if getattr(response, "stop_reason", None) == "refusal":
-        logger.warning("rasifal writer refused")
+        logger.error("rasifal writer refused for %s/%s", on, language)
         return {}
 
     text = "".join(b.text for b in response.content if getattr(b, "type", "") == "text")
-    parsed = _parse(text)
+    parsed = parse(text)
     if parsed is None:
         return {}
 
     by_sign = {r.sign: r for r in parsed.signs}
-    # Only keep it if the writer covered the whole sky; a partial day would
-    # show some signs written and others bare, which looks broken.
-    if len(by_sign) < len(day.signs):
-        logger.warning("rasifal writer covered %d of %d signs", len(by_sign), len(day.signs))
+    # Partial days are not published. Some signs written and others bare looks
+    # broken, and a half publication would satisfy the "already done" check
+    # tomorrow and never be repaired.
+    if len(by_sign) < SIGNS_EXPECTED:
+        logger.error(
+            "rasifal writer covered %d of %d signs for %s/%s; not publishing",
+            len(by_sign), SIGNS_EXPECTED, on, language,
+        )
         return {}
 
-    _store(day.for_date, language, by_sign)
-    return by_sign
+    row = DailyRashifal(
+        id=uuid.uuid4().hex,
+        on_date=on,
+        language=language,
+        content_json=json.dumps(
+            {k: v.model_dump() for k, v in by_sign.items()}, ensure_ascii=False
+        ),
+        astrology_data_json=json.dumps(_findings(day), ensure_ascii=False, default=str),
+        model=model_name(),
+        prompt_version=prompts.PROMPT_VERSION,
+    )
+    saved = repository.replace(session, row) if overwrite else repository.publish(session, row)
+    logger.info("published rasifal %s/%s (%s)", on, language, saved.id)
+    return published(session, day.for_date, language)

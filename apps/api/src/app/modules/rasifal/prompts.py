@@ -31,6 +31,8 @@ HOUSE_MEANING = {
     12: "expense, travel, sleep, letting go",
 }
 
+PROMPT_VERSION = "rasifal-writer-2"
+
 _BAND_WORD = {
     "very_good": "धेरै शुभ",
     "good": "शुभ",
@@ -55,6 +57,24 @@ ephemeris-backed engine: which grahas favour a sign today, which strain it,
 the house each stands in from that sign, whether an obstruction (vedha) blocks
 a benefic, and how the day rates. You interpret. You never calculate, never
 contradict the given rating, and never add a placement that is not listed.
+
+NEVER OPEN THE SAME WAY TWICE
+Do not begin a reading with "आजको दिन". Not once. It is the tell of a
+generated horoscope, and twelve of them in a column is what makes a page look
+machine-written. Open on the strongest thing the findings say, in the words a
+reader would use for it.
+
+  BAD:  "आजको दिन केही चुनौतीपूर्ण रहन सक्छ। काममा ढिलाइ हुन सक्छ..."
+  BAD:  "आजको दिन कुल मिलाएर फलदायी रहनेछ।"
+  GOOD: "कार्यक्षेत्रमा अरुको भर पर्दा काम बिग्रन सक्छ। महत्वपूर्ण निर्णयमा
+         हतार नगर्नुहोला।"
+  GOOD: "रोकिएका कामहरू बिस्तारै अघि बढ्नेछन्। परिवारबाट सहयोग मिल्ने
+         सम्भावना छ।"
+  GOOD: "कागजपत्र तथा आर्थिक लेनदेनमा विशेष सावधानी अपनाउनुहोस्।"
+
+Vary the opening across the twelve: some on work, some on money, some on the
+household, some on a caution, some on an opening. The same sentence shape
+twelve times is the failure, even when the words differ.
 
 WRITE FOR THE READER, NOT THE ASTROLOGER
 The main text must be about their life, not about the sky. A sentence naming a

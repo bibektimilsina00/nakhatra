@@ -210,6 +210,16 @@ jobs:
             NEXT_PUBLIC_GOOGLE_CLIENT_ID="${{ secrets.NEXT_PUBLIC_GOOGLE_CLIENT_ID }}"
             EOF
 
+            # 3b. The daily rashifal is a publication, not a per-request
+            # generation: one AI call a day writes it, the table serves it.
+            # 20:00 UTC is a little after 01:45 in Kathmandu, so tomorrow is
+            # ready before anyone wakes to read it. Re-installing the line is
+            # safe — it is matched and replaced, never appended twice.
+            echo "Installing the daily rashifal job..."
+            ( crontab -l 2>/dev/null | grep -v 'daily-rasifal' ; \
+              echo "0 20 * * * cd ~/nakhatra && docker compose exec -T nakhatra_api uv run daily-rasifal >> ~/nakhatra/rasifal.log 2>&1" \
+            ) | crontab -
+
             # 4. Pull microservice container images
             echo "Pulling latest microservice images..."
             docker compose pull || docker-compose pull
