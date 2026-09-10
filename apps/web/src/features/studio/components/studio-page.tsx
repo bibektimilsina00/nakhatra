@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 
-import { useAuthStore } from "@/features/auth/store/auth-store";
+import { AdminOnly } from "@/features/admin/components/admin-only";
+import { AppShell } from "@/features/dashboard/components/app-shell";
 import {
   useStartRender,
   useStudioCaption,
@@ -76,65 +77,60 @@ function Part({ date, part }: { date: string; part: "1" | "2" }) {
 }
 
 export function StudioPage() {
-  const role = useAuthStore((s) => s.user?.role);
   const [date, setDate] = useState(todayInNepal());
   const status = useStudioStatus(date);
   const start = useStartRender(date);
-
-  // The page hides itself from anyone else, but the routes behind it are what
-  // actually refuse them — this is a courtesy, not the lock.
-  if (role !== "admin") {
-    return <p className="p-8 text-[14px] text-mut">Admins only.</p>;
-  }
 
   const running = status.data?.running ?? false;
   const done = (status.data?.files.length ?? 0) > 0;
 
   return (
-    // Fixed dark, like the slides it makes: this is an editing bay, and the
-    // parchment theme puts a cream log box on a night-sky page.
-    <main className="theme-dark mx-auto w-full max-w-3xl px-5 py-8">
-      <h1 className="text-[22px] font-bold text-fg">Rasifal studio</h1>
-      <p className="mt-1.5 text-[14px] text-mut">
-        बाह्र स्लाइड, नेपाली आवाज र दुई भागको भिडियो — एउटै थिचाइमा।
-      </p>
+    <AppShell>
+      <AdminOnly>
+        <main className="mx-auto w-full max-w-3xl px-5 pt-10 pb-24">
+          <h1 className="text-[22px] font-bold text-fg">Rasifal studio</h1>
+          <p className="mt-1.5 text-[14px] text-mut">
+            बाह्र स्लाइड, नेपाली आवाज र दुई भागको भिडियो — एउटै थिचाइमा।
+          </p>
 
-      <div className="mt-5 flex flex-wrap items-center gap-3">
-        <input
-          type="date"
-          value={date}
-          onChange={(e) => setDate(e.target.value)}
-          className="rounded-[8px] border border-brd bg-inset px-3 py-2 text-[14px] text-fg"
-        />
-        <button
-          type="button"
-          disabled={running || start.isPending}
-          onClick={() => start.mutate()}
-          className="cursor-pointer rounded-[8px] bg-acc px-4 py-2 text-[14px] font-semibold text-onacc disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          {running ? "Rendering…" : done ? "Render again" : "Generate today's video"}
-        </button>
-        {running && <span className="text-[13px] text-mut">~६ मिनेट लाग्छ।</span>}
-      </div>
+          <div className="mt-5 flex flex-wrap items-center gap-3">
+            <input
+              type="date"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              className="rounded-[8px] border border-brd bg-inset px-3 py-2 text-[14px] text-fg"
+            />
+            <button
+              type="button"
+              disabled={running || start.isPending}
+              onClick={() => start.mutate()}
+              className="cursor-pointer rounded-[8px] bg-acc px-4 py-2 text-[14px] font-semibold text-onacc disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {running ? "Rendering…" : done ? "Render again" : "Generate today's video"}
+            </button>
+            {running && <span className="text-[13px] text-mut">~६ मिनेट लाग्छ।</span>}
+          </div>
 
-      {(start.error || status.data?.error) && (
-        <p className="mt-4 rounded-[8px] border border-rose-400/30 bg-rose-500/10 p-3 text-[13px] text-rose-300">
-          {start.error?.message || status.data?.error}
-        </p>
-      )}
+          {(start.error || status.data?.error) && (
+            <p className="mt-4 rounded-[8px] border border-rose-400/30 bg-rose-500/10 p-3 text-[13px] text-rose-300">
+              {start.error?.message || status.data?.error}
+            </p>
+          )}
 
-      {status.data?.log && (
-        <pre className="mt-4 max-h-56 overflow-auto rounded-[8px] border border-brd bg-inset p-3 text-[12px] leading-[1.6] whitespace-pre-wrap text-mid">
-          {status.data.log}
-        </pre>
-      )}
+          {status.data?.log && (
+            <pre className="mt-4 max-h-56 overflow-auto rounded-[8px] border border-brd bg-inset p-3 text-[12px] leading-[1.6] whitespace-pre-wrap text-mid">
+              {status.data.log}
+            </pre>
+          )}
 
-      {done && (
-        <div className="mt-6 grid gap-4 sm:grid-cols-2">
-          <Part date={date} part="1" />
-          <Part date={date} part="2" />
-        </div>
-      )}
-    </main>
+          {done && (
+            <div className="mt-6 grid gap-4 sm:grid-cols-2">
+              <Part date={date} part="1" />
+              <Part date={date} part="2" />
+            </div>
+          )}
+        </main>
+      </AdminOnly>
+    </AppShell>
   );
 }
