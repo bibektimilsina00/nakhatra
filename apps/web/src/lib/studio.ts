@@ -1,4 +1,5 @@
 import { spawn } from "node:child_process";
+import { createHmac, timingSafeEqual } from "node:crypto";
 import {
   existsSync,
   mkdirSync,
@@ -75,6 +76,31 @@ export async function isAdmin(req: Request): Promise<boolean> {
   } catch {
     return false;
   }
+}
+
+/**
+ * A URL for one file that a `<video>` can use.
+ *
+ * The page used to download the whole 16 MB file with its bearer token and
+ * hand the player a blob, so there was nothing to show — no first frame, no
+ * duration, no seeking — until the last byte arrived. A media element cannot
+ * carry an Authorization header, so the permission goes in the URL instead:
+ * an HMAC over the file and an expiry, signed with the studio key.
+ */
+export function signFile(date: string, name: string, ttlSeconds = 6 * 3600): string {
+  const exp = Math.floor(Date.now() / 1000) + ttlSeconds;
+  const sig = createHmac("sha256", STUDIO_KEY).update(`${date}/${name}/${exp}`).digest("hex");
+  return `/api/studio/file?date=${date}&name=${encodeURIComponent(name)}&exp=${exp}&sig=${sig}`;
+}
+
+/** Constant-time, and only while the key is set — an unset key must not
+ *  make every signature valid. */
+export function verifyFile(date: string, name: string, exp: string, sig: string): boolean {
+  if (!STUDIO_KEY || !exp || !sig) return false;
+  if (Number(exp) * 1000 < Date.now()) return false;
+  const want = createHmac("sha256", STUDIO_KEY).update(`${date}/${name}/${exp}`).digest();
+  const got = Buffer.from(sig, "hex");
+  return want.length === got.length && timingSafeEqual(want, got);
 }
 
 export const forbidden = () =>

@@ -3,6 +3,9 @@ import { authHeaders } from "@/features/auth/store/auth-store";
 export interface StudioFile {
   name: string;
   size: number;
+  /** Signed and short-lived, so a `<video>` or a download link can fetch it
+   *  without an Authorization header. */
+  url: string;
 }
 
 export type PartPublish =
