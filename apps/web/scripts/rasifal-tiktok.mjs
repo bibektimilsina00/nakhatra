@@ -224,6 +224,11 @@ for (const part of parts) {
     process.stdout.write(`part ${part} · slide ${i} · ${dur.toFixed(1)}s ✓\n`);
   }
 
+  // A still from the title card, so the studio page can show the film
+  // before it has downloaded a byte of it.
+  const poster = join(out, `rasifal-${date}-part${part}.jpg`);
+  ff(["-i", clips[0], "-ss", "1", "-frames:v", "1", "-q:v", "4", poster]);
+
   const list = join(work, "clips.txt");
   writeFileSync(list, clips.map((c) => `file '${c}'`).join("\n"));
   const mp4 = join(out, `rasifal-${date}-part${part}.mp4`);
