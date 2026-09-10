@@ -2200,6 +2200,50 @@
         "title": "PasswordChangeIn",
         "type": "object"
       },
+      "PeriodRasifalOut": {
+        "properties": {
+          "days": {
+            "title": "Days",
+            "type": "integer"
+          },
+          "end": {
+            "format": "date",
+            "title": "End",
+            "type": "string"
+          },
+          "engine_version": {
+            "title": "Engine Version",
+            "type": "string"
+          },
+          "signs": {
+            "items": {
+              "$ref": "#/components/schemas/RashiPeriodOut"
+            },
+            "title": "Signs",
+            "type": "array"
+          },
+          "span": {
+            "description": "'weekly' or 'monthly'.",
+            "title": "Span",
+            "type": "string"
+          },
+          "start": {
+            "format": "date",
+            "title": "Start",
+            "type": "string"
+          }
+        },
+        "required": [
+          "start",
+          "end",
+          "days",
+          "span",
+          "engine_version",
+          "signs"
+        ],
+        "title": "PeriodRasifalOut",
+        "type": "object"
+      },
       "PhotoOut": {
         "description": "Where an uploaded photograph now lives.",
         "properties": {
@@ -2856,6 +2900,102 @@
           "transits"
         ],
         "title": "RashiDayOut",
+        "type": "object"
+      },
+      "RashiPeriodOut": {
+        "properties": {
+          "best_date": {
+            "format": "date",
+            "title": "Best Date",
+            "type": "string"
+          },
+          "best_rating": {
+            "title": "Best Rating",
+            "type": "integer"
+          },
+          "golden_days": {
+            "description": "Days whose Moon murti is Swarna.",
+            "title": "Golden Days",
+            "type": "integer"
+          },
+          "hardest_date": {
+            "format": "date",
+            "title": "Hardest Date",
+            "type": "string"
+          },
+          "hardest_rating": {
+            "title": "Hardest Rating",
+            "type": "integer"
+          },
+          "iron_days": {
+            "title": "Iron Days",
+            "type": "integer"
+          },
+          "lord": {
+            "title": "Lord",
+            "type": "string"
+          },
+          "lucky_colour": {
+            "title": "Lucky Colour",
+            "type": "string"
+          },
+          "lucky_number": {
+            "title": "Lucky Number",
+            "type": "integer"
+          },
+          "rating": {
+            "maximum": 5.0,
+            "minimum": 1.0,
+            "title": "Rating",
+            "type": "integer"
+          },
+          "score": {
+            "description": "Mean of the daily scores across the span.",
+            "title": "Score",
+            "type": "number"
+          },
+          "sign": {
+            "title": "Sign",
+            "type": "string"
+          },
+          "sign_index": {
+            "title": "Sign Index",
+            "type": "integer"
+          },
+          "steady_strains": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Steady Strains",
+            "type": "array"
+          },
+          "steady_supports": {
+            "description": "Grahas favourable through most of the span \u2014 its theme, not a passing day.",
+            "items": {
+              "type": "string"
+            },
+            "title": "Steady Supports",
+            "type": "array"
+          }
+        },
+        "required": [
+          "sign",
+          "sign_index",
+          "lord",
+          "score",
+          "rating",
+          "best_date",
+          "best_rating",
+          "hardest_date",
+          "hardest_rating",
+          "steady_supports",
+          "steady_strains",
+          "golden_days",
+          "iron_days",
+          "lucky_number",
+          "lucky_colour"
+        ],
+        "title": "RashiPeriodOut",
         "type": "object"
       },
       "RasifalOut": {
@@ -6438,6 +6578,73 @@
           }
         },
         "summary": "The day's rasifal",
+        "tags": [
+          "rasifal"
+        ]
+      }
+    },
+    "/v1/rasifal/period": {
+      "get": {
+        "description": "All twelve rashis across a span, aggregated from every day in it.\n\nEach day is genuinely computed rather than sampled, so the span knows the\ndate Saturn changes house rather than averaging over it.",
+        "operationId": "rasifal_period_v1_rasifal_period_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "span",
+            "required": false,
+            "schema": {
+              "default": "weekly",
+              "enum": [
+                "weekly",
+                "monthly"
+              ],
+              "title": "Span",
+              "type": "string"
+            }
+          },
+          {
+            "description": "First day of the span. Defaults to today in Kathmandu.",
+            "in": "query",
+            "name": "on",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "First day of the span. Defaults to today in Kathmandu.",
+              "title": "On"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PeriodRasifalOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "The week's or month's rasifal",
         "tags": [
           "rasifal"
         ]

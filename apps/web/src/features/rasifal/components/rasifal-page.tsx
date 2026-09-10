@@ -4,7 +4,10 @@ import { useMemo, useState } from "react";
 
 import { AppShell } from "@/features/dashboard/components/app-shell";
 import { RashiCard } from "@/features/rasifal/components/rashi-card";
-import { useRasifal } from "@/features/rasifal/hooks/use-rasifal";
+import { RashiPeriodCard } from "@/features/rasifal/components/rashi-period-card";
+import { spanLabel } from "@/features/rasifal/rasifal-i18n";
+import type { Span } from "@/features/rasifal/types";
+import { useRasifal, useRasifalPeriod } from "@/features/rasifal/hooks/use-rasifal";
 import { useTranslation } from "@/lib/i18n/language-context";
 import { formatDateFor } from "@/lib/utils/date-converter";
 
@@ -19,6 +22,7 @@ import { formatDateFor } from "@/lib/utils/date-converter";
 export function RasifalPage() {
   const { language } = useTranslation();
   const [offset, setOffset] = useState(0);
+  const [span, setSpan] = useState<Span>("daily");
 
   // Dates are formed in Nepal's own day, not the browser's: a reader in
   // Sydney asking for "today" means today in Kathmandu.
@@ -30,16 +34,39 @@ export function RasifalPage() {
     return nepal.toISOString().slice(0, 10);
   }, [offset]);
 
-  const { data, isPending, isError, refetch } = useRasifal(iso);
+  const daily = useRasifal(span === "daily" ? iso : undefined);
+  const period = useRasifalPeriod(
+    span === "daily" ? "weekly" : span,
+    iso,
+    span !== "daily",
+  );
 
+  // One set of flags, whichever span is showing.
+  const active = span === "daily" ? daily : period;
+  const { isPending, isError, refetch } = active;
+  const data = daily.data;
+
+  // The heading follows the tab: a page titled "today's rasifal" while
+  // showing the month is lying about what the reader is looking at.
   const title =
-    language === "ne" ? "आजको राशिफल" : language === "hi" ? "आज का राशिफल" : "Today's Rasifal";
+    span === "daily"
+      ? language === "ne" ? "आजको राशिफल" : language === "hi" ? "आज का राशिफल" : "Today's Rasifal"
+      : span === "weekly"
+        ? language === "ne" ? "साप्ताहिक राशिफल" : language === "hi" ? "साप्ताहिक राशिफल" : "Weekly Rasifal"
+        : language === "ne" ? "मासिक राशिफल" : language === "hi" ? "मासिक राशिफल" : "Monthly Rasifal";
+
   const sub =
-    language === "ne"
-      ? "नेपालकै समयमा गोचर गणना गरी बनाइएको — बाह्रै राशिको दैनिक फल।"
-      : language === "hi"
-        ? "नेपाल के समय पर गोचर गणना से बना — बारहों राशियों का दैनिक फल।"
-        : "Computed by gochara in Nepal's own time — the day for all twelve signs.";
+    span === "daily"
+      ? language === "ne"
+        ? "नेपालकै समयमा गोचर गणना गरी बनाइएको — बाह्रै राशिको दैनिक फल।"
+        : language === "hi"
+          ? "नेपाल के समय पर गोचर गणना से बना — बारहों राशियों का दैनिक फल।"
+          : "Computed by gochara in Nepal's own time — the day for all twelve signs."
+      : language === "ne"
+        ? "अवधिभरका हरेक दिन गणना गरी निकालिएको — कुन ग्रह टिक्छ र कुन दिन उत्तम, दुवै।"
+        : language === "hi"
+          ? "अवधि के हर दिन की गणना से निकाला गया — कौन सा ग्रह टिकता है और कौन सा दिन उत्तम, दोनों।"
+          : "Aggregated from every day in the span — which grahas hold, and which days stand out.";
 
   const dayLabel = (n: number) =>
     n === 0
@@ -61,7 +88,22 @@ export function RasifalPage() {
           <p className="mt-3 text-[14.5px] leading-[1.7] text-mut">{sub}</p>
         </header>
 
-        <div className="mt-6 flex flex-wrap items-center gap-2">
+        <div className="mt-6 flex flex-wrap items-center gap-1.5 rounded-full border border-brd bg-panel p-1 sm:w-fit">
+          {(["daily", "weekly", "monthly"] as Span[]).map((s) => (
+            <button
+              key={s}
+              type="button"
+              onClick={() => setSpan(s)}
+              className={`cursor-pointer rounded-full px-4 py-1.5 text-[12.5px] font-medium transition ${
+                span === s ? "bg-acc text-onacc" : "text-mid hover:text-acc2"
+              }`}
+            >
+              {spanLabel(s, language)}
+            </button>
+          ))}
+        </div>
+
+        <div className={`mt-4 flex-wrap items-center gap-2 ${span === "daily" ? "flex" : "hidden"}`}>
           {[-1, 0, 1].map((n) => (
             <button
               key={n}
@@ -113,12 +155,20 @@ export function RasifalPage() {
           </div>
         )}
 
-        {data && (
+        {span !== "daily" && period.data && (
+          <p className="mt-4 text-[12px] text-mut">
+            {formatDateFor(period.data.start, language)} — {formatDateFor(period.data.end, language)}
+          </p>
+        )}
+
+        {((span === "daily" && data) || (span !== "daily" && period.data)) && (
           <>
-            <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {data.signs.map((day) => (
-                <RashiCard key={day.sign} day={day} />
-              ))}
+            <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {span === "daily"
+                ? data?.signs.map((day) => <RashiCard key={day.sign} day={day} />)
+                : period.data?.signs.map((p) => (
+                    <RashiPeriodCard key={p.sign} period={p} span={span} />
+                  ))}
             </div>
 
             {/* What produced these, said plainly — the reference sites explain

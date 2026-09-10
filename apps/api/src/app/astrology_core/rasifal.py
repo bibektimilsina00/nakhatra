@@ -20,7 +20,8 @@ No text and no language lives here.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import date, datetime, time
+from collections import Counter
+from datetime import date, datetime, time, timedelta
 
 from app.astrology_core import ephemeris
 from app.astrology_core.constants import SIGN_LORDS, SIGNS
@@ -259,3 +260,110 @@ def compute(
         positions=positions,
         signs=days,
     )
+
+
+# --- periods ---------------------------------------------------------------
+
+
+@dataclass(frozen=True, slots=True)
+class RashiPeriod:
+    """One sign across a span of days.
+
+    A week or a month is not a longer day. The Moon crosses every house in a
+    month and three or four in a week, so its daily murti averages out and
+    what actually characterises the span is the slow grahas — which houses
+    Saturn, Jupiter and the nodes hold from this rashi throughout. What a
+    period reading can say that a daily cannot is *when*: the day inside the
+    span that reads strongest, and the one to step carefully through.
+    """
+
+    sign: str
+    sign_index: int
+    lord: str
+    score: float                  # mean of the daily scores
+    rating: int
+    best_date: date
+    best_rating: int
+    hardest_date: date
+    hardest_rating: int
+    steady_supports: list[str]    # favourable on most days of the span
+    steady_strains: list[str]
+    golden_days: int              # days whose Moon murti is Swarna
+    iron_days: int                # ... and Loha
+    lucky_number: int
+    lucky_colour: str
+
+
+@dataclass(frozen=True, slots=True)
+class PeriodRasifal:
+    start: date
+    end: date
+    days: int
+    signs: list[RashiPeriod]
+
+
+# A graha counts as characterising the span when it holds the same verdict
+# through most of it — anything less is a passing mood, not a theme.
+_STEADY_SHARE = 0.6
+
+
+def compute_period(
+    start: date,
+    days: int,
+    tz_name: str = "Asia/Kathmandu",
+    at: time = time(6, 0),
+) -> PeriodRasifal:
+    """Judge a span by computing every day in it and reading the aggregate.
+
+    Every day is genuinely calculated rather than sampled: a week is seven
+    swisseph runs, a month thirty, which is cheap next to being wrong about
+    the day Saturn changes house.
+    """
+    if days < 1:
+        raise ValueError("a period needs at least one day")
+
+    dailies = [compute(start + timedelta(n), tz_name, at) for n in range(days)]
+    end = start + timedelta(days - 1)
+
+    signs: list[RashiPeriod] = []
+    for i in range(12):
+        per_day = [d.signs[i] for d in dailies]
+        scores = [x.score for x in per_day]
+        mean = sum(scores) / len(scores)
+
+        best_at = max(range(len(per_day)), key=lambda n: per_day[n].score)
+        worst_at = min(range(len(per_day)), key=lambda n: per_day[n].score)
+
+        support_days: Counter[str] = Counter()
+        strain_days: Counter[str] = Counter()
+        for day in per_day:
+            support_days.update(day.supports)
+            strain_days.update(day.strains)
+
+        threshold = len(per_day) * _STEADY_SHARE
+        steady_supports = [g for g, n in support_days.most_common() if n >= threshold]
+        steady_strains = [g for g, n in strain_days.most_common() if n >= threshold]
+
+        signs.append(
+            RashiPeriod(
+                sign=SIGNS[i],
+                sign_index=i,
+                lord=SIGN_LORDS[i],
+                score=round(mean, 2),
+                rating=_rating(mean),
+                best_date=dailies[best_at].for_date,
+                best_rating=per_day[best_at].rating,
+                hardest_date=dailies[worst_at].for_date,
+                hardest_rating=per_day[worst_at].rating,
+                steady_supports=steady_supports,
+                steady_strains=steady_strains,
+                golden_days=sum(1 for x in per_day if x.murti == "Swarna"),
+                iron_days=sum(1 for x in per_day if x.murti == "Loha"),
+                # The span's own first day sets these, so a week's card does
+                # not contradict the daily card a reader saw this morning.
+                lucky_number=per_day[0].lucky_number,
+                lucky_colour=per_day[0].lucky_colour,
+            )
+        )
+
+    return PeriodRasifal(start=start, end=end, days=days, signs=signs)

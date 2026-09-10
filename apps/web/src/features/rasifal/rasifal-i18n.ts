@@ -1,4 +1,4 @@
-import type { RashiDay } from "@/features/rasifal/types";
+import type { RashiDay, RashiPeriod, Span } from "@/features/rasifal/types";
 import type { Language } from "@/lib/i18n/translations";
 import { getPlanetName, getSignName } from "@/lib/i18n/vedic-translations";
 
@@ -256,4 +256,76 @@ export function murtiName(key: string, lang: Language): string {
 
 export function rashiLabel(signIndex: number, sign: string, lang: Language): string {
   return getSignName(sign, lang);
+}
+
+// --- periods ---------------------------------------------------------------
+
+/**
+ * A week or a month, said out loud.
+ *
+ * Deliberately not the daily sentence with a different date. What a span can
+ * say and a day cannot is which grahas hold their position throughout — the
+ * theme — and which dates inside it stand out. The Moon's murti is left out
+ * entirely: it crosses every house within a month, so quoting it would be
+ * quoting noise.
+ */
+export function periodReadingFor(period: RashiPeriod, span: "weekly" | "monthly", lang: Language): string {
+  const out: string[] = [];
+  const unit: Tri =
+    span === "weekly"
+      ? { en: "week", ne: "हप्ता", hi: "सप्ताह" }
+      : { en: "month", ne: "महिना", hi: "महीना" };
+
+  const strain = period.steady_strains[0];
+  const support = period.steady_supports[0];
+
+  if (support) {
+    const what = SUPPORT_LINE[support]?.[lang] ?? "";
+    out.push(
+      lang === "en"
+        ? `Through the ${unit.en}, ${what}.`
+        : `यो ${unit[lang]}भरि ${what}।`,
+    );
+  }
+  if (strain) {
+    const what = STRAIN_LINE[strain]?.[lang] ?? "";
+    out.push(
+      lang === "en"
+        ? `Running against that, ${what}.`
+        : `अर्कोतर्फ, ${what}।`,
+    );
+  }
+  if (!support && !strain) {
+    out.push(
+      lang === "en"
+        ? `No graha holds one position through the ${unit.en} — it moves in stretches rather than as one stretch.`
+        : `कुनै ग्रहले पूरै ${unit[lang]} एउटै स्थिति राख्दैन — यो खण्ड-खण्डमा चल्छ।`,
+    );
+  }
+
+  // Golden and iron days are the one place the Moon still says something
+  // across a span: how many of the days it grades well.
+  if (period.golden_days || period.iron_days) {
+    out.push(
+      lang === "en"
+        ? `${period.golden_days} golden ${period.golden_days === 1 ? "day" : "days"} and ${period.iron_days} iron.`
+        : `${toDev(period.golden_days)} दिन स्वर्ण, ${toDev(period.iron_days)} दिन लोह मूर्तिमा।`,
+    );
+  }
+
+  if (strain) out.push(REMEDY[strain]?.[lang] ?? "");
+  return out.filter(Boolean).join(" ");
+}
+
+function toDev(n: number): string {
+  return String(n).replace(/[0-9]/g, (c) => "०१२३४५६७८९"[Number(c)]);
+}
+
+export function spanLabel(span: Span, lang: Language): string {
+  const labels: Record<Span, Tri> = {
+    daily: { en: "Daily", ne: "दैनिक", hi: "दैनिक" },
+    weekly: { en: "Weekly", ne: "साप्ताहिक", hi: "साप्ताहिक" },
+    monthly: { en: "Monthly", ne: "मासिक", hi: "मासिक" },
+  };
+  return labels[span][lang];
 }

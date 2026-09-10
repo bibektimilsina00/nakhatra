@@ -725,6 +725,29 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/rasifal/period": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The week's or month's rasifal
+         * @description All twelve rashis across a span, aggregated from every day in it.
+         *
+         *     Each day is genuinely computed rather than sampled, so the span knows the
+         *     date Saturn changes house rather than averaging over it.
+         */
+        get: operations["rasifal_period_v1_rasifal_period_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/realtime-session": {
         parameters: {
             query?: never;
@@ -2013,6 +2036,30 @@ export interface components {
             /** New Password */
             new_password: string;
         };
+        /** PeriodRasifalOut */
+        PeriodRasifalOut: {
+            /** Days */
+            days: number;
+            /**
+             * End
+             * Format: date
+             */
+            end: string;
+            /** Engine Version */
+            engine_version: string;
+            /** Signs */
+            signs: components["schemas"]["RashiPeriodOut"][];
+            /**
+             * Span
+             * @description 'weekly' or 'monthly'.
+             */
+            span: string;
+            /**
+             * Start
+             * Format: date
+             */
+            start: string;
+        };
         /**
          * PhotoOut
          * @description Where an uploaded photograph now lives.
@@ -2310,6 +2357,54 @@ export interface components {
             supports: string[];
             /** Transits */
             transits: components["schemas"]["TransitOut"][];
+        };
+        /** RashiPeriodOut */
+        RashiPeriodOut: {
+            /**
+             * Best Date
+             * Format: date
+             */
+            best_date: string;
+            /** Best Rating */
+            best_rating: number;
+            /**
+             * Golden Days
+             * @description Days whose Moon murti is Swarna.
+             */
+            golden_days: number;
+            /**
+             * Hardest Date
+             * Format: date
+             */
+            hardest_date: string;
+            /** Hardest Rating */
+            hardest_rating: number;
+            /** Iron Days */
+            iron_days: number;
+            /** Lord */
+            lord: string;
+            /** Lucky Colour */
+            lucky_colour: string;
+            /** Lucky Number */
+            lucky_number: number;
+            /** Rating */
+            rating: number;
+            /**
+             * Score
+             * @description Mean of the daily scores across the span.
+             */
+            score: number;
+            /** Sign */
+            sign: string;
+            /** Sign Index */
+            sign_index: number;
+            /** Steady Strains */
+            steady_strains: string[];
+            /**
+             * Steady Supports
+             * @description Grahas favourable through most of the span — its theme, not a passing day.
+             */
+            steady_supports: string[];
         };
         /** RasifalOut */
         RasifalOut: {
@@ -4254,6 +4349,39 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["RasifalOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    rasifal_period_v1_rasifal_period_get: {
+        parameters: {
+            query?: {
+                span?: "weekly" | "monthly";
+                /** @description First day of the span. Defaults to today in Kathmandu. */
+                on?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PeriodRasifalOut"];
                 };
             };
             /** @description Validation Error */
