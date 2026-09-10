@@ -42,10 +42,11 @@ WORKDIR /app
 # The rasifal studio (`/admin/studio`) shoots the slide route with headless
 # Chromium and cuts the film with ffmpeg, both on this box. The Devanagari
 # font is not optional: without it every slide renders as tofu boxes and the
-# failure only shows up in the finished video.
+# failure only shows up in the finished video. Debian ships it inside
+# fonts-noto-core — there is no fonts-noto-devanagari to ask for.
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
-        chromium ffmpeg fonts-noto-devanagari fonts-noto-core \
+        chromium ffmpeg fonts-noto-core \
     && rm -rf /var/lib/apt/lists/*
 
 # Only the app and its modules — no compilers, no repo, no Python.
