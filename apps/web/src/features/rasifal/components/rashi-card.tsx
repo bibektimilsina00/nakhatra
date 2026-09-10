@@ -1,5 +1,6 @@
 "use client";
 
+import { Briefcase, Flame, HeartHandshake, HeartPulse, Wallet } from "lucide-react";
 import { useState } from "react";
 
 import { RashiGlyph } from "@/features/rasifal/components/rashi-glyph";
@@ -15,6 +16,16 @@ import {
 import type { RashiDay } from "@/features/rasifal/types";
 import { useTranslation } from "@/lib/i18n/language-context";
 import { getPlanetName, getSignName, toLocalizedDigit } from "@/lib/i18n/vedic-translations";
+
+/** The four areas of life, each with its own mark. One shared icon would
+ *  have been no icon at all — the point is to find the line you want without
+ *  reading the label. */
+const SECTIONS = [
+  { key: "career", Icon: Briefcase, tint: "bg-sky-400/15 text-sky-300" },
+  { key: "love", Icon: HeartHandshake, tint: "bg-rose-400/15 text-rose-300" },
+  { key: "finance", Icon: Wallet, tint: "bg-emerald-400/15 text-emerald-300" },
+  { key: "health", Icon: HeartPulse, tint: "bg-violet-400/15 text-violet-300" },
+] as const;
 
 /** One sign's day. */
 export function RashiCard({ day }: { day: RashiDay }) {
@@ -66,23 +77,36 @@ export function RashiCard({ day }: { day: RashiDay }) {
       </p>
 
       {day.reading && (
-        <dl className="mt-3 flex-1 space-y-2">
-          {(["career", "love", "finance", "health"] as const).map((k) =>
-            day.reading?.[k] ? (
-              <div key={k}>
-                <dt className="text-[10.5px] font-semibold uppercase tracking-wider text-gold">
-                  {SECTION_LABELS[k][language]}
-                </dt>
-                <dd className="mt-0.5 text-[13px] leading-[1.65] text-muted">{day.reading[k]}</dd>
+        <dl className="mt-3.5 flex-1 space-y-2.5">
+          {SECTIONS.map(({ key, Icon, tint }) =>
+            day.reading?.[key] ? (
+              <div key={key} className="flex gap-2.5">
+                <span
+                  className={`mt-0.5 grid size-6 shrink-0 place-items-center rounded-[7px] ${tint}`}
+                >
+                  <Icon className="size-3.5" />
+                </span>
+                <div className="min-w-0 text-[13px] leading-[1.6]">
+                  <dt className="inline font-semibold text-paper">
+                    {SECTION_LABELS[key][language]}
+                  </dt>
+                  <dd className="ml-1.5 inline text-muted">{day.reading[key]}</dd>
+                </div>
               </div>
             ) : null,
           )}
+
           {day.reading.remedy && (
-            <div className="rounded-[8px] border border-gold/25 bg-gold/[0.06] px-3 py-2.5">
-              <dt className="text-[10.5px] font-semibold uppercase tracking-wider text-gold">
-                {SECTION_LABELS.remedy[language]}
-              </dt>
-              <dd className="mt-0.5 text-[13px] leading-[1.65] text-paper">{day.reading.remedy}</dd>
+            <div className="flex gap-2.5 rounded-[8px] border border-gold/25 bg-gold/[0.06] p-2.5">
+              <span className="mt-0.5 grid size-6 shrink-0 place-items-center rounded-[7px] bg-gold/20 text-gold">
+                <Flame className="size-3.5" />
+              </span>
+              <div className="min-w-0 text-[13px] leading-[1.6]">
+                <dt className="inline font-semibold text-gold2">
+                  {SECTION_LABELS.remedy[language]}
+                </dt>
+                <dd className="ml-1.5 inline text-paper/90">{day.reading.remedy}</dd>
+              </div>
             </div>
           )}
         </dl>
