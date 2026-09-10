@@ -93,17 +93,6 @@ export function useStudioSlide(date: string, part: "1" | "2", i: number, enabled
   });
 }
 
-/** One rendered file, as an object URL the page can play or download. */
-export function useStudioFile(date: string, name: string, enabled: boolean) {
-  return useQuery({
-    queryKey: ["studio-file", date, name],
-    queryFn: async () => URL.createObjectURL(await fetchStudioFile(date, name)),
-    enabled,
-    staleTime: Infinity,
-    gcTime: 1000 * 60 * 30,
-  });
-}
-
 /** Captions are small and wanted as text, not as a download. */
 export function useStudioCaption(date: string, name: string, enabled: boolean) {
   return useQuery({

@@ -5,7 +5,12 @@ import { Check, ExternalLink } from "lucide-react";
 
 import { AdminOnly } from "@/features/admin/components/admin-only";
 import { AppShell } from "@/features/dashboard/components/app-shell";
-import type { PartPublish, PublishState, StudioStatus } from "@/features/studio/api/studio-api";
+import type {
+  PartPublish,
+  PublishState,
+  StudioFile,
+  StudioStatus,
+} from "@/features/studio/api/studio-api";
 import { StudioPreview } from "@/features/studio/components/studio-preview";
 import { SnackHost, useSnack } from "@/features/studio/components/studio-snacks";
 import { StudioSettingsPanel } from "@/features/studio/components/studio-settings";
@@ -15,7 +20,6 @@ import {
   useStartRender,
   useStudioCaption,
   useStudioConfig,
-  useStudioFile,
   useStudioStatus,
 } from "@/features/studio/hooks/use-studio";
 import { useLatinTracking } from "@/lib/i18n/language-context";
@@ -59,33 +63,55 @@ function PublishLine({ label, state }: { label: string; state?: PartPublish }) {
 function Part({
   date,
   part,
+  file,
   publish,
 }: {
   date: string;
   part: "1" | "2";
+  /** The rendered mp4, with the signed URL the player streams from. */
+  file?: StudioFile;
   publish: { youtube?: PartPublish; tiktok?: PartPublish };
 }) {
-  const video = `rasifal-${date}-part${part}.mp4`;
   const caption = `rasifal-${date}-part${part}-caption.txt`;
-  const { data: url } = useStudioFile(date, video, true);
   const { data: text } = useStudioCaption(date, caption, true);
   const [copied, setCopied] = useState(false);
+  const mb = file ? (file.size / 1e6).toFixed(1) : null;
 
   return (
     <section className={card}>
-      <h3 className="mb-3 text-[15px] font-semibold text-fg">
-        भाग {part === "1" ? "१" : "२"} · {part === "1" ? "मेष–कन्या" : "तुला–मीन"}
-      </h3>
+      <div className="flex items-baseline justify-between gap-3">
+        <h3 className="text-[15px] font-semibold text-fg">
+          भाग {part === "1" ? "१" : "२"} · {part === "1" ? "मेष–कन्या" : "तुला–मीन"}
+        </h3>
+        {mb && <span className="text-[11.5px] text-mut">{mb} MB</span>}
+      </div>
 
-      {url ? (
-        <video src={url} controls className="w-full max-w-[260px] rounded-[8px] border border-brd" />
-      ) : (
-        <p className="text-[13px] text-mut">Loading…</p>
-      )}
+      {/* The films are 1080×1920, so the frame is too. Given the shape up
+          front, the player has the right box before a byte arrives instead
+          of a 300×150 default that snaps once metadata lands. */}
+      <div className="mt-3 flex justify-center">
+        {file ? (
+          <video
+            src={file.url}
+            controls
+            preload="metadata"
+            playsInline
+            className="aspect-[9/16] w-full max-w-[220px] rounded-[10px] border border-brd bg-black"
+          />
+        ) : (
+          <div className="grid aspect-[9/16] w-full max-w-[220px] place-items-center rounded-[10px] border border-dashed border-brd text-[12px] text-mut">
+            not rendered
+          </div>
+        )}
+      </div>
 
-      <div className="mt-3 flex flex-wrap items-center gap-2">
-        {url && (
-          <a href={url} download={video} className="rounded-[8px] border border-brd px-3 py-1.5 text-[13px] font-medium text-fg hover:border-acc">
+      <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
+        {file && (
+          <a
+            href={file.url}
+            download={file.name}
+            className="rounded-[8px] border border-brd px-3 py-1.5 text-[13px] font-medium text-fg hover:border-acc"
+          >
             Download mp4
           </a>
         )}
@@ -109,10 +135,17 @@ function Part({
         <PublishLine label="YouTube" state={publish.youtube} />
       </div>
 
+      {/* Folded away: it is the same text the caption button copies, and
+          open it pushed everything else off the screen. */}
       {text && (
-        <pre className="mt-3 max-h-52 overflow-auto rounded-[8px] bg-inset p-3 text-[12.5px] leading-[1.7] whitespace-pre-wrap text-mid">
-          {text}
-        </pre>
+        <details className="mt-3 group">
+          <summary className="cursor-pointer list-none text-[12px] text-mut hover:text-fg">
+            Caption ▾
+          </summary>
+          <pre className="mt-2 max-h-52 overflow-auto rounded-[8px] bg-inset p-3 text-[12.5px] leading-[1.7] whitespace-pre-wrap text-mid">
+            {text}
+          </pre>
+        </details>
       )}
     </section>
   );
@@ -338,6 +371,7 @@ function Studio() {
                   key={p}
                   date={date}
                   part={p}
+                  file={status.data?.files.find((f) => f.name === `rasifal-${date}-part${p}.mp4`)}
                   publish={{
                     youtube: status.data?.publish.youtube?.[`part${p}`],
                     tiktok: status.data?.publish.tiktok?.[`part${p}`],

@@ -10,6 +10,7 @@ import {
   isPublishing,
   readPublish,
   renderedDays,
+  signFile,
   todayInNepal,
 } from "@/lib/studio";
 
@@ -42,7 +43,9 @@ export async function GET(req: Request) {
     error: job?.date === date ? job.error : undefined,
     publishing: isPublishing() === date,
     log,
-    files: await filesFor(date),
+    // Signed, so the player and the download link can fetch them without a
+    // header they have no way to send.
+    files: (await filesFor(date)).map((f) => ({ ...f, url: signFile(date, f.name) })),
     publish: readPublish(date),
     days: await renderedDays(),
   });
