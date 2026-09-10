@@ -171,8 +171,6 @@ export function StudioSettingsPanel({
                 )}
               </>
             }
-            setup="In the TikTok portal: add the redirect URI to Login Kit, and add this account under Sandbox → Target Users."
-            redirectUri={config.tiktokRedirectUri}
           >
             <label className="block max-w-xs">
               <span className={label}>Visibility</span>
@@ -205,8 +203,6 @@ export function StudioSettingsPanel({
             onEnabled={(enabled) => patch({ youtube: { ...s.youtube, enabled } })}
             unconfigured="GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET are not set on the web server."
             note="Uploads to the connected channel. Until Google audits the project, its uploads stay private whatever is chosen here."
-            setup="Uses the Google sign-in client. In Google Cloud: enable YouTube Data API v3 and add the redirect URI to the client's authorised redirect URIs."
-            redirectUri={config.youtubeRedirectUri}
           >
             <div className="grid gap-3 sm:grid-cols-2">
               <label>
@@ -289,8 +285,6 @@ function ChannelCard({
   onEnabled,
   unconfigured,
   note,
-  setup,
-  redirectUri,
   children,
 }: {
   channel: string;
@@ -306,10 +300,6 @@ function ChannelCard({
   onEnabled: (v: boolean) => void;
   unconfigured: string;
   note: React.ReactNode;
-  /** What to do in the platform's own console. Shown while the channel is
-   *  not connected, which is the only time it is any use. */
-  setup: string;
-  redirectUri: string;
   children: React.ReactNode;
 }) {
   const snack = useSnack();
@@ -363,12 +353,6 @@ function ChannelCard({
 
       <p className="mt-2 text-[12px] leading-[1.7] text-mut">{note}</p>
 
-      {!conn.connected && (
-        <p className="mt-1.5 text-[11.5px] leading-[1.7] text-mut">
-          {setup}{" "}
-          <code className="rounded bg-black/30 px-1 py-0.5 text-[11px] break-all">{redirectUri}</code>
-        </p>
-      )}
 
       {/* The channel's own controls and its own button, on one line: what
           to post as, and post it. Naming a channel is its own instruction,

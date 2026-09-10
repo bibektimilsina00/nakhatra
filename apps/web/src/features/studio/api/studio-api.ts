@@ -46,8 +46,6 @@ export interface StudioConfig {
     youtube: Connection;
     tiktok: Connection & { privacyOptions: string[]; maxDurationSec: number };
   };
-  youtubeRedirectUri: string;
-  tiktokRedirectUri: string;
 }
 
 interface Connection {

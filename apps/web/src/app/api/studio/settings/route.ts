@@ -6,8 +6,6 @@ import {
   writeSettings,
   type StudioSettings,
 } from "@/lib/studio";
-import { tiktokRedirectUri } from "@/lib/studio-tiktok";
-import { redirectUri } from "@/lib/studio-youtube";
 
 /** What the studio is set to, and what it is connected to. */
 export async function GET(req: Request) {
@@ -15,8 +13,6 @@ export async function GET(req: Request) {
   return Response.json({
     settings: readSettings(),
     connections: publicConnections(),
-    youtubeRedirectUri: redirectUri(),
-    tiktokRedirectUri: tiktokRedirectUri(),
   });
 }
 
