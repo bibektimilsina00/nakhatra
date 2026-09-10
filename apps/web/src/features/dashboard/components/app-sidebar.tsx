@@ -4,8 +4,17 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Fragment } from "react";
 import {
+  CalendarDays,
+  Heart,
+  HelpCircle,
+  MessageCircle,
   MessagesSquare,
-  Heart, HelpCircle, MessageCircle, Plus, ScrollText, Settings, Sparkles, Star, Sun,
+  Plus,
+  ScrollText,
+  Settings,
+  Sparkles,
+  Star,
+  Sun,
 } from "lucide-react";
 
 import { NakhatraMark } from "@/components/ui/nakhatra-mark";
@@ -76,6 +85,10 @@ export function AppSidebar({
         ]
       : []),
     { href: "/milan", label: t.dashNavMilan, icon: <Heart className="size-[16px]" /> },
+    // The two public pages, reachable from inside as well: someone signed in
+    // should not have to leave the app to read the day or check a date.
+    { href: "/rasifal", label: t.dashNavRasifal, icon: <Sparkles className="size-[16px]" /> },
+    { href: "/patro", label: t.dashNavPatro, icon: <CalendarDays className="size-[16px]" /> },
     ...(MARKETPLACE_LIVE
       ? [
           {
