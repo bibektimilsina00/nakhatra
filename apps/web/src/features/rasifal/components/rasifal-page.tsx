@@ -107,9 +107,7 @@ export function RasifalPage() {
   const dayLabel = (n: number) =>
     n === 0
       ? language === "ne" ? "आज" : language === "hi" ? "आज" : "Today"
-      : n === -1
-        ? language === "ne" ? "हिजो" : language === "hi" ? "कल" : "Yesterday"
-        : language === "ne" ? "भोलि" : language === "hi" ? "कल" : "Tomorrow";
+      : language === "ne" ? "भोलि" : language === "hi" ? "कल" : "Tomorrow";
 
   return (
     // Reached from the marketing nav, so it wears the marketing site: same
@@ -181,7 +179,7 @@ export function RasifalPage() {
         </header>
 
         <div className={`mt-5 flex-wrap items-center gap-2 ${span === "daily" ? "flex" : "hidden"}`}>
-          {[-1, 0, 1].map((n) => (
+          {[0, 1].map((n) => (
             <button
               key={n}
               type="button"

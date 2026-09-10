@@ -1,6 +1,5 @@
 "use client";
 
-import { Briefcase, Flame, HeartHandshake, HeartPulse, Wallet } from "lucide-react";
 import { useState } from "react";
 
 import { RashiGlyph } from "@/features/rasifal/components/rashi-glyph";
@@ -17,15 +16,8 @@ import type { RashiDay } from "@/features/rasifal/types";
 import { useTranslation } from "@/lib/i18n/language-context";
 import { getPlanetName, getSignName, toLocalizedDigit } from "@/lib/i18n/vedic-translations";
 
-/** The four areas of life, each with its own mark. One shared icon would
- *  have been no icon at all — the point is to find the line you want without
- *  reading the label. */
-const SECTIONS = [
-  { key: "career", Icon: Briefcase, tint: "bg-sky-400/15 text-sky-300" },
-  { key: "love", Icon: HeartHandshake, tint: "bg-rose-400/15 text-rose-300" },
-  { key: "finance", Icon: Wallet, tint: "bg-emerald-400/15 text-emerald-300" },
-  { key: "health", Icon: HeartPulse, tint: "bg-violet-400/15 text-violet-300" },
-] as const;
+/** The four areas of life, in the order a reader wants them. */
+const SECTIONS = ["career", "love", "finance", "health"] as const;
 
 /** One sign's day. */
 export function RashiCard({ day }: { day: RashiDay }) {
@@ -78,35 +70,23 @@ export function RashiCard({ day }: { day: RashiDay }) {
 
       {day.reading && (
         <dl className="mt-3.5 flex-1 space-y-2.5">
-          {SECTIONS.map(({ key, Icon, tint }) =>
+          {SECTIONS.map((key) =>
             day.reading?.[key] ? (
-              <div key={key} className="flex gap-2.5">
-                <span
-                  className={`mt-0.5 grid size-6 shrink-0 place-items-center rounded-[7px] ${tint}`}
-                >
-                  <Icon className="size-3.5" />
-                </span>
-                <div className="min-w-0 text-[13px] leading-[1.6]">
-                  <dt className="inline font-semibold text-paper">
-                    {SECTION_LABELS[key][language]}
-                  </dt>
-                  <dd className="ml-1.5 inline text-muted">{day.reading[key]}</dd>
-                </div>
+              <div key={key} className="text-[13px] leading-[1.6]">
+                <dt className="inline font-semibold text-paper">
+                  {SECTION_LABELS[key][language]}
+                </dt>
+                <dd className="ml-1.5 inline text-muted">{day.reading[key]}</dd>
               </div>
             ) : null,
           )}
 
           {day.reading.remedy && (
-            <div className="flex gap-2.5 rounded-[8px] border border-gold/25 bg-gold/[0.06] p-2.5">
-              <span className="mt-0.5 grid size-6 shrink-0 place-items-center rounded-[7px] bg-gold/20 text-gold">
-                <Flame className="size-3.5" />
-              </span>
-              <div className="min-w-0 text-[13px] leading-[1.6]">
-                <dt className="inline font-semibold text-gold2">
-                  {SECTION_LABELS.remedy[language]}
-                </dt>
-                <dd className="ml-1.5 inline text-paper/90">{day.reading.remedy}</dd>
-              </div>
+            <div className="rounded-[8px] border border-gold/25 bg-gold/[0.06] p-2.5 text-[13px] leading-[1.6]">
+              <dt className="inline font-semibold text-gold2">
+                {SECTION_LABELS.remedy[language]}
+              </dt>
+              <dd className="ml-1.5 inline text-paper/90">{day.reading.remedy}</dd>
             </div>
           )}
         </dl>
@@ -124,18 +104,29 @@ export function RashiCard({ day }: { day: RashiDay }) {
           </dd>
         </div>
 
+        {/* The working sits on the same line: it is a footnote to these, not
+            a section of its own. */}
+        <button
+          type="button"
+          onClick={() => setOpen((v) => !v)}
+          className="ml-auto cursor-pointer text-[11.5px] font-medium text-faint transition hover:text-gold2"
+        >
+          {open
+            ? language === "ne"
+              ? "गणना लुकाउनुहोस्"
+              : language === "hi"
+                ? "गणना छिपाएँ"
+                : "Hide the working"
+            : language === "ne"
+              ? "गोचर हेर्नुहोस्"
+              : language === "hi"
+                ? "गोचर देखें"
+                : "See the transits"}
+        </button>
+
       </dl>
 
-      {/* The working, for the reader who knows gochara and wants to check. */}
-      <button
-        type="button"
-        onClick={() => setOpen((v) => !v)}
-        className="mt-3 cursor-pointer self-start text-[11px] font-medium text-faint transition hover:text-gold2"
-      >
-        {open
-          ? language === "ne" ? "गणना लुकाउनुहोस्" : language === "hi" ? "गणना छिपाएँ" : "Hide the working"
-          : language === "ne" ? "गोचर हेर्नुहोस्" : language === "hi" ? "गोचर देखें" : "See the transits"}
-      </button>
+
 
       {open && (
         <p className="mt-2.5 text-[10.5px] text-faint/70">
