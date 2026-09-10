@@ -1,9 +1,19 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
-import { currentJob, dirFor, filesFor, forbidden, isAdmin, todayInNepal } from "@/lib/studio";
+import {
+  currentJob,
+  dirFor,
+  filesFor,
+  forbidden,
+  isAdmin,
+  isPublishing,
+  readPublish,
+  renderedDays,
+  todayInNepal,
+} from "@/lib/studio";
 
-/** How the render is going, and what it has produced so far. */
+/** How the render is going, what it has produced, and where it went. */
 export async function GET(req: Request) {
   if (!(await isAdmin(req))) return forbidden();
 
@@ -26,9 +36,14 @@ export async function GET(req: Request) {
 
   return Response.json({
     date,
+    today: todayInNepal(),
     running: Boolean(job && job.date === date && !job.finishedAt),
+    startedAt: job?.date === date ? job.startedAt : undefined,
     error: job?.date === date ? job.error : undefined,
+    publishing: isPublishing() === date,
     log,
     files: filesFor(date),
+    publish: readPublish(date),
+    days: renderedDays(),
   });
 }

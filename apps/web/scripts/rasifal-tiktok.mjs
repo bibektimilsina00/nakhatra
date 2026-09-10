@@ -8,6 +8,7 @@
  *   --part 1|2          just one of them
  *   --base http://…     a running site instead of localhost:3000
  *   --voice Aoede       any Gemini prebuilt voice (Kore, Leda, Charon, …)
+ *   --hashtags "#a #b"  the caption's last line, in place of the default
  *   --out /path         where the files land (default ~/Desktop)
  *   --key <secret>      STUDIO_KEY, which the slide route demands
  *   --keep              leave the frames and the voice clips behind
@@ -143,9 +144,11 @@ const SIGNS = {
   "1": "मेष, वृष, मिथुन, कर्कट, सिंह र कन्या",
   "2": "तुला, वृश्चिक, धनु, मकर, कुम्भ र मीन",
 };
-const HASHTAGS =
+const HASHTAGS = arg(
+  "hashtags",
   "#rasifal #राशिफल #आजकोराशिफल #nepal #nepalitiktok #jyotish #ज्योतिष " +
-  "#horoscope #zodiac #nepalinews #kathmandu #nakhatra #fyp #foryou";
+    "#horoscope #zodiac #nepalinews #kathmandu #nakhatra #fyp #foryou",
+);
 
 /** The caption, ready to paste. Written here rather than by hand each morning
  *  for the same reason the slides are: it is the same post every day. */

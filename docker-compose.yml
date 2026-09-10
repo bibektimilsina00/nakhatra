@@ -76,6 +76,11 @@ services:
       # Generate button refusing to start — which is the safe way round.
       - GEMINI_API_KEY=${GEMINI_API_KEY}
       - STUDIO_KEY=${STUDIO_KEY}
+      # YouTube publishing rides on the same Google OAuth client that signs
+      # people in; the secret was API-only until the studio needed to mint
+      # its own tokens.
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
     volumes:
       # Rendered videos. A volume rather than the container filesystem so a
       # deploy in the middle of the morning does not take the day's post with
