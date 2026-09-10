@@ -1,14 +1,16 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Check, ExternalLink, TriangleAlert } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Check, ExternalLink } from "lucide-react";
 
 import { AdminOnly } from "@/features/admin/components/admin-only";
 import { AppShell } from "@/features/dashboard/components/app-shell";
-import type { PartPublish, StudioStatus } from "@/features/studio/api/studio-api";
+import type { PartPublish, PublishState, StudioStatus } from "@/features/studio/api/studio-api";
 import { StudioPreview } from "@/features/studio/components/studio-preview";
+import { SnackHost, useSnack } from "@/features/studio/components/studio-snacks";
 import { StudioSettingsPanel } from "@/features/studio/components/studio-settings";
 import {
+  useClearErrors,
   usePublishDay,
   useStartRender,
   useStudioCaption,
@@ -32,17 +34,16 @@ const todayInNepal = () =>
 
 const card = "rounded-[10px] border border-brd bg-panel p-4";
 
-/** Where a part went on one channel. Reporting only — publishing is a
- *  channel's own business, and its button lives on its card. */
+/**
+ * Where a part went on one channel.
+ *
+ * Successes only. A refusal belongs to the channel that refused — its card
+ * carries it, with the time it happened and something to dismiss it with —
+ * and printed here as well it was the same failure in two places, one of
+ * which could not be cleared.
+ */
 function PublishLine({ label, state }: { label: string; state?: PartPublish }) {
-  if (!state) return null;
-  if (!("videoId" in state)) {
-    return (
-      <span className="flex items-start gap-1.5 text-[12.5px] text-rose-300">
-        <TriangleAlert className="mt-0.5 size-3.5 shrink-0" /> {label} · {state.error}
-      </span>
-    );
-  }
+  if (!state || !("videoId" in state)) return null;
   // YouTube has a watchable URL; a TikTok direct post has only its publish
   // id until the account makes it public, so it says how it went instead.
   return state.url ? (
@@ -123,6 +124,28 @@ function Part({
   );
 }
 
+const CHANNEL_NAME = { tiktok: "TikTok", youtube: "YouTube" } as const;
+
+/**
+ * What refused, by channel — one line each, not one per part.
+ *
+ * A publish answers 200 with a per-channel record, so a refusal arrives as
+ * data rather than as a thrown error; and both parts of a day fail for the
+ * same reason, so two snackbars saying it would be one too many.
+ */
+function refusals(result?: PublishState): { channel: "tiktok" | "youtube"; text: string }[] {
+  if (!result) return [];
+  return (["tiktok", "youtube"] as const).flatMap((channel) => {
+    const failed = (["part1", "part2"] as const)
+      .map((key) => ({ key, state: result[channel]?.[key] }))
+      .filter((f) => f.state && !("videoId" in f.state!));
+    if (!failed.length) return [];
+    const reason = (failed[0].state as { error: string }).error;
+    const parts = failed.length === 2 ? "both parts" : `भाग ${failed[0].key === "part1" ? "१" : "२"}`;
+    return [{ channel, text: `${CHANNEL_NAME[channel]} · ${parts}: ${reason}` }];
+  });
+}
+
 function elapsed(status?: StudioStatus): string {
   if (!status?.running || !status.startedAt) return "";
   const s = Math.round((Date.now() - status.startedAt) / 1000);
@@ -130,12 +153,43 @@ function elapsed(status?: StudioStatus): string {
 }
 
 export function StudioPage() {
+  return (
+    <SnackHost>
+      <Studio />
+    </SnackHost>
+  );
+}
+
+function Studio() {
   const eyebrow = useLatinTracking("uppercase tracking-[0.2em]");
   const [date, setDate] = useState(todayInNepal());
   const status = useStudioStatus(date);
   const config = useStudioConfig();
   const start = useStartRender(date);
   const publish = usePublishDay(date);
+  const clearErrors = useClearErrors(date);
+  const snack = useSnack();
+
+  /** A publish answers 200 with a per-channel record, so a refusal arrives
+   *  as data rather than as a thrown error. Both end up in a snackbar. */
+  const runPublish = (req: Parameters<typeof publish.mutate>[0]) =>
+    publish.mutate(req, {
+      onSuccess: ({ publish: result }) => {
+        const failed = refusals(result);
+        if (!failed.length) {
+          snack({ tone: "ok", text: "Published." });
+          return;
+        }
+        for (const f of failed) {
+          snack({
+            tone: "error",
+            text: f.text,
+            action: { label: "Dismiss", run: () => clearErrors.mutate(f.channel) },
+          });
+        }
+      },
+      onError: (err) => snack({ tone: "error", text: err.message }),
+    });
 
   // The YouTube callback lands back here with a word in the query string.
   // Read once, on mount — this only ever renders after hydration, behind the
@@ -150,6 +204,24 @@ export function StudioPage() {
   useEffect(() => {
     if (notice) window.history.replaceState(null, "", "/admin/studio");
   }, [notice]);
+
+  // Failures stored by an unattended run are still news the first time the
+  // page is opened — and only the first time.
+  const told = useRef("");
+  useEffect(() => {
+    if (status.data?.date !== date) return;
+    const failed = refusals(status.data?.publish);
+    const seen = `${date}:${failed.map((f) => f.channel).join(",")}`;
+    if (!failed.length || told.current === seen) return;
+    told.current = seen;
+    for (const f of failed) {
+      snack({
+        tone: "error",
+        text: `last try — ${f.text}`,
+        action: { label: "Dismiss", run: () => clearErrors.mutate(f.channel) },
+      });
+    }
+  }, [status.data, date, snack, clearErrors]);
 
   const running = status.data?.running ?? false;
   const done = (status.data?.files ?? []).filter((f) => f.name.endsWith(".mp4")).length === 2;
@@ -217,7 +289,11 @@ export function StudioPage() {
               <button
                 type="button"
                 disabled={running || start.isPending}
-                onClick={() => start.mutate()}
+                onClick={() =>
+                  start.mutate(undefined, {
+                    onError: (err) => snack({ tone: "error", text: err.message }),
+                  })
+                }
                 className="cursor-pointer rounded-[8px] bg-acc px-4 py-2 text-[14px] font-semibold text-onacc disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {running ? `Rendering… ${elapsed(status.data)}` : done ? "Render again" : "Generate the day's video"}
@@ -226,7 +302,7 @@ export function StudioPage() {
                 <button
                   type="button"
                   disabled={!live.length || publish.isPending || status.data?.publishing}
-                  onClick={() => publish.mutate({})}
+                  onClick={() => runPublish({})}
                   title={live.length ? `Upload to ${live.join(" and ")}` : "Connect a channel below and switch it on"}
                   className="cursor-pointer rounded-[8px] border border-brd px-4 py-2 text-[14px] font-medium text-fg hover:border-acc disabled:cursor-not-allowed disabled:opacity-50"
                 >
@@ -235,12 +311,6 @@ export function StudioPage() {
               )}
               {running && <span className="text-[13px] text-mut">About six minutes.</span>}
             </div>
-
-            {(start.error || publish.error || status.data?.error) && (
-              <p className="mt-4 rounded-[8px] border border-rose-400/30 bg-rose-500/10 p-3 text-[13px] text-rose-300">
-                {start.error?.message || publish.error?.message || status.data?.error}
-              </p>
-            )}
 
             {status.data?.log && (
               <pre className="mt-4 max-h-56 overflow-auto rounded-[8px] border border-brd bg-inset p-3 text-[12px] leading-[1.6] whitespace-pre-wrap text-mid">
@@ -281,7 +351,7 @@ export function StudioPage() {
                 publish={status.data?.publish ?? {}}
                 rendered={done}
                 busy={publish.isPending || Boolean(status.data?.publishing)}
-                onPublish={(channel, force) => publish.mutate({ channel, force })}
+                onPublish={(channel, force) => runPublish({ channel, force })}
               />
             ) : (
               <p className="text-[13px] text-mut">{config.error ? config.error.message : "Loading settings…"}</p>
