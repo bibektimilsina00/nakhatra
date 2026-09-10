@@ -155,8 +155,8 @@ export function StudioSettingsPanel({
             unconfigured="TIKTOK_CLIENT_KEY / TIKTOK_CLIENT_SECRET are not set on the web server."
             note={
               <>
-                Posts straight to the profile with Direct Post. While the app is unaudited TikTok allows
-                only <em>private</em> posts, whatever is chosen here — the option list below is the
+                Posts straight to the profile with Direct Post. While the app is unaudited, TikTok
+                accepts a post only if the account itself is private — the visibility list here is the
                 account&apos;s own, read when it was connected.
                 {tt.connected && tt.maxDurationSec > 0 && tt.maxDurationSec < 160 && (
                   <span className="mt-1 block text-amber-300/90">
@@ -166,6 +166,7 @@ export function StudioSettingsPanel({
                 )}
               </>
             }
+            setup="In the TikTok portal: add the redirect URI to Login Kit, and add this account under Sandbox → Target Users."
             redirectUri={config.tiktokRedirectUri}
           >
             <label className="block max-w-xs">
@@ -198,13 +199,8 @@ export function StudioSettingsPanel({
             enabled={s.youtube.enabled}
             onEnabled={(enabled) => patch({ youtube: { ...s.youtube, enabled } })}
             unconfigured="GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET are not set on the web server."
-            note={
-              <>
-                Uses the Google sign-in client. In Google Cloud: enable <em>YouTube Data API v3</em> and add
-                the URI below to the client&apos;s authorised redirect URIs. Until Google audits the project,
-                its uploads stay private whatever is chosen here.
-              </>
-            }
+            note="Uploads to the connected channel. Until Google audits the project, its uploads stay private whatever is chosen here."
+            setup="Uses the Google sign-in client. In Google Cloud: enable YouTube Data API v3 and add the redirect URI to the client's authorised redirect URIs."
             redirectUri={config.youtubeRedirectUri}
           >
             <div className="grid gap-3 sm:grid-cols-2">
@@ -290,6 +286,7 @@ function ChannelCard({
   onEnabled,
   unconfigured,
   note,
+  setup,
   redirectUri,
   children,
 }: {
@@ -306,6 +303,9 @@ function ChannelCard({
   onEnabled: (v: boolean) => void;
   unconfigured: string;
   note: React.ReactNode;
+  /** What to do in the platform's own console. Shown while the channel is
+   *  not connected, which is the only time it is any use. */
+  setup: string;
   redirectUri: string;
   children: React.ReactNode;
 }) {
@@ -352,17 +352,20 @@ function ChannelCard({
       {connect.error && <p className="mt-2 text-[12px] text-rose-300">{connect.error.message}</p>}
 
       <p className="mt-2 text-[12px] leading-[1.7] text-mut">{note}</p>
-      <p className="mt-1.5 text-[11.5px] text-mut">
-        Redirect URI:{" "}
-        <code className="rounded bg-black/30 px-1 py-0.5 text-[11px] break-all">{redirectUri}</code>
-      </p>
 
-      <div className="mt-3">{children}</div>
+      {!conn.connected && (
+        <p className="mt-1.5 text-[11.5px] leading-[1.7] text-mut">
+          {setup}{" "}
+          <code className="rounded bg-black/30 px-1 py-0.5 text-[11px] break-all">{redirectUri}</code>
+        </p>
+      )}
 
-      {/* Publishing this day, to this channel. Naming a channel is its own
-          instruction, so this posts whether or not the switch above is on —
-          that switch is what the clock obeys, not this button. */}
-      <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1.5 border-t border-brd pt-3">
+      {/* The channel's own controls and its own button, on one line: what
+          to post as, and post it. Naming a channel is its own instruction,
+          so this posts whether or not the switch above is on — that switch
+          is what the clock obeys, not this button. */}
+      <div className="mt-3 flex flex-wrap items-end gap-3">
+        <div className="min-w-[200px] flex-1">{children}</div>
         <button
           type="button"
           disabled={!conn.connected || !rendered || busy}
@@ -372,27 +375,33 @@ function ChannelCard({
               ? `Connect ${name} first`
               : !rendered
                 ? "Render the day first"
-                : `Post both parts of ${date} to ${name}`
+                : `Post both parts of ${date} to ${name}${both ? ", again" : ""}`
           }
-          className="cursor-pointer rounded-[6px] bg-acc px-3 py-1.5 text-[12px] font-semibold text-onacc disabled:cursor-not-allowed disabled:opacity-40"
+          className="cursor-pointer rounded-[8px] bg-acc px-4 py-2 text-[13px] font-semibold text-onacc transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
         >
-          {busy ? "Publishing…" : both ? `Publish ${date} again` : `Publish ${date} to ${name}`}
+          {busy ? "Publishing…" : "Publish"}
         </button>
-
-        {(["1", "2"] as const).map((n) => {
-          const state = publish?.[`part${n}` as "part1" | "part2"];
-          if (!state) return null;
-          return (
-            <span
-              key={n}
-              className={`text-[11.5px] ${"videoId" in state ? "text-emerald-300" : "text-rose-300"}`}
-              title={"videoId" in state ? state.url ?? state.note : state.error}
-            >
-              भाग {n === "1" ? "१" : "२"} · {"videoId" in state ? (state.note ?? "posted") : "failed"}
-            </span>
-          );
-        })}
       </div>
+
+      {/* What has already gone up there, for the day on show. */}
+      {(publish?.part1 || publish?.part2) && (
+        <div className="mt-2.5 flex flex-wrap gap-x-4 gap-y-1">
+          {(["1", "2"] as const).map((n) => {
+            const state = publish?.[`part${n}` as "part1" | "part2"];
+            if (!state) return null;
+            const ok = "videoId" in state;
+            return (
+              <span
+                key={n}
+                className={`text-[11.5px] ${ok ? "text-emerald-300" : "text-rose-300"}`}
+                title={ok ? (state.url ?? state.note) : state.error}
+              >
+                भाग {n === "1" ? "१" : "२"} · {ok ? (state.note ?? "posted") : state.error}
+              </span>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
