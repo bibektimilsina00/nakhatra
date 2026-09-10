@@ -10,7 +10,8 @@
     "generate:api": "openapi-typescript ../../contracts/openapi.json -o src/lib/api/generated/schema.d.ts",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "design": "./scripts/design-audit.sh"
+    "design": "./scripts/design-audit.sh",
+    "tiktok": "node scripts/rasifal-tiktok.mjs"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.102.8",

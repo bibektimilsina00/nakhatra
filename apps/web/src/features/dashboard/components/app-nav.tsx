@@ -5,6 +5,7 @@ import Link from "next/link";
 import {
   Bell,
   CheckCheck,
+  Clapperboard,
   LogOut,
   Menu,
   Search,
@@ -288,6 +289,20 @@ export function AppNav({
                       >
                         <ShieldCheck className="size-3.5" />
                         {t.practReviewLink}
+                      </Link>
+                    )}
+
+                    {/* The video studio. Deliberately untranslated: it is a
+                        tool for whoever runs the TikTok account, not a page
+                        the product has readers for. */}
+                    {user.role === "admin" && (
+                      <Link
+                        href="/admin/studio"
+                        onClick={close}
+                        className="flex items-center gap-2.5 rounded-[6px] px-2.5 py-2 text-[13px] text-mut transition-colors hover:bg-fg/[0.05] hover:text-fg"
+                      >
+                        <Clapperboard className="size-3.5" />
+                        Rasifal studio
                       </Link>
                     )}
                   </>

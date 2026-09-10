@@ -39,11 +39,23 @@ FROM node:20-slim AS runtime
 
 WORKDIR /app
 
+# The rasifal studio (`/admin/studio`) shoots the slide route with headless
+# Chromium and cuts the film with ffmpeg, both on this box. The Devanagari
+# font is not optional: without it every slide renders as tofu boxes and the
+# failure only shows up in the finished video.
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        chromium ffmpeg fonts-noto-devanagari fonts-noto-core \
+    && rm -rf /var/lib/apt/lists/*
+
 # Only the app and its modules — no compilers, no repo, no Python.
 COPY --from=build /app/apps/web /app/apps/web
 
 ENV PORT=3000 \
-    NODE_ENV=production
+    NODE_ENV=production \
+    CHROME_PATH=/usr/bin/chromium \
+    STUDIO_OUT=/data/studio \
+    STUDIO_SCRIPT=/app/apps/web/scripts/rasifal-tiktok.mjs
 
 EXPOSE 3000
 
