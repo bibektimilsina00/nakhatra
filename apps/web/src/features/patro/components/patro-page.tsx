@@ -73,21 +73,18 @@ export function PatroPage() {
   return (
     <div className="min-h-dvh bg-ink font-sys antialiased">
       <SiteHeader />
-      <main className="mx-auto w-full max-w-[1280px] px-5 pb-24 pt-28 sm:px-8 sm:pt-32">
-        <header className="flex flex-wrap items-end justify-between gap-4">
-          <div>
-            <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-gold">
-              {language === "en" ? "Panchang" : "पञ्चाङ्ग"}
-            </span>
-            <h1 className="mt-2 font-serif text-[30px] font-bold leading-tight text-paper sm:text-[38px]">
+      <main className="mx-auto w-full max-w-[1280px] px-5 pb-20 pt-24 sm:px-8 sm:pt-28">
+        <header className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3">
+          <div className="min-w-0">
+            <h1 className="font-serif text-[26px] font-bold leading-none text-paper sm:text-[30px]">
               {language === "en" ? "Nepali Patro" : "नेपाली पात्रो"}
             </h1>
-            <p className="mt-2 text-[14px] text-muted">
+            <p className="mt-1.5 text-[12.5px] text-faint">
               {language === "ne"
-                ? "निरयण (लाहिरी) गणनामा आधारित — तिथि सूर्योदयको समयमा पढिएको।"
+                ? "निरयण (लाहिरी) गणना — तिथि सूर्योदयको समयमा"
                 : language === "hi"
-                  ? "निरयण (लाहिरी) गणना पर आधारित — तिथि सूर्योदय पर पढ़ी गई।"
-                  : "Sidereal (Lahiri) throughout — each tithi read at that day's sunrise."}
+                  ? "निरयण (लाहिरी) गणना — तिथि सूर्योदय पर"
+                  : "Sidereal (Lahiri) — each tithi read at sunrise"}
             </p>
           </div>
 
@@ -121,7 +118,7 @@ export function PatroPage() {
           </div>
         </header>
 
-        <div className="mt-7 grid gap-5 lg:grid-cols-[1fr_400px]">
+        <div className="mt-5 grid items-start gap-4 lg:grid-cols-[1fr_400px]">
           {/* The month */}
           <section className="rounded-[12px] border border-brd bg-card p-4 sm:p-5">
             <div className="grid grid-cols-7 gap-2 sm:gap-2.5">
@@ -129,7 +126,7 @@ export function PatroPage() {
                 <div
                   key={w}
                   className={`pb-2.5 text-center text-[15px] font-semibold ${
-                    i === 6 ? "text-rose-400" : "text-muted"
+                    i === 0 || i === 6 ? "text-rose-400" : "text-muted"
                   }`}
                 >
                   {w}
@@ -146,7 +143,8 @@ export function PatroPage() {
                 const day = byDate.get(ad.iso);
                 const isToday = ad.iso === todayIso;
                 const isActive = ad.iso === activeIso;
-                const saturday = new Date(ad.iso + "T12:00:00").getDay() === 6;
+                const weekday = new Date(ad.iso + "T12:00:00").getDay();
+                const holiday = weekday === 0 || weekday === 6;
                 const festival = day?.festivals[0];
 
                 return (
@@ -156,10 +154,10 @@ export function PatroPage() {
                     onClick={() => setSelected(ad.iso)}
                     className={`flex min-h-[112px] cursor-pointer flex-col justify-between rounded-[10px] border p-2.5 text-left transition ${
                       isActive
-                        ? "border-gold bg-gold/10"
+                        ? "border-gold bg-gold/[0.14] ring-1 ring-gold/40"
                         : isToday
-                          ? "border-gold/50"
-                          : "border-brd hover:border-gold/40"
+                          ? "border-gold/60 bg-gold/[0.04]"
+                          : "border-brd hover:border-gold/40 hover:bg-paper/[0.02]"
                     }`}
                   >
                     <span className="block truncate text-[12px] leading-tight text-muted">
@@ -169,7 +167,7 @@ export function PatroPage() {
                     </span>
                     <span
                       className={`block text-center font-serif text-[30px] font-bold leading-none ${
-                        saturday || festival ? "text-rose-400" : "text-paper"
+                        holiday || festival ? "text-rose-400" : "text-paper"
                       }`}
                     >
                       {num(bsDay, language)}
