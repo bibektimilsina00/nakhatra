@@ -46,6 +46,24 @@ export function tiktokAuthUrl(state: string): string {
   return `${AUTH}?${q}`;
 }
 
+/**
+ * TikTok's own words for what went wrong.
+ *
+ * Several of their refusals carry the same sentence — "Please review our
+ * integration guidelines" — and differ only in the code beside it, so a
+ * message without its code sends you to the docs to guess. The commonest
+ * one is spelled out, because it is a setting on the account rather than
+ * anything the studio can fix.
+ */
+function tiktokError(err: { code?: string; message?: string } | undefined, fallback: string): string {
+  const code = err?.code && err.code !== "ok" ? err.code : "";
+  if (code === "unaudited_client_can_only_post_to_private_accounts") {
+    return "TikTok will not accept posts from an unaudited app unless the account itself is private. Set the account to private (Settings and privacy → Privacy → Private account) and try again, or post once the audit is through.";
+  }
+  const message = err?.message || fallback;
+  return code ? `${code} · ${message}` : message;
+}
+
 async function token(body: Record<string, string>): Promise<Record<string, string>> {
   const res = await fetch(`${API}/oauth/token/`, {
     method: "POST",
@@ -84,7 +102,7 @@ export async function tiktokCreatorInfo(accessToken: string): Promise<CreatorInf
     error?: { code?: string; message?: string };
   };
   if (json.error && json.error.code !== "ok") {
-    throw new Error(json.error.message || json.error.code || "tiktok creator_info failed");
+    throw new Error(tiktokError(json.error, "tiktok creator_info failed"));
   }
   return {
     nickname: json.data?.creator_nickname || "TikTok",
@@ -166,7 +184,7 @@ export async function tiktokPost(opts: {
     error?: { code?: string; message?: string };
   };
   if (!init.ok || (initJson.error && initJson.error.code !== "ok")) {
-    throw new Error(initJson.error?.message || `tiktok init ${init.status}`);
+    throw new Error(tiktokError(initJson.error, `tiktok init ${init.status}`));
   }
   const { publish_id: publishId, upload_url: uploadUrl } = initJson.data ?? {};
   if (!publishId || !uploadUrl) throw new Error("tiktok init returned no upload URL");
