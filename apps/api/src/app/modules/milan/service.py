@@ -64,6 +64,7 @@ def compute_match(body: MilanRequest) -> MilanResponse:
         max_guna=result["max_guna"],
         percentage=result["percentage"],
         recommendation=result["recommendation"],
+        verdict=result.get("verdict", ""),
         kutas=result["kutas"],
         groom_manglik=result["groom_manglik"],
         bride_manglik=result["bride_manglik"],

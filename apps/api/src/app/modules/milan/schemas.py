@@ -21,6 +21,11 @@ class KutaOut(BaseModel):
     obtained: float
     max_points: float
     description: str
+    # Additive: the koota's identifier and the two terms compared, so a client
+    # can localise the finding rather than display the English sentence.
+    key: str = ""
+    groom_value: str = ""
+    bride_value: str = ""
 
 
 class ManglikOut(BaseModel):
@@ -35,6 +40,7 @@ class ManglikCompatibilityOut(BaseModel):
     compatible: bool
     canceled: bool
     reason: str
+    reason_key: str = ""
 
 
 class MilanResponse(BaseModel):
@@ -44,6 +50,7 @@ class MilanResponse(BaseModel):
     max_guna: float = 36.0
     percentage: float
     recommendation: str
+    verdict: str = ""
     kutas: list[KutaOut]
     groom_manglik: ManglikOut
     bride_manglik: ManglikOut

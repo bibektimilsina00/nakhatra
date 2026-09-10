@@ -1620,8 +1620,23 @@ export interface components {
         };
         /** KutaOut */
         KutaOut: {
+            /**
+             * Bride Value
+             * @default
+             */
+            bride_value: string;
             /** Description */
             description: string;
+            /**
+             * Groom Value
+             * @default
+             */
+            groom_value: string;
+            /**
+             * Key
+             * @default
+             */
+            key: string;
             /** Max Points */
             max_points: number;
             /** Name */
@@ -1646,6 +1661,11 @@ export interface components {
             compatible: boolean;
             /** Reason */
             reason: string;
+            /**
+             * Reason Key
+             * @default
+             */
+            reason_key: string;
         };
         /** ManglikOut */
         ManglikOut: {
@@ -1798,6 +1818,11 @@ export interface components {
             recommendation: string;
             /** Total Guna */
             total_guna: number;
+            /**
+             * Verdict
+             * @default
+             */
+            verdict: string;
         };
         /** NakshatraOut */
         NakshatraOut: {
@@ -2218,11 +2243,15 @@ export interface components {
              */
             language: "en" | "ne" | "hi";
             /**
+             * Provider
+             * @description Pin the realtime provider. The browser sends 'openai' when a Gemini session was granted but failed to connect — billing and regional availability are only discoverable at connect time.
+             */
+            provider?: string | null;
+            /**
              * Voice
              * @default ash
-             * @enum {string}
              */
-            voice: "onyx" | "ash" | "sage" | "coral" | "echo" | "alloy" | "shimmer" | "ballad" | "verse";
+            voice: string;
         };
         /** RealtimeSessionResponse */
         RealtimeSessionResponse: {
@@ -2240,6 +2269,12 @@ export interface components {
             instructions?: string | null;
             /** Model */
             model?: string | null;
+            /**
+             * Provider
+             * @description Which realtime stack the token belongs to: 'openai' (WebRTC) or 'gemini' (Live API WebSocket). Old clients ignore it and keep working, since they predate the Gemini path entirely.
+             * @default openai
+             */
+            provider: string;
         };
         /** ReplyIn */
         ReplyIn: {

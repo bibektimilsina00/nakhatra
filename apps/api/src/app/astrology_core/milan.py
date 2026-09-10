@@ -155,6 +155,12 @@ class KutaResult:
     obtained: float
     max_points: float
     description: str
+    # The koota's stable identifier and the two Sanskrit terms it compared.
+    # `description` stays an English sentence for older clients; these let a
+    # client render the same fact in Nepali or Hindi.
+    key: str = ""
+    groom_value: str = ""
+    bride_value: str = ""
 
 
 @dataclass
@@ -174,7 +180,7 @@ def calculate_varna(groom_rashi: int, bride_rashi: int) -> KutaResult:
     pts = 1.0 if g_grade >= b_grade else 0.0
     desc = f"Groom ({VARNA_NAMES[g_grade]}) & Bride ({VARNA_NAMES[b_grade]}). "
     desc += "Compatible Varna." if pts == 1.0 else "Incompatible Varna."
-    return KutaResult("Varna", pts, 1.0, desc)
+    return KutaResult("Varna", pts, 1.0, desc, "varna", VARNA_NAMES[g_grade], VARNA_NAMES[b_grade])
 
 
 def calculate_vashya(groom_rashi: int, bride_rashi: int) -> KutaResult:
@@ -188,7 +194,7 @@ def calculate_vashya(groom_rashi: int, bride_rashi: int) -> KutaResult:
         pts = 0.5 if groom_rashi == bride_rashi else 0.0
 
     desc = f"Groom Vashya: {g_v}, Bride Vashya: {b_v}."
-    return KutaResult("Vashya", pts, 2.0, desc)
+    return KutaResult("Vashya", pts, 2.0, desc, "vashya", g_v, b_v)
 
 
 def calculate_tara(groom_nak_idx: int, bride_nak_idx: int) -> KutaResult:
@@ -207,7 +213,7 @@ def calculate_tara(groom_nak_idx: int, bride_nak_idx: int) -> KutaResult:
         pts = 0.0
 
     desc = f"Tara Compatibility score: {pts}/3."
-    return KutaResult("Tara", pts, 3.0, desc)
+    return KutaResult("Tara", pts, 3.0, desc, "tara", "", "")
 
 
 def calculate_yoni(groom_nak_idx: int, bride_nak_idx: int) -> KutaResult:
@@ -224,7 +230,7 @@ def calculate_yoni(groom_nak_idx: int, bride_nak_idx: int) -> KutaResult:
         pts = 2.0
 
     desc = f"Groom Yoni: {g_y}, Bride Yoni: {b_y}."
-    return KutaResult("Yoni", pts, 4.0, desc)
+    return KutaResult("Yoni", pts, 4.0, desc, "yoni", g_y, b_y)
 
 
 def calculate_graha_maitri(groom_rashi: int, bride_rashi: int) -> KutaResult:
@@ -249,7 +255,7 @@ def calculate_graha_maitri(groom_rashi: int, bride_rashi: int) -> KutaResult:
             pts = 0.0
 
     desc = f"Groom Moon Lord: {g_lord}, Bride Moon Lord: {b_lord}."
-    return KutaResult("Graha Maitri", pts, 5.0, desc)
+    return KutaResult("Graha Maitri", pts, 5.0, desc, "graha_maitri", g_lord, b_lord)
 
 
 def calculate_gana(groom_nak_idx: int, bride_nak_idx: int) -> KutaResult:
@@ -268,7 +274,7 @@ def calculate_gana(groom_nak_idx: int, bride_nak_idx: int) -> KutaResult:
         pts = 0.0
 
     desc = f"Groom Gana: {g_g}, Bride Gana: {b_g}."
-    return KutaResult("Gana", pts, 6.0, desc)
+    return KutaResult("Gana", pts, 6.0, desc, "gana", g_g, b_g)
 
 
 def calculate_bhakoot(groom_rashi: int, bride_rashi: int) -> KutaResult:
@@ -292,7 +298,7 @@ def calculate_bhakoot(groom_rashi: int, bride_rashi: int) -> KutaResult:
         pts = 7.0
         desc = "Favorable Bhakoot relation."
 
-    return KutaResult("Bhakoot", pts, 7.0, desc)
+    return KutaResult("Bhakoot", pts, 7.0, desc, "bhakoot", str(rel), str((14 - rel) % 12))
 
 
 def calculate_nadi(groom_nak_idx: int, bride_nak_idx: int) -> KutaResult:
@@ -306,7 +312,7 @@ def calculate_nadi(groom_nak_idx: int, bride_nak_idx: int) -> KutaResult:
         pts = 0.0
         desc = f"Nadi Dosha present! Both Groom and Bride have {g_n} Nadi."
 
-    return KutaResult("Nadi", pts, 8.0, desc)
+    return KutaResult("Nadi", pts, 8.0, desc, "nadi", g_n, b_n)
 
 
 # --- MANGLIK DOSHA DETECTOR ---
@@ -373,22 +379,29 @@ def match_kundalis(
     # Overall Recommendation
     if total_score >= 28:
         recommendation = "Excellent Match (Uttam)"
+        verdict = "uttam"
     elif total_score >= 18:
         recommendation = "Good Match (Madhyam)"
+        verdict = "madhyam"
     else:
         recommendation = "Low Guna Match (Varjya)"
+        verdict = "varjya"
 
     return {
         "total_guna": total_score,
         "max_guna": 36.0,
         "percentage": round((total_score / 36.0) * 100, 1),
         "recommendation": recommendation,
+        "verdict": verdict,
         "kutas": [
             {
                 "name": k.name,
                 "obtained": k.obtained,
                 "max_points": k.max_points,
                 "description": k.description,
+                "key": k.key,
+                "groom_value": k.groom_value,
+                "bride_value": k.bride_value,
             }
             for k in kutas
         ],
@@ -410,6 +423,14 @@ def match_kundalis(
             "compatible": not (groom_manglik.is_manglik ^ bride_manglik.is_manglik)
             or manglik_canceled,
             "canceled": manglik_canceled,
+            # Additive key for the same finding `reason` states in English.
+            "reason_key": (
+                "both_manglik"
+                if manglik_canceled
+                else "neither"
+                if not groom_manglik.is_manglik and not bride_manglik.is_manglik
+                else "one_sided"
+            ),
             "reason": cancellation_reason
             or (
                 "Both Non-Manglik"

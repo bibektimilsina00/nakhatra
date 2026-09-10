@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { kutaName } from "@/features/milan/kuta-i18n";
 import { ArrowRight, Heart } from "lucide-react";
 
 import { AppShell } from "@/features/dashboard/components/app-shell";
@@ -23,15 +24,16 @@ import { useLatinTracking, useTranslation } from "@/lib/i18n/language-context";
  * can see that Nadi alone is eight of them. Static because the weights are
  * classical and fixed — the API returns the same maxima every time.
  */
+// key and weight; the name is rendered in the reader's script.
 const KUTAS: [string, number][] = [
-  ["Varna", 1],
-  ["Vashya", 2],
-  ["Tara", 3],
-  ["Yoni", 4],
-  ["Graha Maitri", 5],
-  ["Gana", 6],
-  ["Bhakoot", 7],
-  ["Nadi", 8],
+  ["varna", 1],
+  ["vashya", 2],
+  ["tara", 3],
+  ["yoni", 4],
+  ["graha_maitri", 5],
+  ["gana", 6],
+  ["bhakoot", 7],
+  ["nadi", 8],
 ];
 
 /**
@@ -192,17 +194,17 @@ export function MilanPage() {
 
 /** What the match will actually compute — the page's teaching moment. */
 function WhatItChecks() {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const label = useLatinTracking("uppercase tracking-[0.16em]");
 
   return (
     <section className="mt-16">
       <h2 className={`text-[10.5px] text-acc ${label}`}>{t.milanWhatWeCheck}</h2>
 
-      <div className="mt-4 grid gap-px overflow-hidden rounded-[10px] bg-white/[0.08] sm:grid-cols-2 lg:grid-cols-4">
-        {KUTAS.map(([name, points]) => (
-          <div key={name} className="flex items-baseline justify-between gap-2 bg-app px-4 py-3.5">
-            <span className="text-[13px] text-mut">{name}</span>
+      <div className="mt-4 grid gap-px overflow-hidden rounded-[10px] bg-brd sm:grid-cols-2 lg:grid-cols-4">
+        {KUTAS.map(([key, points]) => (
+          <div key={key} className="flex items-baseline justify-between gap-2 bg-app px-4 py-3.5">
+            <span className="text-[13px] text-mid">{kutaName(key, key, language)}</span>
             <span className="text-[12px] text-dim">
               {points} <span className="text-[10px]">{t.milanGuna}</span>
             </span>

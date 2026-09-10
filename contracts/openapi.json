@@ -1448,8 +1448,23 @@
       },
       "KutaOut": {
         "properties": {
+          "bride_value": {
+            "default": "",
+            "title": "Bride Value",
+            "type": "string"
+          },
           "description": {
             "title": "Description",
+            "type": "string"
+          },
+          "groom_value": {
+            "default": "",
+            "title": "Groom Value",
+            "type": "string"
+          },
+          "key": {
+            "default": "",
+            "title": "Key",
             "type": "string"
           },
           "max_points": {
@@ -1512,6 +1527,11 @@
           },
           "reason": {
             "title": "Reason",
+            "type": "string"
+          },
+          "reason_key": {
+            "default": "",
+            "title": "Reason Key",
             "type": "string"
           }
         },
@@ -1867,6 +1887,11 @@
           "total_guna": {
             "title": "Total Guna",
             "type": "number"
+          },
+          "verdict": {
+            "default": "",
+            "title": "Verdict",
+            "type": "string"
           }
         },
         "required": [
