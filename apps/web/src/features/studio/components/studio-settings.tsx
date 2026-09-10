@@ -239,9 +239,14 @@ function Toggle({ checked, onChange, label }: { checked: boolean; onChange: (v: 
       onClick={() => onChange(!checked)}
       className="flex items-center gap-2 text-[12px] text-mut"
     >
-      <span className={`relative h-5 w-9 rounded-full transition-colors ${checked ? "bg-acc" : "bg-brd2"}`}>
+      {/* inline-block, not a bare span: a span is inline and ignores its
+          height and width, so the track sized itself from the line box and
+          the knob sat wherever the text put it. */}
+      <span
+        className={`relative inline-block h-5 w-9 shrink-0 rounded-full transition-colors ${checked ? "bg-acc" : "bg-brd2"}`}
+      >
         <span
-          className={`absolute top-0.5 size-4 rounded-full bg-white transition-transform ${checked ? "translate-x-4" : "translate-x-0.5"}`}
+          className={`absolute top-0.5 left-0.5 size-4 rounded-full bg-white shadow-sm transition-transform ${checked ? "translate-x-4" : ""}`}
         />
       </span>
       {label}
