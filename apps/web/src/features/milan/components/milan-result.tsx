@@ -2,6 +2,7 @@
 
 import { AlertTriangle, ShieldCheck } from "lucide-react";
 
+import { MilanCharts } from "@/features/milan/components/milan-charts";
 import { kutaName, kutaTerm, KUTA_MEANING, MANGLIK_REASONS, VERDICTS } from "@/features/milan/kuta-i18n";
 import type { Kuta, Manglik, MilanResponse } from "@/features/milan/types";
 import { useTranslation } from "@/lib/i18n/language-context";
@@ -84,6 +85,15 @@ export function MilanResult({
           </button>
         </div>
       </section>
+
+      {result.bride_chart && result.groom_chart && (
+        <MilanCharts
+          brideName={result.bride_name}
+          brideChart={result.bride_chart}
+          groomName={result.groom_name}
+          groomChart={result.groom_chart}
+        />
+      )}
 
       {/* What the score is actually made of */}
       {(failing.length > 0 || partial.length > 0) && (
