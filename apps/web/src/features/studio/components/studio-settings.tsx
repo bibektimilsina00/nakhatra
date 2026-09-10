@@ -3,7 +3,12 @@
 import { useState } from "react";
 import { Music2, Video } from "lucide-react";
 
-import type { StudioConfig, StudioSettings } from "@/features/studio/api/studio-api";
+import type {
+  PartPublish,
+  PublishState,
+  StudioConfig,
+  StudioSettings,
+} from "@/features/studio/api/studio-api";
 import { useChannelConnect, useSaveSettings } from "@/features/studio/hooks/use-studio";
 
 /**
@@ -39,7 +44,24 @@ const TIKTOK_PRIVACY: Record<string, string> = {
 const field = "rounded-[8px] border border-brd bg-inset px-3 py-2 text-[13.5px] text-fg";
 const label = "block text-[12px] font-medium text-mut";
 
-export function StudioSettingsPanel({ config }: { config: StudioConfig }) {
+export function StudioSettingsPanel({
+  config,
+  date,
+  publish,
+  rendered,
+  busy,
+  onPublish,
+}: {
+  config: StudioConfig;
+  /** The day the Render section is showing — what a channel's Publish
+   *  button posts. */
+  date: string;
+  publish: PublishState;
+  /** Both films exist for that day. Nothing to publish before they do. */
+  rendered: boolean;
+  busy: boolean;
+  onPublish: (channel: "youtube" | "tiktok", force: boolean) => void;
+}) {
   const [s, setS] = useState<StudioSettings>(config.settings);
   const save = useSaveSettings();
   const dirty = JSON.stringify(s) !== JSON.stringify(config.settings);
@@ -123,6 +145,11 @@ export function StudioSettingsPanel({ config }: { config: StudioConfig }) {
             name="TikTok"
             icon={<Music2 className="size-4 text-fg" />}
             conn={tt}
+            publish={publish.tiktok}
+            date={date}
+            rendered={rendered}
+            busy={busy}
+            onPublish={(force) => onPublish("tiktok", force)}
             enabled={s.tiktok.enabled}
             onEnabled={(enabled) => patch({ tiktok: { ...s.tiktok, enabled } })}
             unconfigured="TIKTOK_CLIENT_KEY / TIKTOK_CLIENT_SECRET are not set on the web server."
@@ -163,6 +190,11 @@ export function StudioSettingsPanel({ config }: { config: StudioConfig }) {
             name="YouTube"
             icon={<Video className="size-4 text-rose-400" />}
             conn={yt}
+            publish={publish.youtube}
+            date={date}
+            rendered={rendered}
+            busy={busy}
+            onPublish={(force) => onPublish("youtube", force)}
             enabled={s.youtube.enabled}
             onEnabled={(enabled) => patch({ youtube: { ...s.youtube, enabled } })}
             unconfigured="GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET are not set on the web server."
@@ -242,12 +274,18 @@ export function StudioSettingsPanel({ config }: { config: StudioConfig }) {
   );
 }
 
-/** One connectable channel: the same head, switch and consent dance for each. */
+/** One connectable channel: the same head, switch, consent dance and
+ *  Publish button for each. */
 function ChannelCard({
   channel,
   name,
   icon,
   conn,
+  publish,
+  date,
+  rendered,
+  busy,
+  onPublish,
   enabled,
   onEnabled,
   unconfigured,
@@ -259,6 +297,11 @@ function ChannelCard({
   name: string;
   icon: React.ReactNode;
   conn: { configured: boolean; connected: boolean; channel: string | null };
+  publish?: { part1?: PartPublish; part2?: PartPublish };
+  date: string;
+  rendered: boolean;
+  busy: boolean;
+  onPublish: (force: boolean) => void;
   enabled: boolean;
   onEnabled: (v: boolean) => void;
   unconfigured: string;
@@ -267,6 +310,8 @@ function ChannelCard({
   children: React.ReactNode;
 }) {
   const { connect, disconnect } = useChannelConnect(channel);
+  const posted = (p?: PartPublish) => Boolean(p && "videoId" in p);
+  const both = posted(publish?.part1) && posted(publish?.part2);
 
   return (
     <div className="rounded-[8px] border border-brd bg-inset p-3.5">
@@ -313,6 +358,41 @@ function ChannelCard({
       </p>
 
       <div className="mt-3">{children}</div>
+
+      {/* Publishing this day, to this channel. Naming a channel is its own
+          instruction, so this posts whether or not the switch above is on —
+          that switch is what the clock obeys, not this button. */}
+      <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1.5 border-t border-brd pt-3">
+        <button
+          type="button"
+          disabled={!conn.connected || !rendered || busy}
+          onClick={() => onPublish(both)}
+          title={
+            !conn.connected
+              ? `Connect ${name} first`
+              : !rendered
+                ? "Render the day first"
+                : `Post both parts of ${date} to ${name}`
+          }
+          className="cursor-pointer rounded-[6px] bg-acc px-3 py-1.5 text-[12px] font-semibold text-onacc disabled:cursor-not-allowed disabled:opacity-40"
+        >
+          {busy ? "Publishing…" : both ? `Publish ${date} again` : `Publish ${date} to ${name}`}
+        </button>
+
+        {(["1", "2"] as const).map((n) => {
+          const state = publish?.[`part${n}` as "part1" | "part2"];
+          if (!state) return null;
+          return (
+            <span
+              key={n}
+              className={`text-[11.5px] ${"videoId" in state ? "text-emerald-300" : "text-rose-300"}`}
+              title={"videoId" in state ? state.url ?? state.note : state.error}
+            >
+              भाग {n === "1" ? "१" : "२"} · {"videoId" in state ? (state.note ?? "posted") : "failed"}
+            </span>
+          );
+        })}
+      </div>
     </div>
   );
 }
