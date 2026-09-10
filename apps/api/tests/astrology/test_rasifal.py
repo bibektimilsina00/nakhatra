@@ -95,15 +95,70 @@ def test_ratings_span_the_scale_over_a_year() -> None:
     assert seen == {1, 2, 3, 4, 5}
 
 
-def test_the_reading_hour_does_not_depend_on_the_wall_clock() -> None:
-    """A different hour is allowed to give a different sky; the default must
-    be a fixed hour, not `now`."""
-    morning = rasifal.compute(date(2026, 5, 5), at=time(6, 0))
-    default = rasifal.compute(date(2026, 5, 5))
-    assert [s.score for s in morning.signs] == [s.score for s in default.signs]
+def test_a_day_is_read_at_its_own_sunrise() -> None:
+    """The Vedic day starts at sunrise, not at a round hour someone picked.
 
-    evening = rasifal.compute(date(2026, 5, 5), at=time(23, 0))
-    assert evening.for_date == morning.for_date
+    The Moon moves about half a degree an hour, so a fixed six o'clock can put
+    it in a different house from the one a panchanga prints.
+    """
+    moment = rasifal.reading_moment(date(2026, 9, 10))
+    assert moment.date() == date(2026, 9, 10)
+    assert (moment.hour, moment.minute) == (5, 46)
+
+    # Whatever the hour, it is a function of the date and not of the clock.
+    assert rasifal.reading_moment(date(2026, 9, 10)) == moment
+
+
+def test_an_explicit_hour_still_overrides_sunrise() -> None:
+    """Callers that need a fixed hour keep it, and it is honoured.
+
+    Six in the evening puts the Moon roughly six degrees further on than
+    sunrise did, so on a day it crosses a sign the two readings must differ.
+    2026-09-11 is such a day: the Moon leaves Cancer for Leo during it.
+    """
+    morning = rasifal.compute(date(2026, 9, 11), at=time(5, 0))
+    evening = rasifal.compute(date(2026, 9, 11), at=time(23, 30))
+    moon_at = lambda day: next(  # noqa: E731
+        t.sign for t in day.signs[0].transits if t.name == "Moon"
+    )
+    assert moon_at(morning) != moon_at(evening), "the hour was ignored"
+
+
+def test_a_grahas_murti_is_fixed_at_its_ingress_not_read_daily() -> None:
+    """The whole point of the correction.
+
+    Murti Nirnaya asks where the Moon stood when a graha *entered* its sign.
+    A slow graha's murti therefore cannot change from one morning to the next
+    — Saturn's was settled when it entered Aquarius and does not move again
+    until it leaves. Reading the Moon's own house daily and calling it every
+    graha's murti, which this used to do, made all nine change temper together
+    every two days.
+    """
+    saturn_murti = []
+    for day_of in (1, 8, 15, 22):
+        day = rasifal.compute(date(2026, 9, day_of))
+        saturn_murti.append(
+            next(t.murti for t in day.signs[0].transits if t.name == "Saturn")
+        )
+    assert len(set(saturn_murti)) == 1, f"Saturn's murti drifted: {saturn_murti}"
+
+    # The Moon's own, by contrast, is expected to move with it.
+    moon_murti = {
+        next(t.murti for t in rasifal.compute(date(2026, 9, d)).signs[0].transits
+             if t.name == "Moon")
+        for d in (1, 8, 15, 22)
+    }
+    assert len(moon_murti) > 1, "the Moon's murti should follow the Moon"
+
+
+def test_the_nodes_carry_no_vedha() -> None:
+    """The classical vedha table is given for the seven grahas. Lending Rahu
+    and Ketu the Sun's row silently cancelled real transits."""
+    for month in (2, 6, 10):
+        for s in rasifal.compute(date(2026, month, 9)).signs:
+            for t in s.transits:
+                if t.name in ("Rahu", "Ketu"):
+                    assert not t.obstructed
 
 
 # --- periods ---------------------------------------------------------------
