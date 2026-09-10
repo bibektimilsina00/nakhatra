@@ -27,7 +27,11 @@ if (!projectToken || !host) {
 } else {
   posthog.init(projectToken, {
     api_host: host,
-    defaults: "2026-01-30",
+    // The host is our own reverse proxy (t.nakhatra.com), so the SDK is told
+    // separately where PostHog itself lives; without this, links it builds
+    // back to the app point at the proxy and 404.
+    ui_host: "https://us.posthog.com",
+    defaults: "2026-05-30",
     capture_exceptions: true,
     tracing_headers: tracingHeaders,
     debug: process.env.NODE_ENV === "development",
