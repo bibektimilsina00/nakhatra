@@ -1,3 +1,4 @@
+import { SITE_URL } from "@/lib/seo/site";
 import { readConnections, writeConnections } from "@/lib/studio";
 import { takeState, tiktokExchangeCode } from "@/lib/studio-tiktok";
 
@@ -9,7 +10,10 @@ export async function GET(req: Request) {
   const p = new URL(req.url).searchParams;
   const back = (msg: string, ok = false) =>
     Response.redirect(
-      new URL(`/admin/studio?${ok ? "connected" : "error"}=${encodeURIComponent(msg)}`, req.url),
+      // SITE_URL, not `req.url`: Caddy proxies to this container, so the
+      // request's own host is localhost:3000 and sending the browser there
+      // ends the connection dance on a machine that is not the user's.
+      new URL(`/admin/studio?${ok ? "connected" : "error"}=${encodeURIComponent(msg)}`, SITE_URL),
       302,
     );
 
