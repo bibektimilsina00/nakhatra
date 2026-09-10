@@ -2,7 +2,8 @@
 
 import { useMemo, useState } from "react";
 
-import { AppShell } from "@/features/dashboard/components/app-shell";
+import { SiteFooter } from "@/features/marketing/components/site-footer";
+import { SiteHeader } from "@/features/marketing/components/site-header";
 import { RashiCard } from "@/features/rasifal/components/rashi-card";
 import { RashiPeriodCard } from "@/features/rasifal/components/rashi-period-card";
 import { spanLabel } from "@/features/rasifal/rasifal-i18n";
@@ -76,26 +77,30 @@ export function RasifalPage() {
         : language === "ne" ? "भोलि" : language === "hi" ? "कल" : "Tomorrow";
 
   return (
-    <AppShell guest>
-      <main className="mx-auto w-full max-w-[1180px] px-5 pb-24 pt-10 sm:px-8">
+    // Reached from the marketing nav, so it wears the marketing site: same
+    // header, same footer, same ink. A visitor who has not signed up should
+    // not be dropped into the dashboard's furniture.
+    <div className="min-h-dvh bg-ink font-sys antialiased">
+      <SiteHeader />
+      <main className="mx-auto w-full max-w-[1180px] px-5 pb-24 pt-28 sm:px-8 sm:pt-32">
         <header className="max-w-2xl">
-          <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-acc">
+          <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-gold">
             {language === "en" ? "Gochara" : "गोचर"}
           </span>
-          <h1 className="mt-3 font-serif text-[26px] font-bold leading-tight text-fg sm:text-[32px]">
+          <h1 className="mt-3 font-serif text-[30px] font-bold leading-tight text-paper sm:text-[40px]">
             {title}
           </h1>
-          <p className="mt-3 text-[14.5px] leading-[1.7] text-mut">{sub}</p>
+          <p className="mt-3 text-[15px] leading-[1.75] text-muted">{sub}</p>
         </header>
 
-        <div className="mt-6 flex flex-wrap items-center gap-1.5 rounded-full border border-brd bg-panel p-1 sm:w-fit">
+        <div className="mt-6 flex flex-wrap items-center gap-1.5 rounded-full border border-brd bg-card p-1 sm:w-fit">
           {(["daily", "weekly", "monthly"] as Span[]).map((s) => (
             <button
               key={s}
               type="button"
               onClick={() => setSpan(s)}
               className={`cursor-pointer rounded-full px-4 py-1.5 text-[12.5px] font-medium transition ${
-                span === s ? "bg-acc text-onacc" : "text-mid hover:text-acc2"
+                span === s ? "bg-gold text-ink" : "text-muted hover:text-paper"
               }`}
             >
               {spanLabel(s, language)}
@@ -111,15 +116,15 @@ export function RasifalPage() {
               onClick={() => setOffset(n)}
               className={`cursor-pointer rounded-full border px-4 py-1.5 text-[12.5px] font-medium transition ${
                 offset === n
-                  ? "border-acc bg-acc text-onacc"
-                  : "border-brd text-mid hover:border-acc/50 hover:text-acc2"
+                  ? "border-gold bg-gold text-ink"
+                  : "border-brd text-muted hover:border-gold/50 hover:text-paper"
               }`}
             >
               {dayLabel(n)}
             </button>
           ))}
           {data && (
-            <span className="ml-1 text-[12px] text-mut">
+            <span className="ml-1 text-[12px] text-muted">
               {formatDateFor(data.for_date, language)}
             </span>
           )}
@@ -130,15 +135,15 @@ export function RasifalPage() {
             {Array.from({ length: 12 }).map((_, i) => (
               <div
                 key={i}
-                className="h-[230px] animate-pulse rounded-[12px] border border-brd bg-panel"
+                className="h-[230px] animate-pulse rounded-[12px] border border-brd bg-card"
               />
             ))}
           </div>
         )}
 
         {isError && (
-          <div className="mt-8 rounded-[12px] border border-brd bg-panel p-6 text-center">
-            <p className="text-[13.5px] text-mid">
+          <div className="mt-8 rounded-[12px] border border-brd bg-card p-6 text-center">
+            <p className="text-[13.5px] text-muted">
               {language === "ne"
                 ? "राशिफल ल्याउन सकिएन।"
                 : language === "hi"
@@ -148,7 +153,7 @@ export function RasifalPage() {
             <button
               type="button"
               onClick={() => refetch()}
-              className="mt-3 cursor-pointer rounded-[8px] border border-brd px-4 py-2 text-[12.5px] font-medium text-mid transition hover:border-acc/50 hover:text-acc2"
+              className="mt-3 cursor-pointer rounded-[8px] border border-brd px-4 py-2 text-[12.5px] font-medium text-muted transition hover:border-gold/50 hover:text-paper"
             >
               {language === "ne" ? "फेरि प्रयास" : language === "hi" ? "पुनः प्रयास" : "Try again"}
             </button>
@@ -156,7 +161,7 @@ export function RasifalPage() {
         )}
 
         {span !== "daily" && period.data && (
-          <p className="mt-4 text-[12px] text-mut">
+          <p className="mt-4 text-[12px] text-muted">
             {formatDateFor(period.data.start, language)} — {formatDateFor(period.data.end, language)}
           </p>
         )}
@@ -173,15 +178,15 @@ export function RasifalPage() {
 
             {/* What produced these, said plainly — the reference sites explain
                 their method, and this one actually has one. */}
-            <section className="mt-8 rounded-[12px] border border-brd bg-inset p-5">
-              <h2 className="text-[13px] font-semibold text-fg">
+            <section className="mt-8 rounded-[12px] border border-brd bg-card p-5">
+              <h2 className="text-[13px] font-semibold text-paper">
                 {language === "ne"
                   ? "यो राशिफल कसरी गणना गरिएको हो?"
                   : language === "hi"
                     ? "यह राशिफल कैसे गणना किया गया है?"
                     : "How this rasifal is calculated"}
               </h2>
-              <p className="mt-2 text-[12.5px] leading-[1.8] text-mut">
+              <p className="mt-2 text-[12.5px] leading-[1.8] text-muted">
                 {language === "ne"
                   ? "हरेक राशिका लागि आजका नौ ग्रह त्यही राशिबाट भाव गन्ती गरी राखिन्छ। शास्त्रीय गोचर तालिकाअनुसार कुन ग्रह अनुकूल छ हेरिन्छ, वेध (अवरोध) जाँचिन्छ — अनुकूल ग्रह पनि वेधले रोक्छ — र चन्द्रमाको भावले मूर्ति निर्णय (स्वर्ण, रजत, ताम्र, लोह) तय गर्छ। लाहिरी अयनांश, नेपालकै समय। कुनै पनि वाक्य अनुमानले लेखिएको छैन।"
                   : language === "hi"
@@ -192,6 +197,7 @@ export function RasifalPage() {
           </>
         )}
       </main>
-    </AppShell>
+      <SiteFooter />
+    </div>
   );
 }

@@ -17,6 +17,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 1,
     },
     {
+      // The rasifal changes every day and is the one page a stranger can read
+      // in full without signing in.
+      url: `${SITE_URL}/rasifal`,
+      changeFrequency: "daily",
+      priority: 0.9,
+    },
+    {
       url: `${SITE_URL}/privacy`,
       changeFrequency: "yearly",
       priority: 0.3,
