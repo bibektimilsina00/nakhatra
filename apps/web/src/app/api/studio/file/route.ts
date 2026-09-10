@@ -1,4 +1,4 @@
-import { forbidden, isAdmin, readStudioFile, todayInNepal, verifyFile } from "@/lib/studio";
+import { contentType, forbidden, isAdmin, readStudioFile, todayInNepal, verifyFile } from "@/lib/studio";
 
 /**
  * A rendered file, for the admin page to play, download or read.
@@ -11,7 +11,7 @@ import { forbidden, isAdmin, readStudioFile, todayInNepal, verifyFile } from "@/
  * a path off a query string, and "strip the ../" is the kind of cleverness
  * that turns into a directory traversal a year later.
  */
-const NAME = /^rasifal-\d{4}-\d{2}-\d{2}-part[12](-caption\.txt|\.mp4)$/;
+const NAME = /^rasifal-\d{4}-\d{2}-\d{2}-part[12](-caption\.txt|\.mp4|\.jpg)$/;
 const DATE = /^\d{4}-\d{2}-\d{2}$/;
 
 export async function GET(req: Request) {
@@ -26,9 +26,8 @@ export async function GET(req: Request) {
   const body = await readStudioFile(date, name).catch(() => null);
   if (!body) return new Response("Not found", { status: 404 });
 
-  const type = name.endsWith(".mp4") ? "video/mp4" : "text/plain; charset=utf-8";
   const headers = {
-    "Content-Type": type,
+    "Content-Type": contentType(name),
     // A signed URL is good for hours and the bytes never change under it;
     // an unsigned one is a one-off read for an admin.
     "Cache-Control": signed ? "private, max-age=3600" : "no-store",

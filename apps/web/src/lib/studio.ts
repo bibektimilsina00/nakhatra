@@ -318,7 +318,8 @@ export function startRender(date: string): { started: boolean; reason?: string }
 
 export type StudioFile = { name: string; size: number };
 
-const KEEP = (name: string) => name.endsWith(".mp4") || name.endsWith("-caption.txt");
+const KEEP = (name: string) =>
+  name.endsWith(".mp4") || name.endsWith("-caption.txt") || name.endsWith(".jpg");
 
 /** What is on the volume for a day. */
 function localFiles(date: string): StudioFile[] {
@@ -348,6 +349,13 @@ export async function filesFor(date: string): Promise<StudioFile[]> {
   }
   return [...seen.values()].sort((a, b) => a.name.localeCompare(b.name));
 }
+
+export const contentType = (name: string) =>
+  name.endsWith(".mp4")
+    ? "video/mp4"
+    : name.endsWith(".jpg")
+      ? "image/jpeg"
+      : "text/plain; charset=utf-8";
 
 /** Both films exist. */
 export async function isRendered(date: string): Promise<boolean> {
@@ -400,7 +408,7 @@ async function archive(date: string): Promise<void> {
       await r2Put(
         keyFor(date, file.name),
         readFileSync(join(dirFor(date), file.name)),
-        file.name.endsWith(".mp4") ? "video/mp4" : "text/plain; charset=utf-8",
+        contentType(file.name),
       );
     } catch (err) {
       logger(`r2 put ${file.name} failed`, err);

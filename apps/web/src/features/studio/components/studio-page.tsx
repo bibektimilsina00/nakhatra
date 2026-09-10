@@ -64,12 +64,15 @@ function Part({
   date,
   part,
   file,
+  poster,
   publish,
 }: {
   date: string;
   part: "1" | "2";
   /** The rendered mp4, with the signed URL the player streams from. */
   file?: StudioFile;
+  /** Its title card as a still, so the card shows the film immediately. */
+  poster?: StudioFile;
   publish: { youtube?: PartPublish; tiktok?: PartPublish };
 }) {
   const caption = `rasifal-${date}-part${part}-caption.txt`;
@@ -93,10 +96,14 @@ function Part({
         {file ? (
           <video
             src={file.url}
+            poster={poster?.url}
             controls
-            preload="metadata"
+            // None, not metadata: the poster is already the first frame, so
+            // there is nothing to fetch until someone presses play — and a
+            // page with two 16 MB films on it should not fetch either.
+            preload="none"
             playsInline
-            className="aspect-[9/16] w-full max-w-[220px] rounded-[10px] border border-brd bg-black"
+            className="aspect-[9/16] w-full max-w-[220px] rounded-[10px] border border-brd bg-black object-cover"
           />
         ) : (
           <div className="grid aspect-[9/16] w-full max-w-[220px] place-items-center rounded-[10px] border border-dashed border-brd text-[12px] text-mut">
@@ -372,6 +379,7 @@ function Studio() {
                   date={date}
                   part={p}
                   file={status.data?.files.find((f) => f.name === `rasifal-${date}-part${p}.mp4`)}
+                  poster={status.data?.files.find((f) => f.name === `rasifal-${date}-part${p}.jpg`)}
                   publish={{
                     youtube: status.data?.publish.youtube?.[`part${p}`],
                     tiktok: status.data?.publish.tiktok?.[`part${p}`],
