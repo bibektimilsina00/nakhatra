@@ -108,7 +108,12 @@ export function MilanPage() {
 
         {match.data ? (
           <div className="mt-10 space-y-4">
-            <MilanResult result={match.data} onReset={reset} />
+            <MilanResult
+              result={match.data}
+              onReset={reset}
+              brideBirth={bride?.birth}
+              groomBirth={groom?.birth}
+            />
             <MilanAnalysisPanel
               analysis={analysis.data}
               isPending={analysis.isPending}

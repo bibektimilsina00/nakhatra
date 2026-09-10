@@ -1,9 +1,13 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+import { BirthSky3D } from "@/features/kundali/components/birth-sky-3d";
 import { NorthIndianChart } from "@/features/kundali/components/north-indian-chart";
-import type { Chart } from "@/features/kundali/types";
+import { saveKundaliToStorage } from "@/features/kundali/store/kundali-store";
+import type { BirthDetailsIn, Chart } from "@/features/kundali/types";
+import { Maximize2 } from "lucide-react";
 import { useTranslation } from "@/lib/i18n/language-context";
 import {
   getNakshatraName,
@@ -23,13 +27,17 @@ import {
 export function MilanCharts({
   brideName,
   brideChart,
+  brideBirth,
   groomName,
   groomChart,
+  groomBirth,
 }: {
   brideName: string;
   brideChart: Chart;
+  brideBirth?: BirthDetailsIn | null;
   groomName: string;
   groomChart: Chart;
+  groomBirth?: BirthDetailsIn | null;
 }) {
   const { language } = useTranslation();
   const [open, setOpen] = useState(false);
@@ -73,6 +81,13 @@ export function MilanCharts({
         </button>
       </div>
 
+      {/* The sky each was born under, side by side. The kootas are a claim
+          about two skies; this is the pair of skies themselves. */}
+      <div className="mt-4 grid gap-4 sm:grid-cols-2">
+        <SkyCard name={brideName} chart={brideChart} birth={brideBirth} />
+        <SkyCard name={groomName} chart={groomChart} birth={groomBirth} />
+      </div>
+
       <div className="mt-4 grid gap-4 sm:grid-cols-2">
         <ChartCard name={brideName} chart={brideChart} />
         <ChartCard name={groomName} chart={groomChart} />
@@ -87,6 +102,67 @@ export function MilanCharts({
         />
       )}
     </section>
+  );
+}
+
+/** One partner's birth sky. Expanding hands that partner's chart to /sky,
+ *  which reads whichever kundali is active — so the couple can open either. */
+function SkyCard({
+  name,
+  chart,
+  birth,
+}: {
+  name: string;
+  chart: Chart;
+  birth?: BirthDetailsIn | null;
+}) {
+  const { language } = useTranslation();
+  const router = useRouter();
+
+  const open = () => {
+    if (!birth) return;
+    saveKundaliToStorage(birth, chart);
+    router.push("/sky");
+  };
+
+  return (
+    <div className="relative overflow-hidden rounded-[10px] border border-brd bg-[#090A10]">
+      <div className="pointer-events-none h-[230px]">
+        <BirthSky3D
+          chart={chart}
+          selected={null}
+          onSelect={() => {}}
+          showNakshatras={false}
+          showAspects={false}
+          hint={false}
+          planetLabels={false}
+          wheelZoom={false}
+          className="absolute inset-0 h-full w-full"
+        />
+      </div>
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 flex items-end justify-between gap-2 bg-gradient-to-t from-[#090A10] via-[#090A10]/80 to-transparent p-3.5">
+        <span className="min-w-0">
+          <span className="block truncate text-[12.5px] font-semibold text-white">{name}</span>
+          <span className="mt-0.5 block text-[10.5px] text-white/60">
+            {language === "ne"
+              ? "जन्मकालीन आकाश"
+              : language === "hi"
+                ? "जन्मकालीन आकाश"
+                : "Birth sky"}
+          </span>
+        </span>
+        {birth && (
+          <button
+            type="button"
+            onClick={open}
+            aria-label={language === "en" ? "Open the birth sky" : "जन्म आकाश खोल्नुहोस्"}
+            className="pointer-events-auto grid size-8 shrink-0 cursor-pointer place-items-center rounded-[8px] bg-acc text-onacc transition hover:bg-acc2 active:scale-95"
+          >
+            <Maximize2 className="size-3.5" />
+          </button>
+        )}
+      </div>
+    </div>
   );
 }
 

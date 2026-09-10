@@ -4,6 +4,7 @@ import { AlertTriangle, ShieldCheck } from "lucide-react";
 
 import { MilanCharts } from "@/features/milan/components/milan-charts";
 import { kutaName, kutaTerm, KUTA_MEANING, MANGLIK_REASONS, VERDICTS } from "@/features/milan/kuta-i18n";
+import type { BirthDetailsIn } from "@/features/kundali/types";
 import type { Kuta, Manglik, MilanResponse } from "@/features/milan/types";
 import { useTranslation } from "@/lib/i18n/language-context";
 
@@ -19,9 +20,14 @@ import { useTranslation } from "@/lib/i18n/language-context";
 export function MilanResult({
   result,
   onReset,
+  brideBirth,
+  groomBirth,
 }: {
   result: MilanResponse;
   onReset: () => void;
+  /** Passed through so each birth sky can open full screen. */
+  brideBirth?: BirthDetailsIn | null;
+  groomBirth?: BirthDetailsIn | null;
 }) {
   const { t, language } = useTranslation();
   const pct = Math.round(result.percentage);
@@ -90,8 +96,10 @@ export function MilanResult({
         <MilanCharts
           brideName={result.bride_name}
           brideChart={result.bride_chart}
+          brideBirth={brideBirth}
           groomName={result.groom_name}
           groomChart={result.groom_chart}
+          groomBirth={groomBirth}
         />
       )}
 
