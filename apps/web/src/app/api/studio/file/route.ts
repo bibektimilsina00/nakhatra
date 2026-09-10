@@ -1,7 +1,4 @@
-import { readFileSync } from "node:fs";
-import { join } from "node:path";
-
-import { dirFor, forbidden, isAdmin, todayInNepal } from "@/lib/studio";
+import { forbidden, isAdmin, readStudioFile, todayInNepal } from "@/lib/studio";
 
 /** A rendered file, for the admin page to preview or download.
  *
@@ -20,7 +17,8 @@ export async function GET(req: Request) {
   if (!NAME.test(name)) return new Response("Not found", { status: 404 });
 
   try {
-    const body = readFileSync(join(dirFor(date), name));
+    const body = await readStudioFile(date, name);
+    if (!body) return new Response("Not found", { status: 404 });
     return new Response(new Uint8Array(body), {
       headers: {
         "Content-Type": name.endsWith(".mp4") ? "video/mp4" : "text/plain; charset=utf-8",

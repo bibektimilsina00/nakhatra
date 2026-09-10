@@ -203,6 +203,10 @@ jobs:
             STUDIO_KEY="${{ secrets.STUDIO_KEY }}"
             TIKTOK_CLIENT_KEY="${{ secrets.TIKTOK_CLIENT_KEY }}"
             TIKTOK_CLIENT_SECRET="${{ secrets.TIKTOK_CLIENT_SECRET }}"
+            R2_ACCOUNT_ID="${{ secrets.R2_ACCOUNT_ID }}"
+            R2_BUCKET="${{ secrets.R2_BUCKET }}"
+            R2_ACCESS_KEY_ID="${{ secrets.R2_ACCESS_KEY_ID }}"
+            R2_SECRET_ACCESS_KEY="${{ secrets.R2_SECRET_ACCESS_KEY }}"
             GOOGLE_CLIENT_ID="${{ secrets.NEXT_PUBLIC_GOOGLE_CLIENT_ID }}"
             GOOGLE_CLIENT_SECRET="${{ secrets.GOOGLE_CLIENT_SECRET }}"
             CORS_ORIGINS='["https://nakhatra.com","https://www.nakhatra.com"]'

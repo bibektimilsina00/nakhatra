@@ -47,6 +47,12 @@ services:
       - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
       - TIKTOK_CLIENT_KEY=${TIKTOK_CLIENT_KEY}
       - TIKTOK_CLIENT_SECRET=${TIKTOK_CLIENT_SECRET}
+      # Where finished films are kept. Unset, the volume below is the only
+      # copy and the studio behaves as it always has.
+      - R2_ACCOUNT_ID=${R2_ACCOUNT_ID}
+      - R2_BUCKET=${R2_BUCKET}
+      - R2_ACCESS_KEY_ID=${R2_ACCESS_KEY_ID}
+      - R2_SECRET_ACCESS_KEY=${R2_SECRET_ACCESS_KEY}
       - CORS_ORIGINS=${CORS_ORIGINS:-[]}
       - JWT_SECRET=${JWT_SECRET}
       # Voice: the API synthesises TTS itself; without this the endpoint 503s
@@ -85,6 +91,12 @@ services:
       - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
       - TIKTOK_CLIENT_KEY=${TIKTOK_CLIENT_KEY}
       - TIKTOK_CLIENT_SECRET=${TIKTOK_CLIENT_SECRET}
+      # Where finished films are kept. Unset, the volume below is the only
+      # copy and the studio behaves as it always has.
+      - R2_ACCOUNT_ID=${R2_ACCOUNT_ID}
+      - R2_BUCKET=${R2_BUCKET}
+      - R2_ACCESS_KEY_ID=${R2_ACCESS_KEY_ID}
+      - R2_SECRET_ACCESS_KEY=${R2_SECRET_ACCESS_KEY}
     volumes:
       # Rendered videos. A volume rather than the container filesystem so a
       # deploy in the middle of the morning does not take the day's post with

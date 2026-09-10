@@ -42,8 +42,8 @@ export async function GET(req: Request) {
     error: job?.date === date ? job.error : undefined,
     publishing: isPublishing() === date,
     log,
-    files: filesFor(date),
+    files: await filesFor(date),
     publish: readPublish(date),
-    days: renderedDays(),
+    days: await renderedDays(),
   });
 }
