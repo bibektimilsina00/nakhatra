@@ -805,7 +805,36 @@ export function LiveModeWorkspace() {
   // One list. It drives the empty state in the middle of the chat and the
   // strip above the input; written twice it would drift, and the empty
   // state is where these actually get read.
-  const suggestions = (selectedLanguage === "ne"
+  // A match consultation asks match questions. The single-chart set below
+  // is about one person's career and gemstones, which is not what someone
+  // who just cast a milan came to ask.
+  const partnerName = milanLive?.partner.name ?? "";
+  const milanSuggestions =
+    selectedLanguage === "ne"
+      ? [
+          { icon: "❤️", title: "यो मिलान कस्तो हो?", query: `${partnerName}सँगको मेरो मिलान समग्रमा कस्तो छ? बलियो र कमजोर पक्ष के-के हुन्?` },
+          { icon: "⚠️", title: "कमजोर कूटहरू", query: "कम अंक आएका कूटहरूले व्यावहारिक रूपमा के अर्थ राख्छन्? कति गम्भीर हो?" },
+          { icon: "🔥", title: "मंगल दोष", query: "हाम्रो मंगल दोषको अवस्था कस्तो छ र यसले विवाहमा के असर गर्छ?" },
+          { icon: "🪔", title: "उपाय के छन्?", query: "हाम्रो मिलानका कमजोर पक्षका लागि के-के शान्ति उपाय गर्न सकिन्छ?" },
+          { icon: "🤝", title: "स्वभाव मिल्छ?", query: "दुवैको चन्द्रमा र लग्न हेरेर हाम्रो स्वभाव कति मिल्छ?" },
+        ]
+      : selectedLanguage === "hi"
+        ? [
+            { icon: "❤️", title: "यह मिलान कैसा है?", query: `${partnerName} के साथ मेरा मिलान कुल मिलाकर कैसा है? मजबूत और कमजोर पक्ष क्या हैं?` },
+            { icon: "⚠️", title: "कमजोर कूट", query: "कम अंक वाले कूटों का व्यावहारिक अर्थ क्या है? यह कितना गंभीर है?" },
+            { icon: "🔥", title: "मंगल दोष", query: "हमारे मंगल दोष की स्थिति क्या है और इसका विवाह पर क्या असर होगा?" },
+            { icon: "🪔", title: "उपाय क्या हैं?", query: "हमारे मिलान के कमजोर पक्षों के लिए कौन से उपाय किए जा सकते हैं?" },
+            { icon: "🤝", title: "स्वभाव मिलता है?", query: "दोनों के चंद्रमा और लग्न को देखकर हमारा स्वभाव कितना मिलता है?" },
+          ]
+        : [
+            { icon: "❤️", title: "How good is this match?", query: `Overall, how good is my match with ${partnerName}? What are its real strengths and weaknesses?` },
+            { icon: "⚠️", title: "The weak kootas", query: "What do the kootas that scored low actually mean in practice, and how serious are they?" },
+            { icon: "🔥", title: "Mangal dosha", query: "What is our Mangal dosha situation, and how does it affect the marriage?" },
+            { icon: "🪔", title: "Remedies for us", query: "What remedies are advised for the weak points in our match?" },
+            { icon: "🤝", title: "Do our natures fit?", query: "Looking at both Moons and both ascendants, how well do our temperaments fit?" },
+          ];
+
+  const singleSuggestions = (selectedLanguage === "ne"
                 ? [
                     { icon: "✨", title: "करियर र धन योग?", query: "मेरो करियर र नोकरीमा कहिले राम्रो समय आउँछ?" },
                     { icon: "❤️", title: "विवाह र ७औं भाव?", query: "मेरो विवाह र दाम्पत्य जीवनको विश्लेषण गर्नुहोस्।" },
@@ -828,6 +857,8 @@ export function LiveModeWorkspace() {
                     { icon: "💎", title: `Gemstone for ${getSignName(activeChart.lagna_sign, selectedLanguage)}`, query: `What gemstone is recommended for my ${getSignName(activeChart.lagna_sign, selectedLanguage)} Ascendant?` },
                     { icon: "✈️", title: "Foreign relocation?", query: `Will I travel or relocate abroad during my ${getPlanetName(mahaLord, selectedLanguage)} dasha?` },
                   ]);
+
+  const suggestions = milanLive ? milanSuggestions : singleSuggestions;
 
   return (
     <AppShell
@@ -1436,6 +1467,36 @@ onClick={() => setupMicAnalyzer()}
               </p>
             </div>
 
+            {/* The other chart. A match consultation that shows one kundali is
+                answering about two and displaying one. */}
+            {milanLive && (
+              <div className="space-y-4 rounded-[12px] border border-acc/30 bg-panel p-5">
+                <div className="flex items-center justify-between border-b border-brd pb-3">
+                  <div className="flex items-center gap-2.5">
+                    <div className="grid size-8 place-items-center rounded-full bg-inset text-xs font-bold text-acc">
+                      {milanLive.partner.name.charAt(0)}
+                    </div>
+                    <div className="min-w-0">
+                      <h2 className="truncate text-[14px] font-bold leading-tight text-fg">
+                        {milanLive.partner.name}
+                      </h2>
+                      <span className="block text-[10px] text-mut">
+                        {selectedLanguage === "en" ? "Partner's chart" : "जोडीको कुण्डली"}
+                      </span>
+                    </div>
+                  </div>
+                  <span className="shrink-0 rounded-[8px] border border-acc/30 bg-acc/10 px-2.5 py-0.5 text-[10px] font-bold text-acc2">
+                    {getSignName(milanLive.partner.chart.lagna_sign, selectedLanguage)}{" "}
+                    {t.ascendantLabel}
+                  </span>
+                </div>
+
+                <div className="relative mx-auto w-full max-w-[290px] rounded-[10px] border border-brd bg-app p-2.5">
+                  <NorthIndianChart chart={milanLive.partner.chart} />
+                </div>
+              </div>
+            )}
+
             {/* Quick Dasha & Active Time Lords Widget */}
             <div className="space-y-3 rounded-[12px] border border-brd bg-panel p-4">
               <div className="flex items-center justify-between border-b border-brd pb-2.5">
@@ -1493,7 +1554,15 @@ onClick={() => setupMicAnalyzer()}
               {messages.length <= 1 && !isThinking && (
                 <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col justify-center px-1 py-6">
                   <h2 className="text-[13px] font-semibold text-fg">{t.consultSuggestedTopics}</h2>
-                  <p className="mt-1 text-[12.5px] leading-[1.7] text-dim">{t.askAnythingHint}</p>
+                  <p className="mt-1 text-[12.5px] leading-[1.7] text-dim">
+                    {milanLive
+                      ? selectedLanguage === "ne"
+                        ? `${milanLive.self.name} र ${milanLive.partner.name} — दुवै कुण्डली र मिलानको अंक मसँग छन्। जे पनि सोध्नुहोस्।`
+                        : selectedLanguage === "hi"
+                          ? `${milanLive.self.name} और ${milanLive.partner.name} — दोनों कुंडली और मिलान के अंक मेरे पास हैं। कुछ भी पूछें।`
+                          : `${milanLive.self.name} and ${milanLive.partner.name} — I have both charts and the koota scores. Ask me anything about the two of you.`
+                      : t.askAnythingHint}
+                  </p>
                   <div className="mt-4 grid gap-2.5 sm:grid-cols-2">
                     {suggestions.map((chip) => (
                       <button
