@@ -3,13 +3,14 @@
 import { useState } from "react";
 import { Music2, Video } from "lucide-react";
 
+import { useSnack } from "@/features/studio/components/studio-snacks";
 import type {
   PartPublish,
   PublishState,
   StudioConfig,
   StudioSettings,
 } from "@/features/studio/api/studio-api";
-import { useChannelConnect, useClearErrors, useSaveSettings } from "@/features/studio/hooks/use-studio";
+import { useChannelConnect, useSaveSettings } from "@/features/studio/hooks/use-studio";
 
 /**
  * What the studio does on its own, and where it sends the result.
@@ -41,15 +42,6 @@ const TIKTOK_PRIVACY: Record<string, string> = {
   PUBLIC_TO_EVERYONE: "Public",
 };
 
-/** "3 min ago" — enough for a failure to read as an event, not a state. */
-function when(iso: string): string {
-  const mins = Math.round((Date.now() - new Date(iso).getTime()) / 60000);
-  if (mins < 1) return "just now";
-  if (mins < 60) return `${mins} min ago`;
-  const hours = Math.round(mins / 60);
-  return hours < 24 ? `${hours} h ago` : `${Math.round(hours / 24)} d ago`;
-}
-
 const field = "rounded-[8px] border border-brd bg-inset px-3 py-2 text-[13.5px] text-fg";
 const label = "block text-[12px] font-medium text-mut";
 
@@ -72,6 +64,7 @@ export function StudioSettingsPanel({
   onPublish: (channel: "youtube" | "tiktok", force: boolean) => void;
 }) {
   const [s, setS] = useState<StudioSettings>(config.settings);
+  const snack = useSnack();
   const save = useSaveSettings();
   const dirty = JSON.stringify(s) !== JSON.stringify(config.settings);
   const patch = (p: Partial<StudioSettings>) => setS((cur) => ({ ...cur, ...p }));
@@ -83,7 +76,10 @@ export function StudioSettingsPanel({
     <form
       onSubmit={(e) => {
         e.preventDefault();
-        save.mutate(s);
+        save.mutate(s, {
+          onSuccess: () => snack({ tone: "ok", text: "Settings saved." }),
+          onError: (err) => snack({ tone: "error", text: err.message }),
+        });
       }}
       className="grid gap-4"
     >
@@ -272,8 +268,6 @@ export function StudioSettingsPanel({
         >
           {save.isPending ? "Saving…" : "Save settings"}
         </button>
-        {save.isSuccess && !dirty && <span className="text-[12.5px] text-emerald-300">Saved.</span>}
-        {save.error && <span className="text-[12.5px] text-rose-300">{save.error.message}</span>}
       </div>
     </form>
   );
@@ -318,11 +312,10 @@ function ChannelCard({
   redirectUri: string;
   children: React.ReactNode;
 }) {
+  const snack = useSnack();
   const { connect, disconnect } = useChannelConnect(channel);
-  const clear = useClearErrors(date);
   const posted = (p?: PartPublish) => Boolean(p && "videoId" in p);
   const both = posted(publish?.part1) && posted(publish?.part2);
-  const failed = [publish?.part1, publish?.part2].some((p) => p && !("videoId" in p));
 
   return (
     <div className="rounded-[8px] border border-brd bg-inset p-3.5">
@@ -349,7 +342,11 @@ function ChannelCard({
             <button
               type="button"
               disabled={!conn.configured || connect.isPending}
-              onClick={() => connect.mutate()}
+              onClick={() =>
+                connect.mutate(undefined, {
+                  onError: (err) => snack({ tone: "error", text: err.message }),
+                })
+              }
               className="rounded-[6px] bg-acc px-3 py-1.5 text-[12px] font-semibold text-onacc disabled:opacity-50"
             >
               Connect {name}
@@ -360,7 +357,6 @@ function ChannelCard({
       </div>
 
       {!conn.configured && <p className="mt-2 text-[12px] text-amber-300/90">{unconfigured}</p>}
-      {connect.error && <p className="mt-2 text-[12px] text-rose-300">{connect.error.message}</p>}
 
       <p className="mt-2 text-[12px] leading-[1.7] text-mut">{note}</p>
 
@@ -394,40 +390,20 @@ function ChannelCard({
         </button>
       </div>
 
-      {/* What has already gone up there, for the day on show. A failure is
-          the last attempt rather than a standing state — it is kept so the
-          dawn run's refusal is still there at nine, and dismissable so it
-          does not read as live for the rest of the week. */}
-      {(publish?.part1 || publish?.part2) && (
+      {/* What has gone up there, for the day on show. Only what went up: a
+          refusal is an event, and events are snackbars — printed here it sat
+          on the page for a week reading as live. */}
+      {(posted(publish?.part1) || posted(publish?.part2)) && (
         <div className="mt-2.5 grid gap-1">
           {(["1", "2"] as const).map((n) => {
             const state = publish?.[`part${n}` as "part1" | "part2"];
-            if (!state) return null;
-            const part = `भाग ${n === "1" ? "१" : "२"}`;
-            return "videoId" in state ? (
+            if (!state || !("videoId" in state)) return null;
+            return (
               <span key={n} className="text-[11.5px] text-emerald-300" title={state.url ?? state.note}>
-                {part} · {state.note ?? "posted"}
-              </span>
-            ) : (
-              <span key={n} className="flex items-start gap-1.5 text-[11.5px] text-amber-300/90">
-                <span className="shrink-0">
-                  {part} · last try {when(state.at)} failed:
-                </span>
-                <span className="text-mut">{state.error}</span>
+                भाग {n === "1" ? "१" : "२"} · {state.note ?? "posted"}
               </span>
             );
           })}
-
-          {failed && (
-            <button
-              type="button"
-              onClick={() => clear.mutate(channel)}
-              disabled={clear.isPending}
-              className="mt-0.5 w-fit cursor-pointer text-[11.5px] text-mut underline-offset-2 hover:text-fg hover:underline"
-            >
-              Dismiss
-            </button>
-          )}
         </div>
       )}
     </div>
