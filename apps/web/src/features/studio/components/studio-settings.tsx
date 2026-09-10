@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { Video } from "lucide-react";
+import { Music2, Video } from "lucide-react";
 
 import type { StudioConfig, StudioSettings } from "@/features/studio/api/studio-api";
-import { useSaveSettings, useYoutubeConnect } from "@/features/studio/hooks/use-studio";
+import { useChannelConnect, useSaveSettings } from "@/features/studio/hooks/use-studio";
 
 /**
  * What the studio does on its own, and where it sends the result.
@@ -28,17 +28,25 @@ const VOICES: { id: string; note: string }[] = [
   { id: "Despina", note: "female · smooth" },
 ];
 
+/** What TikTok's privacy levels are called in English. */
+const TIKTOK_PRIVACY: Record<string, string> = {
+  SELF_ONLY: "Private — only you",
+  MUTUAL_FOLLOW_FRIENDS: "Friends (mutual follows)",
+  FOLLOWER_OF_CREATOR: "Followers",
+  PUBLIC_TO_EVERYONE: "Public",
+};
+
 const field = "rounded-[8px] border border-brd bg-inset px-3 py-2 text-[13.5px] text-fg";
 const label = "block text-[12px] font-medium text-mut";
 
 export function StudioSettingsPanel({ config }: { config: StudioConfig }) {
   const [s, setS] = useState<StudioSettings>(config.settings);
   const save = useSaveSettings();
-  const yt = useYoutubeConnect();
   const dirty = JSON.stringify(s) !== JSON.stringify(config.settings);
-  const conn = config.connections.youtube;
-
   const patch = (p: Partial<StudioSettings>) => setS((cur) => ({ ...cur, ...p }));
+
+  const yt = config.connections.youtube;
+  const tt = config.connections.tiktok;
 
   return (
     <form
@@ -109,58 +117,65 @@ export function StudioSettingsPanel({ config }: { config: StudioConfig }) {
         </p>
 
         <div className="mt-3 grid gap-3">
-          {/* YouTube — the one that works with keys already in the box. */}
-          <div className="rounded-[8px] border border-brd bg-inset p-3.5">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <span className="flex items-center gap-2 text-[14px] font-semibold text-fg">
-                <Video className="size-4 text-rose-400" />
-                YouTube
-                {conn.connected && (
-                  <span className="rounded-full border border-emerald-400/40 bg-emerald-500/10 px-2 py-0.5 text-[10.5px] text-emerald-300">
-                    {conn.channel}
+          {/* TikTok */}
+          <ChannelCard
+            channel="tiktok"
+            name="TikTok"
+            icon={<Music2 className="size-4 text-fg" />}
+            conn={tt}
+            enabled={s.tiktok.enabled}
+            onEnabled={(enabled) => patch({ tiktok: { ...s.tiktok, enabled } })}
+            unconfigured="TIKTOK_CLIENT_KEY / TIKTOK_CLIENT_SECRET are not set on the web server."
+            note={
+              <>
+                Posts straight to the profile with Direct Post. While the app is unaudited TikTok allows
+                only <em>private</em> posts, whatever is chosen here — the option list below is the
+                account&apos;s own, read when it was connected.
+                {tt.connected && tt.maxDurationSec > 0 && tt.maxDurationSec < 160 && (
+                  <span className="mt-1 block text-amber-300/90">
+                    This account accepts videos up to {tt.maxDurationSec}s, and a part runs about 150s.
+                    Longer posts will be refused.
                   </span>
                 )}
-              </span>
-              <span className="flex items-center gap-2">
-                {conn.connected ? (
-                  <button
-                    type="button"
-                    onClick={() => yt.disconnect.mutate()}
-                    className="rounded-[6px] border border-brd px-2.5 py-1 text-[12px] text-mut hover:border-brd2 hover:text-fg"
-                  >
-                    Disconnect
-                  </button>
-                ) : (
-                  <button
-                    type="button"
-                    disabled={!conn.configured || yt.connect.isPending}
-                    onClick={() => yt.connect.mutate()}
-                    className="rounded-[6px] bg-acc px-3 py-1.5 text-[12px] font-semibold text-onacc disabled:opacity-50"
-                  >
-                    Connect YouTube
-                  </button>
-                )}
-                <Toggle
-                  checked={s.youtube.enabled}
-                  onChange={(enabled) => patch({ youtube: { ...s.youtube, enabled } })}
-                  label={s.youtube.enabled ? "On" : "Off"}
-                />
-              </span>
-            </div>
+              </>
+            }
+            redirectUri={config.tiktokRedirectUri}
+          >
+            <label className="block max-w-xs">
+              <span className={label}>Visibility</span>
+              <select
+                value={s.tiktok.privacy}
+                onChange={(e) => patch({ tiktok: { ...s.tiktok, privacy: e.target.value } })}
+                className={`mt-1 w-full ${field}`}
+              >
+                {(tt.privacyOptions.length ? tt.privacyOptions : ["SELF_ONLY"]).map((o) => (
+                  <option key={o} value={o}>
+                    {TIKTOK_PRIVACY[o] ?? o}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </ChannelCard>
 
-            {!conn.configured && (
-              <p className="mt-2 text-[12px] text-amber-300/90">
-                GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET are not set on the web server.
-              </p>
-            )}
-            <p className="mt-2 text-[12px] leading-[1.7] text-mut">
-              Uses the Google sign-in client. In Google Cloud: enable <em>YouTube Data API v3</em> and add
-              <code className="mx-1 rounded bg-black/30 px-1 py-0.5 text-[11px]">{config.youtubeRedirectUri}</code>
-              to the client&apos;s authorised redirect URIs. Until Google audits the project, its uploads stay
-              private whatever is chosen below.
-            </p>
-
-            <div className="mt-3 grid gap-3 sm:grid-cols-2">
+          {/* YouTube */}
+          <ChannelCard
+            channel="youtube"
+            name="YouTube"
+            icon={<Video className="size-4 text-rose-400" />}
+            conn={yt}
+            enabled={s.youtube.enabled}
+            onEnabled={(enabled) => patch({ youtube: { ...s.youtube, enabled } })}
+            unconfigured="GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET are not set on the web server."
+            note={
+              <>
+                Uses the Google sign-in client. In Google Cloud: enable <em>YouTube Data API v3</em> and add
+                the URI below to the client&apos;s authorised redirect URIs. Until Google audits the project,
+                its uploads stay private whatever is chosen here.
+              </>
+            }
+            redirectUri={config.youtubeRedirectUri}
+          >
+            <div className="grid gap-3 sm:grid-cols-2">
               <label>
                 <span className={label}>Visibility</span>
                 <select
@@ -184,16 +199,12 @@ export function StudioSettingsPanel({ config }: { config: StudioConfig }) {
                 />
               </label>
             </div>
-          </div>
+          </ChannelCard>
 
-          {/* The three that need an app registered first. Shown, not
+          {/* The two that need an app registered first. Shown, not
               pretended: a Connect button with nothing behind it is worse
               than the honest list of what it would take. */}
           {[
-            {
-              name: "TikTok",
-              needs: "A TikTok for Developers app with the Content Posting API, audited — unaudited apps can only post privately.",
-            },
             {
               name: "Instagram",
               needs: "A Meta app with instagram_content_publish, reviewed, and the account switched to Business or Creator.",
@@ -208,7 +219,9 @@ export function StudioSettingsPanel({ config }: { config: StudioConfig }) {
                 <span className="text-[14px] font-semibold text-fg">{p.name}</span>
                 <span className="rounded-full border border-brd px-2 py-0.5 text-[10.5px] text-mut">needs an app</span>
               </div>
-              <p className="mt-1.5 text-[12px] leading-[1.7] text-mut">{p.needs} Once you have its id and secret, the connection is the same shape as YouTube&apos;s.</p>
+              <p className="mt-1.5 text-[12px] leading-[1.7] text-mut">
+                {p.needs} Once you have its id and secret, the connection is the same shape as TikTok&apos;s.
+              </p>
             </div>
           ))}
         </div>
@@ -224,9 +237,83 @@ export function StudioSettingsPanel({ config }: { config: StudioConfig }) {
         </button>
         {save.isSuccess && !dirty && <span className="text-[12.5px] text-emerald-300">Saved.</span>}
         {save.error && <span className="text-[12.5px] text-rose-300">{save.error.message}</span>}
-        {yt.connect.error && <span className="text-[12.5px] text-rose-300">{yt.connect.error.message}</span>}
       </div>
     </form>
+  );
+}
+
+/** One connectable channel: the same head, switch and consent dance for each. */
+function ChannelCard({
+  channel,
+  name,
+  icon,
+  conn,
+  enabled,
+  onEnabled,
+  unconfigured,
+  note,
+  redirectUri,
+  children,
+}: {
+  channel: string;
+  name: string;
+  icon: React.ReactNode;
+  conn: { configured: boolean; connected: boolean; channel: string | null };
+  enabled: boolean;
+  onEnabled: (v: boolean) => void;
+  unconfigured: string;
+  note: React.ReactNode;
+  redirectUri: string;
+  children: React.ReactNode;
+}) {
+  const { connect, disconnect } = useChannelConnect(channel);
+
+  return (
+    <div className="rounded-[8px] border border-brd bg-inset p-3.5">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <span className="flex items-center gap-2 text-[14px] font-semibold text-fg">
+          {icon}
+          {name}
+          {conn.connected && (
+            <span className="rounded-full border border-emerald-400/40 bg-emerald-500/10 px-2 py-0.5 text-[10.5px] text-emerald-300">
+              {conn.channel}
+            </span>
+          )}
+        </span>
+        <span className="flex items-center gap-2">
+          {conn.connected ? (
+            <button
+              type="button"
+              onClick={() => disconnect.mutate()}
+              className="rounded-[6px] border border-brd px-2.5 py-1 text-[12px] text-mut hover:border-brd2 hover:text-fg"
+            >
+              Disconnect
+            </button>
+          ) : (
+            <button
+              type="button"
+              disabled={!conn.configured || connect.isPending}
+              onClick={() => connect.mutate()}
+              className="rounded-[6px] bg-acc px-3 py-1.5 text-[12px] font-semibold text-onacc disabled:opacity-50"
+            >
+              Connect {name}
+            </button>
+          )}
+          <Toggle checked={enabled} onChange={onEnabled} label={enabled ? "On" : "Off"} />
+        </span>
+      </div>
+
+      {!conn.configured && <p className="mt-2 text-[12px] text-amber-300/90">{unconfigured}</p>}
+      {connect.error && <p className="mt-2 text-[12px] text-rose-300">{connect.error.message}</p>}
+
+      <p className="mt-2 text-[12px] leading-[1.7] text-mut">{note}</p>
+      <p className="mt-1.5 text-[11.5px] text-mut">
+        Redirect URI:{" "}
+        <code className="rounded bg-black/30 px-1 py-0.5 text-[11px] break-all">{redirectUri}</code>
+      </p>
+
+      <div className="mt-3">{children}</div>
+    </div>
   );
 }
 

@@ -5,10 +5,15 @@ export interface StudioFile {
   size: number;
 }
 
-export type PartPublish = { videoId: string; url: string; at: string } | { error: string; at: string };
+export type PartPublish =
+  | { videoId: string; url?: string; note?: string; at: string }
+  | { error: string; at: string };
+
+type ChannelPublish = { part1?: PartPublish; part2?: PartPublish };
 
 export interface PublishState {
-  youtube?: { part1?: PartPublish; part2?: PartPublish };
+  youtube?: ChannelPublish;
+  tiktok?: ChannelPublish;
 }
 
 export interface StudioStatus {
@@ -29,14 +34,24 @@ export interface StudioSettings {
   hashtags: string;
   daily: { enabled: boolean; time: string };
   youtube: { enabled: boolean; privacy: "private" | "unlisted" | "public"; publishTime: string };
+  tiktok: { enabled: boolean; privacy: string };
 }
 
 export interface StudioConfig {
   settings: StudioSettings;
   connections: {
-    youtube: { configured: boolean; connected: boolean; channel: string | null; connectedAt: string | null };
+    youtube: Connection;
+    tiktok: Connection & { privacyOptions: string[]; maxDurationSec: number };
   };
   youtubeRedirectUri: string;
+  tiktokRedirectUri: string;
+}
+
+interface Connection {
+  configured: boolean;
+  connected: boolean;
+  channel: string | null;
+  connectedAt: string | null;
 }
 
 async function call<T>(path: string, init: RequestInit = {}): Promise<T> {
@@ -65,9 +80,12 @@ export const fetchStudioConfig = () => call<StudioConfig>("/api/studio/settings"
 export const saveStudioSettings = (patch: Partial<StudioSettings>) =>
   call<{ settings: StudioSettings }>("/api/studio/settings", { method: "PUT", body: JSON.stringify(patch) });
 
-export const beginYoutubeConnect = () => call<{ url: string }>("/api/studio/connect/youtube", { method: "POST" });
+/** `channel` is "youtube" or "tiktok" — the routes are the same shape. */
+export const beginConnect = (channel: string) =>
+  call<{ url: string }>(`/api/studio/connect/${channel}`, { method: "POST" });
 
-export const disconnectYoutube = () => call<{ ok: true }>("/api/studio/connect/youtube", { method: "DELETE" });
+export const disconnectChannel = (channel: string) =>
+  call<{ ok: true }>(`/api/studio/connect/${channel}`, { method: "DELETE" });
 
 /** One slide's HTML, for a `srcdoc` iframe. */
 export async function fetchStudioSlide(date: string, part: "1" | "2", i: number): Promise<string> {

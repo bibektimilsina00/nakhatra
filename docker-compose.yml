@@ -45,6 +45,8 @@ services:
       - LLM_MODEL=${LLM_MODEL:-google/gemini-3.6-flash}
       - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
       - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+      - TIKTOK_CLIENT_KEY=${TIKTOK_CLIENT_KEY}
+      - TIKTOK_CLIENT_SECRET=${TIKTOK_CLIENT_SECRET}
       - CORS_ORIGINS=${CORS_ORIGINS:-[]}
       - JWT_SECRET=${JWT_SECRET}
       # Voice: the API synthesises TTS itself; without this the endpoint 503s
@@ -81,6 +83,8 @@ services:
       # its own tokens.
       - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
       - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+      - TIKTOK_CLIENT_KEY=${TIKTOK_CLIENT_KEY}
+      - TIKTOK_CLIENT_SECRET=${TIKTOK_CLIENT_SECRET}
     volumes:
       # Rendered videos. A volume rather than the container filesystem so a
       # deploy in the middle of the morning does not take the day's post with

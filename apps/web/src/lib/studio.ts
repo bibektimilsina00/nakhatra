@@ -12,6 +12,7 @@ import { homedir } from "node:os";
 import { join } from "node:path";
 
 import { API_URL } from "@/lib/api/proxy";
+import { tiktokConfigured, tiktokPost, tiktokRefresh } from "@/lib/studio-tiktok";
 import { youtubeUpload } from "@/lib/studio-youtube";
 
 /**
@@ -94,6 +95,9 @@ export interface StudioSettings {
     privacy: "private" | "unlisted" | "public";
     publishTime: string;
   };
+  /** `privacy` is one of the levels the account itself offers; an unaudited
+   *  client is offered SELF_ONLY and nothing else. */
+  tiktok: { enabled: boolean; privacy: string };
 }
 
 export const DEFAULT_SETTINGS: StudioSettings = {
@@ -105,6 +109,7 @@ export const DEFAULT_SETTINGS: StudioSettings = {
   // anything after that finds the prose rather than the fallback sentence.
   daily: { enabled: false, time: "05:30" },
   youtube: { enabled: false, privacy: "private", publishTime: "07:00" },
+  tiktok: { enabled: false, privacy: "SELF_ONLY" },
 };
 
 const settingsPath = () => join(STUDIO_OUT, "settings.json");
@@ -123,6 +128,7 @@ export function readSettings(): StudioSettings {
     ...s,
     daily: { ...DEFAULT_SETTINGS.daily, ...s.daily },
     youtube: { ...DEFAULT_SETTINGS.youtube, ...s.youtube },
+    tiktok: { ...DEFAULT_SETTINGS.tiktok, ...s.tiktok },
   };
 }
 
@@ -148,6 +154,12 @@ export function writeSettings(patch: Partial<StudioSettings>): StudioSettings {
         ? patch.youtube!.publishTime
         : cur.youtube.publishTime,
     },
+    tiktok: {
+      enabled: patch.tiktok?.enabled ?? cur.tiktok.enabled,
+      privacy: /^[A-Z_]{4,32}$/.test(patch.tiktok?.privacy ?? "")
+        ? patch.tiktok!.privacy
+        : cur.tiktok.privacy,
+    },
   };
   mkdirSync(STUDIO_OUT, { recursive: true });
   writeFileSync(settingsPath(), JSON.stringify(next, null, 2));
@@ -161,6 +173,15 @@ export function writeSettings(patch: Partial<StudioSettings>): StudioSettings {
  *  browser — the page is told `connected: true` and the channel's name. */
 export interface Connections {
   youtube?: { refreshToken: string; channel: string; connectedAt: string };
+  tiktok?: {
+    refreshToken: string;
+    channel: string;
+    connectedAt: string;
+    /** What the account offered when it was connected: which privacy levels
+     *  exist for it, and how long a video it will take. */
+    privacyOptions: string[];
+    maxDurationSec: number;
+  };
 }
 
 const connectionsPath = () => join(STUDIO_OUT, "connections.json");
@@ -181,6 +202,14 @@ export function publicConnections() {
       connected: Boolean(c.youtube),
       channel: c.youtube?.channel ?? null,
       connectedAt: c.youtube?.connectedAt ?? null,
+    },
+    tiktok: {
+      configured: tiktokConfigured(),
+      connected: Boolean(c.tiktok),
+      channel: c.tiktok?.channel ?? null,
+      connectedAt: c.tiktok?.connectedAt ?? null,
+      privacyOptions: c.tiktok?.privacyOptions ?? ["SELF_ONLY"],
+      maxDurationSec: c.tiktok?.maxDurationSec ?? 0,
     },
   };
 }
@@ -285,11 +314,14 @@ export function renderedDays(limit = 30): string[] {
 // ─── Publishing ──────────────────────────────────────────────────────────────
 
 export type PartPublish =
-  | { videoId: string; url: string; at: string }
+  | { videoId: string; url?: string; note?: string; at: string }
   | { error: string; at: string };
 
+type ChannelPublish = { part1?: PartPublish; part2?: PartPublish };
+
 export interface PublishState {
-  youtube?: { part1?: PartPublish; part2?: PartPublish };
+  youtube?: ChannelPublish;
+  tiktok?: ChannelPublish;
 }
 
 const publishPath = (date: string) => join(dirFor(date), "publish.json");
@@ -297,12 +329,19 @@ export const readPublish = (date: string): PublishState => readJson(publishPath(
 
 export const isPublishing = () => state.publishing;
 
+const isDone = (p?: PartPublish) => Boolean(p && "videoId" in p);
+const failure = (err: unknown): PartPublish => ({
+  error: err instanceof Error ? err.message : String(err),
+  at: new Date().toISOString(),
+});
+
 /**
  * Hand a rendered day to every channel that is connected and switched on.
  *
- * Idempotent per part: a part that already has a videoId is not uploaded
- * twice, so pressing Publish after a half-failed run only retries the half
- * that failed.
+ * Idempotent per part per channel: anything that already has an id is left
+ * alone, so pressing Publish after a half-failed run retries only the half
+ * that failed. A channel that throws is recorded and the next one still
+ * runs — one platform being down is not a reason to skip the other.
  */
 export async function publishDay(date: string): Promise<PublishState> {
   if (state.publishing) throw new Error(`already publishing ${state.publishing}`);
@@ -311,20 +350,18 @@ export async function publishDay(date: string): Promise<PublishState> {
     const settings = readSettings();
     const conns = readConnections();
     const pub = readPublish(date);
+    const save = () => writeFileSync(publishPath(date), JSON.stringify(pub, null, 2));
 
-    if (settings.youtube.enabled && conns.youtube) {
-      pub.youtube ??= {};
-      for (const part of ["1", "2"] as const) {
-        const key = `part${part}` as const;
-        const done = pub.youtube[key];
-        if (done && "videoId" in done) continue;
+    for (const part of ["1", "2"] as const) {
+      const key = `part${part}` as const;
+      const mp4 = join(dirFor(date), `rasifal-${date}-part${part}.mp4`);
+      const captionFile = join(dirFor(date), `rasifal-${date}-part${part}-caption.txt`);
+      if (!existsSync(mp4)) continue;
+      const caption = existsSync(captionFile) ? readFileSync(captionFile, "utf8") : "";
+      const title = (caption.split("\n")[0] || `Rasifal ${date} · part ${part}`).slice(0, 100);
 
-        const mp4 = join(dirFor(date), `rasifal-${date}-part${part}.mp4`);
-        const captionFile = join(dirFor(date), `rasifal-${date}-part${part}-caption.txt`);
-        if (!existsSync(mp4)) continue;
-        const caption = existsSync(captionFile) ? readFileSync(captionFile, "utf8") : "";
-        const title = (caption.split("\n")[0] || `Rasifal ${date} · part ${part}`).slice(0, 100);
-
+      if (settings.youtube.enabled && conns.youtube && !isDone(pub.youtube?.[key])) {
+        pub.youtube ??= {};
         try {
           const videoId = await youtubeUpload({
             refreshToken: conns.youtube.refreshToken,
@@ -345,12 +382,36 @@ export async function publishDay(date: string): Promise<PublishState> {
             at: new Date().toISOString(),
           };
         } catch (err) {
-          pub.youtube[key] = {
-            error: err instanceof Error ? err.message : String(err),
+          pub.youtube[key] = failure(err);
+        }
+        save();
+      }
+
+      if (settings.tiktok.enabled && conns.tiktok && !isDone(pub.tiktok?.[key])) {
+        pub.tiktok ??= {};
+        try {
+          // Their refresh tokens rotate: the one just used is now dead, and
+          // a studio that kept it would post once and never again.
+          const { accessToken, refreshToken } = await tiktokRefresh(conns.tiktok.refreshToken);
+          if (refreshToken !== conns.tiktok.refreshToken) {
+            conns.tiktok = { ...conns.tiktok, refreshToken };
+            writeConnections(conns);
+          }
+          const posted = await tiktokPost({
+            accessToken,
+            file: mp4,
+            caption,
+            privacyLevel: settings.tiktok.privacy,
+          });
+          pub.tiktok[key] = {
+            videoId: posted.publishId,
+            note: `${posted.status.toLowerCase().replace(/_/g, " ")} · ${posted.privacyLevel}`,
             at: new Date().toISOString(),
           };
+        } catch (err) {
+          pub.tiktok[key] = failure(err);
         }
-        writeFileSync(publishPath(date), JSON.stringify(state, null, 2));
+        save();
       }
     }
     return pub;
