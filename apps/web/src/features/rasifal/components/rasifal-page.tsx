@@ -12,11 +12,13 @@ import { SiteHeader } from "@/features/marketing/components/site-header";
 import { RashiCard } from "@/features/rasifal/components/rashi-card";
 import { RashiPeriodCard } from "@/features/rasifal/components/rashi-period-card";
 import { spanLabel } from "@/features/rasifal/rasifal-i18n";
+import { SIGN_ROUTES } from "@/features/rasifal/signs";
 import type { Span } from "@/features/rasifal/types";
 import { usePatro } from "@/features/patro/hooks/use-patro";
 import { PAKSHA, tithiName } from "@/features/patro/patro-i18n";
 import { useRasifal, useRasifalPeriod } from "@/features/rasifal/hooks/use-rasifal";
 import { useTranslation } from "@/lib/i18n/language-context";
+import { getSignName } from "@/lib/i18n/vedic-translations";
 import { formatDateFor } from "@/lib/utils/date-converter";
 
 /**
@@ -125,6 +127,21 @@ export function RasifalPage() {
               {title}
             </h1>
             <p className="mt-3 text-[15px] leading-[1.75] text-muted">{sub}</p>
+
+            {/* Twelve links that need no data, so they are in the HTML a
+                crawler receives rather than in the cards a hook fills in
+                afterwards — each sign's own page, one hop from here. */}
+            <nav aria-label="Rashi" className="mt-4 flex flex-wrap gap-1.5">
+              {SIGN_ROUTES.map((r) => (
+                <Link
+                  key={r.slug}
+                  href={`/rasifal/${r.slug}`}
+                  className="rounded-full border border-brd px-2.5 py-1 text-[12.5px] text-muted transition hover:border-gold/40 hover:text-gold2"
+                >
+                  {getSignName(r.sign, language)}
+                </Link>
+              ))}
+            </nav>
           </div>
 
         {/* The day the page is speaking about on the left, the span it covers

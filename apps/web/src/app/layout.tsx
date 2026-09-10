@@ -36,7 +36,8 @@ const DESCRIPTION =
   "Cast your Vedic birth chart free, to the arcsecond, with Swiss Ephemeris — " +
   "Lahiri ayanamsa, whole-sign houses, all sixteen vargas and your Vimshottari " +
   "dasha. Read it in English, Nepali or Hindi, ask an AI astrologer about it, " +
-  "and match two charts with full Ashtakoota Kundali Milan.";
+  "and match two charts with full Ashtakoota Kundali Milan. Nakhatra is named " +
+  "for the nakshatra, the lunar mansions Vedic astrology is read by.";
 
 export const metadata: Metadata = {
   // Absolute URLs are required for social cards — a relative og:image is

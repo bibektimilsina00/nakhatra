@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 
 import { CONTACT_EMAIL, LegalPage } from "@/features/marketing/components/legal-page";
 
@@ -119,7 +120,7 @@ export default function TermsPage() {
         apply to them as to anything else here: the rasifal in them is general and
         computed for a sign rather than for a person, and it is not advice on your health,
         money, marriage or legal position. Read them the way you would read the{" "}
-        <a href="/rasifal">rasifal page</a> — see <em>What a reading is for</em> above.
+        <Link href="/rasifal">rasifal page</Link> — see <em>What a reading is for</em> above.
       </p>
       <p>
         Watching, following or commenting on those channels is a matter between you and
