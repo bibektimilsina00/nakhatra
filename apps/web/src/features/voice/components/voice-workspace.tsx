@@ -1214,31 +1214,16 @@ onClick={() => setupMicAnalyzer()}
 
               {/* ── One console: suggestions, input, controls ─────────────── */}
               <div className="z-20 w-full max-w-2xl shrink-0 space-y-2.5">
+                {/* The same topics the desk offers, so a match consultation
+                    asks match questions here too. */}
                 <div className="flex justify-center gap-2 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-                  {(selectedLanguage === "ne"
-                    ? [
-                        { label: "करियरको योग?", query: "मेरो करियर र नोकरीमा कहिले राम्रो समय आउँछ?" },
-                        { label: "विवाह र ७औं भाव?", query: "मेरो विवाह र दाम्पत्य जीवनको विश्लेषण गर्नुहोस्।" },
-                        { label: `${getPlanetName(mahaLord, selectedLanguage)} दशा उपाय?`, query: `मेरो ${getPlanetName(mahaLord, selectedLanguage)} महादशाको लागि के शान्ति उपायहरू छन्?` },
-                      ]
-                    : selectedLanguage === "hi"
-                      ? [
-                          { label: "करियर का समय?", query: "मेरे करियर और पदोन्नति का सबसे अच्छा समय कब है?" },
-                          { label: "विवाह और 7वां भाव?", query: "मेरे विवाह और 7वें भाव का विस्तृत विश्लेषण करें।" },
-                          { label: `${getPlanetName(mahaLord, selectedLanguage)} दशा उपाय?`, query: `मेरी ${getPlanetName(mahaLord, selectedLanguage)} महादशा के लिए कौन से उपाय करने चाहिए?` },
-                        ]
-                      : [
-                          { label: "Career timing?", query: "When is the strongest period for my career growth?" },
-                          { label: "Marriage & 7th house?", query: "Analyze my 7th house for marriage & relationship." },
-                          { label: `${getPlanetName(mahaLord, selectedLanguage)} remedies?`, query: `What remedies help my ${getPlanetName(mahaLord, selectedLanguage)} Dasha period?` },
-                        ]
-                  ).map((chip) => (
+                  {suggestions.slice(0, 3).map((chip) => (
                     <button
-                      key={chip.label}
+                      key={chip.title}
                       onClick={() => handleSend(chip.query)}
                       className="shrink-0 rounded-full border border-brd bg-panel px-3.5 py-1.5 text-[11px] font-medium text-mid transition hover:border-acc/50 hover:text-acc2"
                     >
-                      {chip.label}
+                      {chip.title}
                     </button>
                   ))}
                 </div>
@@ -1342,29 +1327,70 @@ onClick={() => setupMicAnalyzer()}
           </div>
 
           {/* The chart, close at hand */}
+          {/* The chart, close at hand — both of them during a match, since
+              that consultation is about the pair. */}
           {showChartDrawer && (
-            <div className="absolute right-5 top-5 z-30 w-80 animate-fade-in space-y-3 rounded-[8px] border border-brd bg-panel p-4 shadow-2xl">
-              <div className="flex items-center justify-between border-b border-brd pb-2">
-                <h4 className="font-serif text-xs font-bold text-fg">
-                  {activeBirth.name}&apos;s D1 Kundali
+            <div
+              className={`absolute right-5 top-5 z-30 max-h-[calc(100%-2.5rem)] animate-fade-in space-y-3 overflow-y-auto rounded-[8px] border border-brd bg-panel p-4 shadow-2xl ${
+                milanLive ? "w-[22rem] sm:w-[34rem]" : "w-80"
+              }`}
+            >
+              <div className="flex items-center justify-between gap-3 border-b border-brd pb-2">
+                <h4 className="min-w-0 truncate font-serif text-xs font-bold text-fg">
+                  {milanLive
+                    ? `${milanLive.self.name} & ${milanLive.partner.name}`
+                    : `${activeBirth.name}'s D1 Kundali`}
                 </h4>
                 <button
                   onClick={() => setShowChartDrawer(false)}
-                  className="text-xs text-mut hover:text-fg"
+                  className="shrink-0 text-xs text-mut hover:text-fg"
                 >
                   {t.closeChartDrawer}
                 </button>
               </div>
-              <div className="rounded-[8px] border border-brd bg-inset p-2">
-                <NorthIndianChart
-                  chart={activeChart}
-                  selectedHouse={highlightedHouse}
-                  onSelectHouse={(h) => setHighlightedHouse((prev) => (prev === h ? null : h))}
-                />
+
+              <div className={milanLive ? "grid gap-3 sm:grid-cols-2" : ""}>
+                <div className="space-y-2">
+                  {milanLive && (
+                    <p className="truncate text-[11px] font-semibold text-fg">
+                      {milanLive.self.name}
+                    </p>
+                  )}
+                  <div className="rounded-[8px] border border-brd bg-inset p-2">
+                    <NorthIndianChart
+                      chart={activeChart}
+                      selectedHouse={highlightedHouse}
+                      onSelectHouse={(h) => setHighlightedHouse((prev) => (prev === h ? null : h))}
+                    />
+                  </div>
+                  <p className="text-center text-[10px] text-mut">
+                    {getSignName(activeChart.lagna_sign, selectedLanguage)} {t.ascendantLabel} (
+                    {activeChart.lagna_degree.toFixed(2)}°)
+                  </p>
+                </div>
+
+                {milanLive && (
+                  <div className="space-y-2">
+                    <p className="truncate text-[11px] font-semibold text-fg">
+                      {milanLive.partner.name}
+                    </p>
+                    <div className="rounded-[8px] border border-brd bg-inset p-2">
+                      <NorthIndianChart chart={milanLive.partner.chart} />
+                    </div>
+                    <p className="text-center text-[10px] text-mut">
+                      {getSignName(milanLive.partner.chart.lagna_sign, selectedLanguage)}{" "}
+                      {t.ascendantLabel} ({milanLive.partner.chart.lagna_degree.toFixed(2)}°)
+                    </p>
+                  </div>
+                )}
               </div>
-              <p className="text-center text-[10px] text-mut">
-                {getSignName(activeChart.lagna_sign, selectedLanguage)} {t.ascendantLabel} ({activeChart.lagna_degree.toFixed(2)}°)
-              </p>
+
+              {milanLive && (
+                <p className="border-t border-brd pt-2.5 text-center text-[10.5px] text-mut">
+                  {milanLive.match.total_guna}/{milanLive.match.max_guna}{" "}
+                  {selectedLanguage === "en" ? "gunas" : "गुण"}
+                </p>
+              )}
             </div>
           )}
         </div>

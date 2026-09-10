@@ -84,6 +84,16 @@ def build_realtime_prompt(chart: ChartOut, birth: BirthDetailsIn, language: str 
     vargas = "\n".join(f"- {v.code} ({v.name}): Lagna in {v.lagna_sign}" for v in chart.vargas[:5])
 
     milan_block = build_milan_block(milan)
+    opening_note = (
+        (
+            f"Because this is a match consultation, open on the match itself: "
+            f"name {milan.partner_name or 'the partner'}, say the score "
+            f"({milan.total_guna:g} of {milan.max_guna:g} gunas) in plain words, "
+            f"and invite questions about the two charts.\n"
+        )
+        if milan is not None and milan.total_guna is not None and milan.max_guna
+        else ""
+    )
 
     return f"""You are an authentic, wise, and grounded Vedic Astrologer (Jyotishi) conducting a live 1-on-1 audio consultation.
 
@@ -103,6 +113,14 @@ Key Varga Charts:
 {vargas}
 {milan_block}=========================================================
 
+HOW TO OPEN (FIRST TURN — THIS MATTERS):
+Greet {birth.name} by name and immediately name something concrete from the
+chart above — the ascendant, the Moon's sign, or the running mahadasha — then
+invite their question. A generic opening like "I am an astrologer, what shall
+we discuss?" is a failure: the seeker gave you their birth details before this
+call began, and an opening that could have been said to anyone tells them you
+have not read them. Keep it to two or three sentences.
+{opening_note}
 CORE OPERATIONAL BEHAVIORS:
 1. ADAPTIVE RESPONSE LENGTH BASED ON SEEKER INTENT:
    - If the seeker asks for "detail", "thorough analysis", "explain in detail", "deep dive", or a comprehensive breakdown, provide a rich, multi-paragraph astrological analysis covering house lords, dasha timelines, planetary aspects, and specific remedies.
