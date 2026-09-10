@@ -112,6 +112,21 @@ export default function TermsPage() {
         <a href="/privacy">Privacy Policy</a> in order to produce a reading.
       </p>
 
+      <h2>Our social media channels</h2>
+      <p>
+        We publish the day&apos;s rasifal as short videos on channels we own — TikTok and
+        YouTube today, others perhaps later. Those videos are ours, and the same rules
+        apply to them as to anything else here: the rasifal in them is general and
+        computed for a sign rather than for a person, and it is not advice on your health,
+        money, marriage or legal position. Read them the way you would read the{" "}
+        <a href="/rasifal">rasifal page</a> — see <em>What a reading is for</em> above.
+      </p>
+      <p>
+        Watching, following or commenting on those channels is a matter between you and
+        the platform, under its terms, not ours. Nothing you do there gives you an account
+        with us, and nothing you do here is posted there.
+      </p>
+
       <h2>Payment</h2>
       <p>
         Nakhatra is currently free to use. If we introduce paid features we will set out
