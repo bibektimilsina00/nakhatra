@@ -5,7 +5,7 @@ import { MainNavbar } from "@/components/layout/main-navbar";
 
 /** Where legal notices reach a human. Change here, not in each document. */
 export const CONTACT_EMAIL = "support@nakhatra.com";
-export const LAST_UPDATED = "6 September 2026";
+export const LAST_UPDATED = "10 September 2026";
 
 /**
  * Shell for the privacy policy and terms.

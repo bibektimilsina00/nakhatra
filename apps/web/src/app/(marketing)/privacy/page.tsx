@@ -97,8 +97,15 @@ export default function PrivacyPage() {
         </li>
         <li>
           <strong>Google</strong> — runs the model that writes your reading, so it
-          receives the same chart, birth details and question through OpenRouter. Also
-          receives the text of a reading when our fallback speech synthesis is used.
+          receives the same chart, birth details and question through OpenRouter. Its
+          Gemini speech service also receives the text of the daily rasifal, which is the
+          same public text everyone sees, to read it aloud in our videos.
+        </li>
+        <li>
+          <strong>TikTok and YouTube</strong> — receive the daily rasifal videos we
+          publish on our own channels, and the caption that goes with them. They contain
+          the public rasifal only: no account of yours, no birth details, nothing about
+          any visitor to this site.
         </li>
         <li>
           <strong>PostHog and Umami</strong> — usage analytics, as described above.
@@ -114,12 +121,45 @@ export default function PrivacyPage() {
         we are legally required to.
       </p>
 
+      <h2>Our social media channels</h2>
+      <p>
+        We publish the day&apos;s rasifal as short videos on our own channels — TikTok and
+        YouTube today, and possibly Instagram or Facebook later. Those videos are made
+        from the public daily rasifal for the twelve signs. Nobody&apos;s chart, birth
+        details or questions go into them, and they are produced whether or not anyone is
+        signed in.
+      </p>
+      <p>
+        Connecting a channel is something only an administrator of Nakhatra can do, for an
+        account we own. When it happens the platform gives us a token that lets us post as
+        that channel; we keep it on our own server, alongside the channel&apos;s display
+        name, and we can disconnect at any time. Visitors cannot connect their own
+        accounts, and we never post on anyone else&apos;s behalf.
+      </p>
+      <p>
+        We receive nothing about the people who watch or comment on those platforms beyond
+        what the platform shows publicly, and this website carries no TikTok or YouTube
+        pixel, button or embed — so reading Nakhatra does not tell them you were here.
+        What happens on their platforms is governed by their own policies:{" "}
+        <a href="https://www.tiktok.com/legal/privacy-policy" rel="noreferrer">
+          TikTok
+        </a>{" "}
+        and{" "}
+        <a href="https://policies.google.com/privacy" rel="noreferrer">
+          Google
+        </a>
+        .
+      </p>
+
       <h2>What we deliberately do not do</h2>
       <ul>
         <li>Birth details never appear in our server logs.</li>
         <li>Birth details never appear in error messages returned to your browser.</li>
         <li>Birth details never appear in analytics events.</li>
         <li>We do not use your conversations to train our own models.</li>
+        <li>
+          Nothing personal to you is ever published on our social media channels.
+        </li>
       </ul>
 
       <h2>How it is stored</h2>
