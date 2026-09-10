@@ -229,7 +229,7 @@ jobs:
 
             # 4. Pull microservice container images
             echo "Pulling latest microservice images..."
-            docker compose pull || docker-compose pull
+            docker compose pull
 
             # 5. Stop anything left from before the rename.
             #    These names are deliberately still `kundali*` — that is what
@@ -266,7 +266,7 @@ jobs:
                 echo "Dumped $(wc -c < "$PENDING") bytes to $PENDING"
                 # Release the ports. The old volume is deliberately left in
                 # place, so this is reversible until someone prunes it.
-                (cd ~/kundali 2>/dev/null && (docker compose down || docker-compose down)) || true
+                (cd ~/kundali 2>/dev/null && docker compose down) || true
                 docker rm -f kundali_postgres kundali_api kundali_web 2>/dev/null || true
               else
                 echo "::error::pg_dump produced nothing — refusing to tear down the old stack."
@@ -276,7 +276,7 @@ jobs:
 
             # 6. Launch 3 microservices (nakhatra_postgres, nakhatra_api, nakhatra_web)
             echo "Starting docker compose stack..."
-            docker compose up -d || docker-compose up -d
+            docker compose up -d
 
             # 8. Bring the schema up to date.
             #
@@ -286,8 +286,7 @@ jobs:
             # Runs after `up -d` so the database is accepting connections, and
             # is idempotent — an already-current schema is a no-op.
             echo "Applying database migrations..."
-            docker compose exec -T nakhatra_api alembic upgrade head \
-              || docker-compose exec -T nakhatra_api alembic upgrade head
+            docker compose exec -T nakhatra_api alembic upgrade head
 
             # 6a. Restore the pre-rename database into the renamed one, once.
             if [ -n "$PENDING" ] && [ -s "$PENDING" ]; then
