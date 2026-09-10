@@ -1,0 +1,179 @@
+"use client";
+
+import {
+  AYANA,
+  bsMonthName,
+  clock,
+  dms,
+  grahaName,
+  karanaName,
+  nakName,
+  num,
+  PAKSHA,
+  rituForBsMonth,
+  signName,
+  tithiName,
+  WEEKDAY_FULL,
+  yogaName,
+} from "@/features/patro/patro-i18n";
+import type { PatroDay, PatroElement } from "@/features/patro/types";
+import { useTranslation } from "@/lib/i18n/language-context";
+import { convertAdToBs } from "@/lib/utils/date-converter";
+
+/** The selected day, read in full — the column a patro prints beside its grid. */
+export function PanchangPanel({
+  day,
+  bsMonth,
+  bsYear,
+}: {
+  day: PatroDay;
+  bsMonth: number;
+  bsYear: number;
+}) {
+  const { language } = useTranslation();
+  const bs = convertAdToBs(
+    Number(day.on.slice(0, 4)),
+    Number(day.on.slice(5, 7)),
+    Number(day.on.slice(8, 10)),
+  );
+  void bsMonth;
+  void bsYear;
+
+  const en = language === "en";
+
+  return (
+    <aside className="space-y-4">
+      <section className="rounded-[12px] border border-brd bg-card p-5">
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <h2 className="font-serif text-[22px] font-bold leading-tight text-paper">
+              {num(bs.year, language)} {bsMonthName(bs.month, language)} {num(bs.day, language)}
+            </h2>
+            <p className="mt-1 text-[13px] font-semibold text-rose-400">
+              {WEEKDAY_FULL[day.weekday]?.[language] ?? day.weekday}
+            </p>
+            <p className="mt-1 text-[12px] text-muted">{day.on}</p>
+          </div>
+
+          <dl className="grid grid-cols-2 gap-x-5 gap-y-1.5 text-[11.5px]">
+            <Rise label={en ? "Sunrise" : "सूर्योदय"} value={clock(day.sunrise, language)} />
+            <Rise label={en ? "Sunset" : "सूर्यास्त"} value={clock(day.sunset, language)} />
+            <Rise label={en ? "Moonrise" : "चन्द्रोदय"} value={clock(day.moonrise, language)} />
+            <Rise label={en ? "Moonset" : "चन्द्रास्त"} value={clock(day.moonset, language)} />
+          </dl>
+        </div>
+
+        <div className="mt-4 flex flex-wrap gap-x-6 gap-y-1.5 border-t border-brd pt-3 text-[12px]">
+          <Pair k={en ? "Ritu" : "ऋतु"} v={rituForBsMonth(bs.month, language)} />
+          <Pair k={en ? "Ayana" : "अयन"} v={AYANA[day.ayana]?.[language] ?? day.ayana} />
+          <Pair k={en ? "Moon" : "चन्द्र"} v={signName(day.moon_sign, language)} />
+        </div>
+
+        {day.festivals.length > 0 && (
+          <p className="mt-3 rounded-[8px] border border-gold/30 bg-gold/10 px-3 py-2 text-[12.5px] font-semibold text-gold2">
+            {day.festivals.join(" · ")}
+          </p>
+        )}
+      </section>
+
+      <section className="rounded-[12px] border border-brd bg-card p-5">
+        <h3 className="text-[13px] font-semibold text-paper">
+          {en ? "Panchang" : "पञ्चाङ्ग विवरण"}
+        </h3>
+        <dl className="mt-3 space-y-2.5 text-[12.5px]">
+          <Row k={en ? "Paksha" : "पक्ष"}>
+            <span className="text-gold2">{PAKSHA[day.paksha]?.[language] ?? day.paksha}</span>
+          </Row>
+          <Row k={en ? "Tithi" : "तिथि"}>
+            <Element el={day.tithi} render={tithiName} />
+          </Row>
+          <Row k={en ? "Nakshatra" : "नक्षत्र"}>
+            <Element el={day.nakshatra} render={nakName} />
+          </Row>
+          <Row k={en ? "Yoga" : "योग"}>
+            <Element el={day.yoga} render={yogaName} />
+          </Row>
+          <Row k={en ? "Karana" : "करण"}>
+            <Element el={day.karana} render={karanaName} />
+          </Row>
+        </dl>
+      </section>
+
+      <section className="rounded-[12px] border border-brd bg-card p-5">
+        <h3 className="text-[13px] font-semibold text-paper">
+          {en ? "Graha positions" : "ग्रह गोचर"}
+        </h3>
+        <div className="mt-3 grid grid-cols-1 gap-1.5 sm:grid-cols-2">
+          {day.grahas.map((g) => (
+            <div
+              key={g.name}
+              className="flex items-baseline justify-between gap-2 rounded-[6px] border border-brd bg-ink2 px-2.5 py-1.5 text-[11px]"
+            >
+              <span className="text-muted">
+                {grahaName(g.name, language)}
+                {g.retrograde && <span className="ml-1 text-rose-400">℞</span>}
+              </span>
+              <span className="text-right">
+                <span className="block font-mono tabular-nums text-paper">
+                  {dms(g.degree_in_sign, language)}
+                </span>
+                <span className="block text-[9.5px] text-faint">{signName(g.sign, language)}</span>
+              </span>
+            </div>
+          ))}
+        </div>
+      </section>
+    </aside>
+  );
+}
+
+function Rise({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex items-baseline gap-1.5">
+      <dt className="text-faint">{label}</dt>
+      <dd className="font-mono tabular-nums text-paper">{value}</dd>
+    </div>
+  );
+}
+
+function Pair({ k, v }: { k: string; v: string }) {
+  return (
+    <span className="flex items-baseline gap-1.5">
+      <span className="text-faint">{k}:</span>
+      <span className="font-semibold text-paper">{v}</span>
+    </span>
+  );
+}
+
+function Row({ k, children }: { k: string; children: React.ReactNode }) {
+  return (
+    <div className="flex items-baseline justify-between gap-3 border-b border-brd/60 pb-2 last:border-0">
+      <dt className="shrink-0 text-faint">{k}</dt>
+      <dd className="text-right">{children}</dd>
+    </div>
+  );
+}
+
+/** "Chaturdashi · Amavasya from 10:49" — what is running, and its handover. */
+function Element({
+  el,
+  render,
+}: {
+  el: PatroElement;
+  render: (name: string, lang: "en" | "ne" | "hi") => string;
+}) {
+  const { language } = useTranslation();
+  return (
+    <span>
+      <span className="font-semibold text-gold2">{render(el.name, language)}</span>
+      {el.ends_at && el.next_name && (
+        <span className="text-muted">
+          {" · "}
+          {clock(el.ends_at, language)}
+          {language === "en" ? " → " : " बाट "}
+          <span className="text-paper">{render(el.next_name, language)}</span>
+        </span>
+      )}
+    </span>
+  );
+}

@@ -18,6 +18,7 @@ from app.modules.chat.router import router as chat_router
 from app.modules.consultations.router import router as consultations_router
 from app.modules.kundali.router import router as kundali_router
 from app.modules.milan.router import router as milan_router
+from app.modules.patro.router import router as patro_router
 from app.modules.rasifal.router import router as rasifal_router
 from app.modules.places.router import router as places_router
 from app.modules.practitioners.router import router as practitioners_router
@@ -85,6 +86,7 @@ def create_app() -> FastAPI:
     app.include_router(vault_router)
     app.include_router(milan_router)
     app.include_router(rasifal_router)
+    app.include_router(patro_router)
     app.include_router(kundali_router)
     app.include_router(billing_router)
     app.include_router(chat_router)

@@ -1210,6 +1210,43 @@
         "title": "DirectoryOut",
         "type": "object"
       },
+      "ElementOut": {
+        "properties": {
+          "ends_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Local time the element gives way to the next.",
+            "title": "Ends At"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "next_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Name"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "title": "ElementOut",
+        "type": "object"
+      },
       "EntryOut": {
         "properties": {
           "amount_minor": {
@@ -1306,6 +1343,34 @@
           }
         },
         "title": "GoogleSignInIn",
+        "type": "object"
+      },
+      "GrahaPlaceOut": {
+        "properties": {
+          "degree_in_sign": {
+            "title": "Degree In Sign",
+            "type": "number"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "retrograde": {
+            "title": "Retrograde",
+            "type": "boolean"
+          },
+          "sign": {
+            "title": "Sign",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "sign",
+          "degree_in_sign",
+          "retrograde"
+        ],
+        "title": "GrahaPlaceOut",
         "type": "object"
       },
       "GrantOut": {
@@ -2198,6 +2263,172 @@
           "new_password"
         ],
         "title": "PasswordChangeIn",
+        "type": "object"
+      },
+      "PatroDayOut": {
+        "properties": {
+          "ayana": {
+            "title": "Ayana",
+            "type": "string"
+          },
+          "festivals": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Festivals",
+            "type": "array"
+          },
+          "grahas": {
+            "items": {
+              "$ref": "#/components/schemas/GrahaPlaceOut"
+            },
+            "title": "Grahas",
+            "type": "array"
+          },
+          "karana": {
+            "$ref": "#/components/schemas/ElementOut"
+          },
+          "masa": {
+            "title": "Masa",
+            "type": "string"
+          },
+          "moon_sign": {
+            "title": "Moon Sign",
+            "type": "string"
+          },
+          "moonrise": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Moonrise"
+          },
+          "moonset": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Moonset"
+          },
+          "nakshatra": {
+            "$ref": "#/components/schemas/ElementOut"
+          },
+          "on": {
+            "format": "date",
+            "title": "On",
+            "type": "string"
+          },
+          "paksha": {
+            "title": "Paksha",
+            "type": "string"
+          },
+          "ritu": {
+            "title": "Ritu",
+            "type": "string"
+          },
+          "sun_sign": {
+            "title": "Sun Sign",
+            "type": "string"
+          },
+          "sunrise": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sunrise"
+          },
+          "sunset": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sunset"
+          },
+          "tithi": {
+            "$ref": "#/components/schemas/ElementOut"
+          },
+          "weekday": {
+            "title": "Weekday",
+            "type": "string"
+          },
+          "yoga": {
+            "$ref": "#/components/schemas/ElementOut"
+          }
+        },
+        "required": [
+          "on",
+          "weekday",
+          "sunrise",
+          "sunset",
+          "moonrise",
+          "moonset",
+          "paksha",
+          "tithi",
+          "nakshatra",
+          "yoga",
+          "karana",
+          "moon_sign",
+          "sun_sign",
+          "ayana",
+          "ritu",
+          "masa",
+          "festivals",
+          "grahas"
+        ],
+        "title": "PatroDayOut",
+        "type": "object"
+      },
+      "PatroRangeOut": {
+        "properties": {
+          "days": {
+            "items": {
+              "$ref": "#/components/schemas/PatroDayOut"
+            },
+            "title": "Days",
+            "type": "array"
+          },
+          "end": {
+            "format": "date",
+            "title": "End",
+            "type": "string"
+          },
+          "engine_version": {
+            "title": "Engine Version",
+            "type": "string"
+          },
+          "start": {
+            "format": "date",
+            "title": "Start",
+            "type": "string"
+          }
+        },
+        "required": [
+          "start",
+          "end",
+          "days",
+          "engine_version"
+        ],
+        "title": "PatroRangeOut",
         "type": "object"
       },
       "PeriodRasifalOut": {
@@ -5617,6 +5848,71 @@
         "summary": "Match",
         "tags": [
           "milan"
+        ]
+      }
+    },
+    "/v1/patro": {
+      "get": {
+        "description": "A run of days with the panchang each one is read by.\n\nThe Bikram Sambat month is not computed here: it is a published table\nrather than something the sky knows, and the client already owns it. This\nserves whatever span of days the client asks for, and the client decides\nwhich of them make up Bhadra.\n\nUnauthenticated, like the rasifal \u2014 a calendar is public by nature.",
+        "operationId": "patro_range_v1_patro_get",
+        "parameters": [
+          {
+            "description": "First day. Defaults to today.",
+            "in": "query",
+            "name": "start",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "First day. Defaults to today.",
+              "title": "Start"
+            }
+          },
+          {
+            "in": "query",
+            "name": "days",
+            "required": false,
+            "schema": {
+              "default": 32,
+              "maximum": 45,
+              "minimum": 1,
+              "title": "Days",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PatroRangeOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Patro days for a range",
+        "tags": [
+          "patro"
         ]
       }
     },

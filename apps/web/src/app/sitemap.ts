@@ -24,6 +24,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.9,
     },
     {
+      // The calendar people look up by habit.
+      url: `${SITE_URL}/patro`,
+      changeFrequency: "daily",
+      priority: 0.9,
+    },
+    {
       url: `${SITE_URL}/privacy`,
       changeFrequency: "yearly",
       priority: 0.3,

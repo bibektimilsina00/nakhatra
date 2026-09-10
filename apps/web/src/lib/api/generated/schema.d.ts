@@ -467,6 +467,33 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/patro": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Patro days for a range
+         * @description A run of days with the panchang each one is read by.
+         *
+         *     The Bikram Sambat month is not computed here: it is a published table
+         *     rather than something the sky knows, and the client already owns it. This
+         *     serves whatever span of days the client asks for, and the client decides
+         *     which of them make up Bhadra.
+         *
+         *     Unauthenticated, like the rasifal — a calendar is public by nature.
+         */
+        get: operations["patro_range_v1_patro_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/places": {
         parameters: {
             query?: never;
@@ -1582,6 +1609,18 @@ export interface components {
             /** Total */
             total: number;
         };
+        /** ElementOut */
+        ElementOut: {
+            /**
+             * Ends At
+             * @description Local time the element gives way to the next.
+             */
+            ends_at?: string | null;
+            /** Name */
+            name: string;
+            /** Next Name */
+            next_name?: string | null;
+        };
         /** EntryOut */
         EntryOut: {
             /** Amount Minor */
@@ -1616,6 +1655,17 @@ export interface components {
             code?: string | null;
             /** Credential */
             credential?: string | null;
+        };
+        /** GrahaPlaceOut */
+        GrahaPlaceOut: {
+            /** Degree In Sign */
+            degree_in_sign: number;
+            /** Name */
+            name: string;
+            /** Retrograde */
+            retrograde: boolean;
+            /** Sign */
+            sign: string;
         };
         /** GrantOut */
         GrantOut: {
@@ -2035,6 +2085,61 @@ export interface components {
             current_password: string;
             /** New Password */
             new_password: string;
+        };
+        /** PatroDayOut */
+        PatroDayOut: {
+            /** Ayana */
+            ayana: string;
+            /** Festivals */
+            festivals: string[];
+            /** Grahas */
+            grahas: components["schemas"]["GrahaPlaceOut"][];
+            karana: components["schemas"]["ElementOut"];
+            /** Masa */
+            masa: string;
+            /** Moon Sign */
+            moon_sign: string;
+            /** Moonrise */
+            moonrise: string | null;
+            /** Moonset */
+            moonset: string | null;
+            nakshatra: components["schemas"]["ElementOut"];
+            /**
+             * On
+             * Format: date
+             */
+            on: string;
+            /** Paksha */
+            paksha: string;
+            /** Ritu */
+            ritu: string;
+            /** Sun Sign */
+            sun_sign: string;
+            /** Sunrise */
+            sunrise: string | null;
+            /** Sunset */
+            sunset: string | null;
+            tithi: components["schemas"]["ElementOut"];
+            /** Weekday */
+            weekday: string;
+            yoga: components["schemas"]["ElementOut"];
+        };
+        /** PatroRangeOut */
+        PatroRangeOut: {
+            /** Days */
+            days: components["schemas"]["PatroDayOut"][];
+            /**
+             * End
+             * Format: date
+             */
+            end: string;
+            /** Engine Version */
+            engine_version: string;
+            /**
+             * Start
+             * Format: date
+             */
+            start: string;
         };
         /** PeriodRasifalOut */
         PeriodRasifalOut: {
@@ -3817,6 +3922,39 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["MilanResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    patro_range_v1_patro_get: {
+        parameters: {
+            query?: {
+                /** @description First day. Defaults to today. */
+                start?: string | null;
+                days?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PatroRangeOut"];
                 };
             };
             /** @description Validation Error */

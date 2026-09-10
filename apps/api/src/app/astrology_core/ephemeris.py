@@ -266,6 +266,37 @@ def sun_rise_set(
     return _event(swe.CALC_RISE), _event(swe.CALC_SET)
 
 
+def body_rise_set(
+    local_date_midnight: datetime,
+    tz_name: str,
+    latitude: float,
+    longitude: float,
+    body: str = "Moon",
+) -> tuple[datetime | None, datetime | None]:
+    """Rise and set (UTC) for any graha on the local day.
+
+    The same horizon event `sun_rise_set` computes, for a body a patro also
+    prints — moonrise and moonset head the panchang column beside the Sun's.
+    None when the body does not cross the horizon that day, which for the Moon
+    happens roughly once a month at any latitude.
+    """
+    _ensure_init()
+    ipl = _SWE_PLANET.get(body)
+    if ipl is None:
+        raise EphemerisError(f"no swisseph body for {body}")
+    start = julian_day(local_date_midnight, tz_name)
+    geopos = (longitude, latitude, 0.0)
+    flags = _flags() & ~swe.FLG_SIDEREAL
+
+    def _event(rsmi: int) -> datetime | None:
+        res, tret = swe.rise_trans(start, ipl, rsmi, geopos, 0.0, 0.0, flags)
+        if res != 0:
+            return None
+        return _from_julian_day(tret[0])
+
+    return _event(swe.CALC_RISE), _event(swe.CALC_SET)
+
+
 def _from_julian_day(jd: float) -> datetime:
     year, month, day, hour = swe.revjul(jd, swe.GREG_CAL)
     h = int(hour)
