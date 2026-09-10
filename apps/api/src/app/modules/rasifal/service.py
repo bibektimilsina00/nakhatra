@@ -10,10 +10,12 @@ from datetime import date, datetime
 from zoneinfo import ZoneInfo
 
 from app.astrology_core import rasifal
+from app.modules.rasifal import writer
 from app.modules.rasifal.schemas import (
     PeriodRasifalOut,
     RashiDayOut,
     RashiPeriodOut,
+    RashiReadingOut,
     RasifalOut,
     TransitOut,
 )
@@ -29,8 +31,11 @@ def today_in_nepal() -> date:
     return datetime.now(NEPAL).date()
 
 
-def for_date(day: date) -> RasifalOut:
+async def for_date(day: date, language: str = "ne") -> RasifalOut:
     computed = rasifal.compute(day)
+    # Prose is a bonus, never a requirement: an empty mapping here simply
+    # means the cards render from their findings.
+    written = await writer.readings_for(computed, language)
     return RasifalOut(
         for_date=computed.for_date,
         weekday_lord=computed.weekday_lord,
@@ -48,6 +53,12 @@ def for_date(day: date) -> RasifalOut:
                 strains=s.strains,
                 lucky_number=s.lucky_number,
                 lucky_colour=s.lucky_colour,
+                band=s.band,
+                reading=(
+                    RashiReadingOut(**written[s.sign].model_dump(exclude={"sign"}))
+                    if s.sign in written
+                    else None
+                ),
                 transits=[
                     TransitOut(
                         name=t.name,
@@ -86,6 +97,7 @@ def for_period(start: date, span: str) -> PeriodRasifalOut:
                 lord=s.lord,
                 score=s.score,
                 rating=s.rating,
+                band=s.band,
                 best_date=s.best_date,
                 best_rating=s.best_rating,
                 hardest_date=s.hardest_date,

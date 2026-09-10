@@ -3052,6 +3052,12 @@
       },
       "RashiDayOut": {
         "properties": {
+          "band": {
+            "default": "",
+            "description": "Verdict key: very_good | good | favourable | ordinary | caution | difficult. Decided by the engine, never by the writer.",
+            "title": "Band",
+            "type": "string"
+          },
           "lord": {
             "title": "Lord",
             "type": "string"
@@ -3079,6 +3085,17 @@
             "minimum": 1.0,
             "title": "Rating",
             "type": "integer"
+          },
+          "reading": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RashiReadingOut"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The written rashifal, when one was generated."
           },
           "score": {
             "title": "Score",
@@ -3135,6 +3152,11 @@
       },
       "RashiPeriodOut": {
         "properties": {
+          "band": {
+            "default": "",
+            "title": "Band",
+            "type": "string"
+          },
           "best_date": {
             "format": "date",
             "title": "Best Date",
@@ -3227,6 +3249,49 @@
           "lucky_colour"
         ],
         "title": "RashiPeriodOut",
+        "type": "object"
+      },
+      "RashiReadingOut": {
+        "description": "The written rashifal for one sign.\n\nAdditive and optional: a client that predates it, or a day the writer\ncould not be reached for, still renders from the computed findings.",
+        "properties": {
+          "astrological_reason": {
+            "default": "",
+            "description": "Where the technical terms belong \u2014 grahas, houses, obstructions. Never in the fields above.",
+            "title": "Astrological Reason",
+            "type": "string"
+          },
+          "career": {
+            "default": "",
+            "title": "Career",
+            "type": "string"
+          },
+          "finance": {
+            "default": "",
+            "title": "Finance",
+            "type": "string"
+          },
+          "health": {
+            "default": "",
+            "title": "Health",
+            "type": "string"
+          },
+          "love": {
+            "default": "",
+            "title": "Love",
+            "type": "string"
+          },
+          "remedy": {
+            "default": "",
+            "title": "Remedy",
+            "type": "string"
+          },
+          "summary": {
+            "default": "",
+            "title": "Summary",
+            "type": "string"
+          }
+        },
+        "title": "RashiReadingOut",
         "type": "object"
       },
       "RasifalOut": {
@@ -6848,6 +6913,23 @@
               ],
               "description": "Date to read, in Nepal time. Defaults to today in Kathmandu.",
               "title": "On"
+            }
+          },
+          {
+            "description": "Language of the written reading.",
+            "in": "query",
+            "name": "language",
+            "required": false,
+            "schema": {
+              "default": "ne",
+              "description": "Language of the written reading.",
+              "enum": [
+                "ne",
+                "hi",
+                "en"
+              ],
+              "title": "Language",
+              "type": "string"
             }
           }
         ],

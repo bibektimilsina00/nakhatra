@@ -166,3 +166,31 @@ def test_murti_day_counts_match_the_days() -> None:
 def test_a_period_needs_at_least_one_day() -> None:
     with pytest.raises(ValueError):
         rasifal.compute_period(date(2026, 1, 1), 0)
+
+
+# --- the verdict band ------------------------------------------------------
+
+
+def test_every_day_carries_a_band_and_it_agrees_with_its_stars() -> None:
+    """The band is what the writer is told to match, so it must never drift
+    from the star rating a reader sees beside it."""
+    expected = {1: {"difficult"}, 2: {"caution"}, 3: {"ordinary"},
+                4: {"good", "favourable"}, 5: {"very_good"}}
+    for month in range(1, 13):
+        for s in rasifal.compute(date(2026, month, 12)).signs:
+            assert s.band in expected[s.rating], (s.sign, s.rating, s.band)
+
+
+def test_all_six_bands_are_reachable() -> None:
+    """Six words are offered to the reader; a mapping that can only produce
+    five of them is a bug in the split, not a fact about the sky."""
+    seen: set[str] = set()
+    for month in range(1, 13):
+        for dom in (5, 15, 25):
+            seen.update(s.band for s in rasifal.compute(date(2026, month, dom)).signs)
+    assert seen == {"very_good", "good", "favourable", "ordinary", "caution", "difficult"}
+
+
+def test_periods_carry_a_band_too() -> None:
+    week = rasifal.compute_period(date(2026, 9, 10), 7)
+    assert all(s.band for s in week.signs)

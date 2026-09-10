@@ -100,7 +100,7 @@ export function PatroPage() {
             >
               <ChevronLeft className="size-4" />
             </button>
-            <span className="min-w-[9rem] rounded-[8px] border border-brd bg-card px-4 py-2 text-center font-serif text-[15px] font-bold text-paper">
+            <span className="min-w-[10.5rem] rounded-[8px] border border-brd bg-card px-4 py-2.5 text-center font-serif text-[17px] font-bold text-paper">
               {bsMonthName(bsMonth, language)} {num(bsYear, language)}
             </span>
             <button
@@ -121,14 +121,14 @@ export function PatroPage() {
           </div>
         </header>
 
-        <div className="mt-7 grid gap-5 lg:grid-cols-[1fr_380px]">
+        <div className="mt-7 grid gap-5 lg:grid-cols-[1fr_400px]">
           {/* The month */}
           <section className="rounded-[12px] border border-brd bg-card p-4 sm:p-5">
-            <div className="grid grid-cols-7 gap-1.5 sm:gap-2">
+            <div className="grid grid-cols-7 gap-2 sm:gap-2.5">
               {WEEKDAY_SHORT[language].map((w, i) => (
                 <div
                   key={w}
-                  className={`pb-2 text-center text-[11px] font-semibold ${
+                  className={`pb-2.5 text-center text-[15px] font-semibold ${
                     i === 6 ? "text-rose-400" : "text-muted"
                   }`}
                 >
@@ -154,7 +154,7 @@ export function PatroPage() {
                     key={ad.iso}
                     type="button"
                     onClick={() => setSelected(ad.iso)}
-                    className={`flex min-h-[86px] cursor-pointer flex-col justify-between rounded-[8px] border p-2 text-left transition ${
+                    className={`flex min-h-[112px] cursor-pointer flex-col justify-between rounded-[10px] border p-2.5 text-left transition ${
                       isActive
                         ? "border-gold bg-gold/10"
                         : isToday
@@ -162,23 +162,23 @@ export function PatroPage() {
                           : "border-brd hover:border-gold/40"
                     }`}
                   >
-                    <span className="block truncate text-[9.5px] leading-tight text-muted">
+                    <span className="block truncate text-[12px] leading-tight text-muted">
                       {day
                         ? `${PAKSHA[day.paksha]?.[language] ?? ""} ${tithiName(day.tithi.name, language)}`.trim()
                         : ""}
                     </span>
                     <span
-                      className={`block text-center font-serif text-[20px] font-bold leading-none ${
+                      className={`block text-center font-serif text-[30px] font-bold leading-none ${
                         saturday || festival ? "text-rose-400" : "text-paper"
                       }`}
                     >
                       {num(bsDay, language)}
                     </span>
                     <span className="flex items-end justify-between gap-1">
-                      <span className="min-w-0 truncate text-[8.5px] leading-tight text-gold2">
+                      <span className="min-w-0 truncate text-[10.5px] leading-tight text-gold2">
                         {festival ?? ""}
                       </span>
-                      <span className="shrink-0 text-[9px] text-faint">
+                      <span className="shrink-0 text-[11px] text-faint">
                         {new Date(ad.iso + "T12:00:00").getDate()}
                       </span>
                     </span>

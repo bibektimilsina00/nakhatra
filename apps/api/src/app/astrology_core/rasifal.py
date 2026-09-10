@@ -19,8 +19,8 @@ No text and no language lives here.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
 from collections import Counter
+from dataclasses import dataclass, field
 from datetime import date, datetime, time, timedelta
 
 from app.astrology_core import ephemeris
@@ -108,6 +108,11 @@ class RashiDay:
     lord: str
     score: float                 # roughly -10..+10
     rating: int                  # 1..5 stars, derived from score
+    #: A stable key for the verdict word. Language-free: the six bands a
+    #: Nepali reader expects map onto the five stars, with the fourth split
+    #: on where inside its band the score falls, so "good" and "favourable"
+    #: are a real distinction rather than a writer's choice.
+    band: str
     murti: str
     murti_house: int
     transits: list[GrahaTransit] = field(default_factory=list)
@@ -139,6 +144,23 @@ def _house_from(sign_index: int, janma_index: int) -> int:
 # would have called almost every day of the year poor, which is a bug in the
 # scale, not a fact about the sky. These are the p20/p40/p60/p85 cuts.
 _BANDS: tuple[float, ...] = (-6.6, -4.9, -3.2, -0.7)
+
+
+_BAND_KEYS = ("difficult", "caution", "ordinary", "favourable", "very_good")
+
+
+def _band(score: float, stars: int) -> str:
+    """The verdict word's key, decided here so nothing downstream invents one.
+
+    A rating and a prediction that disagree is the failure this prevents: the
+    writer is told the band and must match it, rather than choosing a mood.
+    """
+    if stars == 4:
+        # The 4-star band runs from _BANDS[2] to _BANDS[3]; its upper half is
+        # the stronger word.
+        low, high = _BANDS[2], _BANDS[3]
+        return "good" if score >= (low + high) / 2 else "favourable"
+    return _BAND_KEYS[stars - 1]
 
 
 def _rating(score: float) -> int:
@@ -242,6 +264,7 @@ def compute(
                 lord=SIGN_LORDS[janma],
                 score=round(score, 2),
                 rating=_rating(score),
+                band=_band(score, _rating(score)),
                 murti=murti,
                 murti_house=murti_house,
                 transits=transits,
@@ -249,7 +272,9 @@ def compute(
                 strains=strains,
                 # The day's own lord decides the number and colour; the rashi
                 # lord breaks the tie so twelve cards do not read identically.
-                lucky_number=_GRAHA_NUMBER[weekday_lord if murti in ("Swarna", "Rajata") else SIGN_LORDS[janma]],
+                lucky_number=_GRAHA_NUMBER[
+                    weekday_lord if murti in ("Swarna", "Rajata") else SIGN_LORDS[janma]
+                ],
                 lucky_colour=_GRAHA_COLOUR[SIGN_LORDS[janma]],
             )
         )
@@ -282,6 +307,7 @@ class RashiPeriod:
     lord: str
     score: float                  # mean of the daily scores
     rating: int
+    band: str
     best_date: date
     best_rating: int
     hardest_date: date
@@ -351,6 +377,7 @@ def compute_period(
                 lord=SIGN_LORDS[i],
                 score=round(mean, 2),
                 rating=_rating(mean),
+                band=_band(mean, _rating(mean)),
                 best_date=dailies[best_at].for_date,
                 best_rating=per_day[best_at].rating,
                 hardest_date=dailies[worst_at].for_date,

@@ -9,9 +9,9 @@ from __future__ import annotations
 
 import asyncio
 import logging
+from datetime import UTC, datetime, timedelta
 
 import httpx
-from datetime import datetime, timedelta, timezone
 
 from app.core.config import get_settings
 from app.core.errors import AppError
@@ -229,7 +229,7 @@ async def _gemini_session(instructions: str) -> RealtimeSessionResponse | None:
     if not key:
         return None
 
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     body = {
         "uses": 1,
         # A minute to open the socket, half an hour of conversation.

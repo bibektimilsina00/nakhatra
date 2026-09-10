@@ -329,3 +329,27 @@ export function spanLabel(span: Span, lang: Language): string {
   };
   return labels[span][lang];
 }
+
+/** The verdict word. Keyed on the engine's band so the label and the written
+ *  reading can never disagree — both are told the same thing. */
+export const BAND_LABELS: Record<string, Tri> = {
+  very_good: { en: "Strongly favourable", ne: "धेरै शुभ", hi: "अत्यंत शुभ" },
+  good: { en: "Favourable", ne: "शुभ", hi: "शुभ" },
+  favourable: { en: "Mostly favourable", ne: "अनुकूल", hi: "अनुकूल" },
+  ordinary: { en: "Ordinary day", ne: "सामान्य", hi: "सामान्य" },
+  caution: { en: "Go carefully", ne: "सावधानी", hi: "सावधानी" },
+  difficult: { en: "Difficult day", ne: "कठिन", hi: "कठिन" },
+};
+
+export function bandLabel(band: string, rating: number, lang: Language): string {
+  return BAND_LABELS[band]?.[lang] ?? verdictFor(rating, lang);
+}
+
+export const SECTION_LABELS: Record<string, Tri> = {
+  career: { en: "Work", ne: "कार्यक्षेत्र", hi: "कार्यक्षेत्र" },
+  love: { en: "Relationships", ne: "सम्बन्ध", hi: "संबंध" },
+  finance: { en: "Money", ne: "आर्थिक", hi: "आर्थिक" },
+  health: { en: "Health", ne: "स्वास्थ्य", hi: "स्वास्थ्य" },
+  remedy: { en: "Remedy", ne: "उपाय", hi: "उपाय" },
+  astrological_reason: { en: "The astrology behind it", ne: "ज्योतिषीय कारण", hi: "ज्योतिषीय कारण" },
+};

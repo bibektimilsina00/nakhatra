@@ -19,9 +19,9 @@ from app.modules.consultations.router import router as consultations_router
 from app.modules.kundali.router import router as kundali_router
 from app.modules.milan.router import router as milan_router
 from app.modules.patro.router import router as patro_router
-from app.modules.rasifal.router import router as rasifal_router
 from app.modules.places.router import router as places_router
 from app.modules.practitioners.router import router as practitioners_router
+from app.modules.rasifal.router import router as rasifal_router
 from app.modules.report.router import router as report_router
 from app.modules.vault.router import router as vault_router
 from app.modules.voice.router import router as voice_router

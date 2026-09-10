@@ -256,6 +256,8 @@ def day(
     ayan = ephemeris.ayanamsa(jd)
 
     sun_sign_index = int(sun // 30)
+    # Ayana is a tropical fact, so the ayanamsa goes back on.
+    tropical_sun = (sun + ayan) % 360.0
     elongation = (moon - sun) % 360.0
 
     return PatroDay(
@@ -272,8 +274,9 @@ def day(
         karana=_element("karana", reference, tz_name),
         moon_sign=SIGNS[int(moon // 30)],
         sun_sign=SIGNS[sun_sign_index],
-        # Ayana is a tropical fact, so the ayanamsa goes back on.
-        ayana="Uttarayana" if 270.0 <= (sun + ayan) % 360.0 or (sun + ayan) % 360.0 < 90.0 else "Dakshinayana",
+        ayana=(
+            "Uttarayana" if tropical_sun >= 270.0 or tropical_sun < 90.0 else "Dakshinayana"
+        ),
         ritu=_RITU[sun_sign_index // 2],
         masa=_MASA[sun_sign_index],
         festivals=[],
@@ -309,7 +312,12 @@ def month(
                 "festivals": [
                     name
                     for key, name in FESTIVALS.items()
-                    if key == (lunar_month(d.on, d.paksha, tz_name, d.tithi.name), d.paksha, d.tithi.name)
+                    if key
+                    == (
+                        lunar_month(d.on, d.paksha, tz_name, d.tithi.name),
+                        d.paksha,
+                        d.tithi.name,
+                    )
                 ],
             }
         )

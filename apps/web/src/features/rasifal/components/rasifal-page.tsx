@@ -35,7 +35,7 @@ export function RasifalPage() {
     return nepal.toISOString().slice(0, 10);
   }, [offset]);
 
-  const daily = useRasifal(span === "daily" ? iso : undefined);
+  const daily = useRasifal(span === "daily" ? iso : undefined, language);
   const period = useRasifalPeriod(
     span === "daily" ? "weekly" : span,
     iso,

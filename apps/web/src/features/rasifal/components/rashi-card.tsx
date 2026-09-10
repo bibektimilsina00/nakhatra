@@ -3,11 +3,12 @@
 import { useState } from "react";
 
 import {
+  bandLabel,
   colourName,
   murtiName,
   RASHI_SYLLABLES,
   readingFor,
-  verdictFor,
+  SECTION_LABELS,
 } from "@/features/rasifal/rasifal-i18n";
 import type { RashiDay } from "@/features/rasifal/types";
 import { useTranslation } from "@/lib/i18n/language-context";
@@ -42,15 +43,40 @@ export function RashiCard({ day }: { day: RashiDay }) {
             {"★".repeat(day.rating)}
             <span className="text-faint/60">{"★".repeat(5 - day.rating)}</span>
           </span>
-          <span className="mt-1 block text-[10px] font-semibold text-fainted">
-            {verdictFor(day.rating, language)}
+          <span className="mt-1 block text-[10px] font-semibold text-muted">
+            {bandLabel(day.band ?? "", day.rating, language)}
           </span>
         </div>
       </header>
 
-      <p className="mt-3 flex-1 text-[13px] leading-[1.85] text-fainted">
-        {readingFor(day, language)}
+      {/* The written reading when the writer has been round; the composed one
+          from the findings while it has not. Never a blank card. */}
+      <p className="mt-3 text-[13px] leading-[1.85] text-muted">
+        {day.reading?.summary || readingFor(day, language)}
       </p>
+
+      {day.reading && (
+        <dl className="mt-3.5 flex-1 space-y-2.5">
+          {(["career", "love", "finance", "health"] as const).map((k) =>
+            day.reading?.[k] ? (
+              <div key={k}>
+                <dt className="text-[10px] font-semibold uppercase tracking-wider text-gold">
+                  {SECTION_LABELS[k][language]}
+                </dt>
+                <dd className="mt-0.5 text-[12px] leading-[1.7] text-muted">{day.reading[k]}</dd>
+              </div>
+            ) : null,
+          )}
+          {day.reading.remedy && (
+            <div className="rounded-[8px] border border-gold/25 bg-gold/[0.06] px-3 py-2">
+              <dt className="text-[10px] font-semibold uppercase tracking-wider text-gold">
+                {SECTION_LABELS.remedy[language]}
+              </dt>
+              <dd className="mt-0.5 text-[12px] leading-[1.7] text-paper">{day.reading.remedy}</dd>
+            </div>
+          )}
+        </dl>
+      )}
 
       <dl className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-1.5 border-t border-brd pt-3 text-[11.5px]">
         <div className="flex items-center gap-1.5">
@@ -63,10 +89,7 @@ export function RashiCard({ day }: { day: RashiDay }) {
             {toLocalizedDigit(String(day.lucky_number), language)}
           </dd>
         </div>
-        <div className="flex items-center gap-1.5">
-          <dt className="text-faint">{language === "en" ? "Murti" : "मूर्ति"}:</dt>
-          <dd className="font-semibold text-paper">{murtiName(day.murti, language)}</dd>
-        </div>
+
       </dl>
 
       {/* The working, for the reader who knows gochara and wants to check. */}
@@ -81,10 +104,22 @@ export function RashiCard({ day }: { day: RashiDay }) {
       </button>
 
       {open && (
-        <ul className="mt-2.5 space-y-1 rounded-[8px] border border-brd bg-ink2 p-3">
+        <p className="mt-2.5 text-[10.5px] text-faint/70">
+          {language === "en" ? "Murti" : "मूर्ति"}: {murtiName(day.murti, language)}
+        </p>
+      )}
+
+      {open && day.reading?.astrological_reason && (
+        <p className="mt-2.5 rounded-[8px] border border-brd bg-ink2 p-3 text-[11.5px] leading-[1.75] text-muted">
+          {day.reading.astrological_reason}
+        </p>
+      )}
+
+      {open && (
+        <ul className="mt-2 space-y-1 rounded-[8px] border border-brd bg-ink2 p-3">
           {day.transits.map((t) => (
             <li key={t.name} className="flex items-baseline justify-between gap-2 text-[11px]">
-              <span className="text-fainted">
+              <span className="text-muted">
                 {getPlanetName(t.name, language)}
                 {t.retrograde && <span className="ml-1 text-rose-400">℞</span>}
               </span>

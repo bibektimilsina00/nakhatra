@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from datetime import date, timedelta
+from typing import Annotated
 
 from fastapi import APIRouter, Query
 
@@ -18,8 +19,8 @@ _MAX_DAYS = 45
 
 @router.get("/patro", response_model=PatroRangeOut, summary="Patro days for a range")
 def patro_range(
-    start: date | None = Query(default=None, description="First day. Defaults to today."),
-    days: int = Query(default=32, ge=1, le=_MAX_DAYS),
+    start: Annotated[date | None, Query(description="First day. Defaults to today.")] = None,
+    days: Annotated[int, Query(ge=1, le=_MAX_DAYS)] = 32,
 ) -> PatroRangeOut:
     """A run of days with the panchang each one is read by.
 

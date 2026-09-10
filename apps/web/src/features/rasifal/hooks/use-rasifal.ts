@@ -6,11 +6,13 @@ import { fetchRasifal, fetchRasifalPeriod } from "@/features/rasifal/api/rasifal
 
 /** Server state lives in TanStack Query (CLAUDE.md rule 6). The sky for a
  *  given date never changes, so it is cached hard. */
-export function useRasifal(on?: string) {
+export function useRasifal(on?: string, language = "ne") {
   return useQuery({
-    queryKey: ["rasifal", on ?? "today"],
-    queryFn: () => fetchRasifal(on),
-    staleTime: 1000 * 60 * 60,
+    queryKey: ["rasifal", on ?? "today", language],
+    queryFn: () => fetchRasifal(on, language),
+    // The writer fills a day in the background, so a page opened in that
+    // minute should come back for the prose rather than cache the gap.
+    staleTime: 1000 * 30,
     gcTime: 1000 * 60 * 60 * 6,
   });
 }

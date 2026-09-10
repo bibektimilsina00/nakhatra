@@ -3,8 +3,7 @@
 from __future__ import annotations
 
 from datetime import date, timedelta
-
-from typing import Literal
+from typing import Annotated, Literal
 
 from fastapi import APIRouter, Query
 
@@ -20,11 +19,15 @@ _WINDOW = timedelta(days=366)
 
 
 @router.get("/rasifal", response_model=RasifalOut, summary="The day's rasifal")
-def rasifal(
-    on: date | None = Query(
-        default=None,
-        description="Date to read, in Nepal time. Defaults to today in Kathmandu.",
-    ),
+async def rasifal(
+    on: Annotated[
+        date | None,
+        Query(description="Date to read, in Nepal time. Defaults to today in Kathmandu."),
+    ] = None,
+    language: Annotated[
+        Literal["ne", "hi", "en"],
+        Query(description="Language of the written reading."),
+    ] = "ne",
 ) -> RasifalOut:
     """All twelve rashis judged by gochara for one day.
 
@@ -36,7 +39,7 @@ def rasifal(
     day = on or today
     if abs(day - today) > _WINDOW:
         raise ValidationError("That date is outside the range this reads.")
-    return service.for_date(day)
+    return await service.for_date(day, language)
 
 
 @router.get(
@@ -45,10 +48,11 @@ def rasifal(
     summary="The week's or month's rasifal",
 )
 def rasifal_period(
-    span: Literal["weekly", "monthly"] = Query(default="weekly"),
-    on: date | None = Query(
-        default=None, description="First day of the span. Defaults to today in Kathmandu."
-    ),
+    span: Annotated[Literal["weekly", "monthly"], Query()] = "weekly",
+    on: Annotated[
+        date | None,
+        Query(description="First day of the span. Defaults to today in Kathmandu."),
+    ] = None,
 ) -> PeriodRasifalOut:
     """All twelve rashis across a span, aggregated from every day in it.
 

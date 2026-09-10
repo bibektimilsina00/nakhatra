@@ -46,16 +46,16 @@ export function PanchangPanel({
       <section className="rounded-[12px] border border-brd bg-card p-5">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <h2 className="font-serif text-[22px] font-bold leading-tight text-paper">
+            <h2 className="font-serif text-[27px] font-bold leading-tight text-paper">
               {num(bs.year, language)} {bsMonthName(bs.month, language)} {num(bs.day, language)}
             </h2>
-            <p className="mt-1 text-[13px] font-semibold text-rose-400">
+            <p className="mt-1 text-[15px] font-semibold text-rose-400">
               {WEEKDAY_FULL[day.weekday]?.[language] ?? day.weekday}
             </p>
-            <p className="mt-1 text-[12px] text-muted">{day.on}</p>
+            <p className="mt-1 text-[13px] text-muted">{day.on}</p>
           </div>
 
-          <dl className="grid grid-cols-2 gap-x-5 gap-y-1.5 text-[11.5px]">
+          <dl className="grid grid-cols-2 gap-x-5 gap-y-2 text-[13px]">
             <Rise label={en ? "Sunrise" : "सूर्योदय"} value={clock(day.sunrise, language)} />
             <Rise label={en ? "Sunset" : "सूर्यास्त"} value={clock(day.sunset, language)} />
             <Rise label={en ? "Moonrise" : "चन्द्रोदय"} value={clock(day.moonrise, language)} />
@@ -63,24 +63,24 @@ export function PanchangPanel({
           </dl>
         </div>
 
-        <div className="mt-4 flex flex-wrap gap-x-6 gap-y-1.5 border-t border-brd pt-3 text-[12px]">
+        <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2 border-t border-brd pt-3.5 text-[13.5px]">
           <Pair k={en ? "Ritu" : "ऋतु"} v={rituForBsMonth(bs.month, language)} />
           <Pair k={en ? "Ayana" : "अयन"} v={AYANA[day.ayana]?.[language] ?? day.ayana} />
           <Pair k={en ? "Moon" : "चन्द्र"} v={signName(day.moon_sign, language)} />
         </div>
 
         {day.festivals.length > 0 && (
-          <p className="mt-3 rounded-[8px] border border-gold/30 bg-gold/10 px-3 py-2 text-[12.5px] font-semibold text-gold2">
+          <p className="mt-3.5 rounded-[8px] border border-gold/30 bg-gold/10 px-3.5 py-2.5 text-[14px] font-semibold text-gold2">
             {day.festivals.join(" · ")}
           </p>
         )}
       </section>
 
       <section className="rounded-[12px] border border-brd bg-card p-5">
-        <h3 className="text-[13px] font-semibold text-paper">
+        <h3 className="text-[15px] font-semibold text-paper">
           {en ? "Panchang" : "पञ्चाङ्ग विवरण"}
         </h3>
-        <dl className="mt-3 space-y-2.5 text-[12.5px]">
+        <dl className="mt-3.5 space-y-3 text-[14px]">
           <Row k={en ? "Paksha" : "पक्ष"}>
             <span className="text-gold2">{PAKSHA[day.paksha]?.[language] ?? day.paksha}</span>
           </Row>
@@ -100,14 +100,14 @@ export function PanchangPanel({
       </section>
 
       <section className="rounded-[12px] border border-brd bg-card p-5">
-        <h3 className="text-[13px] font-semibold text-paper">
+        <h3 className="text-[15px] font-semibold text-paper">
           {en ? "Graha positions" : "ग्रह गोचर"}
         </h3>
-        <div className="mt-3 grid grid-cols-1 gap-1.5 sm:grid-cols-2">
+        <div className="mt-3.5 grid grid-cols-1 gap-2 sm:grid-cols-2">
           {day.grahas.map((g) => (
             <div
               key={g.name}
-              className="flex items-baseline justify-between gap-2 rounded-[6px] border border-brd bg-ink2 px-2.5 py-1.5 text-[11px]"
+              className="flex items-baseline justify-between gap-2 rounded-[6px] border border-brd bg-ink2 px-3 py-2 text-[12.5px]"
             >
               <span className="text-muted">
                 {grahaName(g.name, language)}
@@ -117,7 +117,7 @@ export function PanchangPanel({
                 <span className="block font-mono tabular-nums text-paper">
                   {dms(g.degree_in_sign, language)}
                 </span>
-                <span className="block text-[9.5px] text-faint">{signName(g.sign, language)}</span>
+                <span className="block text-[11px] text-faint">{signName(g.sign, language)}</span>
               </span>
             </div>
           ))}

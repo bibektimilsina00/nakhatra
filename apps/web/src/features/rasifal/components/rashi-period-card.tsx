@@ -4,7 +4,7 @@ import {
   colourName,
   periodReadingFor,
   RASHI_SYLLABLES,
-  verdictFor,
+  bandLabel,
 } from "@/features/rasifal/rasifal-i18n";
 import type { RashiPeriod } from "@/features/rasifal/types";
 import { useTranslation } from "@/lib/i18n/language-context";
@@ -44,13 +44,13 @@ export function RashiPeriodCard({
             {"★".repeat(period.rating)}
             <span className="text-faint/60">{"★".repeat(5 - period.rating)}</span>
           </span>
-          <span className="mt-1 block text-[10px] font-semibold text-fainted">
-            {verdictFor(period.rating, language)}
+          <span className="mt-1 block text-[10px] font-semibold text-muted">
+            {bandLabel(period.band ?? "", period.rating, language)}
           </span>
         </div>
       </header>
 
-      <p className="mt-3 flex-1 text-[13px] leading-[1.85] text-fainted">
+      <p className="mt-3 flex-1 text-[13px] leading-[1.85] text-muted">
         {periodReadingFor(period, span, language)}
       </p>
 

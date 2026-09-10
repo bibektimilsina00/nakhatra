@@ -2426,6 +2426,12 @@ export interface components {
         };
         /** RashiDayOut */
         RashiDayOut: {
+            /**
+             * Band
+             * @description Verdict key: very_good | good | favourable | ordinary | caution | difficult. Decided by the engine, never by the writer.
+             * @default
+             */
+            band: string;
             /** Lord */
             lord: string;
             /**
@@ -2444,6 +2450,8 @@ export interface components {
             murti_house: number;
             /** Rating */
             rating: number;
+            /** @description The written rashifal, when one was generated. */
+            reading?: components["schemas"]["RashiReadingOut"] | null;
             /** Score */
             score: number;
             /** Sign */
@@ -2465,6 +2473,11 @@ export interface components {
         };
         /** RashiPeriodOut */
         RashiPeriodOut: {
+            /**
+             * Band
+             * @default
+             */
+            band: string;
             /**
              * Best Date
              * Format: date
@@ -2510,6 +2523,51 @@ export interface components {
              * @description Grahas favourable through most of the span — its theme, not a passing day.
              */
             steady_supports: string[];
+        };
+        /**
+         * RashiReadingOut
+         * @description The written rashifal for one sign.
+         *
+         *     Additive and optional: a client that predates it, or a day the writer
+         *     could not be reached for, still renders from the computed findings.
+         */
+        RashiReadingOut: {
+            /**
+             * Astrological Reason
+             * @description Where the technical terms belong — grahas, houses, obstructions. Never in the fields above.
+             * @default
+             */
+            astrological_reason: string;
+            /**
+             * Career
+             * @default
+             */
+            career: string;
+            /**
+             * Finance
+             * @default
+             */
+            finance: string;
+            /**
+             * Health
+             * @default
+             */
+            health: string;
+            /**
+             * Love
+             * @default
+             */
+            love: string;
+            /**
+             * Remedy
+             * @default
+             */
+            remedy: string;
+            /**
+             * Summary
+             * @default
+             */
+            summary: string;
         };
         /** RasifalOut */
         RasifalOut: {
@@ -4473,6 +4531,8 @@ export interface operations {
             query?: {
                 /** @description Date to read, in Nepal time. Defaults to today in Kathmandu. */
                 on?: string | null;
+                /** @description Language of the written reading. */
+                language?: "ne" | "hi" | "en";
             };
             header?: never;
             path?: never;

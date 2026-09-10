@@ -23,6 +23,26 @@ class TransitOut(BaseModel):
     retrograde: bool
 
 
+class RashiReadingOut(BaseModel):
+    """The written rashifal for one sign.
+
+    Additive and optional: a client that predates it, or a day the writer
+    could not be reached for, still renders from the computed findings.
+    """
+
+    summary: str = ""
+    career: str = ""
+    love: str = ""
+    finance: str = ""
+    health: str = ""
+    remedy: str = ""
+    astrological_reason: str = Field(
+        default="",
+        description="Where the technical terms belong — grahas, houses, "
+        "obstructions. Never in the fields above.",
+    )
+
+
 class RashiDayOut(BaseModel):
     sign: str
     sign_index: int
@@ -35,6 +55,14 @@ class RashiDayOut(BaseModel):
     strains: list[str] = Field(description="Grahas hindering today.")
     lucky_number: int
     lucky_colour: str = Field(description="Colour key, not a word: 'white', 'red', ...")
+    band: str = Field(
+        default="",
+        description="Verdict key: very_good | good | favourable | ordinary | "
+        "caution | difficult. Decided by the engine, never by the writer.",
+    )
+    reading: RashiReadingOut | None = Field(
+        default=None, description="The written rashifal, when one was generated."
+    )
     transits: list[TransitOut]
 
 
@@ -49,6 +77,7 @@ class RashiPeriodOut(BaseModel):
     sign: str
     sign_index: int
     lord: str
+    band: str = ""
     score: float = Field(description="Mean of the daily scores across the span.")
     rating: int = Field(ge=1, le=5)
     best_date: date
