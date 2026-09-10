@@ -798,6 +798,17 @@
             "title": "Messages",
             "type": "array"
           },
+          "milan": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MilanContextIn"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "A finished Ashtakoota match, when the consultation was opened from one. Additive: absent for every single-chart session."
+          },
           "query": {
             "maxLength": 4000,
             "minLength": 1,
@@ -1729,6 +1740,67 @@
         "title": "MilanAnalysisResponse",
         "type": "object"
       },
+      "MilanContextIn": {
+        "description": "A finished match, handed to the model as data.\n\nPresent only when the visitor opened the consultation from a milan\nresult. Every figure was computed by `astrology_core.milan`; the model\nreads it and never recomputes it.",
+        "properties": {
+          "kutas": {
+            "items": {
+              "$ref": "#/components/schemas/MilanKutaBrief"
+            },
+            "title": "Kutas",
+            "type": "array"
+          },
+          "manglik_note": {
+            "default": "",
+            "title": "Manglik Note",
+            "type": "string"
+          },
+          "max_guna": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Guna"
+          },
+          "partner_chart": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ChartOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "partner_name": {
+            "default": "",
+            "title": "Partner Name",
+            "type": "string"
+          },
+          "total_guna": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Total Guna"
+          },
+          "verdict": {
+            "default": "",
+            "title": "Verdict",
+            "type": "string"
+          }
+        },
+        "title": "MilanContextIn",
+        "type": "object"
+      },
       "MilanDoshaOut": {
         "properties": {
           "affects": {
@@ -1761,6 +1833,28 @@
           "detail"
         ],
         "title": "MilanDoshaOut",
+        "type": "object"
+      },
+      "MilanKutaBrief": {
+        "description": "One koota's score, as the engine computed it.",
+        "properties": {
+          "max_points": {
+            "default": 0.0,
+            "title": "Max Points",
+            "type": "number"
+          },
+          "name": {
+            "default": "",
+            "title": "Name",
+            "type": "string"
+          },
+          "obtained": {
+            "default": 0.0,
+            "title": "Obtained",
+            "type": "number"
+          }
+        },
+        "title": "MilanKutaBrief",
         "type": "object"
       },
       "MilanPointOut": {
@@ -2763,6 +2857,17 @@
             ],
             "title": "Language",
             "type": "string"
+          },
+          "milan": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MilanContextIn"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "A finished Ashtakoota match, when the consultation was opened from one. Additive: absent for every single-chart session."
           },
           "provider": {
             "anyOf": [

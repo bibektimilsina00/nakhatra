@@ -13,6 +13,12 @@ import type { ChatMessage } from "@/features/chat/types";
 import { speakText, stopSpeech } from "@/lib/utils/audio-speaker";
 import { OpenAIRealtimeWebRTCClient, type RealtimeWebRTCCallbacks } from "@/lib/utils/openai-realtime-webrtc";
 import { GeminiLiveClient } from "@/lib/utils/gemini-live-client";
+import {
+  clearMilanLive,
+  loadMilanLive,
+  toMilanContext,
+  type MilanLive,
+} from "@/features/milan/store/milan-live";
 import { ASTROLOGER_VOICES, GEMINI_ASTROLOGER_VOICES } from "@/lib/constants/voices";
 import { CustomVoiceSelector } from "@/features/voice/components/voice-selector";
 import { authHeaders } from "@/features/auth/store/auth-store";
@@ -35,6 +41,7 @@ import {
   Monitor,
   Radio,
   Headphones,
+  Heart,
   LogOut,
 } from "lucide-react";
 
@@ -204,9 +211,24 @@ export function LiveModeWorkspace() {
   const transcriptKey = (b: BirthDetailsIn) =>
     `nakhatra_chat:${b.name}|${b.date}|${b.time}`;
 
+  // A match handed over from the milan page, if the visitor came from one.
+  // Held in a ref as well, because the realtime mint reads it outside render.
+  const [milanLive, setMilanLive] = useState<MilanLive | null>(null);
+  const milanRef = useRef<MilanLive | null>(null);
+
   // Load active chart
   useEffect(() => {
     const stored = loadKundaliFromStorage();
+    // The handoff only applies to the chart it was made for. Without this
+    // check, opening any later consultation would still be answered as though
+    // it were about someone's marriage match.
+    const live = loadMilanLive();
+    if (live && stored && live.self.chart.julian_day === stored.chart.julian_day) {
+      setMilanLive(live);
+      milanRef.current = live;
+    } else if (live) {
+      clearMilanLive();
+    }
     if (stored) {
       setActiveBirth(stored.birth);
       setActiveChart(stored.chart);
@@ -395,11 +417,20 @@ export function LiveModeWorkspace() {
           ? `नमस्ते ${activeBirth.name}! मैंने आपकी कुंडली का विस्तृत विश्लेषण किया है। आपका ${getSignName(activeChart.lagna_sign, selectedLanguageRef.current)} लग्न${activeChart.panchang?.moon_sign ? ` एवं ${getSignName(activeChart.panchang.moon_sign, selectedLanguageRef.current)} चंद्रमा` : ""} तथा वर्तमान ${getPlanetName(mahaLord, selectedLanguageRef.current)}-${getPlanetName(antarLord, selectedLanguageRef.current)} दशा आपके जीवन में महत्वपूर्ण समय का संकेत देती है। आज आप क्या पूछना चाहते हैं?`
           : `Namaste ${activeBirth.name}! I have thoroughly analyzed your Kundali. Your ${getSignName(activeChart.lagna_sign, selectedLanguageRef.current)} Ascendant${activeChart.panchang?.moon_sign ? ` with ${getSignName(activeChart.panchang.moon_sign, selectedLanguageRef.current)} Moon` : ""} under current ${dashaText} make this a significant phase for your personal growth. What specific questions do you have today?`;
 
+      const matched = milanRef.current;
+      const matchLine = matched
+        ? selectedLanguage === "ne"
+          ? ` तपाईं र ${matched.partner.name}को मिलानमा ३६ मध्ये ${matched.match.total_guna} गुण मिलेको छ — दुवै कुण्डली मसँग छन्, जे पनि सोध्नुहोस्।`
+          : selectedLanguage === "hi"
+            ? ` आपका और ${matched.partner.name} का मिलान 36 में से ${matched.match.total_guna} गुण है — दोनों कुंडली मेरे पास हैं, कुछ भी पूछें।`
+            : ` Your match with ${matched.partner.name} scores ${matched.match.total_guna} of 36 — I have both charts in front of me, so ask me anything about the two of you.`
+        : "";
+
       setMessages([
         {
           id: "msg-init",
           sender: "astrologer",
-          text: greeting,
+          text: greeting + matchLine,
           timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
           astrologicalBasis: `${getSignName(activeChart.lagna_sign, selectedLanguageRef.current)} ${ascendantWord} · ${dashaText}`,
         },
@@ -482,6 +513,7 @@ export function LiveModeWorkspace() {
         chart: activeChart,
         birth: activeBirth,
         language: selectedLanguageRef.current,
+        ...(milanRef.current ? { milan: toMilanContext(milanRef.current) } : {}),
       });
       setIsThinking(false);
 
@@ -547,6 +579,7 @@ export function LiveModeWorkspace() {
           birth: activeBirth,
           language: selectedLanguageRef.current,
           voice: selectedVoiceRef.current,
+          ...(milanRef.current ? { milan: toMilanContext(milanRef.current) } : {}),
         }),
       });
       if (grantRes.ok) grant = await grantRes.json();
@@ -651,6 +684,7 @@ export function LiveModeWorkspace() {
             language: selectedLanguageRef.current,
             voice: selectedVoiceRef.current,
             provider: "openai",
+            ...(milanRef.current ? { milan: toMilanContext(milanRef.current) } : {}),
           }),
         });
         if (res.ok) openaiGrant = await res.json();
@@ -1312,6 +1346,33 @@ onClick={() => setupMicAnalyzer()}
           {/* LEFT COLUMN (38% width) - Interactive Kundali Reference & Seeker Context */}
           <aside className="h-full min-h-0 space-y-4 overflow-y-auto border-r border-brd bg-inset p-5">
             
+            {milanLive && (
+              <div className="flex items-center gap-2.5 rounded-[10px] border border-acc/30 bg-acc/[0.08] px-3.5 py-2.5">
+                <Heart className="size-4 shrink-0 text-acc" />
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate text-[12px] font-semibold text-fg">
+                    {milanLive.self.name} &amp; {milanLive.partner.name}
+                  </span>
+                  <span className="block text-[10.5px] text-mut">
+                    {milanLive.match.total_guna}/{milanLive.match.max_guna}{" "}
+                    {selectedLanguage === "en" ? "gunas · both charts loaded" : "गुण · दुवै कुण्डली"}
+                  </span>
+                </span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    clearMilanLive();
+                    milanRef.current = null;
+                    setMilanLive(null);
+                  }}
+                  aria-label={selectedLanguage === "en" ? "Leave match context" : "मिलान हटाउनुहोस्"}
+                  className="shrink-0 cursor-pointer rounded-[6px] px-1.5 text-[13px] text-mut transition hover:text-fg"
+                >
+                  ✕
+                </button>
+              </div>
+            )}
+
             {/* The door to live voice, where a new visitor will actually see
                 it — the footer's bare headphone icon explained nothing. */}
             <button

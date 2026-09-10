@@ -16,6 +16,31 @@ class ChatTurn(BaseModel):
     text: str
 
 
+class MilanKutaBrief(BaseModel):
+    """One koota's score, as the engine computed it."""
+
+    name: str = ""
+    obtained: float = 0.0
+    max_points: float = 0.0
+
+
+class MilanContextIn(BaseModel):
+    """A finished match, handed to the model as data.
+
+    Present only when the visitor opened the consultation from a milan
+    result. Every figure was computed by `astrology_core.milan`; the model
+    reads it and never recomputes it.
+    """
+
+    partner_name: str = ""
+    partner_chart: ChartOut | None = None
+    total_guna: float | None = None
+    max_guna: float | None = None
+    verdict: str = ""
+    kutas: list[MilanKutaBrief] = Field(default_factory=list)
+    manglik_note: str = ""
+
+
 class ChatRequest(BaseModel):
     query: str = Field(..., min_length=1, max_length=4000)
     messages: list[ChatTurn] = Field(
@@ -28,6 +53,11 @@ class ChatRequest(BaseModel):
     chart: ChartOut
     birth: BirthDetailsIn
     language: Literal["en", "ne", "hi"] = "en"
+    milan: MilanContextIn | None = Field(
+        default=None,
+        description="A finished Ashtakoota match, when the consultation was "
+        "opened from one. Additive: absent for every single-chart session.",
+    )
 
 
 class ChatResponse(BaseModel):

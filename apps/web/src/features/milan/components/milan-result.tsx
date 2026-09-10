@@ -1,6 +1,10 @@
 "use client";
 
-import { AlertTriangle, ShieldCheck } from "lucide-react";
+import { AlertTriangle, ArrowRight, Headphones, ShieldCheck } from "lucide-react";
+import { useRouter } from "next/navigation";
+
+import { saveKundaliToStorage } from "@/features/kundali/store/kundali-store";
+import { milanLiveFrom, saveMilanLive } from "@/features/milan/store/milan-live";
 
 import { MilanCharts } from "@/features/milan/components/milan-charts";
 import { kutaName, kutaTerm, KUTA_MEANING, MANGLIK_REASONS, VERDICTS } from "@/features/milan/kuta-i18n";
@@ -30,7 +34,19 @@ export function MilanResult({
   groomBirth?: BirthDetailsIn | null;
 }) {
   const { t, language } = useTranslation();
+  const router = useRouter();
   const pct = Math.round(result.percentage);
+
+  // Take the match to the astrologer: the consultation opens on the bride's
+  // chart with the groom's and the finished score alongside it.
+  const askAboutMatch = () => {
+    if (!brideBirth) return;
+    const live = milanLiveFrom(result, brideBirth);
+    if (!live) return;
+    saveMilanLive(live);
+    saveKundaliToStorage(live.self.birth, live.self.chart);
+    router.push("/reading/live");
+  };
 
   // Three bands, because the classical reading is three bands. The colour is
   // the same judgement the text makes, not an extra one.
@@ -91,6 +107,36 @@ export function MilanResult({
           </button>
         </div>
       </section>
+
+      {/* The match, taken to the astrologer. */}
+      {brideBirth && result.bride_chart && result.groom_chart && (
+        <button
+          type="button"
+          onClick={askAboutMatch}
+          className="group flex w-full cursor-pointer items-center gap-3.5 rounded-[12px] bg-acc p-4 text-left text-onacc shadow-lg transition hover:bg-acc2 active:scale-[0.99]"
+        >
+          <span className="grid size-11 shrink-0 place-items-center rounded-full bg-onacc/15">
+            <Headphones className="size-5 transition-transform group-hover:scale-110" />
+          </span>
+          <span className="min-w-0 flex-1">
+            <span className="block text-[13.5px] font-bold leading-tight">
+              {language === "ne"
+                ? "यो मिलानबारे ज्योतिषीसँग सोध्नुहोस्"
+                : language === "hi"
+                  ? "इस मिलान के बारे में ज्योतिषी से पूछें"
+                  : "Ask the astrologer about this match"}
+            </span>
+            <span className="mt-0.5 block text-[11px] font-medium opacity-80">
+              {language === "ne"
+                ? "दुवै कुण्डली हेरेर आवाजमै वा लेखेर कुराकानी गर्नुहोस्"
+                : language === "hi"
+                  ? "दोनों कुंडली देखकर आवाज़ में या लिखकर बात करें"
+                  : "Both charts in hand — talk by voice, or type"}
+            </span>
+          </span>
+          <ArrowRight className="size-4 shrink-0 opacity-70 transition-transform group-hover:translate-x-0.5" />
+        </button>
+      )}
 
       {result.bride_chart && result.groom_chart && (
         <MilanCharts

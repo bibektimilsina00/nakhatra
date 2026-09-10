@@ -1,6 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import {
+  clearMilanSession,
+  loadMilanSession,
+  saveMilanSession,
+} from "@/features/milan/store/milan-session";
+import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import { kutaName } from "@/features/milan/kuta-i18n";
 import { ArrowRight, Heart } from "lucide-react";
 
@@ -12,6 +17,7 @@ import { useCalculateMatch } from "@/features/milan/hooks/use-calculate-match";
 import { useMilanAnalysis } from "@/features/milan/hooks/use-milan-analysis";
 import { CreateKundaliDialog } from "@/features/kundali/components/create-kundali-dialog";
 import { useSavedKundalis } from "@/features/vault/hooks/use-vault";
+import type { MilanSession } from "@/features/milan/store/milan-session";
 import type { SavedKundali } from "@/features/vault/types";
 import type { MilanAnalysisRequest } from "@/features/milan/types";
 import { useLatinTracking, useTranslation } from "@/lib/i18n/language-context";
@@ -47,6 +53,11 @@ const KUTAS: [string, number][] = [
  * Wrapped in `AppShell`, so the sidebar and top bar are the dashboard's — this
  * is a page of the app, not a separate one.
  */
+/** A store that never changes: the value is only used as a hydration flag. */
+const noSub = () => () => {};
+const clientYes = () => true;
+const serverNo = () => false;
+
 export function MilanPage() {
   const { t, language } = useTranslation();
   const eyebrow = useLatinTracking("uppercase tracking-[0.2em]");
@@ -54,8 +65,33 @@ export function MilanPage() {
   const match = useCalculateMatch();
   const analysis = useMilanAnalysis();
 
-  const [bride, setBride] = useState<SavedKundali | null>(null);
-  const [groom, setGroom] = useState<SavedKundali | null>(null);
+  const [bridePick, setBride] = useState<SavedKundali | null>(null);
+  const [groomPick, setGroom] = useState<SavedKundali | null>(null);
+  // A match survives leaving the page — opening a birth sky and coming back
+  // used to lose both selections and the finished reading. Read during render
+  // behind a hydration flag rather than in an effect, so the server's markup
+  // and the first client pass agree and no cascading render is scheduled.
+  const [dropped, setDropped] = useState(false);
+  const hydrated = useSyncExternalStore(noSub, clientYes, serverNo);
+  const saved = useMemo<MilanSession | null>(
+    () => (hydrated && !dropped ? loadMilanSession() : null),
+    [hydrated, dropped],
+  );
+
+  const bride = bridePick ?? saved?.bride ?? null;
+  const groom = groomPick ?? saved?.groom ?? null;
+  const result = match.data ?? saved?.result ?? null;
+  const reading = analysis.data ?? saved?.analysis ?? null;
+
+  useEffect(() => {
+    if (!match.data) return;
+    saveMilanSession({
+      bride,
+      groom,
+      result: match.data,
+      analysis: analysis.data ?? null,
+    });
+  }, [match.data, analysis.data, bride, groom]);
   const [creating, setCreating] = useState(false);
 
   const sameChart = Boolean(bride && groom && bride.id === groom.id);
@@ -93,6 +129,8 @@ export function MilanPage() {
     analysis.reset();
     setBride(null);
     setGroom(null);
+    setDropped(true);
+    clearMilanSession();
   };
 
   return (
@@ -106,16 +144,16 @@ export function MilanPage() {
           <p className="mt-3 text-[14.5px] leading-[1.7] text-mut">{t.milanSub}</p>
         </header>
 
-        {match.data ? (
+        {result ? (
           <div className="mt-10 space-y-4">
             <MilanResult
-              result={match.data}
+              result={result}
               onReset={reset}
               brideBirth={bride?.birth}
               groomBirth={groom?.birth}
             />
             <MilanAnalysisPanel
-              analysis={analysis.data}
+              analysis={reading ?? undefined}
               isPending={analysis.isPending}
               isError={analysis.isError}
               onRetry={retryAnalysis}

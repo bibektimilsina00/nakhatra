@@ -9,6 +9,7 @@ session opens rather than per turn.
 from __future__ import annotations
 
 from app.modules.kundali.schemas import BirthDetailsIn, ChartOut
+from app.modules.voice.schemas import MilanContextIn
 
 _LANGUAGE_INSTRUCTIONS: dict[str, str] = {
     "en": "Speak and respond in clear, warm, authentic English.",
@@ -17,7 +18,58 @@ _LANGUAGE_INSTRUCTIONS: dict[str, str] = {
 }
 
 
-def build_realtime_prompt(chart: ChartOut, birth: BirthDetailsIn, language: str = "en") -> str:
+def build_milan_block(milan: MilanContextIn | None) -> str:
+    """The match, as text the model reads rather than arithmetic it performs.
+
+    Every figure here was computed by `astrology_core.milan`. The block is
+    empty when the consultation is about a single chart, which is the usual
+    case, so nothing changes for those sessions.
+    """
+    if milan is None:
+        return ""
+
+    lines = [
+        "",
+        "COMPATIBILITY CONTEXT (ASHTAKOOTA MATCH — ALREADY CALCULATED):",
+        f"This consultation is about a marriage match with {milan.partner_name or 'the partner'}.",
+    ]
+    if milan.total_guna is not None and milan.max_guna:
+        lines.append(
+            f"Total: {milan.total_guna:g} of {milan.max_guna:g} gunas"
+            + (f" ({milan.verdict})" if milan.verdict else "")
+        )
+    if milan.kutas:
+        lines.append("Koota by koota:")
+        lines += [f"- {k.name}: {k.obtained:g}/{k.max_points:g}" for k in milan.kutas]
+    if milan.manglik_note:
+        lines.append(f"Mangal dosha: {milan.manglik_note}")
+
+    if milan.partner_chart is not None:
+        pc = milan.partner_chart
+        lines += [
+            "",
+            f"PARTNER'S CHART ({milan.partner_name or 'partner'}) — Lagna {pc.lagna_sign}:",
+        ]
+        lines += [
+            f"- {p.name} in {p.sign} (House {p.house}, {p.degree_in_sign:.2f}°"
+            + (", Retrograde" if p.retrograde else "")
+            + ")"
+            for p in pc.planets
+        ]
+
+    lines += [
+        "",
+        "Speak about BOTH charts when the question is about the relationship.",
+        "Never recompute these numbers — quote them. If asked why a koota scored",
+        "as it did, explain what that koota weighs, using the figures above.",
+        "",
+    ]
+    return "\n".join(lines)
+
+
+def build_realtime_prompt(chart: ChartOut, birth: BirthDetailsIn, language: str = "en",
+    milan: MilanContextIn | None = None,
+) -> str:
     periods = chart.dasha.periods
     maha = periods[0] if periods else None
     antar = periods[1] if len(periods) > 1 else None
@@ -30,6 +82,8 @@ def build_realtime_prompt(chart: ChartOut, birth: BirthDetailsIn, language: str 
         for p in chart.planets
     )
     vargas = "\n".join(f"- {v.code} ({v.name}): Lagna in {v.lagna_sign}" for v in chart.vargas[:5])
+
+    milan_block = build_milan_block(milan)
 
     return f"""You are an authentic, wise, and grounded Vedic Astrologer (Jyotishi) conducting a live 1-on-1 audio consultation.
 
@@ -47,7 +101,7 @@ Planetary Placements:
 {placements}
 Key Varga Charts:
 {vargas}
-=========================================================
+{milan_block}=========================================================
 
 CORE OPERATIONAL BEHAVIORS:
 1. ADAPTIVE RESPONSE LENGTH BASED ON SEEKER INTENT:

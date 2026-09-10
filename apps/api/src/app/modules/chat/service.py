@@ -48,7 +48,7 @@ async def answer(req: ChatRequest) -> ChatResponse:
         response = await get_client().messages.create(
             model=model_name(),
             max_tokens=MAX_TOKENS,
-            system=prompts.system_blocks(req.chart, req.birth, req.language),
+            system=prompts.system_blocks(req.chart, req.birth, req.language, req.milan),
             messages=messages,
             **tuning(),
         )

@@ -276,7 +276,9 @@ async def create_realtime_session(req: RealtimeSessionRequest) -> RealtimeSessio
     The key is short-lived and scoped to one session, which is the entire reason
     this endpoint exists: the account key must never reach a browser.
     """
-    instructions = prompts.build_realtime_prompt(req.chart, req.birth, req.language)
+    instructions = prompts.build_realtime_prompt(
+        req.chart, req.birth, req.language, req.milan
+    )
 
     if req.provider != "openai":
         gemini = await _gemini_session(instructions)

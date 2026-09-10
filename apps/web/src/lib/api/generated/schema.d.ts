@@ -1356,6 +1356,8 @@ export interface components {
              * @description Conversation so far. Only the most recent turns are sent to the model.
              */
             messages?: components["schemas"]["ChatTurn"][];
+            /** @description A finished Ashtakoota match, when the consultation was opened from one. Additive: absent for every single-chart session. */
+            milan?: components["schemas"]["MilanContextIn"] | null;
             /** Query */
             query: string;
         };
@@ -1741,6 +1743,38 @@ export interface components {
             /** Verdict */
             verdict: string;
         };
+        /**
+         * MilanContextIn
+         * @description A finished match, handed to the model as data.
+         *
+         *     Present only when the visitor opened the consultation from a milan
+         *     result. Every figure was computed by `astrology_core.milan`; the model
+         *     reads it and never recomputes it.
+         */
+        MilanContextIn: {
+            /** Kutas */
+            kutas?: components["schemas"]["MilanKutaBrief"][];
+            /**
+             * Manglik Note
+             * @default
+             */
+            manglik_note: string;
+            /** Max Guna */
+            max_guna?: number | null;
+            partner_chart?: components["schemas"]["ChartOut"] | null;
+            /**
+             * Partner Name
+             * @default
+             */
+            partner_name: string;
+            /** Total Guna */
+            total_guna?: number | null;
+            /**
+             * Verdict
+             * @default
+             */
+            verdict: string;
+        };
         /** MilanDoshaOut */
         MilanDoshaOut: {
             /** Affects */
@@ -1754,6 +1788,27 @@ export interface components {
              * @enum {string}
              */
             severity: "none" | "mild" | "moderate" | "serious";
+        };
+        /**
+         * MilanKutaBrief
+         * @description One koota's score, as the engine computed it.
+         */
+        MilanKutaBrief: {
+            /**
+             * Max Points
+             * @default 0
+             */
+            max_points: number;
+            /**
+             * Name
+             * @default
+             */
+            name: string;
+            /**
+             * Obtained
+             * @default 0
+             */
+            obtained: number;
         };
         /**
          * MilanPointOut
@@ -2242,6 +2297,8 @@ export interface components {
              * @enum {string}
              */
             language: "en" | "ne" | "hi";
+            /** @description A finished Ashtakoota match, when the consultation was opened from one. Additive: absent for every single-chart session. */
+            milan?: components["schemas"]["MilanContextIn"] | null;
             /**
              * Provider
              * @description Pin the realtime provider. The browser sends 'openai' when a Gemini session was granted but failed to connect — billing and regional availability are only discoverable at connect time.

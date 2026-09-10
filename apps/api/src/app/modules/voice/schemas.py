@@ -31,6 +31,31 @@ class TranscriptResponse(BaseModel):
     text: str
 
 
+class MilanKutaBrief(BaseModel):
+    """One koota's score, as the engine computed it."""
+
+    name: str = ""
+    obtained: float = 0.0
+    max_points: float = 0.0
+
+
+class MilanContextIn(BaseModel):
+    """A finished match, handed to the model as data.
+
+    Present only when the visitor opened the consultation from a milan
+    result. Every figure was computed by `astrology_core.milan`; the model
+    reads it and never recomputes it.
+    """
+
+    partner_name: str = ""
+    partner_chart: ChartOut | None = None
+    total_guna: float | None = None
+    max_guna: float | None = None
+    verdict: str = ""
+    kutas: list[MilanKutaBrief] = Field(default_factory=list)
+    manglik_note: str = ""
+
+
 class RealtimeSessionRequest(BaseModel):
     chart: ChartOut
     birth: BirthDetailsIn
@@ -44,6 +69,11 @@ class RealtimeSessionRequest(BaseModel):
         description="Pin the realtime provider. The browser sends 'openai' "
         "when a Gemini session was granted but failed to connect — billing "
         "and regional availability are only discoverable at connect time.",
+    )
+    milan: MilanContextIn | None = Field(
+        default=None,
+        description="A finished Ashtakoota match, when the consultation was "
+        "opened from one. Additive: absent for every single-chart session.",
     )
 
 

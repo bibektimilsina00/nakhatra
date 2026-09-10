@@ -19,6 +19,7 @@ from __future__ import annotations
 from datetime import date
 from typing import Literal
 
+from app.modules.chat.schemas import MilanContextIn
 from app.modules.kundali.schemas import BirthDetailsIn, ChartOut
 
 Language = Literal["en", "ne", "hi"]
@@ -82,7 +83,12 @@ Respond ONLY in valid JSON, with no prose before or after it:
 }"""
 
 
-def system_blocks(chart: ChartOut, birth: BirthDetailsIn, language: Language = "en") -> list[dict]:
+def system_blocks(
+    chart: ChartOut,
+    birth: BirthDetailsIn,
+    language: Language = "en",
+    milan: MilanContextIn | None = None,
+) -> list[dict]:
     """System prompt as cacheable blocks: stable instructions, then this chart.
 
     The `cache_control` marker ends the cacheable prefix. Everything before it is
@@ -102,6 +108,7 @@ def system_blocks(chart: ChartOut, birth: BirthDetailsIn, language: Language = "
                 f"{_LANGUAGE_INSTRUCTIONS.get(language, _LANGUAGE_INSTRUCTIONS['en'])}\n\n"
                 f"=== COMPLETE VERIFIED SIDEREAL ASTRONOMICAL BIRTH CHART & DASHA DATA ===\n"
                 f"{format_chart_for_ai(chart, birth)}\n"
+                f"{_milan_section(milan)}"
                 f"========================================================================"
             ),
         },
@@ -261,3 +268,43 @@ def _running_names(chart: ChartOut, today: date) -> str:
     if antar is None:
         return f"{maha.lord} Mahadasha"
     return f"{maha.lord} Mahadasha ➔ {antar.lord} Antardasha"
+
+
+def _milan_section(milan: MilanContextIn | None) -> str:
+    """The finished match, when the conversation came from one.
+
+    Appended after the chart rather than woven into it, so a single-chart
+    conversation produces byte-identical text and keeps its cache hit.
+    Every figure was computed by `astrology_core.milan`.
+    """
+    if milan is None:
+        return ""
+
+    lines = [
+        "",
+        "=== ASHTAKOOTA MARRIAGE MATCH (ALREADY CALCULATED — READ, NEVER RECOMPUTE) ===",
+        f"• Partner: {milan.partner_name or 'the partner'}",
+    ]
+    if milan.total_guna is not None and milan.max_guna:
+        lines.append(
+            f"• Total: {milan.total_guna:g} of {milan.max_guna:g} gunas"
+            + (f" ({milan.verdict})" if milan.verdict else "")
+        )
+    lines += [f"• {k.name}: {k.obtained:g}/{k.max_points:g}" for k in milan.kutas]
+    if milan.manglik_note:
+        lines.append(f"• Mangal dosha: {milan.manglik_note}")
+
+    if milan.partner_chart is not None:
+        pc = milan.partner_chart
+        lines += [
+            "",
+            f"=== PARTNER'S CHART ({milan.partner_name or 'partner'}) ===",
+            f"• Lagna: {pc.lagna_sign} ({pc.lagna_degree:.3f}°)",
+        ]
+        lines += [
+            f"• {p.name}: {p.sign} at {p.degree_in_sign:.3f}° | House {p.house}"
+            + (" | [RETROGRADE]" if p.retrograde else "")
+            for p in pc.planets
+        ]
+    lines.append("")
+    return "\n".join(lines)
