@@ -34,6 +34,11 @@ import { convertAdToBs } from "@/lib/utils/date-converter";
  * Rebuilt every half hour: the API writes a new day a little before two in
  * the morning, and a page that is at most thirty minutes behind it is a page
  * served from cache to everyone else.
+ *
+ * Rendered on first request, not at build. `generateStaticParams` would have
+ * the twelve pages prerendered on the CI runner, where there is no API to
+ * ask — the build failed on exactly that. Without it the first visitor to a
+ * sign after a deploy waits for one render and everyone after is cached.
  */
 
 export const revalidate = 1800;
@@ -42,10 +47,6 @@ export const dynamicParams = true;
 const LANG = "ne" as const;
 const WEEKDAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 const SECTIONS = ["career", "love", "finance", "health"] as const;
-
-export function generateStaticParams() {
-  return SIGN_ROUTES.map((r) => ({ sign: r.slug }));
-}
 
 async function fetchDay(): Promise<Rasifal> {
   const res = await fetch(`${API_URL}/v1/rasifal?language=${LANG}`, {
