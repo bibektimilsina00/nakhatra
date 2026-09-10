@@ -335,15 +335,29 @@ const failure = (err: unknown): PartPublish => ({
   at: new Date().toISOString(),
 });
 
+export type Channel = "youtube" | "tiktok";
+
+export interface PublishRequest {
+  /** Just this channel, whether or not it is switched on — asking for it by
+   *  name is the instruction the toggle would otherwise be giving. */
+  channel?: Channel;
+  /** Just this part. */
+  part?: "1" | "2";
+  /** Post it again even though it has already been posted. Only an explicit
+   *  button reaches this; the clock never does. */
+  force?: boolean;
+}
+
 /**
- * Hand a rendered day to every channel that is connected and switched on.
+ * Hand a rendered day to every channel that is connected and switched on,
+ * or to the one that was asked for.
  *
  * Idempotent per part per channel: anything that already has an id is left
- * alone, so pressing Publish after a half-failed run retries only the half
- * that failed. A channel that throws is recorded and the next one still
- * runs — one platform being down is not a reason to skip the other.
+ * alone unless `force`, so pressing Publish after a half-failed run retries
+ * only the half that failed. A channel that throws is recorded and the next
+ * one still runs — one platform being down is not a reason to skip the other.
  */
-export async function publishDay(date: string): Promise<PublishState> {
+export async function publishDay(date: string, req: PublishRequest = {}): Promise<PublishState> {
   if (state.publishing) throw new Error(`already publishing ${state.publishing}`);
   state.publishing = date;
   try {
@@ -352,7 +366,16 @@ export async function publishDay(date: string): Promise<PublishState> {
     const pub = readPublish(date);
     const save = () => writeFileSync(publishPath(date), JSON.stringify(pub, null, 2));
 
-    for (const part of ["1", "2"] as const) {
+    const wanted = (channel: Channel, done: boolean) => {
+      if (req.channel && req.channel !== channel) return false;
+      if (!conns[channel]) return false;
+      // Named explicitly, the toggle is not the question — the press is.
+      if (!req.channel && !settings[channel].enabled) return false;
+      return !done || Boolean(req.force);
+    };
+
+    const parts = req.part ? ([req.part] as const) : (["1", "2"] as const);
+    for (const part of parts) {
       const key = `part${part}` as const;
       const mp4 = join(dirFor(date), `rasifal-${date}-part${part}.mp4`);
       const captionFile = join(dirFor(date), `rasifal-${date}-part${part}-caption.txt`);
@@ -360,7 +383,7 @@ export async function publishDay(date: string): Promise<PublishState> {
       const caption = existsSync(captionFile) ? readFileSync(captionFile, "utf8") : "";
       const title = (caption.split("\n")[0] || `Rasifal ${date} · part ${part}`).slice(0, 100);
 
-      if (settings.youtube.enabled && conns.youtube && !isDone(pub.youtube?.[key])) {
+      if (conns.youtube && wanted("youtube", isDone(pub.youtube?.[key]))) {
         pub.youtube ??= {};
         try {
           const videoId = await youtubeUpload({
@@ -387,7 +410,7 @@ export async function publishDay(date: string): Promise<PublishState> {
         save();
       }
 
-      if (settings.tiktok.enabled && conns.tiktok && !isDone(pub.tiktok?.[key])) {
+      if (conns.tiktok && wanted("tiktok", isDone(pub.tiktok?.[key]))) {
         pub.tiktok ??= {};
         try {
           // Their refresh tokens rotate: the one just used is now dead, and

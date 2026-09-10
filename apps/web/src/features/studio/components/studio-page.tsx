@@ -32,30 +32,65 @@ const todayInNepal = () =>
 
 const card = "rounded-[10px] border border-brd bg-panel p-4";
 
-function PublishLine({ label, state }: { label: string; state?: PartPublish }) {
-  if (!state) return null;
-  if (!("videoId" in state)) {
-    return (
-      <span className="flex items-start gap-1.5 text-[12.5px] text-rose-300">
-        <TriangleAlert className="mt-0.5 size-3.5 shrink-0" /> {label} · {state.error}
-      </span>
-    );
-  }
-  // YouTube has a watchable URL; a TikTok direct post has only its publish
-  // id until the account makes it public, so it says how it went instead.
-  return state.url ? (
-    <a
-      href={state.url}
-      target="_blank"
-      rel="noreferrer"
-      className="flex items-center gap-1.5 text-[12.5px] text-emerald-300 hover:underline"
-    >
-      <Check className="size-3.5" /> {label} · {state.url} <ExternalLink className="size-3" />
-    </a>
-  ) : (
-    <span className="flex items-center gap-1.5 text-[12.5px] text-emerald-300">
-      <Check className="size-3.5" /> {label} · {state.note ?? "posted"}
-    </span>
+/**
+ * One channel's line on one part: what happened, and the button to make it
+ * happen. Naming a channel posts to it whether or not its daily switch is
+ * on — the press is the instruction — and a part that has already gone up
+ * offers to go again rather than pretending the button does nothing.
+ */
+function ChannelRow({
+  label,
+  state,
+  connected,
+  busy,
+  onPublish,
+}: {
+  label: string;
+  state?: PartPublish;
+  connected: boolean;
+  busy: boolean;
+  onPublish: (force: boolean) => void;
+}) {
+  const posted = state && "videoId" in state;
+
+  return (
+    <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+      <span className="w-[58px] shrink-0 text-[12px] text-mut">{label}</span>
+
+      {posted &&
+        (state.url ? (
+          <a
+            href={state.url}
+            target="_blank"
+            rel="noreferrer"
+            className="flex items-center gap-1.5 text-[12.5px] text-emerald-300 hover:underline"
+          >
+            <Check className="size-3.5" /> {state.url} <ExternalLink className="size-3" />
+          </a>
+        ) : (
+          // A TikTok direct post has no URL until the account makes it
+          // public, so it says how it went instead.
+          <span className="flex items-center gap-1.5 text-[12.5px] text-emerald-300">
+            <Check className="size-3.5" /> {state.note ?? "posted"}
+          </span>
+        ))}
+
+      {state && !posted && (
+        <span className="flex items-start gap-1.5 text-[12.5px] text-rose-300">
+          <TriangleAlert className="mt-0.5 size-3.5 shrink-0" /> {state.error}
+        </span>
+      )}
+
+      <button
+        type="button"
+        disabled={!connected || busy}
+        onClick={() => onPublish(Boolean(posted))}
+        title={connected ? `Post this part to ${label}` : `Connect ${label} below first`}
+        className="ml-auto cursor-pointer rounded-[6px] border border-brd px-2.5 py-1 text-[11.5px] font-medium text-mut transition-colors hover:border-acc hover:text-fg disabled:cursor-not-allowed disabled:opacity-40"
+      >
+        {busy ? "Posting…" : posted ? "Post again" : `Post to ${label}`}
+      </button>
+    </div>
   );
 }
 
@@ -63,10 +98,16 @@ function Part({
   date,
   part,
   publish,
+  connected,
+  busy,
+  onPublish,
 }: {
   date: string;
   part: "1" | "2";
   publish: { youtube?: PartPublish; tiktok?: PartPublish };
+  connected: { youtube: boolean; tiktok: boolean };
+  busy: boolean;
+  onPublish: (channel: "youtube" | "tiktok", part: "1" | "2", force: boolean) => void;
 }) {
   const video = `rasifal-${date}-part${part}.mp4`;
   const caption = `rasifal-${date}-part${part}-caption.txt`;
@@ -107,9 +148,21 @@ function Part({
         )}
       </div>
 
-      <div className="mt-2.5 grid gap-1">
-        <PublishLine label="TikTok" state={publish.tiktok} />
-        <PublishLine label="YouTube" state={publish.youtube} />
+      <div className="mt-3 grid gap-1.5 border-t border-brd pt-2.5">
+        <ChannelRow
+          label="TikTok"
+          state={publish.tiktok}
+          connected={connected.tiktok}
+          busy={busy}
+          onPublish={(force) => onPublish("tiktok", part, force)}
+        />
+        <ChannelRow
+          label="YouTube"
+          state={publish.youtube}
+          connected={connected.youtube}
+          busy={busy}
+          onPublish={(force) => onPublish("youtube", part, force)}
+        />
       </div>
 
       {text && (
@@ -224,7 +277,7 @@ export function StudioPage() {
                 <button
                   type="button"
                   disabled={!live.length || publish.isPending || status.data?.publishing}
-                  onClick={() => publish.mutate()}
+                  onClick={() => publish.mutate({})}
                   title={live.length ? `Upload to ${live.join(" and ")}` : "Connect a channel below and switch it on"}
                   className="cursor-pointer rounded-[8px] border border-brd px-4 py-2 text-[14px] font-medium text-fg hover:border-acc disabled:cursor-not-allowed disabled:opacity-50"
                 >
@@ -255,22 +308,23 @@ export function StudioPage() {
           {/* ── Output ─────────────────────────────────────────────── */}
           {done && (
             <div className="mt-4 grid gap-4 sm:grid-cols-2">
-              <Part
-                date={date}
-                part="1"
-                publish={{
-                  youtube: status.data?.publish.youtube?.part1,
-                  tiktok: status.data?.publish.tiktok?.part1,
-                }}
-              />
-              <Part
-                date={date}
-                part="2"
-                publish={{
-                  youtube: status.data?.publish.youtube?.part2,
-                  tiktok: status.data?.publish.tiktok?.part2,
-                }}
-              />
+              {(["1", "2"] as const).map((p) => (
+                <Part
+                  key={p}
+                  date={date}
+                  part={p}
+                  publish={{
+                    youtube: status.data?.publish.youtube?.[`part${p}`],
+                    tiktok: status.data?.publish.tiktok?.[`part${p}`],
+                  }}
+                  connected={{
+                    youtube: Boolean(config.data?.connections.youtube.connected),
+                    tiktok: Boolean(config.data?.connections.tiktok.connected),
+                  }}
+                  busy={publish.isPending || Boolean(status.data?.publishing)}
+                  onPublish={(channel, part, force) => publish.mutate({ channel, part, force })}
+                />
+              ))}
             </div>
           )}
 
