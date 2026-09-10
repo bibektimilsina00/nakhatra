@@ -313,6 +313,8 @@ export function renderedDays(limit = 30): string[] {
 
 // ─── Publishing ──────────────────────────────────────────────────────────────
 
+export type Channel = "youtube" | "tiktok";
+
 export type PartPublish =
   | { videoId: string; url?: string; note?: string; at: string }
   | { error: string; at: string };
@@ -327,6 +329,30 @@ export interface PublishState {
 const publishPath = (date: string) => join(dirFor(date), "publish.json");
 export const readPublish = (date: string): PublishState => readJson(publishPath(date), {});
 
+/**
+ * Forget a channel's failures for a day.
+ *
+ * Failures are kept rather than dropped, because the run that produces most
+ * of them is the unattended one at dawn and nobody is watching it — but a
+ * refusal that stands until the next attempt reads as a live error every
+ * time the page is opened. So it is dismissable, and only ever a failure:
+ * a record of something actually posted is not the reader's to delete.
+ */
+export function clearPublishErrors(date: string, channel?: Channel): PublishState {
+  const pub = readPublish(date);
+  for (const name of ["youtube", "tiktok"] as const) {
+    if (channel && channel !== name) continue;
+    const entry = pub[name];
+    if (!entry) continue;
+    for (const key of ["part1", "part2"] as const) {
+      if (entry[key] && !("videoId" in entry[key]!)) delete entry[key];
+    }
+    if (!entry.part1 && !entry.part2) delete pub[name];
+  }
+  writeFileSync(publishPath(date), JSON.stringify(pub, null, 2));
+  return pub;
+}
+
 export const isPublishing = () => state.publishing;
 
 const isDone = (p?: PartPublish) => Boolean(p && "videoId" in p);
@@ -334,8 +360,6 @@ const failure = (err: unknown): PartPublish => ({
   error: err instanceof Error ? err.message : String(err),
   at: new Date().toISOString(),
 });
-
-export type Channel = "youtube" | "tiktok";
 
 export interface PublishRequest {
   /** Just this channel, whether or not it is switched on — asking for it by

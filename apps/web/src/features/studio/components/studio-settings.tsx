@@ -9,7 +9,7 @@ import type {
   StudioConfig,
   StudioSettings,
 } from "@/features/studio/api/studio-api";
-import { useChannelConnect, useSaveSettings } from "@/features/studio/hooks/use-studio";
+import { useChannelConnect, useClearErrors, useSaveSettings } from "@/features/studio/hooks/use-studio";
 
 /**
  * What the studio does on its own, and where it sends the result.
@@ -40,6 +40,15 @@ const TIKTOK_PRIVACY: Record<string, string> = {
   FOLLOWER_OF_CREATOR: "Followers",
   PUBLIC_TO_EVERYONE: "Public",
 };
+
+/** "3 min ago" — enough for a failure to read as an event, not a state. */
+function when(iso: string): string {
+  const mins = Math.round((Date.now() - new Date(iso).getTime()) / 60000);
+  if (mins < 1) return "just now";
+  if (mins < 60) return `${mins} min ago`;
+  const hours = Math.round(mins / 60);
+  return hours < 24 ? `${hours} h ago` : `${Math.round(hours / 24)} d ago`;
+}
 
 const field = "rounded-[8px] border border-brd bg-inset px-3 py-2 text-[13.5px] text-fg";
 const label = "block text-[12px] font-medium text-mut";
@@ -310,8 +319,10 @@ function ChannelCard({
   children: React.ReactNode;
 }) {
   const { connect, disconnect } = useChannelConnect(channel);
+  const clear = useClearErrors(date);
   const posted = (p?: PartPublish) => Boolean(p && "videoId" in p);
   const both = posted(publish?.part1) && posted(publish?.part2);
+  const failed = [publish?.part1, publish?.part2].some((p) => p && !("videoId" in p));
 
   return (
     <div className="rounded-[8px] border border-brd bg-inset p-3.5">
@@ -383,23 +394,40 @@ function ChannelCard({
         </button>
       </div>
 
-      {/* What has already gone up there, for the day on show. */}
+      {/* What has already gone up there, for the day on show. A failure is
+          the last attempt rather than a standing state — it is kept so the
+          dawn run's refusal is still there at nine, and dismissable so it
+          does not read as live for the rest of the week. */}
       {(publish?.part1 || publish?.part2) && (
-        <div className="mt-2.5 flex flex-wrap gap-x-4 gap-y-1">
+        <div className="mt-2.5 grid gap-1">
           {(["1", "2"] as const).map((n) => {
             const state = publish?.[`part${n}` as "part1" | "part2"];
             if (!state) return null;
-            const ok = "videoId" in state;
-            return (
-              <span
-                key={n}
-                className={`text-[11.5px] ${ok ? "text-emerald-300" : "text-rose-300"}`}
-                title={ok ? (state.url ?? state.note) : state.error}
-              >
-                भाग {n === "1" ? "१" : "२"} · {ok ? (state.note ?? "posted") : state.error}
+            const part = `भाग ${n === "1" ? "१" : "२"}`;
+            return "videoId" in state ? (
+              <span key={n} className="text-[11.5px] text-emerald-300" title={state.url ?? state.note}>
+                {part} · {state.note ?? "posted"}
+              </span>
+            ) : (
+              <span key={n} className="flex items-start gap-1.5 text-[11.5px] text-amber-300/90">
+                <span className="shrink-0">
+                  {part} · last try {when(state.at)} failed:
+                </span>
+                <span className="text-mut">{state.error}</span>
               </span>
             );
           })}
+
+          {failed && (
+            <button
+              type="button"
+              onClick={() => clear.mutate(channel)}
+              disabled={clear.isPending}
+              className="mt-0.5 w-fit cursor-pointer text-[11.5px] text-mut underline-offset-2 hover:text-fg hover:underline"
+            >
+              Dismiss
+            </button>
+          )}
         </div>
       )}
     </div>
