@@ -315,7 +315,8 @@ function ChannelCard({
   const snack = useSnack();
   const { connect, disconnect } = useChannelConnect(channel);
   const posted = (p?: PartPublish) => Boolean(p && "videoId" in p);
-  const both = posted(publish?.part1) && posted(publish?.part2);
+  const up = [publish?.part1, publish?.part2].filter(posted).length;
+  const both = up === 2;
 
   return (
     <div className="rounded-[8px] border border-brd bg-inset p-3.5">
@@ -388,24 +389,17 @@ function ChannelCard({
         >
           {busy ? "Publishing…" : "Publish"}
         </button>
+
+        {/* Whether the day is already up there — a word, so the card can be
+            read at a glance. What happened when it went up is a snackbar. */}
+        {up > 0 && (
+          <span className="text-[11.5px] text-emerald-300/90">
+            {up === 2 ? "both parts posted" : "one part posted"}
+          </span>
+        )}
       </div>
 
-      {/* What has gone up there, for the day on show. Only what went up: a
-          refusal is an event, and events are snackbars — printed here it sat
-          on the page for a week reading as live. */}
-      {(posted(publish?.part1) || posted(publish?.part2)) && (
-        <div className="mt-2.5 grid gap-1">
-          {(["1", "2"] as const).map((n) => {
-            const state = publish?.[`part${n}` as "part1" | "part2"];
-            if (!state || !("videoId" in state)) return null;
-            return (
-              <span key={n} className="text-[11.5px] text-emerald-300" title={state.url ?? state.note}>
-                भाग {n === "1" ? "१" : "२"} · {state.note ?? "posted"}
-              </span>
-            );
-          })}
-        </div>
-      )}
+
     </div>
   );
 }

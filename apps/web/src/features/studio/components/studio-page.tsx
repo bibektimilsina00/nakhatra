@@ -35,18 +35,16 @@ const todayInNepal = () =>
 const card = "rounded-[10px] border border-brd bg-panel p-4";
 
 /**
- * Where a part went on one channel.
+ * A link to where this part ended up.
  *
- * Successes only. A refusal belongs to the channel that refused — its card
- * carries it, with the time it happened and something to dismiss it with —
- * and printed here as well it was the same failure in two places, one of
- * which could not be cleared.
+ * Only a link. How a publish went is an event and belongs in a snackbar; a
+ * URL is a place, and a place is worth keeping next to the file it came
+ * from. A TikTok direct post has no URL until the account makes it public,
+ * so there is nothing here to keep for it.
  */
 function PublishLine({ label, state }: { label: string; state?: PartPublish }) {
-  if (!state || !("videoId" in state)) return null;
-  // YouTube has a watchable URL; a TikTok direct post has only its publish
-  // id until the account makes it public, so it says how it went instead.
-  return state.url ? (
+  if (!state || !("videoId" in state) || !state.url) return null;
+  return (
     <a
       href={state.url}
       target="_blank"
@@ -55,10 +53,6 @@ function PublishLine({ label, state }: { label: string; state?: PartPublish }) {
     >
       <Check className="size-3.5" /> {label} · {state.url} <ExternalLink className="size-3" />
     </a>
-  ) : (
-    <span className="flex items-center gap-1.5 text-[12.5px] text-emerald-300">
-      <Check className="size-3.5" /> {label} · {state.note ?? "posted"}
-    </span>
   );
 }
 
@@ -177,7 +171,19 @@ function Studio() {
       onSuccess: ({ publish: result }) => {
         const failed = refusals(result);
         if (!failed.length) {
-          snack({ tone: "ok", text: "Published." });
+          const done = (["tiktok", "youtube"] as const)
+            .map((channel) => {
+              const parts = (["part1", "part2"] as const).filter((key) => {
+                const state = result[channel]?.[key];
+                return state && "videoId" in state;
+              });
+              if (!parts.length) return null;
+              const first = result[channel]?.[parts[0]];
+              const how = first && "videoId" in first ? (first.note ?? "posted") : "posted";
+              return `${CHANNEL_NAME[channel]} · ${parts.length === 2 ? "both parts" : "one part"} · ${how}`;
+            })
+            .filter(Boolean);
+          snack({ tone: "ok", text: done.length ? done.join("  ·  ") : "Nothing to publish." });
           return;
         }
         for (const f of failed) {
