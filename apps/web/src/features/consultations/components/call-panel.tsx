@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { Mic, MicOff, Phone, PhoneOff, TriangleAlert, Video, VideoOff } from "lucide-react";
 
 import type { useCall } from "@/features/consultations/hooks/use-call";
+import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/lib/i18n/language-context";
 
 /**
@@ -43,14 +44,10 @@ export function CallPanel({
     if (!canCall || medium === "chat") return null;
     return (
       <div className="mt-4 flex flex-wrap items-center gap-2">
-        <button
-          type="button"
-          onClick={() => call.session.start(medium === "video")}
-          className="inline-flex items-center gap-2 rounded-[8px] bg-acc px-4 py-2.5 text-[13px] font-bold text-ink transition-colors hover:bg-acc2"
-        >
+        <Button variant="primary" onClick={() => call.session.start(medium === "video")}>
           {medium === "video" ? <Video className="size-4" /> : <Phone className="size-4" />}
           {medium === "video" ? t.callStartVideo : t.callStartVoice}
-        </button>
+        </Button>
         {call.warning === "noRelay" && <Warning text={t.callNoRelay} onDismiss={call.session.dismissWarning} />}
         {call.warning === "mic" && <Warning text={t.callNoMic} onDismiss={call.session.dismissWarning} />}
       </div>
@@ -58,21 +55,21 @@ export function CallPanel({
   }
 
   return (
-    <div className="mt-4 overflow-hidden rounded-[12px] border border-white/[0.09] bg-panel">
+    <div className="mt-4 overflow-hidden rounded-xl border border-line-strong bg-surface">
       {video && state !== "ringing" && (
-        <div className="relative aspect-video bg-app">
+        <div className="relative aspect-video bg-ink">
           <video
             ref={remote}
             autoPlay
             playsInline
-            className="size-full bg-app object-cover"
+            className="size-full bg-ink object-cover"
           />
           <video
             ref={local}
             autoPlay
             playsInline
             muted
-            className="absolute bottom-3 right-3 aspect-video w-32 rounded-[8px] border border-white/[0.12] bg-app object-cover"
+            className="absolute bottom-3 right-3 aspect-video w-32 rounded-md border border-line-strong bg-ink object-cover"
           />
         </div>
       )}
@@ -81,13 +78,13 @@ export function CallPanel({
       {!video && <video ref={remote} autoPlay playsInline className="hidden" />}
 
       <div className="flex flex-wrap items-center justify-between gap-3 p-4">
-        <span className="text-[12.5px] text-mut">
+        <span className="text-xs text-muted">
           {state === "calling" && t.callRinging}
           {state === "ringing" && t.callIncoming}
           {state === "connecting" && t.callConnecting}
           {state === "live" && (
-            <span className="inline-flex items-center gap-2 text-emerald-300">
-              <span className="size-1.5 animate-pulse rounded-full bg-emerald-400" />
+            <span className="inline-flex items-center gap-2 text-success">
+              <span className="size-1.5 animate-pulse rounded-full bg-success" />
               {t.callLive}
             </span>
           )}
@@ -100,7 +97,7 @@ export function CallPanel({
                 type="button"
                 onClick={call.session.accept}
                 aria-label={t.callAnswer}
-                className={`${round} bg-emerald-500 text-ink hover:bg-emerald-400`}
+                className={`${round} bg-success text-white hover:opacity-90`}
               >
                 <Phone className="size-4" />
               </button>
@@ -108,7 +105,7 @@ export function CallPanel({
                 type="button"
                 onClick={call.session.decline}
                 aria-label={t.callDecline}
-                className={`${round} bg-rose-500 text-white hover:bg-rose-400`}
+                className={`${round} bg-danger text-white hover:opacity-90`}
               >
                 <PhoneOff className="size-4" />
               </button>
@@ -122,8 +119,8 @@ export function CallPanel({
                 aria-pressed={!call.micOn}
                 className={`${round} border ${
                   call.micOn
-                    ? "border-white/12 text-mut hover:text-fg"
-                    : "border-rose-400/40 bg-rose-500/10 text-rose-300"
+                    ? "border-line-strong text-muted hover:text-ink"
+                    : "border-danger/40 bg-danger/10 text-danger"
                 }`}
               >
                 {call.micOn ? <Mic className="size-4" /> : <MicOff className="size-4" />}
@@ -137,8 +134,8 @@ export function CallPanel({
                   aria-pressed={!call.cameraOn}
                   className={`${round} border ${
                     call.cameraOn
-                      ? "border-white/12 text-mut hover:text-fg"
-                      : "border-rose-400/40 bg-rose-500/10 text-rose-300"
+                      ? "border-line-strong text-muted hover:text-ink"
+                      : "border-danger/40 bg-danger/10 text-danger"
                   }`}
                 >
                   {call.cameraOn ? <Video className="size-4" /> : <VideoOff className="size-4" />}
@@ -149,7 +146,7 @@ export function CallPanel({
                 type="button"
                 onClick={() => call.session.hangUp()}
                 aria-label={t.callEnd}
-                className={`${round} bg-rose-500 text-white hover:bg-rose-400`}
+                className={`${round} bg-danger text-white hover:opacity-90`}
               >
                 <PhoneOff className="size-4" />
               </button>
@@ -159,7 +156,7 @@ export function CallPanel({
       </div>
 
       {call.warning === "noRelay" && (
-        <div className="border-t border-white/[0.07] px-4 pb-4">
+        <div className="border-t border-line px-4 pb-4">
           <Warning text={t.callNoRelay} onDismiss={call.session.dismissWarning} />
         </div>
       )}
@@ -169,10 +166,10 @@ export function CallPanel({
 
 function Warning({ text, onDismiss }: { text: string; onDismiss: () => void }) {
   return (
-    <p className="flex items-start gap-2 rounded-[8px] border border-acc/30 bg-[#1A150B] px-3 py-2 text-[11.5px] leading-[1.6] text-acc2">
+    <p className="flex items-start gap-2 rounded-md border border-accent/30 bg-accent-wash px-3 py-2 text-xs leading-[1.6] text-accent-ink">
       <TriangleAlert className="mt-0.5 size-3.5 shrink-0" />
       <span className="flex-1">{text}</span>
-      <button type="button" onClick={onDismiss} className="shrink-0 text-dim hover:text-fg">
+      <button type="button" onClick={onDismiss} className="shrink-0 text-dim hover:text-ink">
         ✕
       </button>
     </p>
