@@ -12,6 +12,7 @@
 
   --color-accent: #e8931f;        /* saffron-500 — fill, dark text on top */
   --color-accent-strong: #a66916; /* saffron-700 — button fill, white text */
+  --color-accent-ink: #824f11;    /* saffron-800 — ghost button text, pressed states */
   --color-accent-wash: #fdf4e7;   /* saffron-50 */
   --color-accent-tint: #fae6c9;   /* saffron-100 */
   --color-ring: #c97a12;          /* saffron-600 — focus ring only */

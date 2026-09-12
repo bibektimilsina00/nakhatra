@@ -16,4 +16,8 @@ describe("inputClasses", () => {
     // regression guard: no placeholder:text-ink / placeholder-only styling
     expect(inputClasses()).not.toMatch(/placeholder:font-|placeholder-bold/);
   });
+
+  it("has a visible focus ring — the border turns saffron-600 on focus", () => {
+    expect(inputClasses()).toContain("focus-visible:border-ring");
+  });
 });

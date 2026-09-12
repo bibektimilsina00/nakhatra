@@ -12,26 +12,24 @@ const BASE =
 const VARIANT: Record<ButtonVariant, string> = {
   primary: "bg-accent-strong text-white hover:opacity-90",
   secondary: "bg-surface border border-line-strong text-ink hover:bg-cream",
-  ghost: "bg-transparent text-accent-strong hover:bg-accent-wash",
+  ghost: "bg-transparent text-accent-ink hover:bg-accent-wash",
   danger: "bg-danger text-white hover:opacity-90",
 };
 
 export function buttonClasses(
   variant: ButtonVariant = "primary",
-  opts: { size?: "sm" | "md"; className?: string } = {},
+  opts: { className?: string } = {},
 ): string {
-  const size = opts.size === "sm" ? "h-9 px-3 text-sm" : "";
-  return [BASE, VARIANT[variant], size, opts.className].filter(Boolean).join(" ");
+  return [BASE, VARIANT[variant], opts.className].filter(Boolean).join(" ");
 }
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant;
-  size?: "sm" | "md";
 }
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ variant = "primary", size, className, ...rest }, ref) => (
-    <button ref={ref} className={buttonClasses(variant, { size, className })} {...rest} />
+  ({ variant = "primary", className, ...rest }, ref) => (
+    <button ref={ref} className={buttonClasses(variant, { className })} {...rest} />
   ),
 );
 Button.displayName = "Button";

@@ -7,7 +7,7 @@ export function inputClasses(
 ): string {
   const base =
     "h-11 w-full rounded-md border bg-surface px-3 text-base text-ink " +
-    "placeholder:text-dim focus-visible:outline-none";
+    "placeholder:text-dim focus-visible:outline-none focus-visible:border-ring";
   const border = opts.invalid ? "border-danger" : "border-line-strong";
   return [base, border, opts.className].filter(Boolean).join(" ");
 }

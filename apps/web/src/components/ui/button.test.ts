@@ -30,4 +30,11 @@ describe("buttonClasses", () => {
     expect(classes).toContain("w-full");
     expect(classes).toContain("border-line-strong");
   });
+
+  it("ghost text uses saffron-800 (AA on cream), not saffron-700", () => {
+    // saffron-700 (text-accent-strong) measures 4.38:1 on cream — below the
+    // 4.5:1 AA threshold for body text; saffron-800 (text-accent-ink) is
+    // 6.63:1 (design.md §5 Ghost).
+    expect(buttonClasses("ghost")).toContain("text-accent-ink");
+  });
 });
