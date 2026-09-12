@@ -1,33 +1,25 @@
 import type { Metadata } from "next";
-import { Cinzel, JetBrains_Mono, Sora } from "next/font/google";
+import { Inter, Poppins } from "next/font/google";
 import Script from "next/script";
 
 import { SessionSync } from "@/features/auth/components/session-sync";
 import { SITE_NAME, SITE_URL } from "@/lib/seo/site";
 import { QueryProvider } from "@/providers/query-provider";
 import { LanguageProvider } from "@/lib/i18n/language-context";
-import { THEME_INIT_SCRIPT, ThemeProvider } from "@/providers/theme-provider";
 
 import "./globals.css";
 
-const sora = Sora({
+const inter = Inter({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-sora",
+  weight: ["400", "500", "600"],
+  variable: "--font-inter",
   display: "swap",
 });
 
-const jetbrains = JetBrains_Mono({
+const poppins = Poppins({
   subsets: ["latin"],
-  weight: ["400", "500"],
-  variable: "--font-jetbrains",
-  display: "swap",
-});
-
-const cinzel = Cinzel({
-  subsets: ["latin"],
-  weight: ["500", "600", "700", "800"],
-  variable: "--font-serif-face",
+  weight: ["500", "600", "700"],
+  variable: "--font-poppins",
   display: "swap",
 });
 
@@ -124,24 +116,14 @@ export default function RootLayout({
   const umamiHost = process.env.NEXT_PUBLIC_UMAMI_HOST || "https://cloud.umami.is/script.js";
 
   return (
-    <html
-      lang="en"
-      suppressHydrationWarning
-      className={`${cinzel.variable} ${sora.variable} ${jetbrains.variable} dark`}
-    >
-      <head>
-        {/* Before paint, so the patro theme never flashes dark first. */}
-        <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
-      </head>
-      <body className="font-body antialiased bg-app text-mut min-h-dvh">
-        <ThemeProvider>
+    <html lang="en" className={`${inter.variable} ${poppins.variable}`}>
+      <body className="font-body antialiased bg-cream text-ink min-h-dvh">
         <LanguageProvider>
           <QueryProvider>
             <SessionSync />
             {children}
           </QueryProvider>
         </LanguageProvider>
-        </ThemeProvider>
         {umamiWebsiteId && (
           <Script
             src={umamiHost}

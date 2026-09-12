@@ -13,7 +13,6 @@ import { NorthIndianChart } from "@/features/kundali/components/north-indian-cha
 import { SouthIndianChart } from "@/features/kundali/components/south-indian-chart";
 import { Section, ViewMore, useReveal } from "@/features/kundali/components/section";
 import { VargaGrid } from "@/features/kundali/components/varga-grid";
-import { useTheme } from "@/providers/theme-provider";
 import type {
   BirthDetailsIn,
   Chart,
@@ -37,9 +36,8 @@ export function ChartView({
 }) {
   const [house, setHouse] = useState<number | null>(null);
   const [chartStyle, setChartStyle] = useState<"north" | "south">("north");
-  // In the patro theme the charts are drawn in the patro's inks.
-  const { theme } = useTheme();
-  const chartTheme = theme === "light" ? ("patro" as const) : ("dark" as const);
+  // Single theme now — the charts always draw in the patro's inks.
+  const chartTheme = "patro" as const;
   // Captured once on mount. Reading the clock during render is impure and
   // makes the server and client renders disagree.
   const [now] = useState(() => Date.now());
