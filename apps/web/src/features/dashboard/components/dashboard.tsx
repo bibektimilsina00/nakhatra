@@ -50,11 +50,11 @@ export function Dashboard() {
     <AppShell search={{ query, onQueryChange: setQuery }}>
       <main className="mx-auto w-full max-w-[1180px] px-5 pb-24 pt-10 sm:px-8">
             <section id="kundalis" className="scroll-mt-24">
-              <div className="flex flex-wrap items-baseline justify-between gap-3 border-b border-white/[0.09] pb-3">
-                <h2 className="text-[17px] font-bold text-fg">{t.dashSaved}</h2>
+              <div className="flex flex-wrap items-baseline justify-between gap-3 border-b border-line pb-3">
+                <h2 className="text-lg font-bold text-ink">{t.dashSaved}</h2>
                 <div className="flex items-center gap-4">
                   {!isLoading && (
-                    <span className="text-[11.5px] text-dim">
+                    <span className="text-xs text-dim">
                       {query
                         ? t.dashMatches.replace("{n}", String(shown.length))
                         : t.dashSavedCount.replace("{n}", String(kundalis.length))}
@@ -68,7 +68,7 @@ export function Dashboard() {
                   {[0, 1, 2, 3].map((i) => (
                     <div
                       key={i}
-                      className="h-[224px] animate-pulse rounded-[10px] border border-white/[0.07] bg-panel"
+                      className="h-[224px] animate-pulse rounded-lg border border-line bg-surface"
                     />
                   ))}
                 </div>
@@ -79,12 +79,12 @@ export function Dashboard() {
                     <button
                       type="button"
                       onClick={() => setCreating(true)}
-                      className="group flex min-h-[224px] flex-col items-center justify-center gap-2.5 rounded-[10px] border border-dashed border-white/[0.14] transition-colors hover:border-acc/50 hover:bg-panel"
+                      className="group flex min-h-[224px] flex-col items-center justify-center gap-2.5 rounded-lg border border-dashed border-line-strong transition-colors hover:border-accent/50 hover:bg-accent-wash"
                     >
-                      <span className="grid size-10 place-items-center rounded-full border border-white/12 text-mut transition-colors group-hover:border-acc/45 group-hover:text-acc">
+                      <span className="grid size-10 place-items-center rounded-full border border-line-strong text-muted transition-colors group-hover:border-accent group-hover:text-accent">
                         <Plus className="size-4" />
                       </span>
-                      <span className="text-[13.5px] font-medium text-mut transition-colors group-hover:text-fg">
+                      <span className="text-sm font-medium text-muted transition-colors group-hover:text-ink">
                         {t.dashNewKundali}
                       </span>
                     </button>
@@ -104,13 +104,13 @@ export function Dashboard() {
               )}
 
               {!isLoading && kundalis.length === 0 && (
-                <p className="mt-5 max-w-md text-[13.5px] leading-[1.75] text-dim">
+                <p className="mt-5 max-w-md text-sm leading-[1.75] text-dim">
                   {t.dashEmptyBody}
                 </p>
               )}
 
               {!isLoading && query && shown.length === 0 && kundalis.length > 0 && (
-                <p className="mt-5 text-[13.5px] text-dim">
+                <p className="mt-5 text-sm text-dim">
                   {t.dashNoMatches.replace("{q}", query)}
                 </p>
               )}

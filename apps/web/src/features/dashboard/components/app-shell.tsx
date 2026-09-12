@@ -98,7 +98,7 @@ export function AppShell({
 
   return (
     <div
-      className={`bg-app font-sys text-mut antialiased ${
+      className={`bg-cream text-muted antialiased ${
         fill ? "h-dvh overflow-hidden" : "min-h-dvh"
       }`}
     >
@@ -112,7 +112,7 @@ export function AppShell({
             onClick={() => setDrawerOpen(false)}
             className="absolute inset-0 bg-black/60"
           />
-          <div className={`absolute inset-y-0 left-0 ${SIDEBAR_WIDTH} border-r border-brd`}>
+          <div className={`absolute inset-y-0 left-0 ${SIDEBAR_WIDTH} border-r border-line-strong`}>
             {sidebar(() => setDrawerOpen(false))}
           </div>
         </div>
@@ -121,7 +121,7 @@ export function AppShell({
       <div className="flex">
         {withSidebar && (
           <aside
-            className={`sticky top-0 hidden h-dvh shrink-0 border-r border-brd lg:block ${SIDEBAR_WIDTH}`}
+            className={`sticky top-0 hidden h-dvh shrink-0 border-r border-line-strong lg:block ${SIDEBAR_WIDTH}`}
           >
             {sidebar()}
           </aside>
