@@ -15,7 +15,6 @@ import {
 } from "lucide-react";
 
 import { LanguageMenu } from "@/components/ui/language-menu";
-import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { useLogout } from "@/features/auth/hooks/use-auth";
 import { MARKETPLACE_LIVE } from "@/features/practitioners/marketplace";
 import { useMyApplication } from "@/features/practitioners/hooks/use-practitioners";
@@ -144,7 +143,6 @@ export function AppNav({
               handler cannot see this bar's state, so closing on mousedown here
               is what keeps two panels from being open at once. */}
           <span className="flex items-center gap-1.5" onMouseDown={() => setOpen(null)}>
-            <ThemeToggle />
             <LanguageMenu />
           </span>
 

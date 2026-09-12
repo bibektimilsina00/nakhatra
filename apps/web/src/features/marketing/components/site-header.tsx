@@ -5,9 +5,7 @@ import { useEffect, useRef, useState } from "react";
 
 import { useSession } from "@/features/auth/hooks/use-auth";
 import { LANGUAGES, LanguageMenu } from "@/components/ui/language-menu";
-import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { useLatinTracking, useMarketing, useTranslation } from "@/lib/i18n/language-context";
-import { useTheme } from "@/providers/theme-provider";
 
 /** The same three languages as plain text — for the mobile panel, where a
  *  dropdown inside an open panel is one layer too many. */
@@ -46,7 +44,6 @@ export function SiteHeader() {
   const { user } = useSession();
   const nav = useMarketing().nav;
   const menu = useMarketing().menu;
-  const { theme } = useTheme();
   const badge = useLatinTracking("uppercase tracking-[0.12em]");
 
   useEffect(() => {
@@ -118,13 +115,11 @@ export function SiteHeader() {
     <div ref={navRef as React.RefObject<HTMLDivElement>}>
       <header
             id="hdr"
-            // Themed like everything else. In dark it stays transparent over
-            // the hero until scrolled, as always; in light the hero below is
-            // still a night island, so the bar wears its paper from the first
-            // pixel or its ink text would sit on a starfield.
-            className={`fixed inset-x-0 top-0 z-50 transition-all duration-300${
-              stuck || theme === "light" ? " border-b border-brd bg-ink/90 backdrop-blur" : ""
-            }`}
+            // Single theme now (the old "light"/patro palette) — the hero
+            // below is still a night island, so the bar always wears its
+            // paper from the first pixel or its ink text would sit on a
+            // starfield.
+            className="fixed inset-x-0 top-0 z-50 transition-all duration-300 border-b border-brd bg-ink/90 backdrop-blur"
           >
         <div className="mx-auto flex max-w-[1360px] items-center justify-between px-8 py-4">
           <div className="flex items-center gap-9">
@@ -211,7 +206,6 @@ export function SiteHeader() {
           </div>
 
           <div className="flex items-center gap-2.5 text-[13.5px]">
-            <ThemeToggle />
             <div className="hidden xl:block"><LanguageMenu /></div>
             {user ? (
         <Link href="/dashboard" className="hidden text-muted transition-colors hover:text-paper sm:inline">
@@ -292,7 +286,7 @@ export function SiteHeader() {
               <Link href="/login" className="text-muted transition-colors hover:text-paper">
           {nav.signIn}
         </Link>
-              <span className="ml-auto flex items-center gap-3"><ThemeToggle /><LangStrip className="font-mono text-[11px]" /></span>
+              <span className="ml-auto flex items-center gap-3"><LangStrip className="font-mono text-[11px]" /></span>
             </div>
           </nav>
         </div>
