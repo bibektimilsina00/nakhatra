@@ -1,200 +1,60 @@
 @import "tailwindcss";
 
 @theme {
-  --color-navy-bg: #090A10;
-  --color-card-bg: #161B2B;
-  --color-card-border: rgba(255, 255, 255, 0.15);
-  --color-gold-main: #E5A93C;
-  --color-gold-light: #F3C766;
-  --color-indigo-accent: #818CF8;
-  --color-heading-text: #FFFFFF;
-  --color-body-text: #E2E8F0;
+  --color-cream: #fffbf6;
+  --color-surface: #ffffff;
+  --color-line: #f0eae1;
+  --color-line-strong: #e3dacd;
 
-  --radius-sm: 8px;
-  --radius-md: 8px;
-  --radius-lg: 8px;
+  --color-ink: #1f1d1b;
+  --color-muted: #6e6862;
+  --color-dim: #7a736c;
 
-  /* The platform's own UI face — SF Pro on Apple, Segoe UI on Windows, Roboto
-     on Android. No download, no flash, and it never looks slightly foreign the
-     way an imitation of a system face does. */
-  --font-body: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+  --color-accent: #e8931f;        /* saffron-500 — fill, dark text on top */
+  --color-accent-strong: #a66916; /* saffron-700 — button fill, white text */
+  --color-accent-wash: #fdf4e7;   /* saffron-50 */
+  --color-accent-tint: #fae6c9;   /* saffron-100 */
+  --color-ring: #c97a12;          /* saffron-600 — focus ring only */
+
+  --color-success: #3a863d;
+  --color-success-tint: #eaf4ea;
+  --color-danger: #dc382d;
+  --color-danger-tint: #fdedec;
+  --color-star: #f5a623;
+
+  --color-benefic: #2f7d4f;
+  --color-malefic: #b4342a;
+  --color-neutral-dignity: #6e6862;
+  --color-retrograde: #8a5406;
+  --color-combust: #7a736c;
+
+  --radius-sm: 2px;
+  --radius-md: 3px;
+  --radius-lg: 4px;
+  --radius-xl: 6px;
+
+  /* Poppins for display, Inter for body — next/font/google, wired in
+     layout.tsx. font-serif and font-logo are gone with the marketing
+     Cinzel wordmark island; see Task 2. */
+  --font-display: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
+  --font-body: var(--font-inter), ui-sans-serif, system-ui, -apple-system,
     "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 
-  /* `font-serif` resolves to the same stack on purpose. Cinzel has no true
-     lowercase — its minuscules are small capitals — which suits a logotype and
-     fights the reader in a heading. Rather than edit 74 call sites, the token
-     points at the readable face and the display face keeps its own token. */
-  --font-serif: var(--font-body);
-
-  /* Cinzel, reserved for the wordmark. An inscriptional Roman face is exactly
-     right set once, in capitals, with wide tracking. */
-  --font-logo: var(--font-serif-face), Georgia, serif;
-
-  /* Marketing palette. Originally fixed dark; now themed like the app —
-     the same var indirection, so the landing page turns to warm paper in
-     light while the hero (wrapped in .theme-dark) keeps its night sky. */
-  --color-ink: var(--m-ink);
-  --color-ink2: var(--m-ink2);
-  --color-card: var(--m-card);
-  --color-gold: var(--m-gold);
-  --color-gold2: var(--m-gold2);
-  --color-gold3: var(--m-gold3);
-  --color-paper: var(--m-paper);
-  --color-muted: var(--m-muted);
-  --color-faint: var(--m-faint);
-
-  --font-sys: var(--font-sora), ui-sans-serif, system-ui, -apple-system, sans-serif;
-  --font-disp: var(--font-sora), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-jetbrains), ui-monospace, monospace;
-
-  /* ── Themed app tokens ─────────────────────────────────────────────
-     The app (everything behind login) draws from these; marketing keeps its
-     own fixed dark palette above. Dark is the app's existing night-sky
-     values, light is the janma patrika: parchment ground, the guru's red
-     for accents, ink for text. The utilities resolve through --t-* vars so
-     [data-theme] can flip them at runtime. */
-  --color-app: var(--t-app);
-  --color-panel: var(--t-panel);
-  --color-inset: var(--t-inset);
-  --color-fg: var(--t-fg);
-  --color-mid: var(--t-mid);
-  --color-mut: var(--t-mut);
-  --color-dim: var(--t-dim);
-  --color-acc: var(--t-acc);
-  --color-acc2: var(--t-acc2);
-  --color-onacc: var(--t-onacc);
-  --color-brd: var(--t-brd);
-  --color-brd2: var(--t-brd2);
-
-  /* Names the kundali chart page always used; they were never defined, so
-     those classes silently did nothing. Wired to the same theme. */
-  --color-cream: var(--t-app);
-  --color-surface: var(--t-panel);
-  --color-line: var(--t-brd);
-  --color-accent-strong: var(--t-acc);
-  --color-accent-ink: var(--t-acc2);
-  --text-2xs: 0.6875rem;
+  --text-2xs: 0.6875rem; /* 11px */
 }
-
-/* Dark: the values every app screen was built with. */
-:root, html[data-theme="dark"] {
-  --t-app: #090A10;
-  --t-panel: #161B2B;
-  --t-inset: #0B0E18;
-  --t-fg: #F8FAFC;
-  --t-mid: #CBD5E1;
-  --t-mut: #94A3B8;
-  --t-dim: #5F6B7F;
-  --t-acc: #E5A93C;
-  --t-acc2: #F3C766;
-  --t-onacc: #090A10;
-  --t-brd: rgba(255, 255, 255, 0.10);
-  --t-brd2: rgba(255, 255, 255, 0.25);
-  --m-ink: #070810;
-  --m-ink2: #0C0F19;
-  --m-card: #141928;
-  --m-gold: #E5A93C;
-  --m-gold2: #F3C766;
-  --m-gold3: #B87A14;
-  --m-paper: #F8FAFC;
-  --m-muted: #94A3B8;
-  --m-faint: #5F6B7F;
-  --m-glass: rgba(20, 25, 40, 0.55);
-}
-
-/* Light: the patro. Parchment ground, red rules, ink writing. */
-html[data-theme="light"] {
-  color-scheme: light;
-  background-color: #FBF6EC;
-  /* Clean warm paper, patterned on the classic Nepali patro sites: a near-
-     white ground, whiter cards, soft accent-tinted rules, and the accent
-     doing bold work on numerals and highlights — with our gold where those
-     sites run red-orange. */
-  --t-app: #FBF6EC;
-  --t-panel: #FFFDF7;
-  --t-inset: #F5EDDC;
-  --t-fg: #33291a;
-  --t-mid: #55452c;
-  --t-mut: #8a7347;
-  --t-dim: #b8a173;
-  /* The brand gold stays primary in daylight too — deepened so it reads on
-     parchment where the dark theme's bright gold would wash out. The patro
-     paper components and the chart inks keep their traditional red; this is
-     the app's accent, not the guru's pen. */
-  --t-acc: #B7800C;
-  --t-acc2: #8F6206;
-  --t-onacc: #FFFDF5;
-  --t-brd: rgba(183, 128, 12, 0.22);
-  --t-brd2: rgba(183, 128, 12, 0.42);
-  --m-ink: #FBF6EC;
-  --m-ink2: #F3EBD8;
-  --m-card: #FFFDF7;
-  --m-gold: #B7800C;
-  --m-gold2: #96690a;
-  --m-gold3: #8F6206;
-  --m-paper: #33291a;
-  --m-muted: #6b5836;
-  --m-faint: #a38c5f;
-  --m-glass: rgba(255, 253, 247, 0.72);
-}
-
-/* An island that stays night regardless of theme — the hero's solar system
-   and the site header live here, because light text over a starfield cannot
-   flip, and a dark band over paper is exactly how the classic patro sites
-   crown their pages. Custom properties resolve their var() references where
-   they are DECLARED (:root), not where they are used — so the island must
-   override the final color tokens, not the t-/m- variables they were built
-   from. (And never write star-slash inside a CSS comment: an earlier version
-   of this note did, ended the comment mid-sentence, and the parser's error
-   recovery silently swallowed the entire rule below.) */
-.theme-dark {
-  color-scheme: dark;
-  --color-app: #090A10; --color-panel: #161B2B; --color-inset: #0B0E18;
-  --color-fg: #F8FAFC; --color-mid: #CBD5E1; --color-mut: #94A3B8;
-  --color-dim: #5F6B7F; --color-acc: #E5A93C; --color-acc2: #F3C766;
-  --color-onacc: #090A10;
-  --color-brd: rgba(255, 255, 255, 0.10); --color-brd2: rgba(255, 255, 255, 0.25);
-  --color-ink: #070810; --color-ink2: #0C0F19; --color-card: #141928;
-  --color-gold: #E5A93C; --color-gold2: #F3C766; --color-gold3: #B87A14;
-  --color-paper: #F8FAFC; --color-muted: #94A3B8; --color-faint: #5F6B7F;
-  --color-cream: #090A10; --color-surface: #161B2B;
-  --color-line: rgba(255, 255, 255, 0.10);
-  --color-accent-strong: #E5A93C; --color-accent-ink: #F3C766;
-  --m-glass: rgba(20, 25, 40, 0.55);
-}
-
 
 html {
-  color-scheme: dark;
-  background-color: #090A10;
+  color-scheme: light;
+  background-color: #fffbf6;
 }
 
 body {
-  background-color: #090A10;
-  color: #E2E8F0;
+  background-color: var(--color-cream);
+  color: var(--color-ink);
   font-family: var(--font-body);
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
-
-/* Solid elevated cards with 8px radius */
-.solid-card {
-  background-color: #161B2B;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 8px;
-}
-
-.solid-btn-gold {
-  background-color: #E5A93C;
-  color: #090A10;
-  font-weight: 700;
-  border-radius: 8px;
-  transition: background-color 0.2s ease;
-}
-
-.solid-btn-gold:hover {
-  background-color: #F3C766;
 }
 
 /* SVG Chart Stroke Animation */
@@ -303,7 +163,7 @@ body {
    Marketing site. Ported verbatim from design/landing-prototype.html
    ══════════════════════════════════════════════════════════════ */
 
-:focus-visible { outline:2px solid rgba(229,169,60,.75); outline-offset:2px; border-radius:4px }
+:focus-visible { outline: 2px solid var(--color-ring); outline-offset: 2px; border-radius: var(--radius-md); }
 :focus:not(:focus-visible) { outline:none }
 /* Fields draw their own focus state — the border turns gold — so the ring
    above would be a second gold rectangle around the first. Removing it keeps
