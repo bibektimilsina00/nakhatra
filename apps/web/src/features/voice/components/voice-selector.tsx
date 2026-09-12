@@ -91,20 +91,20 @@ export function CustomVoiceSelector({
       <button
         type="button"
         onClick={() => setIsOpen((prev) => !prev)}
-        className="group flex items-center justify-between gap-2.5 rounded-[8px] border border-acc/40 bg-inset px-3 py-1.5 text-xs font-semibold text-acc2 transition-all duration-200 hover:border-acc hover:bg-panel hover:shadow-md cursor-pointer active:scale-95"
+        className="group flex items-center justify-between gap-2.5 rounded-lg border border-accent/40 bg-cream px-3 py-1.5 text-xs font-semibold text-accent-strong transition-all duration-200 hover:border-accent-strong hover:bg-surface hover:shadow-md cursor-pointer active:scale-95"
         title="Choose Astrologer Voice with Audio Preview"
         aria-expanded={isOpen}
         aria-haspopup="listbox"
       >
         <div className="flex items-center gap-2">
-          <Mic className="size-3.5 text-acc shrink-0" />
-          <span className="text-xs font-bold text-fg">
+          <Mic className="size-3.5 text-accent shrink-0" />
+          <span className="text-xs font-bold text-ink">
             {currentVoiceObj.name}
           </span>
         </div>
 
         <ChevronDown
-          className={`size-3.5 text-acc2 transition-transform duration-200 ${
+          className={`size-3.5 text-accent-strong transition-transform duration-200 ${
             isOpen ? "rotate-180" : ""
           }`}
         />
@@ -112,12 +112,12 @@ export function CustomVoiceSelector({
 
       {/* Custom Dropdown Panel */}
       {isOpen && (
-        <div className="absolute right-0 bottom-full mb-2 z-50 max-h-[70vh] w-72 overflow-y-auto sm:w-80 rounded-[8px] border border-acc/30 bg-panel p-2 shadow-2xl backdrop-blur-xl animate-in fade-in zoom-in-95 duration-150">
+        <div className="absolute right-0 bottom-full mb-2 z-50 max-h-[70vh] w-72 overflow-y-auto sm:w-80 rounded-lg border border-accent/30 bg-surface p-2 shadow-2xl backdrop-blur-xl animate-in fade-in zoom-in-95 duration-150">
           {/* Dropdown Header */}
-          <div className="flex items-center justify-between border-b border-brd px-2.5 pb-2 pt-1">
+          <div className="flex items-center justify-between border-b border-line px-2.5 pb-2 pt-1">
             <div className="flex items-center gap-1.5">
-              <Mic className="size-3.5 text-acc" />
-              <span className="text-xs font-bold text-fg">
+              <Mic className="size-3.5 text-accent" />
+              <span className="text-xs font-bold text-ink">
                 {language === "ne"
                   ? "ज्योतिषी स्वर चयन गर्नुहोस्"
                   : language === "hi"
@@ -125,7 +125,7 @@ export function CustomVoiceSelector({
                   : "Select Astrologer Voice"}
               </span>
             </div>
-            <span className="text-[10px] text-mut">
+            <span className="text-2xs text-muted">
               {language === "ne"
                 ? "पूर्वावलोकन सुन्नुहोस्"
                 : language === "hi"
@@ -135,7 +135,7 @@ export function CustomVoiceSelector({
           </div>
 
           {/* Voice Items List */}
-          <div className="mt-1.5 max-h-72 overflow-y-auto space-y-1 pr-0.5 [scrollbar-width:thin] [scrollbar-color:#E5A93C/30_transparent]">
+          <div className="mt-1.5 max-h-72 overflow-y-auto space-y-1 pr-0.5 [scrollbar-width:thin] [scrollbar-color:var(--color-accent)_transparent]">
             {voices.map((voice) => {
               const isSelected = voice.id === selectedVoice;
               const isPreviewing = previewingVoiceId === voice.id;
@@ -144,28 +144,28 @@ export function CustomVoiceSelector({
                 <div
                   key={voice.id}
                   onClick={() => handleSelect(voice.id)}
-                  className={`group relative flex items-center justify-between rounded-[6px] p-2.5 text-xs transition-all duration-150 cursor-pointer ${
+                  className={`group relative flex items-center justify-between rounded-md p-2.5 text-xs transition-all duration-150 cursor-pointer ${
                     isSelected
-                      ? "bg-acc/15 border border-acc/50 text-fg"
-                      : "hover:bg-fg/5 border border-transparent text-mid"
+                      ? "bg-accent/15 border border-accent/50 text-ink"
+                      : "hover:bg-ink/5 border border-transparent text-muted"
                   }`}
                 >
                   <div className="flex items-start gap-2.5 flex-1 min-w-0 pr-2">
                     {/* Selected Checkmark */}
-                    <div className="mt-0.5 grid size-4 shrink-0 place-items-center rounded-full border border-brd2">
-                      {isSelected && <Check className="size-3 text-acc" />}
+                    <div className="mt-0.5 grid size-4 shrink-0 place-items-center rounded-full border border-line-strong">
+                      {isSelected && <Check className="size-3 text-accent" />}
                     </div>
 
                     <div className="flex flex-col min-w-0">
                       <div className="flex items-center gap-2">
-                        <span className="font-bold text-fg truncate">
+                        <span className="font-bold text-ink truncate">
                           {voice.name}
                         </span>
-                        <span className="text-[9px] font-semibold uppercase px-1.5 py-0.5 rounded-[4px] bg-fg/10 text-mut">
+                        <span className="text-2xs font-semibold uppercase px-1.5 py-0.5 rounded-sm bg-ink/10 text-muted">
                           {voice.gender}
                         </span>
                       </div>
-                      <p className="text-[10px] text-mut line-clamp-1 mt-0.5">
+                      <p className="text-2xs text-muted line-clamp-1 mt-0.5">
                         {voice.description[language] || voice.description.en}
                       </p>
                     </div>
@@ -180,10 +180,10 @@ export function CustomVoiceSelector({
                         ? "Stop Preview"
                         : `Preview ${voice.name}'s voice`
                     }
-                    className={`flex size-8 shrink-0 items-center justify-center rounded-[6px] border transition-all duration-150 cursor-pointer active:scale-95 ${
+                    className={`flex size-8 shrink-0 items-center justify-center rounded-md border transition-all duration-150 cursor-pointer active:scale-95 ${
                       isPreviewing
-                        ? "border-acc bg-acc text-onacc shadow-md shadow-acc/30"
-                        : "border-brd bg-inset text-acc hover:border-acc hover:bg-acc/20"
+                        ? "border-accent-strong bg-accent-strong text-white shadow-md shadow-accent/30"
+                        : "border-line bg-cream text-accent hover:border-accent-strong hover:bg-accent/20"
                     }`}
                   >
                     {isPreviewing ? (

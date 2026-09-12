@@ -9,13 +9,11 @@ import { NakhatraMark } from "@/components/ui/nakhatra-mark";
 import { GoogleButton } from "@/features/auth/components/google-button";
 import { useLogin, useSession, useSignup } from "@/features/auth/hooks/use-auth";
 import { loginSchema, signupSchema } from "@/features/auth/schema/auth-forms";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 
-const FIELD =
-  "w-full rounded-[8px] border border-brd bg-[#181B27] px-3.5 py-2.5 text-sm " +
-  "text-fg placeholder-[#5A6172] transition-colors " +
-  "focus:border-acc/70 focus:outline-none focus-visible:border-acc";
-
-const LABEL = "block text-[13px] font-semibold text-mid mb-1.5";
+const LABEL = "block text-sm font-semibold text-ink mb-1.5";
 
 /**
  * Where a signed-in visitor lands. One constant because three paths reach it —
@@ -44,12 +42,12 @@ const FLIP = "matrix(-1 0 0 1 1440 0)";
 function Panel() {
   return (
     <>
-      <path d={PANEL} fill="url(#panelFill)" stroke="#FFFFFF" strokeOpacity="0.06" />
-      <g clipPath="url(#panelClip)" fill="none" stroke="#FFFFFF" strokeOpacity="0.04">
+      <path d={PANEL} className="fill-accent-tint/30 stroke-line" />
+      <g clipPath="url(#panelClip)" className="fill-none stroke-line">
         {/* A chart, cropped by the panel it sits in. */}
         <rect x="960" y="185" width="560" height="560" />
         <path d="M1240 185 L1520 465 L1240 745 L960 465 Z" />
-        <path d="M960 185 L1520 745 M1520 185 L960 745" strokeOpacity="0.025" />
+        <path d="M960 185 L1520 745 M1520 185 L960 745" strokeOpacity="0.5" />
       </g>
     </>
   );
@@ -59,23 +57,15 @@ function Backdrop() {
   return (
     <svg
       aria-hidden="true"
-      className="pointer-events-none absolute inset-0 z-0 h-full w-full"
+      className="pointer-events-none absolute inset-0 z-0 h-full w-full text-cream"
       viewBox="0 0 1440 900"
       preserveAspectRatio="xMidYMid slice"
     >
       <defs>
-        <radialGradient id="halo" cx="50%" cy="47%" r="46%">
-          <stop offset="0" stopColor="#141726" stopOpacity="1" />
-          <stop offset="1" stopColor="#141726" stopOpacity="0" />
-        </radialGradient>
-        <linearGradient id="panelFill" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#141726" stopOpacity="1" />
-          <stop offset="1" stopColor="#141726" stopOpacity="0.15" />
-        </linearGradient>
         <radialGradient id="fade" cx="50%" cy="44%" r="60%">
-          <stop offset="0" stopColor="#ffffff" stopOpacity="1" />
-          <stop offset="0.6" stopColor="#ffffff" stopOpacity="1" />
-          <stop offset="1" stopColor="#ffffff" stopOpacity="0" />
+          <stop offset="0" stopColor="currentColor" stopOpacity="1" />
+          <stop offset="0.6" stopColor="currentColor" stopOpacity="1" />
+          <stop offset="1" stopColor="currentColor" stopOpacity="0" />
         </radialGradient>
         <mask id="fadeMask">
           <rect width="1440" height="900" fill="url(#fade)" />
@@ -83,12 +73,7 @@ function Backdrop() {
         <clipPath id="panelClip">
           <path d={PANEL} />
         </clipPath>
-        <filter id="edgeGlow" x="-20%" y="-20%" width="140%" height="140%">
-          <feGaussianBlur stdDeviation="3" />
-        </filter>
       </defs>
-
-      <rect width="1440" height="900" fill="url(#halo)" />
 
       <g mask="url(#fadeMask)">
         <Panel />
@@ -98,22 +83,10 @@ function Backdrop() {
       </g>
 
       <path
-        className="login-trace"
+        className="login-trace stroke-accent-tint"
         d={TRACE}
         fill="none"
-        stroke="#E5A93C"
         strokeWidth="4.5"
-        strokeLinecap="round"
-        pathLength={1000}
-        strokeDasharray="10 990"
-        filter="url(#edgeGlow)"
-      />
-      <path
-        className="login-trace"
-        d={TRACE}
-        fill="none"
-        stroke="#FFE1A3"
-        strokeWidth="1.4"
         strokeLinecap="round"
         pathLength={1000}
         strokeDasharray="10 990"
@@ -175,16 +148,16 @@ function LoginFormContent() {
 
   return (
     <div className="w-full max-w-[400px]">
-      <div className="overflow-hidden rounded-[14px] border border-white/[0.08] bg-[#111420]">
+      <Card className="overflow-hidden p-0">
         <div className="px-7 pb-8 pt-8 sm:px-8">
           {/* Same treatment as the app bar: gold linework, no tile. */}
-          <NakhatraMark className="mx-auto mb-5 block size-12 text-acc" />
+          <NakhatraMark className="mx-auto mb-5 block size-12 text-accent-strong" />
 
           <div className="mb-7 text-center">
-            <h1 className="font-serif text-[22px] font-bold tracking-tight text-fg">
+            <h1 className="font-serif text-xl font-bold tracking-tight text-ink">
               {isLogin ? "Sign in to Nakhatra" : "Create your Nakhatra account"}
             </h1>
-            <p className="mt-1.5 text-[13px] text-mut">
+            <p className="mt-1.5 text-sm text-muted">
               {isLogin
                 ? "Welcome back. Please sign in to continue."
                 : "Welcome. Fill in your details to get started."}
@@ -194,16 +167,13 @@ function LoginFormContent() {
           <GoogleButton onSignedIn={() => router.push(AFTER_SIGN_IN)} />
 
           <div className="my-6 flex items-center gap-4">
-            <span className="h-px flex-1 bg-fg/10" />
-            <span className="text-[13px] text-mut">or</span>
-            <span className="h-px flex-1 bg-fg/10" />
+            <span className="h-px flex-1 bg-line" />
+            <span className="text-sm text-muted">or</span>
+            <span className="h-px flex-1 bg-line" />
           </div>
 
           {error && (
-            <div
-              role="alert"
-              className="mb-4 rounded-[8px] border border-red-500/25 bg-red-500/10 px-3 py-2.5 text-[13px] text-red-300"
-            >
+            <div role="alert" className="mb-4 rounded-md bg-danger-tint px-3 py-2.5 text-sm text-danger">
               {error}
             </div>
           )}
@@ -214,7 +184,7 @@ function LoginFormContent() {
                 <label htmlFor="full-name" className={LABEL}>
                   Full name
                 </label>
-                <input
+                <Input
                   id="full-name"
                   name="name"
                   type="text"
@@ -223,8 +193,7 @@ function LoginFormContent() {
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
                   placeholder="Enter your full name"
-                  className={FIELD}
-                />
+                  />
               </div>
             )}
 
@@ -232,7 +201,7 @@ function LoginFormContent() {
               <label htmlFor="email" className={LABEL}>
                 Email address
               </label>
-              <input
+              <Input
                 id="email"
                 name="email"
                 type="email"
@@ -241,8 +210,7 @@ function LoginFormContent() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Enter your email address"
-                className={FIELD}
-              />
+                />
             </div>
 
             <div>
@@ -253,14 +221,14 @@ function LoginFormContent() {
                 {isLogin && (
                   <Link
                     href="#"
-                    className="text-[12px] text-acc hover:underline"
+                    className="text-xs text-accent-strong hover:underline"
                   >
                     Forgot password?
                   </Link>
                 )}
               </div>
               <div className="relative">
-                <input
+                <Input
                   id="password"
                   name="password"
                   type={showPassword ? "text" : "password"}
@@ -269,13 +237,13 @@ function LoginFormContent() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder={isLogin ? "Enter your password" : "At least 8 characters"}
-                  className={FIELD + " pr-11"}
+                  className="pr-11"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   aria-label={showPassword ? "Hide password" : "Show password"}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#5A6172] transition-colors hover:text-mid focus-visible:text-acc focus-visible:outline-none"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-dim transition-colors hover:text-ink focus-visible:text-accent-strong focus-visible:outline-none"
                 >
                   {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
                 </button>
@@ -285,10 +253,10 @@ function LoginFormContent() {
             <button
               type="submit"
               disabled={loading}
-              className="mt-2 flex w-full items-center justify-center gap-2 rounded-[8px] bg-acc py-2.5 text-sm font-semibold text-onacc transition-colors hover:bg-acc2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F3C766] focus-visible:ring-offset-2 focus-visible:ring-offset-[#111420] disabled:cursor-not-allowed disabled:opacity-60"
+              className="mt-2 flex w-full items-center justify-center gap-2 rounded-md bg-accent-strong py-2.5 text-sm font-semibold text-white transition-colors hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-strong focus-visible:ring-offset-2 focus-visible:ring-offset-surface disabled:cursor-not-allowed disabled:opacity-60"
             >
               {loading ? (
-                <span className="inline-block size-4 animate-spin rounded-full border-2 border-[#090A10] border-t-transparent" />
+                <span className="inline-block size-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
               ) : (
                 <>
                   <span>{isLogin ? "Continue" : "Create account"}</span>
@@ -299,37 +267,33 @@ function LoginFormContent() {
           </form>
         </div>
 
-        <div className="border-t border-white/[0.08] bg-[#0C0E15] px-7 py-4 text-center text-[13px] text-mut">
+        <div className="border-t border-line-strong bg-surface px-7 py-4 text-center text-sm text-muted">
           {isLogin ? "Don't have an account? " : "Already have an account? "}
-          <button
-            type="button"
-            onClick={switchMode}
-            className="font-semibold text-acc hover:underline focus-visible:outline-none focus-visible:underline"
-          >
+          <Button type="button" variant="ghost" onClick={switchMode} className="h-auto px-1 py-0 font-semibold text-accent-strong hover:bg-transparent hover:underline">
             {isLogin ? "Sign up" : "Sign in"}
-          </button>
+          </Button>
         </div>
-      </div>
+      </Card>
     </div>
   );
 }
 
 export default function LoginPage() {
   return (
-    <div className="relative flex min-h-dvh flex-col justify-between overflow-hidden bg-[#0A0B11] font-body text-fg">
+    <div className="relative flex min-h-dvh flex-col justify-between overflow-hidden bg-cream font-body text-ink">
       <Backdrop />
 
       <header className="relative z-10 mx-auto flex w-full max-w-7xl items-center justify-between px-6 py-5">
         <Link href="/" className="group flex items-center gap-2.5">
-          <NakhatraMark className="size-8 text-acc transition-colors group-hover:text-acc2" />
-          <span className="font-logo text-sm font-bold tracking-[0.16em] text-fg">
+          <NakhatraMark className="size-8 text-accent-strong transition-colors group-hover:opacity-80" />
+          <span className="font-logo text-sm font-bold tracking-[0.16em] text-ink">
             NAKHATRA
           </span>
         </Link>
 
         <Link
           href="/kundali"
-          className="flex items-center gap-1 text-[13px] font-semibold text-acc hover:underline"
+          className="flex items-center gap-1 text-sm font-semibold text-accent-strong hover:underline"
         >
           Free kundali <ArrowRight className="size-3.5" />
         </Link>
@@ -338,21 +302,21 @@ export default function LoginPage() {
       <main className="relative z-10 flex flex-1 items-center justify-center px-4 py-10">
         <Suspense
           fallback={
-            <div className="h-[520px] w-full max-w-[400px] rounded-[14px] border border-white/[0.08] bg-[#111420]" />
+            <Card className="h-[520px] w-full max-w-[400px]" />
           }
         >
           <LoginFormContent />
         </Suspense>
       </main>
 
-      <footer className="relative z-10 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 px-6 py-7 text-[13px] text-[#64748B]">
+      <footer className="relative z-10 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 px-6 py-7 text-sm text-dim">
         <span>© 2026 Nakhatra</span>
-        <span aria-hidden="true" className="text-[#2A3040]">·</span>
-        <Link href="#" className="transition-colors hover:text-mid">Support</Link>
-        <span aria-hidden="true" className="text-[#2A3040]">·</span>
-        <Link href="/privacy" className="transition-colors hover:text-mid">Privacy</Link>
-        <span aria-hidden="true" className="text-[#2A3040]">·</span>
-        <Link href="/terms" className="transition-colors hover:text-mid">Terms</Link>
+        <span aria-hidden="true" className="text-line-strong">·</span>
+        <Link href="#" className="transition-colors hover:text-ink">Support</Link>
+        <span aria-hidden="true" className="text-line-strong">·</span>
+        <Link href="/privacy" className="transition-colors hover:text-ink">Privacy</Link>
+        <span aria-hidden="true" className="text-line-strong">·</span>
+        <Link href="/terms" className="transition-colors hover:text-ink">Terms</Link>
       </footer>
     </div>
   );

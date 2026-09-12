@@ -790,9 +790,9 @@ export function LiveModeWorkspace() {
     return (
       <AppShell sidebar={false} fill>
         <div className="flex flex-1 flex-col items-center justify-center space-y-4 text-center">
-          <div className="size-12 animate-spin rounded-full border-4 border-acc border-t-transparent" />
-          <p className="text-sm font-bold text-fg">{t.connectingToDesk}</p>
-          <p className="text-xs text-mut">{t.calculatingEphemeris}</p>
+          <div className="size-12 animate-spin rounded-full border-4 border-accent-strong border-t-transparent" />
+          <p className="text-sm font-bold text-ink">{t.connectingToDesk}</p>
+          <p className="text-xs text-muted">{t.calculatingEphemeris}</p>
         </div>
       </AppShell>
     );
@@ -875,7 +875,7 @@ export function LiveModeWorkspace() {
               router.back();
             }}
             aria-label={t.readingBack}
-            className="grid size-9 shrink-0 place-items-center rounded-[8px] border border-brd text-mut transition-colors hover:border-brd2 hover:text-fg"
+            className="grid size-9 shrink-0 place-items-center rounded-lg border border-line text-muted transition-colors hover:border-line-strong hover:text-ink"
           >
             <ArrowLeft className="size-4" />
           </button>
@@ -889,86 +889,86 @@ export function LiveModeWorkspace() {
             }}
             trigger={
               <span className="min-w-0">
-                <span className="block truncate text-[14px] font-bold text-fg">
+                <span className="block truncate text-sm font-bold text-ink">
                   {t.brandName} Live AI
                 </span>
-                <span className="block truncate text-[11px] text-mut">{activeBirth.name}</span>
+                <span className="block truncate text-xs text-muted">{activeBirth.name}</span>
               </span>
             }
           />
         </div>
       }
     >
-    <div className="flex min-h-0 flex-1 flex-col overflow-hidden bg-inset text-mut font-sans selection:bg-acc/30 selection:text-acc2">
+    <div className="flex min-h-0 flex-1 flex-col overflow-hidden bg-cream text-muted font-sans selection:bg-accent/30 selection:text-accent-strong">
 
       {/* =================================================================== */}
       {/* REAL-TIME AUDIO TELEMETRY & RECORDING DEBUG PANEL                  */}
       {/* =================================================================== */}
       {showDebugPanel && (
-        <div className="border-b border-amber-500/30 bg-[#0D0F19] p-5 z-40 text-xs font-mono space-y-4 shadow-2xl animate-fade-in">
-          <div className="flex items-center justify-between border-b border-brd pb-3">
+        <div className="border-b border-accent/30 bg-surface p-5 z-40 text-xs font-mono space-y-4 shadow-2xl animate-fade-in">
+          <div className="flex items-center justify-between border-b border-line pb-3">
             <div className="flex items-center gap-2">
-              <span className="text-amber-400 font-bold text-sm">🐛 Live Audio Recording &amp; Voice Telemetry Console</span>
-              <span className={`rounded-[8px] border px-2 py-0.5 text-[10px] font-bold ${isWebRTCActive ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/40" : "bg-cyan-500/20 text-cyan-300 border-cyan-500/40"}`}>
+              <span className="text-accent-strong font-bold text-sm">🐛 Live Audio Recording &amp; Voice Telemetry Console</span>
+              <span className={`rounded-lg border px-2 py-0.5 text-2xs font-bold ${isWebRTCActive ? "bg-success/20 text-emerald-300 border-success/40" : "bg-accent/20 text-cyan-300 border-accent/40"}`}>
                 {isWebRTCActive ? "Realtime WebRTC Active" : "Voice AI Active"}
               </span>
             </div>
             <button
               onClick={() => setShowDebugPanel(false)}
-              className="text-xs text-mut hover:text-white"
+              className="text-xs text-muted hover:text-white"
             >
               ✕ Close Panel
             </button>
           </div>
 
-          <div className="grid gap-4 md:grid-cols-5 text-[11px]">
+          <div className="grid gap-4 md:grid-cols-5 text-xs">
             {/* Box 1: Hardware Mic State */}
-            <div className="rounded-[8px] border border-brd bg-panel p-3 space-y-1.5">
-              <span className="text-mut block text-[10px] uppercase font-semibold">🎙️ Mic Hardware Status</span>
-              <p className="font-bold text-fg flex items-center gap-2">
-                <span className={`size-2 rounded-full ${mediaStreamRef.current?.active ? "bg-emerald-400 animate-pulse" : "bg-red-400"}`} />
+            <div className="rounded-lg border border-line bg-surface p-3 space-y-1.5">
+              <span className="text-muted block text-2xs uppercase font-semibold">🎙️ Mic Hardware Status</span>
+              <p className="font-bold text-ink flex items-center gap-2">
+                <span className={`size-2 rounded-full ${mediaStreamRef.current?.active ? "bg-success animate-pulse" : "bg-danger"}`} />
                 {mediaStreamRef.current?.active ? "MediaStream Connected" : "Mic Stream Inactive"}
               </p>
               <button
 onClick={() => setupMicAnalyzer()}
-                className="mt-1 rounded-[8px] bg-acc/20 border border-acc/40 text-acc2 px-2 py-0.5 text-[10px] font-bold hover:bg-acc/30 transition"
+                className="mt-1 rounded-lg bg-accent/20 border border-accent/40 text-accent-strong px-2 py-0.5 text-2xs font-bold hover:bg-accent/30 transition"
               >
                 ▶️ Start Mic Hardware
               </button>
             </div>
 
             {/* Box 2: Audio Level & VU Meter */}
-            <div className="rounded-[8px] border border-brd bg-panel p-3 space-y-1.5">
-              <span className="text-mut block text-[10px] uppercase font-semibold">🔊 Audio Level (VU Meter)</span>
+            <div className="rounded-lg border border-line bg-surface p-3 space-y-1.5">
+              <span className="text-muted block text-2xs uppercase font-semibold">🔊 Audio Level (VU Meter)</span>
               <div className="flex items-center gap-2">
-                <span className="font-bold text-acc2">{audioLevel}%</span>
-                <div className="flex-1 bg-inset h-2 rounded-[8px] overflow-hidden border border-brd">
+                <span className="font-bold text-accent-strong">{audioLevel}%</span>
+                <div className="flex-1 bg-cream h-2 rounded-lg overflow-hidden border border-line">
                   <div
-                    className="h-full bg-gradient-to-r from-emerald-500 via-cyan-400 to-acc"
+                    className="h-full bg-gradient-to-r from-success via-cyan-400 to-acc"
                     style={{ width: `${Math.max(5, audioLevel)}%` }}
                   />
                 </div>
               </div>
-              <span className="text-[10px] text-mut">Speech Threshold: &gt; 14%</span>
+              <span className="text-2xs text-muted">Speech Threshold: &gt; 14%</span>
             </div>
 
             {/* Box 3: Silence Counter VAD */}
-            <div className="rounded-[8px] border border-brd bg-panel p-3 space-y-1.5">
-              <span className="text-mut block text-[10px] uppercase font-semibold">⏱️ VAD Silence Timer</span>
-              <p className="font-bold text-fg">
+            <div className="rounded-lg border border-line bg-surface p-3 space-y-1.5">
+              <span className="text-muted block text-2xs uppercase font-semibold">⏱️ VAD Silence Timer</span>
+              <p className="font-bold text-ink">
                 {silenceCounterMs}ms / 800ms
               </p>
-              <div className="w-full bg-inset h-1.5 rounded-[8px] overflow-hidden border border-brd">
+              <div className="w-full bg-cream h-1.5 rounded-lg overflow-hidden border border-line">
                 <div
-                  className="h-full bg-amber-400 transition-all duration-75"
+                  className="h-full bg-accent-strong transition-all duration-75"
                   style={{ width: `${Math.min(100, (silenceCounterMs / 800) * 100)}%` }}
                 />
               </div>
             </div>
 
             {/* Box 4: Live Speech Listener State */}
-            <div className="rounded-[8px] border border-brd bg-panel p-3 space-y-1.5">
-              <span className="text-mut block text-[10px] uppercase font-semibold">🗣️ Live Voice Listener</span>
+            <div className="rounded-lg border border-line bg-surface p-3 space-y-1.5">
+              <span className="text-muted block text-2xs uppercase font-semibold">🗣️ Live Voice Listener</span>
               <p className="font-bold text-xs truncate">
                 {audioLevel > 14 ? (
                   <span className="text-emerald-400 flex items-center gap-1.5 animate-pulse">
@@ -980,32 +980,32 @@ onClick={() => setupMicAnalyzer()}
                     ⏱️ Counting Silence ({silenceCounterMs}ms)
                   </span>
                 ) : voiceState === "thinking" ? (
-                  <span className="text-acc2">🧠 Analyzing Speech...</span>
+                  <span className="text-accent-strong">🧠 Analyzing Speech...</span>
                 ) : voiceState === "speaking" ? (
-                  <span className="text-amber-400">🔊 Astrologer Speaking</span>
+                  <span className="text-accent-strong">🔊 Astrologer Speaking</span>
                 ) : (
-                  <span className="text-mut">👂 Listening for speech...</span>
+                  <span className="text-muted">👂 Listening for speech...</span>
                 )}
               </p>
-              <span className="text-[10px] text-mut">Auto-transcribe after 800ms</span>
+              <span className="text-2xs text-muted">Auto-transcribe after 800ms</span>
             </div>
 
             {/* Box 5: Native MediaRecorder Status */}
-            <div className="rounded-[8px] border border-brd bg-panel p-3 space-y-1.5">
-              <span className="text-mut block text-[10px] uppercase font-semibold">📼 MediaRecorder Buffer</span>
+            <div className="rounded-lg border border-line bg-surface p-3 space-y-1.5">
+              <span className="text-muted block text-2xs uppercase font-semibold">📼 MediaRecorder Buffer</span>
               <p className="font-bold text-cyan-300 flex items-center gap-1.5">
-                <span className={`size-2 rounded-full ${isRecordingMedia ? "bg-red-500 animate-ping" : "bg-slate-600"}`} />
+                <span className={`size-2 rounded-full ${isRecordingMedia ? "bg-danger animate-ping" : "bg-slate-600"}`} />
                 {isRecordingMedia ? "Capturing Audio Chunks..." : "Buffer Ready"}
               </p>
-              <span className="text-[10px] text-mut">Voice Audio Buffer</span>
+              <span className="text-2xs text-muted">Voice Audio Buffer</span>
             </div>
           </div>
 
           {/* Test Action & Last Query Bar */}
-          <div className="flex items-center justify-between bg-panel border border-brd rounded-[8px] p-3">
+          <div className="flex items-center justify-between bg-surface border border-line rounded-lg p-3">
             <div className="flex items-center gap-2">
-              <span className="text-acc font-bold text-[11px]">Last Transmitted Query:</span>
-              <span className="text-fg font-semibold">{lastSubmittedQuery || "None yet"}</span>
+              <span className="text-accent font-bold text-xs">Last Transmitted Query:</span>
+              <span className="text-ink font-semibold">{lastSubmittedQuery || "None yet"}</span>
             </div>
             <button
               onClick={() => {
@@ -1015,20 +1015,20 @@ onClick={() => setupMicAnalyzer()}
                 addDebugLog("SIMULATED_TEST_QUERY", `Injected test query: "${sample}"`);
                 handleSend(sample);
               }}
-              className="rounded-[8px] bg-acc hover:bg-acc2 px-3 py-1 text-xs font-bold text-onacc transition"
+              className="rounded-lg bg-accent-strong hover:bg-accent-strong px-3 py-1 text-xs font-bold text-white transition"
             >
               🧪 Test Trigger Career Query
             </button>
           </div>
 
           {/* Event Stream Console Logs */}
-          <div className="space-y-1 bg-inset border border-brd rounded-[8px] p-3 max-h-48 overflow-y-auto">
-            <span className="text-[10px] text-mut block uppercase font-bold mb-1">Live Event Telemetry Log ({debugLogs.length} events)</span>
+          <div className="space-y-1 bg-cream border border-line rounded-lg p-3 max-h-48 overflow-y-auto">
+            <span className="text-2xs text-muted block uppercase font-bold mb-1">Live Event Telemetry Log ({debugLogs.length} events)</span>
             {debugLogs.map((log, idx) => (
-              <div key={idx} className="flex items-start gap-2 text-[11px] font-mono leading-tight py-0.5 border-b border-brd">
-                <span className="text-mut text-[10px] shrink-0">[{log.time}]</span>
-                <span className="text-acc font-bold shrink-0">{log.event}:</span>
-                <span className="text-fg truncate">{log.detail}</span>
+              <div key={idx} className="flex items-start gap-2 text-xs font-mono leading-tight py-0.5 border-b border-line">
+                <span className="text-muted text-2xs shrink-0">[{log.time}]</span>
+                <span className="text-accent font-bold shrink-0">{log.event}:</span>
+                <span className="text-ink truncate">{log.detail}</span>
               </div>
             ))}
           </div>
@@ -1042,17 +1042,17 @@ onClick={() => setupMicAnalyzer()}
         /* The consultation room. Everything sits on the theme tokens, so the
            patro light theme owns it as fully as the night theme does; the one
            accent is the house gold. */
-        <div className="relative flex-1 min-h-0 h-full bg-app flex flex-col p-4 sm:p-5 overflow-hidden">
+        <div className="relative flex-1 min-h-0 h-full bg-cream flex flex-col p-4 sm:p-5 overflow-hidden">
           <div className="w-full flex-1 grid grid-cols-1 lg:grid-cols-[380px_1fr] gap-5 items-stretch min-h-0">
 
             {/* ── The conversation, as a written record ─────────────────── */}
-            <div className="hidden lg:flex flex-col rounded-[8px] border border-brd bg-panel min-h-0 overflow-hidden">
-              <div className="border-b border-brd px-4 py-3 shrink-0">
+            <div className="hidden lg:flex flex-col rounded-lg border border-line bg-surface min-h-0 overflow-hidden">
+              <div className="border-b border-line px-4 py-3 shrink-0">
                 <div className="flex items-center justify-between gap-2">
-                  <span className="flex items-center gap-2 font-serif text-sm font-bold text-fg">
+                  <span className="flex items-center gap-2 font-serif text-sm font-bold text-ink">
                     <span className="relative flex size-2">
-                      <span className="absolute inline-flex size-full animate-ping rounded-full bg-acc opacity-60" />
-                      <span className="relative inline-flex size-2 rounded-full bg-acc" />
+                      <span className="absolute inline-flex size-full animate-ping rounded-full bg-accent-strong opacity-60" />
+                      <span className="relative inline-flex size-2 rounded-full bg-accent-strong" />
                     </span>
                     {t.realtimeResponse}
                   </span>
@@ -1062,13 +1062,13 @@ onClick={() => setupMicAnalyzer()}
                         setShowChartDrawer(true);
                         setHighlightedHouse(teleprompterText.includes("7th") ? 7 : 10);
                       }}
-                      className="max-w-[150px] truncate rounded-full border border-brd bg-inset px-2.5 py-0.5 text-[10px] font-semibold text-mid transition hover:border-acc/50 hover:text-acc2"
+                      className="max-w-[150px] truncate rounded-full border border-line bg-cream px-2.5 py-0.5 text-2xs font-semibold text-muted transition hover:border-accent/50 hover:text-accent-strong"
                     >
                       {teleprompterBasis}
                     </button>
                   )}
                 </div>
-                <p className="mt-1 truncate text-[11px] text-mut">
+                <p className="mt-1 truncate text-xs text-muted">
                   {activeBirth.name} · {getSignName(activeChart.lagna_sign, selectedLanguage)} {t.ascendantLabel} ·{" "}
                   {getPlanetName(mahaLord, selectedLanguage)}-{getPlanetName(antarLord, selectedLanguage)}{" "}
                   {selectedLanguage === "en" ? "Dasha" : "दशा"}
@@ -1080,28 +1080,28 @@ onClick={() => setupMicAnalyzer()}
                   messages.map((m) =>
                     m.sender === "user" ? (
                       <div key={m.id} className="flex justify-end">
-                        <div className="max-w-[85%] rounded-[12px] rounded-br-[4px] border border-acc/30 bg-acc/10 px-3.5 py-2.5">
+                        <div className="max-w-[85%] rounded-xl rounded-br-sm border border-accent/30 bg-accent/10 px-3.5 py-2.5">
                           <MarkdownRenderer content={m.text} isUser />
-                          <span className="mt-1 block text-right text-[9px] text-dim">{m.timestamp}</span>
+                          <span className="mt-1 block text-right text-2xs text-dim">{m.timestamp}</span>
                         </div>
                       </div>
                     ) : (
                       <div key={m.id} className="flex items-start gap-2.5">
-                        <span className="mt-0.5 grid size-6 shrink-0 place-items-center rounded-full bg-inset font-serif text-[11px] font-bold text-acc">
+                        <span className="mt-0.5 grid size-6 shrink-0 place-items-center rounded-full bg-cream font-serif text-xs font-bold text-accent">
                           ॐ
                         </span>
-                        <div className="min-w-0 max-w-[85%] rounded-[12px] rounded-tl-[4px] border border-brd bg-inset px-3.5 py-2.5">
+                        <div className="min-w-0 max-w-[85%] rounded-xl rounded-tl-sm border border-line bg-cream px-3.5 py-2.5">
                           <MarkdownRenderer content={m.text} />
-                          <span className="mt-1 block text-[9px] text-dim">{m.timestamp}</span>
+                          <span className="mt-1 block text-2xs text-dim">{m.timestamp}</span>
                         </div>
                       </div>
                     ),
                   )
                 ) : (
                   <div className="flex h-full flex-col items-center justify-center space-y-2 p-6 text-center">
-                    <span className="font-serif text-2xl text-acc">ॐ</span>
-                    <p className="font-serif text-xs font-semibold text-fg">{t.listeningToVoice}</p>
-                    <p className="text-[10px] text-mut">{t.askAnyQuestionOrb}</p>
+                    <span className="font-serif text-2xl text-accent">ॐ</span>
+                    <p className="font-serif text-xs font-semibold text-ink">{t.listeningToVoice}</p>
+                    <p className="text-2xs text-muted">{t.askAnyQuestionOrb}</p>
                   </div>
                 )}
               </div>
@@ -1115,19 +1115,19 @@ onClick={() => setupMicAnalyzer()}
                   <div
                     className={`pointer-events-none absolute inset-0 m-auto rounded-full transition-all duration-700 ${
                       voiceState === "speaking"
-                        ? "bg-acc/25 blur-3xl scale-125 animate-pulse-glow"
+                        ? "bg-accent/25 blur-3xl scale-125 animate-pulse-glow"
                         : voiceState === "listening"
-                          ? "bg-acc/10 blur-3xl scale-110"
+                          ? "bg-accent/10 blur-3xl scale-110"
                           : voiceState === "thinking"
-                            ? "bg-acc/15 blur-3xl"
+                            ? "bg-accent/15 blur-3xl"
                             : "bg-transparent"
                     }`}
                   />
                   {voiceState === "listening" && (
-                    <div className="pointer-events-none absolute inset-0 m-auto animate-pulse-radar rounded-full border border-acc/25" />
+                    <div className="pointer-events-none absolute inset-0 m-auto animate-pulse-radar rounded-full border border-accent/25" />
                   )}
                   {voiceState === "thinking" && (
-                    <div className="pointer-events-none absolute inset-0 m-auto animate-rotate-slow rounded-full border-2 border-dashed border-acc/40" />
+                    <div className="pointer-events-none absolute inset-0 m-auto animate-rotate-slow rounded-full border-2 border-dashed border-accent/40" />
                   )}
 
                   <button
@@ -1140,18 +1140,18 @@ onClick={() => setupMicAnalyzer()}
                         startOpenAIRealtimeWebRTC();
                       }
                     }}
-                    className={`group relative flex size-48 cursor-pointer items-center justify-center overflow-hidden rounded-full border-2 bg-panel transition-all duration-700 md:size-52 ${
+                    className={`group relative flex size-48 cursor-pointer items-center justify-center overflow-hidden rounded-full border-2 bg-surface transition-all duration-700 md:size-52 ${
                       voiceState === "speaking"
-                        ? "scale-105 border-acc shadow-[0_0_70px_rgba(229,169,60,0.35)]"
+                        ? "scale-105 border-accent-strong shadow-[0_0_70px_rgba(229,169,60,0.35)]"
                         : voiceState === "listening"
-                          ? "border-acc/50 shadow-[0_0_50px_rgba(229,169,60,0.18)]"
+                          ? "border-accent/50 shadow-[0_0_50px_rgba(229,169,60,0.18)]"
                           : voiceState === "thinking"
-                            ? "border-acc/70"
-                            : "border-brd opacity-80"
+                            ? "border-accent/70"
+                            : "border-line opacity-80"
                     }`}
                   >
                     <svg
-                      className="pointer-events-none absolute inset-0 size-full animate-rotate-slow p-2 text-fg/10"
+                      className="pointer-events-none absolute inset-0 size-full animate-rotate-slow p-2 text-ink/10"
                       viewBox="0 0 100 100"
                     >
                       <circle cx="50" cy="50" r="45" fill="none" stroke="currentColor" strokeWidth="0.5" strokeDasharray="4 2" />
@@ -1161,8 +1161,8 @@ onClick={() => setupMicAnalyzer()}
                     </svg>
 
                     <div className="z-10 space-y-2 p-5 text-center">
-                      <span className="block font-serif text-[32px] leading-none text-acc">ॐ</span>
-                      <span className="block text-[13px] font-semibold leading-snug text-fg">
+                      <span className="block font-serif text-2xl leading-none text-accent">ॐ</span>
+                      <span className="block text-sm font-semibold leading-snug text-ink">
                         {voiceState === "speaking"
                           ? t.astrologerSpeaking
                           : voiceState === "thinking"
@@ -1181,10 +1181,10 @@ onClick={() => setupMicAnalyzer()}
                               key={bar}
                               className={`w-[3px] rounded-full transition-all duration-100 ${
                                 speaking
-                                  ? `bg-acc animate-equalizer-${bar + 1}`
+                                  ? `bg-accent-strong animate-equalizer-${bar + 1}`
                                   : on
-                                    ? "bg-acc"
-                                    : "bg-fg/15"
+                                    ? "bg-accent-strong"
+                                    : "bg-ink/15"
                               }`}
                               style={speaking ? undefined : { height: on ? 7 + bar * 3 : 5 }}
                             />
@@ -1195,18 +1195,18 @@ onClick={() => setupMicAnalyzer()}
                   </button>
                 </div>
 
-                <p className="text-[11px] text-mut">
+                <p className="text-xs text-muted">
                   {voiceState === "speaking" ? t.tapToInterrupt : t.tapToStartVoice}
                 </p>
 
 
                 {micPermissionError && (
-                  <div className="w-full max-w-md shrink-0 rounded-[8px] border border-red-500/30 bg-red-500/10 px-4 py-2 text-center text-[11px] text-red-400">
+                  <div className="w-full max-w-md shrink-0 rounded-lg border border-danger/30 bg-danger/10 px-4 py-2 text-center text-xs text-danger">
                     {micPermissionError}
                   </div>
                 )}
                 {realtimeError && (
-                  <div className="w-full max-w-md shrink-0 rounded-[8px] border border-red-500/30 bg-red-500/10 px-4 py-2 text-center text-[11px] text-red-400">
+                  <div className="w-full max-w-md shrink-0 rounded-lg border border-danger/30 bg-danger/10 px-4 py-2 text-center text-xs text-danger">
                     {realtimeError}
                   </div>
                 )}
@@ -1221,14 +1221,14 @@ onClick={() => setupMicAnalyzer()}
                     <button
                       key={chip.title}
                       onClick={() => handleSend(chip.query)}
-                      className="shrink-0 rounded-full border border-brd bg-panel px-3.5 py-1.5 text-[11px] font-medium text-mid transition hover:border-acc/50 hover:text-acc2"
+                      className="shrink-0 rounded-full border border-line bg-surface px-3.5 py-1.5 text-xs font-medium text-muted transition hover:border-accent/50 hover:text-accent-strong"
                     >
                       {chip.title}
                     </button>
                   ))}
                 </div>
 
-                <div className="rounded-[10px] border border-brd bg-panel shadow-xl">
+                <div className="rounded-lg border border-line bg-surface shadow-xl">
                   <form
                     onSubmit={(e) => {
                       e.preventDefault();
@@ -1239,10 +1239,10 @@ onClick={() => setupMicAnalyzer()}
                     <button
                       type="button"
                       onClick={toggleDictation}
-                      className={`grid size-10 shrink-0 cursor-pointer place-items-center rounded-[8px] transition active:scale-95 ${
+                      className={`grid size-10 shrink-0 cursor-pointer place-items-center rounded-lg transition active:scale-95 ${
                         isDictating
-                          ? "bg-red-500/15 text-red-400 animate-pulse"
-                          : "text-mut hover:bg-inset hover:text-acc2"
+                          ? "bg-danger/15 text-danger animate-pulse"
+                          : "text-muted hover:bg-cream hover:text-accent-strong"
                       }`}
                       title={isDictating ? "Stop Voice Dictation" : "Dictate Question by Voice"}
                     >
@@ -1253,18 +1253,18 @@ onClick={() => setupMicAnalyzer()}
                       value={inputQuery}
                       onChange={(e) => setInputQuery(e.target.value)}
                       placeholder={isDictating ? "Listening..." : t.askPlaceholder}
-                      className="min-w-0 flex-1 bg-transparent px-2 py-2.5 text-sm text-fg outline-none placeholder:text-mut/60"
+                      className="min-w-0 flex-1 bg-transparent px-2 py-2.5 text-sm text-ink outline-none placeholder:text-muted"
                     />
                     <button
                       type="submit"
                       disabled={!inputQuery.trim() || isThinking}
-                      className="shrink-0 cursor-pointer rounded-[8px] bg-acc px-5 py-2.5 text-xs font-bold text-onacc transition hover:bg-acc2 active:scale-95 disabled:opacity-40"
+                      className="shrink-0 cursor-pointer rounded-lg bg-accent-strong px-5 py-2.5 text-xs font-bold text-white transition hover:bg-accent-strong active:scale-95 disabled:opacity-40"
                     >
                       {isThinking ? "..." : t.sendQuery}
                     </button>
                   </form>
 
-                  <div className="flex flex-wrap items-center justify-between gap-1.5 border-t border-brd px-2 py-1.5">
+                  <div className="flex flex-wrap items-center justify-between gap-1.5 border-t border-line px-2 py-1.5">
                     <div className="flex items-center gap-1.5">
                       <CustomVoiceSelector
                         selectedVoice={selectedVoice}
@@ -1281,8 +1281,8 @@ onClick={() => setupMicAnalyzer()}
                           // microphone track is what actually goes quiet
                           webrtcClientRef.current?.setMuted(next);
                         }}
-                        className={`flex cursor-pointer items-center gap-1.5 rounded-[8px] px-2.5 py-1.5 text-[11px] font-semibold transition ${
-                          isMicMuted ? "bg-red-500/15 text-red-400" : "text-mid hover:bg-inset hover:text-fg"
+                        className={`flex cursor-pointer items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-semibold transition ${
+                          isMicMuted ? "bg-danger/15 text-danger" : "text-muted hover:bg-cream hover:text-ink"
                         }`}
                       >
                         {isMicMuted ? <MicOff className="size-3.5" /> : <Mic className="size-3.5" />}
@@ -1291,8 +1291,8 @@ onClick={() => setupMicAnalyzer()}
                       <button
                         type="button"
                         onClick={() => setShowChartDrawer(!showChartDrawer)}
-                        className={`flex cursor-pointer items-center gap-1.5 rounded-[8px] px-2.5 py-1.5 text-[11px] font-semibold transition ${
-                          showChartDrawer ? "bg-acc/15 text-acc2" : "text-mid hover:bg-inset hover:text-fg"
+                        className={`flex cursor-pointer items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-semibold transition ${
+                          showChartDrawer ? "bg-accent/15 text-accent-strong" : "text-muted hover:bg-cream hover:text-ink"
                         }`}
                       >
                         <Map className="size-3.5" />
@@ -1303,7 +1303,7 @@ onClick={() => setupMicAnalyzer()}
                       <button
                         type="button"
                         onClick={handleInterrupt}
-                        className="flex cursor-pointer items-center gap-1.5 rounded-[8px] border border-acc/40 px-3 py-1.5 text-[11px] font-bold text-acc2 transition hover:bg-acc/10 active:scale-95"
+                        className="flex cursor-pointer items-center gap-1.5 rounded-lg border border-accent/40 px-3 py-1.5 text-xs font-bold text-accent-strong transition hover:bg-accent/10 active:scale-95"
                       >
                         <Zap className="size-3.5" />
                         {t.interrupt}
@@ -1314,7 +1314,7 @@ onClick={() => setupMicAnalyzer()}
                           toggleLiveVoiceMode(false);
                           router.push("/reading");
                         }}
-                        className="flex cursor-pointer items-center gap-1.5 rounded-[8px] px-2.5 py-1.5 text-[11px] font-semibold text-mid transition hover:bg-red-500/10 hover:text-red-400"
+                        className="flex cursor-pointer items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-muted transition hover:bg-danger/10 hover:text-danger"
                       >
                         <LogOut className="size-3.5" />
                         {t.exitVoice}
@@ -1331,19 +1331,19 @@ onClick={() => setupMicAnalyzer()}
               that consultation is about the pair. */}
           {showChartDrawer && (
             <div
-              className={`absolute right-5 top-5 z-30 max-h-[calc(100%-2.5rem)] animate-fade-in space-y-3 overflow-y-auto rounded-[8px] border border-brd bg-panel p-4 shadow-2xl ${
+              className={`absolute right-5 top-5 z-30 max-h-[calc(100%-2.5rem)] animate-fade-in space-y-3 overflow-y-auto rounded-lg border border-line bg-surface p-4 shadow-2xl ${
                 milanLive ? "w-[22rem] sm:w-[34rem]" : "w-80"
               }`}
             >
-              <div className="flex items-center justify-between gap-3 border-b border-brd pb-2">
-                <h4 className="min-w-0 truncate font-serif text-xs font-bold text-fg">
+              <div className="flex items-center justify-between gap-3 border-b border-line pb-2">
+                <h4 className="min-w-0 truncate font-serif text-xs font-bold text-ink">
                   {milanLive
                     ? `${milanLive.self.name} & ${milanLive.partner.name}`
                     : `${activeBirth.name}'s D1 Kundali`}
                 </h4>
                 <button
                   onClick={() => setShowChartDrawer(false)}
-                  className="shrink-0 text-xs text-mut hover:text-fg"
+                  className="shrink-0 text-xs text-muted hover:text-ink"
                 >
                   {t.closeChartDrawer}
                 </button>
@@ -1352,18 +1352,18 @@ onClick={() => setupMicAnalyzer()}
               <div className={milanLive ? "grid gap-3 sm:grid-cols-2" : ""}>
                 <div className="space-y-2">
                   {milanLive && (
-                    <p className="truncate text-[11px] font-semibold text-fg">
+                    <p className="truncate text-xs font-semibold text-ink">
                       {milanLive.self.name}
                     </p>
                   )}
-                  <div className="rounded-[8px] border border-brd bg-inset p-2">
+                  <div className="rounded-lg border border-line bg-cream p-2">
                     <NorthIndianChart
                       chart={activeChart}
                       selectedHouse={highlightedHouse}
                       onSelectHouse={(h) => setHighlightedHouse((prev) => (prev === h ? null : h))}
                     />
                   </div>
-                  <p className="text-center text-[10px] text-mut">
+                  <p className="text-center text-2xs text-muted">
                     {getSignName(activeChart.lagna_sign, selectedLanguage)} {t.ascendantLabel} (
                     {activeChart.lagna_degree.toFixed(2)}°)
                   </p>
@@ -1371,13 +1371,13 @@ onClick={() => setupMicAnalyzer()}
 
                 {milanLive && (
                   <div className="space-y-2">
-                    <p className="truncate text-[11px] font-semibold text-fg">
+                    <p className="truncate text-xs font-semibold text-ink">
                       {milanLive.partner.name}
                     </p>
-                    <div className="rounded-[8px] border border-brd bg-inset p-2">
+                    <div className="rounded-lg border border-line bg-cream p-2">
                       <NorthIndianChart chart={milanLive.partner.chart} />
                     </div>
-                    <p className="text-center text-[10px] text-mut">
+                    <p className="text-center text-2xs text-muted">
                       {getSignName(milanLive.partner.chart.lagna_sign, selectedLanguage)}{" "}
                       {t.ascendantLabel} ({milanLive.partner.chart.lagna_degree.toFixed(2)}°)
                     </p>
@@ -1386,7 +1386,7 @@ onClick={() => setupMicAnalyzer()}
               </div>
 
               {milanLive && (
-                <p className="border-t border-brd pt-2.5 text-center text-[10.5px] text-mut">
+                <p className="border-t border-line pt-2.5 text-center text-2xs text-muted">
                   {milanLive.match.total_guna}/{milanLive.match.max_guna}{" "}
                   {selectedLanguage === "en" ? "gunas" : "गुण"}
                 </p>
@@ -1401,16 +1401,16 @@ onClick={() => setupMicAnalyzer()}
         <div className="flex-1 min-h-0 h-full grid gap-0 lg:grid-cols-[38%_62%] overflow-hidden">
           
           {/* LEFT COLUMN (38% width) - Interactive Kundali Reference & Seeker Context */}
-          <aside className="h-full min-h-0 space-y-4 overflow-y-auto border-r border-brd bg-inset p-5">
+          <aside className="h-full min-h-0 space-y-4 overflow-y-auto border-r border-line bg-cream p-5">
             
             {milanLive && (
-              <div className="flex items-center gap-2.5 rounded-[10px] border border-acc/30 bg-acc/[0.08] px-3.5 py-2.5">
-                <Heart className="size-4 shrink-0 text-acc" />
+              <div className="flex items-center gap-2.5 rounded-lg border border-accent/30 bg-accent/[0.08] px-3.5 py-2.5">
+                <Heart className="size-4 shrink-0 text-accent" />
                 <span className="min-w-0 flex-1">
-                  <span className="block truncate text-[12px] font-semibold text-fg">
+                  <span className="block truncate text-xs font-semibold text-ink">
                     {milanLive.self.name} &amp; {milanLive.partner.name}
                   </span>
-                  <span className="block text-[10.5px] text-mut">
+                  <span className="block text-2xs text-muted">
                     {milanLive.match.total_guna}/{milanLive.match.max_guna}{" "}
                     {selectedLanguage === "en" ? "gunas · both charts loaded" : "गुण · दुवै कुण्डली"}
                   </span>
@@ -1423,7 +1423,7 @@ onClick={() => setupMicAnalyzer()}
                     setMilanLive(null);
                   }}
                   aria-label={selectedLanguage === "en" ? "Leave match context" : "मिलान हटाउनुहोस्"}
-                  className="shrink-0 cursor-pointer rounded-[6px] px-1.5 text-[13px] text-mut transition hover:text-fg"
+                  className="shrink-0 cursor-pointer rounded-md px-1.5 text-sm text-muted transition hover:text-ink"
                 >
                   ✕
                 </button>
@@ -1435,7 +1435,7 @@ onClick={() => setupMicAnalyzer()}
             <button
               type="button"
               onClick={() => toggleLiveVoiceMode(true)}
-              className="group flex w-full cursor-pointer items-center gap-3.5 rounded-[12px] bg-acc p-4 text-left text-onacc shadow-lg transition hover:bg-acc2 active:scale-[0.99]"
+              className="group flex w-full cursor-pointer items-center gap-3.5 rounded-xl bg-accent-strong p-4 text-left text-white shadow-lg transition hover:bg-accent-strong active:scale-[0.99]"
             >
               <span className="relative grid size-11 shrink-0 place-items-center rounded-full bg-onacc/15">
                 <Headphones className="size-5 transition-transform group-hover:scale-110" />
@@ -1443,14 +1443,14 @@ onClick={() => setupMicAnalyzer()}
                 <span className="absolute -right-0.5 -top-0.5 size-2.5 rounded-full bg-onacc" />
               </span>
               <span className="min-w-0 flex-1">
-                <span className="block text-[13.5px] font-bold leading-tight">
+                <span className="block text-sm font-bold leading-tight">
                   {selectedLanguage === "ne"
                     ? "प्रत्यक्ष एआई ज्योतिषीसँग बोल्नुहोस्"
                     : selectedLanguage === "hi"
                       ? "लाइव एआई ज्योतिषी से बात करें"
                       : "Talk Live with the AI Astrologer"}
                 </span>
-                <span className="mt-0.5 block text-[11px] font-medium opacity-80">
+                <span className="mt-0.5 block text-xs font-medium opacity-80">
                   {selectedLanguage === "ne"
                     ? "आवाजमै प्रश्न सोध्नुहोस् — तुरुन्तै जवाफ सुन्नुहोस्"
                     : selectedLanguage === "hi"
@@ -1462,33 +1462,33 @@ onClick={() => setupMicAnalyzer()}
             </button>
 
             {/* Seeker Profile & D1 Chart Reference Card */}
-            <div className="space-y-4 rounded-[12px] border border-brd bg-panel p-5">
-              <div className="flex items-center justify-between border-b border-brd pb-3">
+            <div className="space-y-4 rounded-xl border border-line bg-surface p-5">
+              <div className="flex items-center justify-between border-b border-line pb-3">
                 <div className="flex items-center gap-2.5">
-                  <div className="size-8 rounded-full bg-gradient-to-br from-acc to-acc2 text-onacc flex items-center justify-center font-bold text-xs shadow-md">
+                  <div className="size-8 rounded-full bg-gradient-to-br from-acc to-acc2 text-white flex items-center justify-center font-bold text-xs shadow-md">
                     {activeBirth.name.charAt(0)}
                   </div>
                   <div>
-                    <h2 className="text-[14px] font-bold leading-tight text-fg">
+                    <h2 className="text-sm font-bold leading-tight text-ink">
                       {activeBirth.name}
                     </h2>
-                    <span className="text-[10px] text-mut block">{t.d1SiderealBirthChart}</span>
+                    <span className="text-2xs text-muted block">{t.d1SiderealBirthChart}</span>
                   </div>
                 </div>
-                <span className="rounded-[8px] bg-acc/10 border border-acc/30 text-acc2 px-2.5 py-0.5 text-[10px] font-bold">
+                <span className="rounded-lg bg-accent/10 border border-accent/30 text-accent-strong px-2.5 py-0.5 text-2xs font-bold">
                   {getSignName(activeChart.lagna_sign, selectedLanguage)} {t.ascendantLabel}
                 </span>
               </div>
               
               {/* Illuminated North Indian Chart Container */}
-              <div className="relative mx-auto w-full max-w-[290px] rounded-[10px] border border-brd bg-app p-2.5">
+              <div className="relative mx-auto w-full max-w-[290px] rounded-lg border border-line bg-cream p-2.5">
                 <NorthIndianChart
                   chart={activeChart}
                   selectedHouse={highlightedHouse}
                   onSelectHouse={(h) => setHighlightedHouse((prev) => (prev === h ? null : h))}
                 />
               </div>
-              <p className="text-center text-[10px] text-mut/80 leading-tight">
+              <p className="text-center text-2xs text-muted leading-tight">
                 {t.tapHouseHelper}
               </p>
             </div>
@@ -1496,38 +1496,38 @@ onClick={() => setupMicAnalyzer()}
             {/* The other chart. A match consultation that shows one kundali is
                 answering about two and displaying one. */}
             {milanLive && (
-              <div className="space-y-4 rounded-[12px] border border-acc/30 bg-panel p-5">
-                <div className="flex items-center justify-between border-b border-brd pb-3">
+              <div className="space-y-4 rounded-xl border border-accent/30 bg-surface p-5">
+                <div className="flex items-center justify-between border-b border-line pb-3">
                   <div className="flex items-center gap-2.5">
-                    <div className="grid size-8 place-items-center rounded-full bg-inset text-xs font-bold text-acc">
+                    <div className="grid size-8 place-items-center rounded-full bg-cream text-xs font-bold text-accent">
                       {milanLive.partner.name.charAt(0)}
                     </div>
                     <div className="min-w-0">
-                      <h2 className="truncate text-[14px] font-bold leading-tight text-fg">
+                      <h2 className="truncate text-sm font-bold leading-tight text-ink">
                         {milanLive.partner.name}
                       </h2>
-                      <span className="block text-[10px] text-mut">
+                      <span className="block text-2xs text-muted">
                         {selectedLanguage === "en" ? "Partner's chart" : "जोडीको कुण्डली"}
                       </span>
                     </div>
                   </div>
-                  <span className="shrink-0 rounded-[8px] border border-acc/30 bg-acc/10 px-2.5 py-0.5 text-[10px] font-bold text-acc2">
+                  <span className="shrink-0 rounded-lg border border-accent/30 bg-accent/10 px-2.5 py-0.5 text-2xs font-bold text-accent-strong">
                     {getSignName(milanLive.partner.chart.lagna_sign, selectedLanguage)}{" "}
                     {t.ascendantLabel}
                   </span>
                 </div>
 
-                <div className="relative mx-auto w-full max-w-[290px] rounded-[10px] border border-brd bg-app p-2.5">
+                <div className="relative mx-auto w-full max-w-[290px] rounded-lg border border-line bg-cream p-2.5">
                   <NorthIndianChart chart={milanLive.partner.chart} />
                 </div>
               </div>
             )}
 
             {/* Quick Dasha & Active Time Lords Widget */}
-            <div className="space-y-3 rounded-[12px] border border-brd bg-panel p-4">
-              <div className="flex items-center justify-between border-b border-brd pb-2.5">
-                <h3 className="text-[12.5px] font-semibold text-fg">{t.activeTimeLords}</h3>
-                <span className="text-[10px] uppercase tracking-[0.1em] text-dim">
+            <div className="space-y-3 rounded-xl border border-line bg-surface p-4">
+              <div className="flex items-center justify-between border-b border-line pb-2.5">
+                <h3 className="text-xs font-semibold text-ink">{t.activeTimeLords}</h3>
+                <span className="text-2xs uppercase tracking-[0.1em] text-dim">
                   {t.vimshottariLabel}
                 </span>
               </div>
@@ -1537,7 +1537,7 @@ onClick={() => setupMicAnalyzer()}
                   label={t.mahadashaLabel}
                   lord={getPlanetName(mahaLord, selectedLanguage)}
                   period={runningNow.maha}
-                  tone="text-acc"
+                  tone="text-accent"
                 />
                 <DashaCell
                   label={t.antardashaLabel}
@@ -1547,9 +1547,9 @@ onClick={() => setupMicAnalyzer()}
                 />
               </div>
 
-              <div className="flex items-center justify-between border-t border-brd pt-2.5 text-[11.5px] text-dim">
+              <div className="flex items-center justify-between border-t border-line pt-2.5 text-xs text-dim">
                 <span>{t.ascendantPlacementLabel}</span>
-                <span className="font-medium text-fg">
+                <span className="font-medium text-ink">
                   {getSignName(activeChart.lagna_sign, selectedLanguage)} ·{" "}
                   {activeChart.lagna_degree.toFixed(2)}°
                 </span>
@@ -1559,7 +1559,7 @@ onClick={() => setupMicAnalyzer()}
           </aside>
 
           {/* RIGHT COLUMN (62% width) - Interactive Live Chat Desk */}
-          <main className="flex flex-col flex-1 min-h-0 h-full bg-app overflow-hidden">
+          <main className="flex flex-col flex-1 min-h-0 h-full bg-cream overflow-hidden">
             
             {/* Streamed Chat Feed */}
             <div ref={chatScrollRef} className="flex min-h-0 flex-1 flex-col gap-5 overflow-y-auto scroll-smooth p-4 sm:p-6">
@@ -1579,8 +1579,8 @@ onClick={() => setupMicAnalyzer()}
 
               {messages.length <= 1 && !isThinking && (
                 <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col justify-center px-1 py-6">
-                  <h2 className="text-[13px] font-semibold text-fg">{t.consultSuggestedTopics}</h2>
-                  <p className="mt-1 text-[12.5px] leading-[1.7] text-dim">
+                  <h2 className="text-sm font-semibold text-ink">{t.consultSuggestedTopics}</h2>
+                  <p className="mt-1 text-xs leading-[1.7] text-dim">
                     {milanLive
                       ? selectedLanguage === "ne"
                         ? `${milanLive.self.name} र ${milanLive.partner.name} — दुवै कुण्डली र मिलानको अंक मसँग छन्। जे पनि सोध्नुहोस्।`
@@ -1594,16 +1594,16 @@ onClick={() => setupMicAnalyzer()}
                       <button
                         key={chip.title}
                         onClick={() => handleSend(chip.query)}
-                        className="group flex items-start gap-3 rounded-[10px] border border-brd bg-panel p-3.5 text-left transition-colors hover:border-acc/40 hover:bg-inset"
+                        className="group flex items-start gap-3 rounded-lg border border-line bg-surface p-3.5 text-left transition-colors hover:border-accent/40 hover:bg-cream"
                       >
-                        <span className="text-[15px] leading-none">{chip.icon}</span>
+                        <span className="text-base leading-none">{chip.icon}</span>
                         <span className="min-w-0 flex-1">
-                          <span className="block text-[13px] font-medium text-fg">{chip.title}</span>
-                          <span className="mt-1 block text-[11.5px] leading-[1.6] text-dim">
+                          <span className="block text-sm font-medium text-ink">{chip.title}</span>
+                          <span className="mt-1 block text-xs leading-[1.6] text-dim">
                             {chip.query}
                           </span>
                         </span>
-                        <ArrowLeft className="mt-0.5 size-3.5 shrink-0 rotate-180 text-dim transition-colors group-hover:text-acc" />
+                        <ArrowLeft className="mt-0.5 size-3.5 shrink-0 rotate-180 text-dim transition-colors group-hover:text-accent" />
                       </button>
                     ))}
                   </div>
@@ -1612,14 +1612,14 @@ onClick={() => setupMicAnalyzer()}
 
               {/* Thinking / Analyzing Indicator */}
               {isThinking && (
-                <div className="flex items-center gap-3 p-4 rounded-[14px] border border-brd bg-panel/90 backdrop-blur-md max-w-xs animate-pulse">
-                  <span className="grid size-6 place-items-center rounded-full bg-inset font-serif text-[11px] font-bold text-acc">
+                <div className="flex items-center gap-3 p-4 rounded-xl border border-line bg-surface/90 backdrop-blur-md max-w-xs animate-pulse">
+                  <span className="grid size-6 place-items-center rounded-full bg-cream font-serif text-xs font-bold text-accent">
                     ॐ
                   </span>
-                  <div className="flex items-center gap-1.5 text-xs text-acc2 font-medium">
-                    <span className="size-2 rounded-full bg-acc animate-bounce" />
-                    <span className="size-2 rounded-full bg-acc2 animate-bounce delay-150" />
-                    <span className="size-2 rounded-full bg-acc animate-bounce delay-300" />
+                  <div className="flex items-center gap-1.5 text-xs text-accent-strong font-medium">
+                    <span className="size-2 rounded-full bg-accent-strong animate-bounce" />
+                    <span className="size-2 rounded-full bg-accent-strong animate-bounce delay-150" />
+                    <span className="size-2 rounded-full bg-accent-strong animate-bounce delay-300" />
                     <span className="ml-2">{t.analyzingSpeech}</span>
                   </div>
                 </div>
@@ -1627,16 +1627,16 @@ onClick={() => setupMicAnalyzer()}
             </div>
 
             {realtimeError && (
-              <div className="mx-4 mb-2 flex shrink-0 items-center gap-2.5 rounded-[8px] border border-acc/30 bg-inset px-3.5 py-2.5">
-                <TriangleAlert className="size-4 shrink-0 text-acc" />
-                <span className="min-w-0 flex-1 text-[12px] leading-[1.6] text-mut">
+              <div className="mx-4 mb-2 flex shrink-0 items-center gap-2.5 rounded-lg border border-accent/30 bg-cream px-3.5 py-2.5">
+                <TriangleAlert className="size-4 shrink-0 text-accent" />
+                <span className="min-w-0 flex-1 text-xs leading-[1.6] text-muted">
                   {t.voiceFellBack}
                 </span>
                 <button
                   type="button"
                   onClick={() => setRealtimeError(null)}
                   aria-label={t.dashClose}
-                  className="shrink-0 text-[11px] text-dim transition-colors hover:text-fg"
+                  className="shrink-0 text-xs text-dim transition-colors hover:text-ink"
                 >
                   ✕
                 </button>
@@ -1653,16 +1653,16 @@ onClick={() => setupMicAnalyzer()}
                 <button
                   key={chip.title}
                   onClick={() => handleSend(chip.query)}
-                  className="group inline-flex shrink-0 cursor-pointer items-center gap-1.5 rounded-full border border-brd bg-panel px-3.5 py-1.5 text-xs text-mut transition-colors hover:border-acc/40 hover:text-fg"
+                  className="group inline-flex shrink-0 cursor-pointer items-center gap-1.5 rounded-full border border-line bg-surface px-3.5 py-1.5 text-xs text-muted transition-colors hover:border-accent/40 hover:text-ink"
                 >
                   <span className="text-xs">{chip.icon}</span>
-                  <span className="font-medium text-[11px] sm:text-xs">{chip.title}</span>
+                  <span className="font-medium text-xs sm:text-xs">{chip.title}</span>
                 </button>
               ))}
             </div>
 
             {/* Bottom Mic & Message Input Dock */}
-            <footer className="border-t border-brd bg-panel/90 backdrop-blur-xl p-4 shadow-2xl">
+            <footer className="border-t border-line bg-surface/90 backdrop-blur-xl p-4 shadow-2xl">
               <form
                 onSubmit={(e) => {
                   e.preventDefault();
@@ -1674,7 +1674,7 @@ onClick={() => setupMicAnalyzer()}
                 <button
                   type="button"
                   onClick={() => toggleLiveVoiceMode(true)}
-                  className="group grid size-11 shrink-0 cursor-pointer place-items-center rounded-[8px] bg-acc text-onacc transition hover:bg-acc2 active:scale-95"
+                  className="group grid size-11 shrink-0 cursor-pointer place-items-center rounded-lg bg-accent-strong text-white transition hover:bg-accent-strong active:scale-95"
                   title={
                     selectedLanguage === "ne"
                       ? "प्रत्यक्ष एआई भ्वाइस परामर्श सुरु गर्नुहोस्"
@@ -1690,10 +1690,10 @@ onClick={() => setupMicAnalyzer()}
                 <button
                   type="button"
                   onClick={toggleDictation}
-                  className={`grid size-11 shrink-0 place-items-center rounded-[8px] border transition group cursor-pointer active:scale-95 ${
+                  className={`grid size-11 shrink-0 place-items-center rounded-lg border transition group cursor-pointer active:scale-95 ${
                     isDictating
-                      ? "bg-red-500/20 border-red-500 text-red-400 shadow-[0_0_15px_rgba(239,68,68,0.4)] animate-pulse"
-                      : "border-brd bg-inset text-mut hover:text-acc2 hover:border-acc/50"
+                      ? "bg-danger/20 border-danger text-danger shadow-[0_0_15px_rgba(239,68,68,0.4)] animate-pulse"
+                      : "border-line bg-cream text-muted hover:text-accent-strong hover:border-accent/50"
                   }`}
                   title={
                     isDictating
@@ -1710,9 +1710,9 @@ onClick={() => setupMicAnalyzer()}
                   }
                 >
                   {isDictating ? (
-                    <MicOff className="size-5 text-red-400" />
+                    <MicOff className="size-5 text-danger" />
                   ) : (
-                    <Mic className="size-5 group-hover:scale-110 transition-transform text-acc" />
+                    <Mic className="size-5 group-hover:scale-110 transition-transform text-accent" />
                   )}
                 </button>
 
@@ -1729,15 +1729,15 @@ onClick={() => setupMicAnalyzer()}
                         : "Listening to your voice... Speak now..."
                       : t.askPlaceholder
                   }
-                  className={`flex-1 rounded-[8px] border bg-inset px-4 py-3 text-xs sm:text-sm text-fg placeholder-mut/50 focus:border-acc focus:ring-1 focus:ring-acc/40 focus:outline-none transition ${
-                    isDictating ? "border-amber-400/70 ring-2 ring-amber-400/20" : "border-brd"
+                  className={`flex-1 rounded-lg border bg-cream px-4 py-3 text-xs sm:text-sm text-ink placeholder-mut/50 focus:border-accent-strong focus:ring-1 focus:ring-accent/40 focus:outline-none transition ${
+                    isDictating ? "border-accent-strong/70 ring-2 ring-accent-strong/20" : "border-line"
                   }`}
                 />
 
                 <button
                   type="submit"
                   disabled={!inputQuery.trim() || isThinking}
-                  className="rounded-[8px] bg-acc px-6 py-3 text-xs font-bold text-onacc transition hover:bg-acc2 disabled:opacity-40 cursor-pointer active:scale-95 shrink-0 sm:text-sm"
+                  className="rounded-lg bg-accent-strong px-6 py-3 text-xs font-bold text-white transition hover:bg-accent-strong disabled:opacity-40 cursor-pointer active:scale-95 shrink-0 sm:text-sm"
                 >
                   {isThinking ? "..." : t.sendQuery}
                 </button>
@@ -1770,11 +1770,11 @@ function DashaCell({
   tone: string;
 }) {
   return (
-    <div className="rounded-[10px] border border-brd bg-app p-3">
-      <span className="block text-[10px] uppercase tracking-[0.1em] text-dim">{label}</span>
-      <span className={`mt-1 block text-[15px] font-bold ${tone}`}>{lord}</span>
+    <div className="rounded-lg border border-line bg-cream p-3">
+      <span className="block text-2xs uppercase tracking-[0.1em] text-dim">{label}</span>
+      <span className={`mt-1 block text-base font-bold ${tone}`}>{lord}</span>
       {period && (
-        <span className="mt-1 block text-[10.5px] tabular-nums text-dim">
+        <span className="mt-1 block text-2xs tabular-nums text-dim">
           {period.start.slice(0, 4)} – {period.end.slice(0, 4)}
         </span>
       )}
