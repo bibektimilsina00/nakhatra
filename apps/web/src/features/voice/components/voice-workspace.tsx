@@ -909,7 +909,7 @@ export function LiveModeWorkspace() {
           <div className="flex items-center justify-between border-b border-line pb-3">
             <div className="flex items-center gap-2">
               <span className="text-accent-strong font-bold text-sm">🐛 Live Audio Recording &amp; Voice Telemetry Console</span>
-              <span className={`rounded-lg border px-2 py-0.5 text-2xs font-bold ${isWebRTCActive ? "bg-success/20 text-emerald-300 border-success/40" : "bg-accent/20 text-cyan-300 border-accent/40"}`}>
+              <span className={`rounded-lg border px-2 py-0.5 text-2xs font-bold ${isWebRTCActive ? "bg-success/20 text-success border-success/40" : "bg-accent/20 text-accent-strong border-accent/40"}`}>
                 {isWebRTCActive ? "Realtime WebRTC Active" : "Voice AI Active"}
               </span>
             </div>
@@ -944,7 +944,7 @@ onClick={() => setupMicAnalyzer()}
                 <span className="font-bold text-accent-strong">{audioLevel}%</span>
                 <div className="flex-1 bg-cream h-2 rounded-lg overflow-hidden border border-line">
                   <div
-                    className="h-full bg-gradient-to-r from-success via-cyan-400 to-acc"
+                    className="h-full bg-gradient-to-r from-success via-accent to-accent-strong"
                     style={{ width: `${Math.max(5, audioLevel)}%` }}
                   />
                 </div>
@@ -976,7 +976,7 @@ onClick={() => setupMicAnalyzer()}
                     Voice Detected ({audioLevel}%)
                   </span>
                 ) : silenceCounterMs > 0 ? (
-                  <span className="text-amber-300">
+                  <span className="text-accent">
                     ⏱️ Counting Silence ({silenceCounterMs}ms)
                   </span>
                 ) : voiceState === "thinking" ? (
@@ -993,8 +993,8 @@ onClick={() => setupMicAnalyzer()}
             {/* Box 5: Native MediaRecorder Status */}
             <div className="rounded-lg border border-line bg-surface p-3 space-y-1.5">
               <span className="text-muted block text-2xs uppercase font-semibold">📼 MediaRecorder Buffer</span>
-              <p className="font-bold text-cyan-300 flex items-center gap-1.5">
-                <span className={`size-2 rounded-full ${isRecordingMedia ? "bg-danger animate-ping" : "bg-slate-600"}`} />
+              <p className="font-bold text-accent-strong flex items-center gap-1.5">
+                <span className={`size-2 rounded-full ${isRecordingMedia ? "bg-danger animate-ping" : "bg-line-strong"}`} />
                 {isRecordingMedia ? "Capturing Audio Chunks..." : "Buffer Ready"}
               </p>
               <span className="text-2xs text-muted">Voice Audio Buffer</span>
@@ -1015,7 +1015,7 @@ onClick={() => setupMicAnalyzer()}
                 addDebugLog("SIMULATED_TEST_QUERY", `Injected test query: "${sample}"`);
                 handleSend(sample);
               }}
-              className="rounded-lg bg-accent-strong hover:bg-accent-strong px-3 py-1 text-xs font-bold text-white transition"
+              className="rounded-lg bg-accent-strong hover:opacity-90 px-3 py-1 text-xs font-bold text-white transition"
             >
               🧪 Test Trigger Career Query
             </button>
@@ -1228,7 +1228,7 @@ onClick={() => setupMicAnalyzer()}
                   ))}
                 </div>
 
-                <div className="rounded-lg border border-line bg-surface shadow-xl">
+                <div className="rounded-lg border border-line bg-surface shadow-xl focus-within:border-ring focus-within:ring-1 focus-within:ring-ring">
                   <form
                     onSubmit={(e) => {
                       e.preventDefault();
@@ -1258,7 +1258,7 @@ onClick={() => setupMicAnalyzer()}
                     <button
                       type="submit"
                       disabled={!inputQuery.trim() || isThinking}
-                      className="shrink-0 cursor-pointer rounded-lg bg-accent-strong px-5 py-2.5 text-xs font-bold text-white transition hover:bg-accent-strong active:scale-95 disabled:opacity-40"
+                      className="shrink-0 cursor-pointer rounded-lg bg-accent-strong px-5 py-2.5 text-xs font-bold text-white transition hover:opacity-90 active:scale-95 disabled:opacity-40"
                     >
                       {isThinking ? "..." : t.sendQuery}
                     </button>
@@ -1435,12 +1435,12 @@ onClick={() => setupMicAnalyzer()}
             <button
               type="button"
               onClick={() => toggleLiveVoiceMode(true)}
-              className="group flex w-full cursor-pointer items-center gap-3.5 rounded-xl bg-accent-strong p-4 text-left text-white shadow-lg transition hover:bg-accent-strong active:scale-[0.99]"
+              className="group flex w-full cursor-pointer items-center gap-3.5 rounded-xl bg-accent-strong p-4 text-left text-white shadow-lg transition hover:opacity-90 active:scale-[0.99]"
             >
-              <span className="relative grid size-11 shrink-0 place-items-center rounded-full bg-onacc/15">
+              <span className="relative grid size-11 shrink-0 place-items-center rounded-full bg-white/15">
                 <Headphones className="size-5 transition-transform group-hover:scale-110" />
-                <span className="absolute -right-0.5 -top-0.5 size-2.5 animate-ping rounded-full bg-onacc/70" />
-                <span className="absolute -right-0.5 -top-0.5 size-2.5 rounded-full bg-onacc" />
+                <span className="absolute -right-0.5 -top-0.5 size-2.5 animate-ping rounded-full bg-white/70" />
+                <span className="absolute -right-0.5 -top-0.5 size-2.5 rounded-full bg-white" />
               </span>
               <span className="min-w-0 flex-1">
                 <span className="block text-sm font-bold leading-tight">
@@ -1465,7 +1465,7 @@ onClick={() => setupMicAnalyzer()}
             <div className="space-y-4 rounded-xl border border-line bg-surface p-5">
               <div className="flex items-center justify-between border-b border-line pb-3">
                 <div className="flex items-center gap-2.5">
-                  <div className="size-8 rounded-full bg-gradient-to-br from-acc to-acc2 text-white flex items-center justify-center font-bold text-xs shadow-md">
+                  <div className="size-8 rounded-full bg-gradient-to-br from-accent-strong to-accent text-white flex items-center justify-center font-bold text-xs shadow-md">
                     {activeBirth.name.charAt(0)}
                   </div>
                   <div>
@@ -1543,7 +1543,7 @@ onClick={() => setupMicAnalyzer()}
                   label={t.antardashaLabel}
                   lord={getPlanetName(antarLord, selectedLanguage)}
                   period={runningNow.antar}
-                  tone="text-amber-300"
+                  tone="text-accent-strong"
                 />
               </div>
 
@@ -1674,7 +1674,7 @@ onClick={() => setupMicAnalyzer()}
                 <button
                   type="button"
                   onClick={() => toggleLiveVoiceMode(true)}
-                  className="group grid size-11 shrink-0 cursor-pointer place-items-center rounded-lg bg-accent-strong text-white transition hover:bg-accent-strong active:scale-95"
+                  className="group grid size-11 shrink-0 cursor-pointer place-items-center rounded-lg bg-accent-strong text-white transition hover:opacity-90 active:scale-95"
                   title={
                     selectedLanguage === "ne"
                       ? "प्रत्यक्ष एआई भ्वाइस परामर्श सुरु गर्नुहोस्"
@@ -1729,7 +1729,7 @@ onClick={() => setupMicAnalyzer()}
                         : "Listening to your voice... Speak now..."
                       : t.askPlaceholder
                   }
-                  className={`flex-1 rounded-lg border bg-cream px-4 py-3 text-xs sm:text-sm text-ink placeholder-mut/50 focus:border-accent-strong focus:ring-1 focus:ring-accent/40 focus:outline-none transition ${
+                  className={`flex-1 rounded-lg border bg-cream px-4 py-3 text-xs sm:text-sm text-ink placeholder-dim focus:border-accent-strong focus:ring-1 focus:ring-accent/40 focus:outline-none transition ${
                     isDictating ? "border-accent-strong/70 ring-2 ring-accent-strong/20" : "border-line"
                   }`}
                 />
@@ -1737,7 +1737,7 @@ onClick={() => setupMicAnalyzer()}
                 <button
                   type="submit"
                   disabled={!inputQuery.trim() || isThinking}
-                  className="rounded-lg bg-accent-strong px-6 py-3 text-xs font-bold text-white transition hover:bg-accent-strong disabled:opacity-40 cursor-pointer active:scale-95 shrink-0 sm:text-sm"
+                  className="rounded-lg bg-accent-strong px-6 py-3 text-xs font-bold text-white transition hover:opacity-90 disabled:opacity-40 cursor-pointer active:scale-95 shrink-0 sm:text-sm"
                 >
                   {isThinking ? "..." : t.sendQuery}
                 </button>
