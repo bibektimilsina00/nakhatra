@@ -28,15 +28,15 @@ import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
 import { UnrealBloomPass } from "three/addons/postprocessing/UnrealBloomPass.js";
 
 export const PLANET_COLORS: Record<string, string> = {
-  Sun: "#FFB347",
-  Moon: "#E8ECF4",
-  Mars: "#FF6B5A",
-  Mercury: "#7ED957",
-  Jupiter: "#F3C766",
-  Venus: "#F7C8E0",
-  Saturn: "#7A9CC6",
-  Rahu: "#8B7BC7",
-  Ketu: "#C77B58",
+  Sun: "rgb(255, 179, 71)",
+  Moon: "rgb(232, 236, 244)",
+  Mars: "rgb(255, 107, 90)",
+  Mercury: "rgb(126, 217, 87)",
+  Jupiter: "rgb(243, 199, 102)",
+  Venus: "rgb(247, 200, 224)",
+  Saturn: "rgb(122, 156, 198)",
+  Rahu: "rgb(139, 123, 199)",
+  Ketu: "rgb(199, 123, 88)",
 };
 
 /** U+FE0E pins the glyphs to text presentation, so they take our gold tint
@@ -123,7 +123,7 @@ export function BirthSky3D({
   onSelect,
   showNakshatras,
   showAspects,
-  className = "relative h-[76vh] min-h-[500px] w-full overflow-hidden rounded-[12px]",
+  className = "relative h-[76vh] min-h-[500px] w-full overflow-hidden rounded-xl",
   wheelZoom = true,
   animateOrbits = false,
   globalInteract = false,
@@ -290,7 +290,7 @@ export function BirthSky3D({
     // visitable bodies. A static pivot keeps the entry shape uniform.
     const earthPivot = new THREE.Group();
     scene.add(earthPivot);
-    const earthLabel = makeLabel(language === "en" ? "Earth" : "पृथ्वी", "#7FB2E5", 42);
+    const earthLabel = makeLabel(language === "en" ? "Earth" : "पृथ्वी", "rgb(127, 178, 229)", 42);
     earthLabel.position.set(0, 17, 0);
     scene.add(earthLabel);
 
@@ -324,14 +324,16 @@ export function BirthSky3D({
       rimMesh.position.copy(mesh.position);
       parent.add(rimMesh);
 
-      // soft halo behind it
+      // soft halo behind it — read back off the already-parsed THREE.Color so
+      // any CSS colour string (hex, rgb()) works, not just hex-with-alpha.
+      const rgb = `${Math.round(color.r * 255)}, ${Math.round(color.g * 255)}, ${Math.round(color.b * 255)}`;
       const cnv = document.createElement("canvas");
       cnv.width = cnv.height = 128;
       const g2 = cnv.getContext("2d")!;
       const grad2 = g2.createRadialGradient(64, 64, 4, 64, 64, 64);
-      grad2.addColorStop(0, hex + "77");
-      grad2.addColorStop(0.35, hex + "2e");
-      grad2.addColorStop(1, hex + "00");
+      grad2.addColorStop(0, `rgba(${rgb}, 0.47)`);
+      grad2.addColorStop(0.35, `rgba(${rgb}, 0.18)`);
+      grad2.addColorStop(1, `rgba(${rgb}, 0)`);
       g2.fillStyle = grad2;
       g2.fillRect(0, 0, 128, 128);
       const glow = new THREE.SpriteMaterial({
@@ -458,7 +460,7 @@ export function BirthSky3D({
       // the name floating bare over the sphere, constant screen size
       const label = makeLabel(
         getPlanetAbbrev(p.name, language) + (p.retrograde ? " ℞" : ""),
-        PLANET_COLORS[p.name] ?? "#F8FAFC", 42,
+        PLANET_COLORS[p.name] ?? "rgb(248, 250, 252)", 42,
       );
       label.position.copy(at(lon, shell.r, shell.size + 7));
       pivot.add(label);
@@ -563,20 +565,20 @@ export function BirthSky3D({
 
       const label = makeLabel(
         getSignName(SIGNS_EN[i], language),
-        isLagnaSign ? "#F3C766" : "#E5C77A", 44,
+        isLagnaSign ? "rgb(243, 199, 102)" : "rgb(229, 199, 122)", 44,
       );
       label.position.copy(at(i * 30 + 15, (RING_IN + RING_OUT) / 2, 4));
       scene.add(label);
       signMarks.push(label);
 
-      const glyph = makeLabel(SIGN_GLYPHS[i], isLagnaSign ? "#F3C766" : "#E5C77A", 52);
+      const glyph = makeLabel(SIGN_GLYPHS[i], isLagnaSign ? "rgb(243, 199, 102)" : "rgb(229, 199, 122)", 52);
       glyph.position.copy(at(i * 30 + 15, (RING_IN + RING_OUT) / 2, 14));
       scene.add(glyph);
       signMarks.push(glyph);
 
       // whole-sign house number just inside the ring
       const houseNo = ((i - chart.lagna_sign_index + 12) % 12) + 1;
-      const num = makeLabel(toLocalizedDigit(houseNo, language), "#8a7a55", 30);
+      const num = makeLabel(toLocalizedDigit(houseNo, language), "rgb(138, 122, 85)", 30);
       num.position.copy(at(i * 30 + 15, RING_IN - 14, 1));
       scene.add(num);
       signMarks.push(num);
@@ -656,7 +658,7 @@ export function BirthSky3D({
 
         const tag = makeLabel(
           getNakshatraName(star.name, language),
-          star.bright ? "#E5C77A" : "#8FA3C4",
+          star.bright ? "rgb(229, 199, 122)" : "rgb(143, 163, 196)",
           star.bright ? 30 : 26,
         );
         tag.position.copy(pos.clone().multiplyScalar(1.04));
@@ -674,7 +676,7 @@ export function BirthSky3D({
       new THREE.LineBasicMaterial({ color: 0xf3c766, transparent: true, opacity: 0.9 }),
     );
     ascPivot.add(beam);
-    const ascLabel = makeLabel(language === "en" ? "Asc" : "लग्न", "#F3C766", 36);
+    const ascLabel = makeLabel(language === "en" ? "Asc" : "लग्न", "rgb(243, 199, 102)", 36);
     ascLabel.position.copy(at(lagnaLon, RING_OUT + 30, 6));
     ascPivot.add(ascLabel);
 
@@ -705,7 +707,7 @@ export function BirthSky3D({
           geo,
           new THREE.LineDashedMaterial({
             color: new THREE.Color(
-              name === "Moon" ? "#F3C766" : PLANET_COLORS[name] ?? "#E5A93C",
+              name === "Moon" ? "rgb(243, 199, 102)" : PLANET_COLORS[name] ?? "rgb(229, 169, 60)",
             ),
             transparent: true, opacity: 0.38, dashSize: 4, gapSize: 4,
           }),
@@ -1006,11 +1008,11 @@ export function BirthSky3D({
       >
         <div
           ref={chipRef}
-          className="whitespace-nowrap rounded-[6px] border border-white/15 bg-[#0B0E18]/90 px-2 py-1 font-mono text-[10px] leading-none text-[#F3C766] backdrop-blur-md"
+          className="whitespace-nowrap rounded-md border border-white/15 bg-black/70 px-2 py-1 font-mono text-2xs leading-none text-star backdrop-blur-md"
         />
       </div>
       {hint && (
-      <p className="pointer-events-none absolute left-3 top-2 z-10 text-[10px] text-white/40">
+      <p className="pointer-events-none absolute left-3 top-2 z-10 text-2xs text-white/40">
         {wheelZoom
           ? "drag to orbit · right-drag to pan · scroll to zoom · click a graha to visit it"
           : "drag to orbit · right-drag to pan · click a graha to visit it"}

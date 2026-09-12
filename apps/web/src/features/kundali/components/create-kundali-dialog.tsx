@@ -86,7 +86,7 @@ export function CreateKundaliDialog({
         type="button"
         aria-label={t.dashClose}
         onClick={onClose}
-        className="fixed inset-0 bg-black/60 backdrop-blur-sm"
+        className="fixed inset-0 bg-ink/60 backdrop-blur-sm"
       />
 
       {/* A flex wrapper at full height centres the panel, and still scrolls
@@ -98,15 +98,15 @@ export function CreateKundaliDialog({
           role="dialog"
           aria-modal="true"
           aria-label={t.dashNewKundali}
-          className="rounded-[12px] border border-white/12 bg-inset shadow-2xl shadow-black/60"
+          className="rounded-xl border border-line-strong bg-surface shadow-2xl"
         >
-          <div className="flex items-center justify-between rounded-t-[12px] border-b border-white/[0.08] px-5 py-4">
-            <h2 className="text-[15px] font-semibold text-fg">{t.dashNewKundali}</h2>
+          <div className="flex items-center justify-between rounded-t-xl border-b border-line px-5 py-4">
+            <h2 className="text-base font-semibold text-ink">{t.dashNewKundali}</h2>
             <button
               type="button"
               onClick={onClose}
               aria-label={t.dashClose}
-              className="rounded-[7px] p-1.5 text-mut transition-colors hover:bg-fg/[0.06] hover:text-fg"
+              className="flex min-h-11 min-w-11 items-center justify-center rounded-md text-muted transition-colors hover:bg-cream hover:text-ink"
             >
               <X className="size-4" />
             </button>
@@ -114,7 +114,7 @@ export function CreateKundaliDialog({
 
           <div className="px-5 pb-6 pt-5 sm:px-7">
             {banner && (
-              <div className="mb-4 rounded-[8px] border border-rose-500/30 bg-rose-500/10 px-4 py-3 text-sm text-rose-200">
+              <div className="mb-4 rounded-xl border border-danger/30 bg-danger-tint px-4 py-3 text-sm text-danger">
                 {banner}
               </div>
             )}

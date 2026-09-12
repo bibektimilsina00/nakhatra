@@ -39,7 +39,7 @@ export function TimePicker({
           max={12}
           onChange={(v) => emit(v, minute, meridiem)}
         />
-        <span className="self-center pb-1 font-display text-xl text-mut">:</span>
+        <span className="self-center pb-1 font-display text-xl text-muted">:</span>
         <Spinner
           label="Minute"
           value={minute}
@@ -57,7 +57,7 @@ export function TimePicker({
               className={`rounded-sm border px-3 py-1 text-xs transition ${
                 meridiem === m
                   ? "border-accent-strong/50 bg-accent-strong/12 text-accent-ink"
-                  : "border-line text-mut hover:border-muted/40"
+                  : "border-line text-muted hover:border-muted/40"
               }`}
             >
               {m}
@@ -65,7 +65,7 @@ export function TimePicker({
           ))}
         </div>
       </div>
-      {error && <p className="mt-1.5 text-xs text-rose-300">{error}</p>}
+      {error && <p className="mt-1.5 text-xs text-danger">{error}</p>}
       <p className="mt-1.5 text-xs text-dim">
         Stored as {value} · four minutes moves the ascendant about a degree.
       </p>
@@ -99,14 +99,14 @@ function Spinner({
         <button
           type="button"
           onClick={() => step(-1)}
-          className="px-2.5 py-2 text-mut transition hover:text-fg"
+          className="min-h-11 min-w-11 px-2.5 py-2 text-muted transition hover:text-ink"
           aria-label={`${label} down`}
         >
           −
         </button>
         <input
           inputMode="numeric"
-          className="w-full bg-transparent py-2 text-center font-display text-lg text-fg outline-none"
+          className="w-full bg-transparent py-2 text-center font-display text-lg text-ink outline-none"
           value={padded ? pad(value) : value}
           onChange={(e) => {
             const n = Number(e.target.value.replace(/\D/g, ""));
@@ -116,7 +116,7 @@ function Spinner({
         <button
           type="button"
           onClick={() => step(1)}
-          className="px-2.5 py-2 text-mut transition hover:text-fg"
+          className="min-h-11 min-w-11 px-2.5 py-2 text-muted transition hover:text-ink"
           aria-label={`${label} up`}
         >
           +

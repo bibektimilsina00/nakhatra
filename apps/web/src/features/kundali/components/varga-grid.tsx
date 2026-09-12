@@ -25,7 +25,7 @@ function VargaCard({ varga }: { varga: Varga }) {
   return (
     <div className="rounded-lg border border-line bg-surface/40 p-4">
       <div className="mb-1 flex items-baseline justify-between gap-2">
-        <h3 className="font-display text-base text-fg">
+        <h3 className="font-display text-base text-ink">
           {varga.code} · {varga.name}
         </h3>
         <span className="text-2xs text-dim">1/{varga.divisions}</span>

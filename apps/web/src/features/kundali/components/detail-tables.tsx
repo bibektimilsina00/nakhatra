@@ -30,7 +30,7 @@ function DetailList({
           <dt className="text-2xs uppercase tracking-[0.14em] text-dim">
             {label}
           </dt>
-          <dd className="m-0 text-right text-sm text-fg">{value}</dd>
+          <dd className="m-0 text-right text-sm text-ink">{value}</dd>
         </div>
       ))}
     </dl>
@@ -48,7 +48,7 @@ export function Panel({
 }) {
   return (
     <section className="rounded-lg border border-line bg-surface/50 p-6 sm:p-7">
-      <h3 className="font-display text-lg text-fg">{title}</h3>
+      <h3 className="font-display text-lg text-ink">{title}</h3>
       {note && <p className="mt-1 mb-4 text-xs text-dim">{note}</p>}
       <div className={note ? "" : "mt-4"}>{children}</div>
     </section>
@@ -103,7 +103,7 @@ export function PanchangPanel({ panchang }: { panchang: Panchang }) {
           come from a calendar. Rendered only when present, because a chart
           computed before these existed does not carry them. */}
       {panchang.masa && (
-        <p className="mb-4 border-l-2 border-acc/40 pl-3 text-[12.5px] leading-relaxed text-mut">
+        <p className="mb-4 border-l-2 border-accent/40 pl-3 text-xs leading-relaxed text-muted">
           {panchang.masa} · {panchang.paksha} {panchang.tithi_name} · {panchang.vara}
           <span className="mt-0.5 block text-dim">
             {panchang.ayana} · {panchang.ritu} ritu · Vikram Samvat{" "}
@@ -138,13 +138,13 @@ export function PanchangPanel({ panchang }: { panchang: Panchang }) {
           the nakshatra, and with it the dasha lord and the name syllable.
           Saying so is more honest than printing one value flatly. */}
       {(panchang.near_boundary ?? []).length > 0 && (
-        <div className="mt-4 rounded-[6px] border border-acc/30 bg-acc/[0.06] p-3">
+        <div className="mt-4 rounded-md border border-accent/30 bg-accent-wash p-3">
           <p className="text-xs font-medium text-accent-ink">Close to changing</p>
           <ul className="mt-1.5 space-y-1">
             {(panchang.near_boundary ?? []).map((w) => (
-              <li key={w.element} className="text-xs leading-relaxed text-mut">
+              <li key={w.element} className="text-xs leading-relaxed text-muted">
                 <span className="capitalize">{w.element}</span> becomes{" "}
-                <span className="text-fg">{w.upcoming}</span> {formatGap(w.minutes)} after
+                <span className="text-ink">{w.upcoming}</span> {formatGap(w.minutes)} after
                 this birth time. An astrologer using a traditional panchang may
                 well name that one instead.
               </li>

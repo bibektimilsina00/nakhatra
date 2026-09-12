@@ -59,8 +59,8 @@ export function ChartSwitcher({
         aria-expanded={open}
         className={
           trigger
-            ? "flex min-w-0 items-center gap-2 rounded-[8px] px-2 py-1 text-left transition-colors hover:bg-fg/[0.05]"
-            : "flex max-w-[220px] items-center gap-2 rounded-[8px] border border-brd px-2.5 py-1.5 text-[12.5px] text-mut transition-colors hover:border-brd2 hover:text-fg"
+            ? "flex min-w-0 items-center gap-2 rounded-md px-2 py-1 text-left transition-colors hover:bg-accent-wash"
+            : "flex max-w-[220px] items-center gap-2 rounded-md border border-line-strong px-2.5 py-1.5 text-xs text-muted transition-colors hover:border-line-strong hover:text-ink"
         }
       >
         {trigger ?? <span className="truncate">{activeName}</span>}
@@ -68,7 +68,7 @@ export function ChartSwitcher({
       </button>
 
       {open && (
-        <div className="absolute right-0 z-50 mt-2 w-[280px] rounded-[8px] border border-white/12 bg-inset p-1.5 shadow-2xl shadow-black/60">
+        <div className="absolute right-0 z-50 mt-2 w-[280px] rounded-xl border border-line-strong bg-surface p-1.5 shadow-2xl">
           <ul className="max-h-[300px] space-y-1 overflow-y-auto">
             {kundalis.map((k) => {
               const usable = Boolean(k.birth);
@@ -81,25 +81,25 @@ export function ChartSwitcher({
                     disabled={!usable || busy}
                     title={usable ? undefined : t.dashNotRecalculable}
                     onClick={() => openKundali(k)}
-                    className={`flex w-full items-center gap-2.5 rounded-[6px] border p-2 text-left transition-colors disabled:pointer-events-none disabled:opacity-40 ${
+                    className={`flex w-full items-center gap-2.5 rounded-md border p-2 text-left transition-colors disabled:pointer-events-none disabled:opacity-40 ${
                       active
-                        ? "border-acc/35 bg-acc/[0.07]"
-                        : "border-transparent hover:border-white/[0.09] hover:bg-panel"
+                        ? "border-accent/35 bg-accent-wash"
+                        : "border-transparent hover:border-line-strong hover:bg-cream"
                     }`}
                   >
                     <ChartTile id={k.id} />
                     <span className="min-w-0 flex-1">
-                      <span className="block truncate text-[13px] font-medium text-fg">
+                      <span className="block truncate text-sm font-medium text-ink">
                         {k.name}
                       </span>
-                      <span className="mt-0.5 block truncate text-[10.5px] text-dim">
+                      <span className="mt-0.5 block truncate text-2xs text-dim">
                         {k.dob} · {k.place_name}
                       </span>
                     </span>
                     {busy ? (
-                      <Loader2 className="size-3.5 shrink-0 animate-spin text-acc" />
+                      <Loader2 className="size-3.5 shrink-0 animate-spin text-accent-strong" />
                     ) : (
-                      active && <Check className="size-3.5 shrink-0 text-acc" />
+                      active && <Check className="size-3.5 shrink-0 text-accent-strong" />
                     )}
                   </button>
                 </li>
@@ -108,7 +108,7 @@ export function ChartSwitcher({
           </ul>
 
           {kundalis.length === 0 && (
-            <p className="px-2.5 py-4 text-center text-[12px] text-dim">{t.milanNoCharts}</p>
+            <p className="px-2.5 py-4 text-center text-xs text-dim">{t.milanNoCharts}</p>
           )}
 
           {onCreate && (
@@ -118,7 +118,7 @@ export function ChartSwitcher({
                 setOpen(false);
                 onCreate();
               }}
-              className="mt-1 flex w-full items-center gap-2 rounded-[6px] border-t border-white/[0.07] px-2.5 py-2.5 text-[12px] text-mut transition-colors hover:text-acc"
+              className="mt-1 flex min-h-11 w-full items-center gap-2 rounded-md border-t border-line px-2.5 py-2.5 text-xs text-muted transition-colors hover:text-accent-strong"
             >
               <Plus className="size-3.5" />
               {t.dashNewKundali}
@@ -134,7 +134,7 @@ function ChartTile({ id }: { id: string }) {
   const { fill, stroke } = chartArt(id);
   return (
     <span
-      className="grid size-8 shrink-0 place-items-center rounded-[6px] border border-white/[0.08]"
+      className="grid size-8 shrink-0 place-items-center rounded-md border border-line-strong"
       style={{ background: fill }}
     >
       <ChartLattice stroke={stroke} className="size-5" />

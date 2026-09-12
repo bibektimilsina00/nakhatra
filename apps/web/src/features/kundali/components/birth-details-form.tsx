@@ -3,7 +3,9 @@
 import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 
+import { Button } from "@/components/ui/button";
 import { CustomPlaceInput } from "@/components/ui/custom-place-input";
+import { FieldError, Input } from "@/components/ui/input";
 import { ModernDatePicker } from "@/components/ui/modern-date-picker";
 import { ModernTimePicker } from "@/components/ui/modern-time-picker";
 import {
@@ -125,30 +127,28 @@ export function BirthDetailsForm({ onSubmit, pending, serverFieldErrors, chrome 
       onSubmit={handleSubmit}
       className={
         chrome
-          ? "mx-auto w-full max-w-lg rounded-[8px] border border-brd bg-panel p-6 sm:p-7"
+          ? "mx-auto w-full max-w-lg rounded-xl border border-line-strong bg-surface p-6 sm:p-7"
           : "w-full"
       }
     >
       <div className="mb-5">
-        <h2 className="font-serif text-xl font-bold text-fg">{t.birthDetails}</h2>
-        <p className="mt-1 text-xs leading-relaxed text-mut">
+        <h2 className="font-serif text-xl font-bold text-ink">{t.birthDetails}</h2>
+        <p className="mt-1 text-xs leading-relaxed text-muted">
           {t.birthTimeNote}
         </p>
       </div>
 
       <div className="space-y-4">
         <Field label={t.fullName} required error={shown.name}>
-          <input
+          <Input
             type="text"
             value={name}
+            invalid={Boolean(shown.name)}
             onChange={(e) => {
               setName(e.target.value);
               if (errors.name) setErrors({ ...errors, name: "" });
             }}
             placeholder={t.fullName}
-            className={`w-full rounded-[8px] border bg-inset px-3.5 py-2.5 text-xs text-fg placeholder-mut/40 transition focus:outline-none ${
-              shown.name ? "border-rose-500" : "border-brd focus:border-acc"
-            }`}
           />
         </Field>
 
@@ -197,14 +197,10 @@ export function BirthDetailsForm({ onSubmit, pending, serverFieldErrors, chrome 
           />
         </Field>
 
-        <button
-          type="submit"
-          disabled={pending}
-          className="mt-1 flex w-full items-center justify-center gap-2 rounded-[8px] bg-acc py-3.5 text-sm font-bold text-onacc shadow-md transition hover:bg-acc2 disabled:opacity-50"
-        >
+        <Button type="submit" disabled={pending} className="mt-1 w-full">
           <span>{pending ? t.calculating : t.calculateKundali}</span>
           {!pending && <span className="text-base">→</span>}
-        </button>
+        </Button>
       </div>
     </form>
   );
@@ -223,11 +219,11 @@ function Field({
 }) {
   return (
     <div>
-      <span className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-mid">
-        {label} {required && <span className="text-acc">*</span>}
+      <span className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-muted">
+        {label} {required && <span className="text-accent-strong">*</span>}
       </span>
       {children}
-      {error && <p className="mt-1 text-xs font-medium text-rose-400">{error}</p>}
+      <FieldError>{error}</FieldError>
     </div>
   );
 }
