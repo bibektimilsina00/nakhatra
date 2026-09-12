@@ -35,6 +35,7 @@ apps/api/data/
 
 # misc
 .DS_Store
+.worktrees/
 coverage/
 htmlcov/
 apps/web/public/audio-cache/
