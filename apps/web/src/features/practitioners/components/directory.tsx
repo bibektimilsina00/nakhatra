@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Search, UserRoundSearch } from "lucide-react";
 
+import { Input } from "@/components/ui/input";
 import { useDirectory } from "@/features/practitioners/hooks/use-practitioners";
 import { PractitionerCardView } from "@/features/practitioners/components/practitioner-card";
 import type { DirectoryQuery } from "@/features/practitioners/types";
@@ -44,10 +45,10 @@ export function PractitionerDirectory({ onOpen }: { onOpen?: (id: string) => voi
     }));
 
   const chip = (active: boolean) =>
-    `rounded-[6px] border px-2.5 py-1 text-[11px] capitalize transition-colors ${
+    `flex min-h-11 items-center rounded-sm border px-2.5 text-xs capitalize transition-colors ${
       active
-        ? "border-acc/50 bg-acc/[0.09] text-acc2"
-        : "border-white/[0.10] text-mut hover:border-brd2 hover:text-fg"
+        ? "border-accent bg-accent-tint text-accent-ink"
+        : "border-line-strong text-muted hover:border-accent hover:text-ink"
     }`;
 
   return (
@@ -55,13 +56,13 @@ export function PractitionerDirectory({ onOpen }: { onOpen?: (id: string) => voi
       <label className="relative flex max-w-md items-center">
         <Search className="pointer-events-none absolute left-3 size-4 text-dim" />
         <span className="sr-only">{t.dashSearch}</span>
-        <input
+        <Input
           value={query.q ?? ""}
           onChange={(event) =>
             setQuery((current) => ({ ...current, q: event.target.value, offset: 0 }))
           }
           placeholder={t.practSearch}
-          className="w-full rounded-[8px] border border-white/[0.09] bg-panel py-2 pl-9 pr-3 text-[13.5px] text-fg placeholder-faint focus:border-acc/45 focus:outline-none"
+          className="pl-9"
         />
       </label>
 
@@ -77,7 +78,7 @@ export function PractitionerDirectory({ onOpen }: { onOpen?: (id: string) => voi
             {value}
           </button>
         ))}
-        <span className="mx-1 w-px bg-white/[0.09]" aria-hidden />
+        <span className="mx-1 w-px bg-line-strong" aria-hidden />
         {LANGUAGES.map((value) => (
           <button
             key={value}
@@ -96,12 +97,12 @@ export function PractitionerDirectory({ onOpen }: { onOpen?: (id: string) => voi
           {[0, 1, 2].map((card) => (
             <div
               key={card}
-              className="h-[150px] animate-pulse rounded-[12px] border border-white/[0.07] bg-panel"
+              className="h-[150px] animate-pulse rounded-lg border border-line-strong bg-surface"
             />
           ))}
         </div>
       ) : isError ? (
-        <p className="mt-6 text-[13px] text-dim">{t.practUnavailable}</p>
+        <p className="mt-6 text-sm text-dim">{t.practUnavailable}</p>
       ) : data && data.items.length > 0 ? (
         <>
           <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -114,7 +115,7 @@ export function PractitionerDirectory({ onOpen }: { onOpen?: (id: string) => voi
             ))}
           </div>
           {data.total > data.items.length && (
-            <p className="mt-4 text-center text-[12px] text-dim">
+            <p className="mt-4 text-center text-xs text-dim">
               {data.items.length} / {data.total}
             </p>
           )}
@@ -122,12 +123,12 @@ export function PractitionerDirectory({ onOpen }: { onOpen?: (id: string) => voi
       ) : (
         // An empty directory is the expected state before the first
         // practitioner is verified, so it says that rather than "no results".
-        <div className="mt-5 rounded-[12px] border border-dashed border-white/[0.14] px-6 py-12 text-center">
-          <span className="mx-auto grid size-11 place-items-center rounded-full border border-white/[0.10] text-acc">
+        <div className="mt-5 rounded-lg border border-dashed border-line-strong px-6 py-12 text-center">
+          <span className="mx-auto grid size-11 place-items-center rounded-full border border-line-strong text-accent">
             <UserRoundSearch className="size-5" />
           </span>
-          <p className="mt-3 text-[13.5px] text-mut">{t.practNoneYet}</p>
-          <p className="mx-auto mt-1 max-w-sm text-[12px] leading-[1.7] text-dim">
+          <p className="mt-3 text-sm text-muted">{t.practNoneYet}</p>
+          <p className="mx-auto mt-1 max-w-sm text-xs leading-[1.7] text-dim">
             {t.practNoneYetNote}
           </p>
         </div>
