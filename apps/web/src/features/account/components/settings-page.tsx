@@ -4,14 +4,10 @@ import { useState } from "react";
 import Link from "next/link";
 import { LogOut } from "lucide-react";
 
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { LanguageMenu } from "@/components/ui/language-menu";
-import {
-  AccountCard,
-  AccountShell,
-  accountButton,
-  accountField,
-  accountLabel,
-} from "@/features/account/components/account-shell";
+import { AccountCard, AccountShell, accountLabel } from "@/features/account/components/account-shell";
 import { useChangePassword, useLogout } from "@/features/auth/hooks/use-auth";
 import { useTranslation } from "@/lib/i18n/language-context";
 
@@ -53,65 +49,55 @@ export function SettingsPage() {
         >
           <label className="block">
             <span className={accountLabel}>{t.acctCurrentPassword}</span>
-            <input
+            <Input
               type="password"
               autoComplete="current-password"
               required
               value={current}
               onChange={(event) => setCurrent(event.target.value)}
-              className={accountField}
             />
           </label>
 
           <label className="block">
             <span className={accountLabel}>{t.acctNewPassword}</span>
-            <input
+            <Input
               type="password"
               autoComplete="new-password"
               required
               minLength={MIN_PASSWORD}
               value={next}
               onChange={(event) => setNext(event.target.value)}
-              className={accountField}
             />
           </label>
 
           {change.isError && (
-            <p role="alert" className="text-[12.5px] text-rose-300">
+            <p role="alert" className="text-sm text-danger">
               {change.error.message}
             </p>
           )}
 
           <div className="flex items-center gap-3">
-            <button
-              type="submit"
-              disabled={change.isPending || !current || next.length < MIN_PASSWORD}
-              className={accountButton}
-            >
+            <Button type="submit" disabled={change.isPending || !current || next.length < MIN_PASSWORD}>
               {t.acctChangePassword}
-            </button>
+            </Button>
             {change.isSuccess && (
-              <span className="text-[12.5px] text-emerald-300">{t.acctPasswordChanged}</span>
+              <span className="text-sm text-success">{t.acctPasswordChanged}</span>
             )}
           </div>
         </form>
       </AccountCard>
 
       <AccountCard title={t.acctPrivacy} note={t.acctPrivacyNote}>
-        <Link href="/privacy" className="text-[12.5px] text-acc hover:underline">
+        <Link href="/privacy" className="text-xs text-accent-strong hover:underline">
           {t.acctPrivacyLink}
         </Link>
       </AccountCard>
 
       <AccountCard title={t.acctDanger} note={t.acctDangerNote}>
-        <button
-          type="button"
-          onClick={logout}
-          className="inline-flex items-center gap-2 rounded-[9px] border border-rose-400/40 px-4 py-2.5 text-[13px] text-rose-300 transition-colors hover:bg-rose-500/10"
-        >
+        <Button type="button" variant="secondary" onClick={logout}>
           <LogOut className="size-4" />
           {t.dashSignOut}
-        </button>
+        </Button>
       </AccountCard>
     </AccountShell>
   );
