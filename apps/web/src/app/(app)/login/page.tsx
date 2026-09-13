@@ -127,6 +127,12 @@ function LoginFormContent() {
   const searchParams = useSearchParams();
   const initialMode = searchParams.get("mode") === "signup" ? "signup" : "login";
 
+  // `?next=` sends the visitor back to the page that required signing in.
+  // Only same-site paths pass; anything else ("//evil.com", full URLs) would
+  // make this an open redirect.
+  const next = searchParams.get("next");
+  const destination = next?.startsWith("/") && !next.startsWith("//") ? next : AFTER_SIGN_IN;
+
   const { user } = useSession();
   const login = useLogin();
   const signup = useSignup();
@@ -142,8 +148,8 @@ function LoginFormContent() {
   const isLogin = mode === "login";
 
   useEffect(() => {
-    if (user) router.push(AFTER_SIGN_IN);
-  }, [user, router]);
+    if (user) router.push(destination);
+  }, [user, router, destination]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -160,7 +166,7 @@ function LoginFormContent() {
         if (!parsed.success) throw new Error(parsed.error.issues[0].message);
         await signup.mutateAsync(parsed.data);
       }
-      router.push(AFTER_SIGN_IN);
+      router.push(destination);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not sign you in.");
     } finally {
@@ -191,7 +197,7 @@ function LoginFormContent() {
             </p>
           </div>
 
-          <GoogleButton onSignedIn={() => router.push(AFTER_SIGN_IN)} />
+          <GoogleButton onSignedIn={() => router.push(destination)} />
 
           <div className="my-6 flex items-center gap-4">
             <span className="h-px flex-1 bg-fg/10" />

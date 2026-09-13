@@ -22,6 +22,7 @@ import {
 import { ASTROLOGER_VOICES, GEMINI_ASTROLOGER_VOICES } from "@/lib/constants/voices";
 import { CustomVoiceSelector } from "@/features/voice/components/voice-selector";
 import { authHeaders } from "@/features/auth/store/auth-store";
+import { useAuthHydrated, useSession } from "@/features/auth/hooks/use-auth";
 import { useAskAstrologer } from "@/features/chat/hooks/use-ask-astrologer";
 import { MarkdownRenderer } from "@/components/ui/markdown-renderer";
 import { ChatMessageBubble } from "@/features/chat/components/chat-message-bubble";
@@ -45,7 +46,30 @@ import {
   LogOut,
 } from "lucide-react";
 
+/**
+ * The live consultation requires an account: `/v1/realtime-session` answers
+ * 401 without one, which the connect path can only report as "could not
+ * connect". Anyone signed out is sent to sign in and returned here, instead
+ * of being shown a network error for an auth problem.
+ */
 export function LiveModeWorkspace() {
+  const router = useRouter();
+  const hydrated = useAuthHydrated();
+  const { isSignedIn } = useSession();
+  const gated = hydrated && !isSignedIn;
+
+  useEffect(() => {
+    if (gated) router.replace("/login?next=/reading/live");
+  }, [gated, router]);
+
+  // Not the workspace, and not a flash of it either: hydration takes a tick,
+  // and rendering the full desk before bouncing to /login reads as a glitch.
+  if (!hydrated || gated) return <div className="min-h-dvh bg-app" />;
+
+  return <LiveWorkspace />;
+}
+
+function LiveWorkspace() {
   const router = useRouter();
   const askAstrologer = useAskAstrologer();
   const { language: globalLang, setLanguage: setGlobalLang, t } = useTranslation();
