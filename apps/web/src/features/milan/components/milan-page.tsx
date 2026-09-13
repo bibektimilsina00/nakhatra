@@ -9,6 +9,7 @@ import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import { kutaName } from "@/features/milan/kuta-i18n";
 import { ArrowRight, Heart } from "lucide-react";
 
+import { Button } from "@/components/ui/button";
 import { AppShell } from "@/features/dashboard/components/app-shell";
 import { ChartPicker } from "@/features/milan/components/chart-picker";
 import { MilanAnalysisPanel } from "@/features/milan/components/milan-analysis";
@@ -137,11 +138,11 @@ export function MilanPage() {
     <AppShell>
       <main className="mx-auto w-full max-w-[1100px] px-5 pb-24 pt-10 sm:px-8">
         <header className="max-w-2xl">
-          <span className={`text-[11px] text-acc ${eyebrow}`}>{t.milanEyebrow}</span>
-          <h1 className="mt-3 text-[26px] font-bold leading-tight text-fg sm:text-[32px]">
+          <span className={`text-2xs text-accent-ink ${eyebrow}`}>{t.milanEyebrow}</span>
+          <h1 className="mt-3 text-2xl font-bold leading-tight text-ink sm:text-3xl">
             {t.milanTitle}
           </h1>
-          <p className="mt-3 text-[14.5px] leading-[1.7] text-mut">{t.milanSub}</p>
+          <p className="mt-3 text-sm leading-[1.7] text-muted">{t.milanSub}</p>
         </header>
 
         {result ? (
@@ -161,8 +162,8 @@ export function MilanPage() {
           </div>
         ) : isLoading ? (
           <div className="mt-10 grid gap-4 md:grid-cols-2">
-            <div className="h-[188px] animate-pulse rounded-[12px] border border-white/[0.07] bg-panel" />
-            <div className="h-[188px] animate-pulse rounded-[12px] border border-white/[0.07] bg-panel" />
+            <div className="h-48 animate-pulse rounded-lg border border-line bg-surface" />
+            <div className="h-48 animate-pulse rounded-lg border border-line bg-surface" />
           </div>
         ) : (
           <>
@@ -171,7 +172,7 @@ export function MilanPage() {
             <div className="relative mt-10">
               <span
                 aria-hidden
-                className="absolute inset-x-0 top-1/2 hidden h-px bg-white/[0.08] md:block"
+                className="absolute inset-x-0 top-1/2 hidden h-px bg-line md:block"
               />
               <div className="relative grid items-start gap-5 md:grid-cols-2 md:gap-16">
                 <ChartPicker
@@ -192,33 +193,33 @@ export function MilanPage() {
                 />
               </div>
               <span className="pointer-events-none absolute left-1/2 top-1/2 hidden -translate-x-1/2 -translate-y-1/2 md:block">
-                <span className="grid size-11 place-items-center rounded-full border border-white/[0.09] bg-app text-acc">
+                <span className="grid size-11 place-items-center rounded-full border border-line-strong bg-cream text-accent-ink">
                   <Heart className="size-4" />
                 </span>
               </span>
             </div>
 
             <div className="mt-8 flex flex-col items-center gap-3">
-              <button
-                type="button"
+              <Button
+                variant="primary"
                 disabled={!ready || match.isPending}
                 onClick={run}
-                className="inline-flex w-full max-w-xs items-center justify-center gap-2 rounded-[8px] bg-acc px-6 py-3 text-[14px] font-bold text-ink transition-colors hover:bg-acc2 disabled:pointer-events-none disabled:opacity-40"
+                className="w-full max-w-xs"
               >
                 {match.isPending ? t.milanMatching : t.milanMatch}
                 {!match.isPending && <ArrowRight className="size-4" />}
-              </button>
+              </Button>
 
               {/* Says which half is missing rather than leaving you to guess
                   why the button is dead. */}
               {!ready && (
-                <p className="text-[12.5px] text-dim">
+                <p className="text-xs text-dim">
                   {sameChart ? t.milanSameChart : t.milanPickBoth}
                 </p>
               )}
 
               {match.isError && (
-                <p role="alert" className="text-[13px] text-rose-300">
+                <p role="alert" className="text-sm text-danger">
                   {match.error.message}
                 </p>
               )}
@@ -242,14 +243,14 @@ function WhatItChecks() {
 
   return (
     <section className="mt-16">
-      <h2 className={`text-[10.5px] text-acc ${label}`}>{t.milanWhatWeCheck}</h2>
+      <h2 className={`text-2xs text-accent-ink ${label}`}>{t.milanWhatWeCheck}</h2>
 
-      <div className="mt-4 grid gap-px overflow-hidden rounded-[10px] bg-brd sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mt-4 grid gap-px overflow-hidden rounded-lg bg-line sm:grid-cols-2 lg:grid-cols-4">
         {KUTAS.map(([key, points]) => (
-          <div key={key} className="flex items-baseline justify-between gap-2 bg-app px-4 py-3.5">
-            <span className="text-[13px] text-mid">{kutaName(key, key, language)}</span>
-            <span className="text-[12px] text-dim">
-              {points} <span className="text-[10px]">{t.milanGuna}</span>
+          <div key={key} className="flex items-baseline justify-between gap-2 bg-surface px-4 py-3.5">
+            <span className="text-sm text-muted">{kutaName(key, key, language)}</span>
+            <span className="text-xs text-dim">
+              {points} <span className="text-2xs">{t.milanGuna}</span>
             </span>
           </div>
         ))}

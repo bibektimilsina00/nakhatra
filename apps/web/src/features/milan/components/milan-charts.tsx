@@ -3,6 +3,8 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { BirthSky3D } from "@/features/kundali/components/birth-sky-3d";
 import { NorthIndianChart } from "@/features/kundali/components/north-indian-chart";
 import { saveKundaliToStorage } from "@/features/kundali/store/kundali-store";
@@ -56,17 +58,13 @@ export function MilanCharts({
         : "Side by side, to compare";
 
   return (
-    <section className="rounded-[12px] border border-brd bg-panel p-5">
+    <Card className="p-5">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
         <div>
-          <h3 className="text-[13px] font-semibold text-fg">{title}</h3>
-          <p className="mt-0.5 text-[11px] text-mut">{sub}</p>
+          <h3 className="text-sm font-semibold text-ink">{title}</h3>
+          <p className="mt-0.5 text-xs text-muted">{sub}</p>
         </div>
-        <button
-          type="button"
-          onClick={() => setOpen((v) => !v)}
-          className="cursor-pointer rounded-[8px] border border-brd px-3 py-1.5 text-[11.5px] font-medium text-mid transition-colors hover:border-acc/50 hover:text-acc2"
-        >
+        <Button variant="secondary" onClick={() => setOpen((v) => !v)}>
           {open
             ? language === "ne"
               ? "ग्रहस्थिति लुकाउनुहोस्"
@@ -78,7 +76,7 @@ export function MilanCharts({
               : language === "hi"
                 ? "ग्रह स्थिति देखें"
                 : "Compare positions"}
-        </button>
+        </Button>
       </div>
 
       {/* The sky each was born under, side by side. The kootas are a claim
@@ -101,12 +99,14 @@ export function MilanCharts({
           groomChart={groomChart}
         />
       )}
-    </section>
+    </Card>
   );
 }
 
 /** One partner's birth sky. Expanding hands that partner's chart to /sky,
- *  which reads whichever kundali is active — so the couple can open either. */
+ *  which reads whichever kundali is active — so the couple can open either.
+ *  The backdrop is literal night sky, not a themed surface, so it stays black
+ *  regardless of the app's light theme — same reasoning as a photo or a canvas. */
 function SkyCard({
   name,
   chart,
@@ -126,7 +126,7 @@ function SkyCard({
   };
 
   return (
-    <div className="relative overflow-hidden rounded-[10px] border border-brd bg-[#090A10]">
+    <div className="relative overflow-hidden rounded-lg border border-line-strong bg-black">
       <div className="pointer-events-none h-[230px]">
         <BirthSky3D
           chart={chart}
@@ -140,10 +140,10 @@ function SkyCard({
           className="absolute inset-0 h-full w-full"
         />
       </div>
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 flex items-end justify-between gap-2 bg-gradient-to-t from-[#090A10] via-[#090A10]/80 to-transparent p-3.5">
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 flex items-end justify-between gap-2 bg-gradient-to-t from-black via-black/80 to-transparent p-3.5">
         <span className="min-w-0">
-          <span className="block truncate text-[12.5px] font-semibold text-white">{name}</span>
-          <span className="mt-0.5 block text-[10.5px] text-white/60">
+          <span className="block truncate text-sm font-semibold text-white">{name}</span>
+          <span className="mt-0.5 block text-2xs text-white/60">
             {language === "ne"
               ? "जन्मकालीन आकाश"
               : language === "hi"
@@ -156,7 +156,7 @@ function SkyCard({
             type="button"
             onClick={open}
             aria-label={language === "en" ? "Open the birth sky" : "जन्म आकाश खोल्नुहोस्"}
-            className="pointer-events-auto grid size-8 shrink-0 cursor-pointer place-items-center rounded-[8px] bg-acc text-onacc transition hover:bg-acc2 active:scale-95"
+            className="pointer-events-auto grid size-11 shrink-0 cursor-pointer place-items-center rounded-md bg-accent-strong text-white transition hover:opacity-90 active:scale-95"
           >
             <Maximize2 className="size-3.5" />
           </button>
@@ -169,10 +169,10 @@ function SkyCard({
 function ChartCard({ name, chart }: { name: string; chart: Chart }) {
   const { language, t } = useTranslation();
   return (
-    <div className="rounded-[10px] border border-brd bg-inset p-3.5">
+    <div className="rounded-lg border border-line-strong bg-cream p-3.5">
       <div className="mb-3 flex items-baseline justify-between gap-2">
-        <span className="truncate text-[13px] font-semibold text-fg">{name}</span>
-        <span className="shrink-0 text-[11px] text-mut">
+        <span className="truncate text-sm font-semibold text-ink">{name}</span>
+        <span className="shrink-0 text-xs text-muted">
           {getSignName(chart.lagna_sign, language)} {t.ascendantLabel}
         </span>
       </div>
@@ -208,15 +208,15 @@ function PlanetComparison({
     <div className="mt-5 overflow-x-auto">
       <table className="w-full min-w-[520px] border-collapse text-left">
         <thead>
-          <tr className="border-b border-brd text-[10px] uppercase tracking-[0.1em] text-mut">
+          <tr className="border-b border-line text-2xs uppercase tracking-[0.1em] text-dim">
             <th className="pb-2 pr-3 font-semibold">
               {language === "ne" ? "ग्रह" : language === "hi" ? "ग्रह" : "Graha"}
             </th>
             <th className="pb-2 pr-3 font-semibold">
-              <span className="block truncate text-fg">{brideName}</span>
+              <span className="block truncate text-ink">{brideName}</span>
             </th>
             <th className="pb-2 font-semibold">
-              <span className="block truncate text-fg">{groomName}</span>
+              <span className="block truncate text-ink">{groomName}</span>
             </th>
           </tr>
         </thead>
@@ -230,16 +230,16 @@ function PlanetComparison({
             return (
               <tr
                 key={b.name}
-                className={`border-b border-brd/60 last:border-0 ${
-                  moon ? "bg-acc/[0.06]" : ""
+                className={`border-b border-line last:border-0 hover:bg-accent-wash ${
+                  moon ? "bg-accent-wash" : ""
                 }`}
               >
                 <td className="py-2 pr-3 align-top">
-                  <span className={`text-[12.5px] font-medium ${moon ? "text-acc2" : "text-fg"}`}>
+                  <span className={`text-xs font-medium ${moon ? "text-accent-ink" : "text-ink"}`}>
                     {getPlanetName(b.name, language)}
                   </span>
                   {moon && (
-                    <span className="ml-1.5 text-[9px] uppercase tracking-wider text-acc">
+                    <span className="ml-1.5 text-2xs uppercase tracking-wider text-accent-ink">
                       {language === "ne" || language === "hi" ? "मिलानको आधार" : "matched on"}
                     </span>
                   )}
@@ -248,7 +248,7 @@ function PlanetComparison({
                 {g ? (
                   <PositionCell planet={g} shared={shared} houseWord={houseWord} />
                 ) : (
-                  <td className="py-2 text-[12px] text-dim">—</td>
+                  <td className="py-2 text-xs text-dim">—</td>
                 )}
               </tr>
             );
@@ -256,7 +256,7 @@ function PlanetComparison({
         </tbody>
       </table>
 
-      <p className="mt-3 text-[11px] leading-[1.6] text-mut">
+      <p className="mt-3 text-2xs leading-[1.6] text-muted">
         {language === "ne"
           ? "उही राशिमा परेका ग्रह सुनौलो रङमा देखाइएका छन् — चन्द्रमा नै अष्टकूट मिलानको आधार हो।"
           : language === "hi"
@@ -280,17 +280,17 @@ function PositionCell({
   return (
     <td className="py-2 pr-3 align-top">
       <span
-        className={`block text-[12.5px] ${shared ? "font-semibold text-acc2" : "text-fg"}`}
+        className={`block text-xs ${shared ? "font-semibold text-accent-ink" : "text-ink"}`}
       >
         {getSignName(planet.sign, language)}
-        {planet.retrograde && <span className="ml-1 text-[10px] text-rose-400">℞</span>}
+        {planet.retrograde && <span className="ml-1 text-2xs text-retrograde">℞</span>}
       </span>
-      <span className="mt-0.5 block font-mono text-[10.5px] tabular-nums text-mut">
+      <span className="mt-0.5 block font-mono text-2xs tabular-nums text-muted">
         {deg(planet.degree_in_sign)} · {houseWord}
         {planet.house}
       </span>
       {planet.nakshatra && (
-        <span className="mt-0.5 block text-[10.5px] text-dim">
+        <span className="mt-0.5 block text-2xs text-dim">
           {getNakshatraName(planet.nakshatra.name, language)} {planet.nakshatra.pada}
         </span>
       )}

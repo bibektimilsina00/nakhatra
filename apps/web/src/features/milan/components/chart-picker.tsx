@@ -14,7 +14,9 @@ import { useLatinTracking, useTranslation } from "@/lib/i18n/language-context";
  *
  * The role icons are a ghoonghat and a pagri rather than Venus and Mars: the
  * planetary glyphs are the classical significators, but on a form they read as
- * biology instead of as two people getting married.
+ * biology instead of as two people getting married. Bride and groom share one
+ * accent treatment — told apart by icon and label, never by a second hue, in
+ * keeping with "never colour alone" (design.md §9.2).
  *
  * Only charts that can be recalculated are offered: a row saved before the
  * vault stored IANA zones has no `birth`, and matching it would mean guessing a
@@ -50,21 +52,17 @@ export function ChartPicker({
     [k.name, k.place_name, k.dob].some((f) => f.toLowerCase().includes(query.trim().toLowerCase())),
   );
 
-  const bride = accent === "rose";
-  const tone = bride
-    ? { text: "text-rose-300/90", ring: "border-rose-400/35", glow: "bg-rose-400/[0.07]" }
-    : { text: "text-sky-300/90", ring: "border-sky-400/35", glow: "bg-sky-400/[0.07]" };
-  const RoleIcon = bride ? BrideIcon : GroomIcon;
+  const RoleIcon = accent === "rose" ? BrideIcon : GroomIcon;
 
   return (
     <div
       ref={panel}
-      className={`relative rounded-[12px] border bg-panel p-5 transition-colors ${
-        selected ? tone.ring : "border-white/[0.09]"
+      className={`relative rounded-lg border bg-surface p-5 transition-colors ${
+        selected ? "border-accent" : "border-line-strong"
       }`}
     >
       <div className="flex items-center justify-between">
-        <span className={`flex items-center gap-2 text-[10.5px] ${label} ${tone.text}`}>
+        <span className={`flex items-center gap-2 text-2xs text-accent-ink ${label}`}>
           <RoleIcon className="size-4" />
           {role}
         </span>
@@ -72,7 +70,7 @@ export function ChartPicker({
           <button
             type="button"
             onClick={() => setOpen((v) => !v)}
-            className="text-[12px] text-mut transition-colors hover:text-fg"
+            className="flex min-h-11 min-w-11 items-center justify-center px-2 text-xs text-muted transition-colors hover:text-ink"
           >
             {t.milanChange}
           </button>
@@ -83,12 +81,12 @@ export function ChartPicker({
         <div className="mt-5 flex items-center gap-4">
           <ChartAvatar id={selected.id} size="lg" />
           <div className="min-w-0">
-            <p className="truncate text-[16px] font-semibold text-fg">{selected.name}</p>
-            <p className="mt-1.5 flex items-center gap-1.5 truncate text-[12px] text-dim">
+            <p className="truncate text-base font-semibold text-ink">{selected.name}</p>
+            <p className="mt-1.5 flex items-center gap-1.5 truncate text-xs text-dim">
               <Calendar className="size-3 shrink-0" />
               {selected.dob} · {selected.tob}
             </p>
-            <p className="mt-1 flex items-center gap-1.5 truncate text-[12px] text-dim">
+            <p className="mt-1 flex items-center gap-1.5 truncate text-xs text-dim">
               <MapPin className="size-3 shrink-0" />
               {selected.place_name}
             </p>
@@ -99,14 +97,12 @@ export function ChartPicker({
           type="button"
           onClick={() => setOpen((v) => !v)}
           aria-expanded={open}
-          className="group mt-5 flex w-full items-center gap-4 rounded-[10px] border border-dashed border-white/[0.14] p-4 text-left transition-colors hover:border-acc/45 hover:bg-app"
+          className="group mt-5 flex w-full items-center gap-4 rounded-lg border border-dashed border-line-strong p-4 text-left transition-colors hover:border-accent hover:bg-cream"
         >
-          <span
-            className={`grid size-14 shrink-0 place-items-center rounded-[10px] border transition-colors ${tone.ring} ${tone.glow} ${tone.text}`}
-          >
+          <span className="grid size-14 shrink-0 place-items-center rounded-md border border-line-strong bg-accent-wash text-accent-ink transition-colors">
             <RoleIcon className="size-6" />
           </span>
-          <span className="min-w-0 flex-1 text-[14px] font-medium text-mut transition-colors group-hover:text-fg">
+          <span className="min-w-0 flex-1 text-sm font-medium text-muted transition-colors group-hover:text-ink">
             {t.milanChoose}
           </span>
           <ChevronDown className={`size-4 shrink-0 text-dim transition-transform ${open ? "rotate-180" : ""}`} />
@@ -114,7 +110,7 @@ export function ChartPicker({
       )}
 
       {open && (
-        <div className="absolute inset-x-5 top-full z-20 -mt-1 rounded-[10px] border border-white/12 bg-inset p-2 shadow-2xl shadow-black/60">
+        <div className="absolute inset-x-5 top-full z-20 -mt-1 rounded-lg border border-line-strong bg-surface p-2 shadow-raised">
           {kundalis.length > 4 && (
             <label className="relative mb-2 flex items-center">
               <Search className="pointer-events-none absolute left-2.5 size-3.5 text-dim" />
@@ -122,7 +118,7 @@ export function ChartPicker({
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder={t.milanSearch}
-                className="w-full rounded-[8px] border border-white/[0.09] bg-panel py-2 pl-8 pr-2 text-[12.5px] text-fg placeholder-faint focus:border-acc/45 focus:outline-none"
+                className="h-11 w-full rounded-md border border-line-strong bg-cream pl-8 pr-2 text-xs text-ink placeholder:text-dim focus-visible:border-ring focus-visible:outline-none"
               />
             </label>
           )}
@@ -141,22 +137,22 @@ export function ChartPicker({
                       onSelect(k);
                       setOpen(false);
                     }}
-                    className={`flex w-full items-center gap-3 rounded-[8px] border p-2.5 text-left transition-colors disabled:pointer-events-none disabled:opacity-40 ${
+                    className={`flex w-full items-center gap-3 rounded-md border p-2.5 text-left transition-colors disabled:pointer-events-none disabled:opacity-40 ${
                       chosen
-                        ? `${tone.ring} bg-panel`
-                        : "border-transparent hover:border-white/[0.09] hover:bg-panel"
+                        ? "border-accent bg-accent-wash"
+                        : "border-transparent hover:border-line-strong hover:bg-cream"
                     }`}
                   >
                     <ChartAvatar id={k.id} size="sm" />
                     <span className="min-w-0 flex-1">
-                      <span className="block truncate text-[13.5px] font-medium text-fg">
+                      <span className="block truncate text-sm font-medium text-ink">
                         {k.name}
                       </span>
-                      <span className="mt-0.5 block truncate text-[11px] text-dim">
+                      <span className="mt-0.5 block truncate text-2xs text-dim">
                         {k.dob} · {k.place_name}
                       </span>
                     </span>
-                    {chosen && <Check className="size-4 shrink-0 text-acc" />}
+                    {chosen && <Check className="size-4 shrink-0 text-accent-ink" />}
                   </button>
                 </li>
               );
@@ -164,7 +160,7 @@ export function ChartPicker({
           </ul>
 
           {shown.length === 0 && (
-            <p className="px-2.5 py-4 text-center text-[12.5px] text-dim">{t.milanNoCharts}</p>
+            <p className="px-2.5 py-4 text-center text-xs text-dim">{t.milanNoCharts}</p>
           )}
 
           <button
@@ -173,9 +169,9 @@ export function ChartPicker({
               setOpen(false);
               onCreate();
             }}
-            className="mt-2 flex w-full items-center gap-2.5 rounded-[8px] border-t border-white/[0.07] px-2.5 py-3 text-[12.5px] text-mut transition-colors hover:text-acc"
+            className="mt-2 flex w-full items-center gap-2.5 rounded-md border-t border-line px-2.5 py-3 text-xs text-muted transition-colors hover:text-accent-ink"
           >
-            <span className="grid size-9 shrink-0 place-items-center rounded-[8px] border border-dashed border-white/[0.14]">
+            <span className="grid size-9 shrink-0 place-items-center rounded-md border border-dashed border-line-strong">
               <Plus className="size-4" />
             </span>
             {t.dashNewKundali}
@@ -192,12 +188,12 @@ export function ChartPicker({
  */
 function ChartAvatar({ id, size }: { id: string; size: "sm" | "lg" }) {
   const { fill, stroke } = chartArt(id);
-  const box = size === "lg" ? "size-14 rounded-[10px]" : "size-9 rounded-[8px]";
+  const box = size === "lg" ? "size-14 rounded-md" : "size-9 rounded-md";
   const glyph = size === "lg" ? "size-9" : "size-6";
 
   return (
     <span
-      className={`grid shrink-0 place-items-center border border-white/[0.08] ${box}`}
+      className={`grid shrink-0 place-items-center border border-line-strong ${box}`}
       style={{ background: fill }}
     >
       <ChartLattice stroke={stroke} className={glyph} />
