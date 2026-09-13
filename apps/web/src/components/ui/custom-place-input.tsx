@@ -138,7 +138,7 @@ export function CustomPlaceInput({
           setIsOpen(true);
         }}
         placeholder={placeholder}
-        className="w-full rounded-[8px] border border-brd bg-inset px-3.5 py-2.5 text-xs text-fg placeholder-mut/40 transition focus:border-acc focus:outline-none"
+        className="w-full rounded-md border border-line-strong bg-surface px-3.5 py-2.5 text-xs text-ink placeholder:text-dim transition focus:border-ring focus:outline-none"
       />
 
       {isOpen && shown.length > 0 && (
@@ -146,10 +146,10 @@ export function CustomPlaceInput({
           ref={listRef}
           id="place-listbox"
           role="listbox"
-          className={`absolute left-0 z-50 w-full overflow-y-auto rounded-[8px] border border-white/12 bg-inset/95 p-1.5 shadow-2xl shadow-black/50 backdrop-blur-xl ${placementClass(fit.placement)}`}
+          className={`absolute left-0 z-50 w-full overflow-y-auto rounded-lg border border-line-strong bg-surface p-1.5 shadow-raised ${placementClass(fit.placement)}`}
           style={{ maxHeight: fit.maxHeight }}
         >
-          <div className="px-2.5 pb-2 pt-1 font-mono text-[9.5px] uppercase tracking-[0.18em] text-acc">
+          <div className="px-2.5 pb-2 pt-1 font-mono text-2xs uppercase tracking-[0.18em] text-accent-ink">
             {query.trim() ? "Matches" : "Popular"}
           </div>
           {shown.map((p, i) => (
@@ -160,13 +160,13 @@ export function CustomPlaceInput({
               aria-selected={i === active}
               onMouseEnter={() => setActive(i)}
               onClick={() => pick(p)}
-              className={`group flex w-full items-center gap-3 rounded-[6px] px-2.5 py-2 text-left transition-colors ${
-                i === active ? "bg-fg/[0.06]" : ""
+              className={`group flex w-full items-center gap-3 rounded-md px-2.5 py-2 text-left transition-colors ${
+                i === active ? "bg-accent-wash" : ""
               }`}
             >
               <span
                 className={`shrink-0 transition-colors ${
-                  i === active ? "text-acc" : "text-[#5F6B7F]"
+                  i === active ? "text-accent" : "text-dim"
                 }`}
               >
                 <svg
@@ -183,14 +183,14 @@ export function CustomPlaceInput({
                 </svg>
               </span>
               <span className="min-w-0 flex-1">
-                <span className="block truncate text-xs font-medium text-fg">{p.label}</span>
+                <span className="block truncate text-xs font-medium text-ink">{p.label}</span>
                 {/* The zone is the field that decides whether the chart is
                     right, so it is shown rather than hidden behind a label. */}
-                <span className="mt-0.5 block truncate font-mono text-[10px] text-[#5F6B7F]">
+                <span className="mt-0.5 block truncate font-mono text-2xs text-dim">
                   {p.tz_name} · {coords(p.latitude, p.longitude)}
                 </span>
               </span>
-              <span className="shrink-0 rounded-[4px] border border-brd px-1.5 py-0.5 font-mono text-[9.5px] tracking-wide text-mut">
+              <span className="shrink-0 rounded-sm border border-line-strong px-1.5 py-0.5 font-mono text-2xs tracking-wide text-muted">
                 {p.country_code}
               </span>
             </button>

@@ -45,19 +45,19 @@ export function CustomSelect({
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="flex w-full items-center justify-between rounded-[8px] border border-brd bg-inset px-3 py-2.5 text-xs font-semibold text-fg hover:border-acc focus:border-acc focus:outline-none transition"
+        className="flex w-full items-center justify-between rounded-md border border-line-strong bg-surface px-3 py-2.5 text-xs font-semibold text-ink hover:border-accent-strong focus:border-ring focus:outline-none transition"
       >
         <span className="truncate">{selectedOption ? selectedOption.label : placeholder}</span>
         <ChevronDown
-          className={`size-3.5 shrink-0 text-mut transition-transform duration-200 ${
-            isOpen ? "rotate-180 text-acc" : ""
+          className={`size-3.5 shrink-0 text-muted transition-transform duration-200 ${
+            isOpen ? "rotate-180 text-accent-strong" : ""
           }`}
         />
       </button>
 
       {/* Popover Options Menu */}
       {isOpen && (
-        <div className="absolute left-0 top-full z-50 mt-1 max-h-52 w-full overflow-y-auto rounded-[8px] border border-brd bg-panel p-1 shadow-2xl">
+        <div className="absolute left-0 top-full z-50 mt-1 max-h-52 w-full overflow-y-auto rounded-lg border border-line-strong bg-surface p-1 shadow-raised">
           {options.map((opt) => {
             const isSelected = opt.value === value;
             return (
@@ -68,10 +68,10 @@ export function CustomSelect({
                   onChange(opt.value);
                   setIsOpen(false);
                 }}
-                className={`w-full rounded-[6px] px-3 py-1.5 text-left text-xs font-semibold transition ${
+                className={`w-full rounded-md px-3 py-1.5 text-left text-xs font-semibold transition ${
                   isSelected
-                    ? "bg-acc text-onacc"
-                    : "text-mut hover:bg-fg/5 hover:text-fg"
+                    ? "bg-accent-strong text-white"
+                    : "text-muted hover:bg-accent-wash hover:text-ink"
                 }`}
               >
                 {opt.label}
