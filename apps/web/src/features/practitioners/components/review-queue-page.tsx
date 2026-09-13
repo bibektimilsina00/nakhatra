@@ -30,7 +30,7 @@ export function ReviewQueuePage() {
   return (
     <AppShell>
       <main className="mx-auto w-full max-w-[900px] px-5 pb-24 pt-10 sm:px-8">
-        <span className={`text-2xs text-accent ${eyebrow}`}>Admin</span>
+        <span className={`text-2xs text-accent-strong ${eyebrow}`}>Admin</span>
         <h1 className="mt-3 text-2xl font-bold leading-tight text-ink">
           {t.practReviewQueue}
         </h1>
@@ -74,7 +74,7 @@ export function ReviewQueuePage() {
           </ul>
         ) : (
           <div className="mt-6 rounded-lg border border-dashed border-line-strong px-6 py-12 text-center">
-            <span className="mx-auto grid size-11 place-items-center rounded-full border border-line-strong text-accent">
+            <span className="mx-auto grid size-11 place-items-center rounded-full border border-line-strong text-accent-strong">
               <ShieldQuestion className="size-5" />
             </span>
             <p className="mt-3 text-sm text-muted">Nothing in this queue.</p>
@@ -113,7 +113,7 @@ function ApplicationRow({ application }: { application: ApplicationReview }) {
 
       {application.sample_reading && (
         <details className="mt-3">
-          <summary className="cursor-pointer text-xs text-accent">Sample reading</summary>
+          <summary className="cursor-pointer text-xs text-accent-strong">Sample reading</summary>
           <p className="mt-2 whitespace-pre-wrap text-sm leading-[1.75] text-muted">
             {application.sample_reading}
           </p>

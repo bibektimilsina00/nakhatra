@@ -132,7 +132,7 @@ export function BirthDetailsForm({ onSubmit, pending, serverFieldErrors, chrome 
       }
     >
       <div className="mb-5">
-        <h2 className="font-serif text-xl font-bold text-ink">{t.birthDetails}</h2>
+        <h2 className="font-display text-xl font-bold text-ink">{t.birthDetails}</h2>
         <p className="mt-1 text-xs leading-relaxed text-muted">
           {t.birthTimeNote}
         </p>

@@ -1,7 +1,7 @@
 // apps/web/src/components/ui/tabs.tsx
 export function tabClasses(active: boolean): string {
   return [
-    "border-b-2 px-1 pb-2 text-sm transition-colors duration-200",
+    "inline-flex items-center min-h-11 border-b-2 px-1 pb-2 text-sm transition-colors duration-200",
     active ? "border-accent text-ink font-medium" : "border-transparent text-muted",
   ].join(" ");
 }

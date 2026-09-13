@@ -169,11 +169,11 @@ export function ChartView({
 function VargaMini({
   varga,
   chartStyle = "north",
-  chartTheme = "dark",
+  chartTheme = "app",
 }: {
   varga: NonNullable<Chart["vargas"][number]>;
   chartStyle?: "north" | "south";
-  chartTheme?: "dark" | "patro";
+  chartTheme?: "app" | "patro";
 }) {
   const adapted = {
     lagna_sign_index: varga.lagna_sign_index,
@@ -280,13 +280,13 @@ function Header({
             what the /sky page reads. */}
         <a
           href="/sky"
-          className="rounded-full border border-accent-strong/40 px-5 py-2 text-sm text-accent-ink transition hover:border-accent-strong hover:text-ink"
+          className="inline-flex min-h-11 items-center justify-center rounded-full border border-accent-strong/40 px-5 py-2 text-sm text-accent-ink transition hover:border-accent-strong hover:text-ink"
         >
           ✦ Birth sky
         </a>
         <button
           onClick={onReset}
-          className="rounded-full border border-line px-5 py-2 text-sm text-muted transition hover:border-accent-strong/50 hover:text-ink"
+          className="inline-flex min-h-11 items-center justify-center rounded-full border border-line px-5 py-2 text-sm text-muted transition hover:border-accent-strong/50 hover:text-ink"
         >
           New chart
         </button>

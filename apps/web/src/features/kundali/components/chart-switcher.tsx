@@ -68,7 +68,7 @@ export function ChartSwitcher({
       </button>
 
       {open && (
-        <div className="absolute right-0 z-50 mt-2 w-[280px] rounded-xl border border-line-strong bg-surface p-1.5 shadow-2xl">
+        <div className="absolute right-0 z-50 mt-2 w-[280px] rounded-xl border border-line-strong bg-surface p-1.5 shadow-raised">
           <ul className="max-h-[300px] space-y-1 overflow-y-auto">
             {kundalis.map((k) => {
               const usable = Boolean(k.birth);

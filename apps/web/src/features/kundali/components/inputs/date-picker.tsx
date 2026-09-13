@@ -99,7 +99,7 @@ export function DatePicker({
       {error && <p className="mt-1 text-xs text-danger font-medium">{error}</p>}
 
       {open && (
-        <div className="absolute z-50 mt-2 w-full min-w-[300px] rounded-xl border border-line-strong bg-surface p-4 shadow-xl">
+        <div className="absolute z-50 mt-2 w-full min-w-[300px] rounded-xl border border-line-strong bg-surface p-4 shadow-raised">
           {/* Era Toggle Switcher (AD / BS) */}
           <div className="mb-3 flex items-center justify-between border-b border-line-strong pb-2.5">
             <span className="text-xs font-bold text-ink">Calendar Era:</span>

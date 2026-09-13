@@ -56,7 +56,7 @@ export function PatroHead({
     <EnglishPatro chart={chart} birth={birth} />
   );
   const frame =
-    "overflow-hidden rounded-lg border-4 border-double border-accent-strong/70 bg-accent-tint text-ink shadow-sm";
+    "overflow-hidden rounded-lg border-4 border-double border-accent-strong/70 bg-accent-tint text-ink shadow-raised";
 
   if (!collapsible) {
     return (
@@ -68,7 +68,7 @@ export function PatroHead({
 
   return (
     <details className={`group ${frame}`}>
-      <summary className="flex cursor-pointer items-center justify-between px-6 py-3 font-serif marker:content-none sm:px-8 [&::-webkit-details-marker]:hidden">
+      <summary className="flex cursor-pointer items-center justify-between px-6 py-3 font-display marker:content-none sm:px-8 [&::-webkit-details-marker]:hidden">
         <span className="text-lg font-bold tracking-wide text-accent-strong">
           ॥ श्रीगणेशाय नमः ॥{" "}
           <span className="text-sm font-semibold text-accent-ink">
@@ -128,7 +128,7 @@ function SanskritPatro({ chart, birth }: { chart: Chart; birth: BirthDetailsIn }
   const nadiNe = AVAKHADA_TRANSLATIONS[a.nadi]?.ne;
 
   return (
-    <div className="space-y-5 font-serif leading-8 [text-wrap:pretty]">
+    <div className="space-y-5 font-display leading-8 [text-wrap:pretty]">
       <header className="space-y-3 text-center">
         <p className="text-2xl font-bold tracking-wide text-accent-strong">
           ॥ श्रीगणेशाय नमः ॥
@@ -243,7 +243,7 @@ function EnglishPatro({ chart, birth }: { chart: Chart; birth: BirthDetailsIn })
   const bhabhoga = chart.dasha.bhabhoga_ghati ?? 0;
 
   return (
-    <div className="space-y-5 font-serif leading-8">
+    <div className="space-y-5 font-display leading-8">
       <header className="space-y-2 text-center">
         <p className="text-2xl font-bold tracking-wide text-accent-strong">
           ॥ Obeisance to Śrī Gaṇeśa ॥

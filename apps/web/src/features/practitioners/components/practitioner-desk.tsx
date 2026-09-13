@@ -51,7 +51,7 @@ export function PractitionerDesk() {
         <main className="mx-auto w-full max-w-[720px] px-5 pt-12 sm:px-8">
           <p className="text-sm text-muted">
             This account is not a practitioner yet.{" "}
-            <Link href="/practitioners/apply" className="text-accent hover:underline">
+            <Link href="/practitioners/apply" className="text-accent-strong hover:underline">
               {t.practBecome}
             </Link>
           </p>
@@ -74,7 +74,7 @@ export function PractitionerDesk() {
           priced, who is waiting — were below the fold under the edit form. */}
       <main className="mx-auto w-full max-w-[1120px] px-5 pb-28 pt-10 sm:px-8">
         <header>
-          <span className={`text-2xs text-accent ${eyebrow}`}>{t.practDesk}</span>
+          <span className={`text-2xs text-accent-strong ${eyebrow}`}>{t.practDesk}</span>
           <h1 className="mt-3 text-2xl font-bold leading-tight text-ink">
             {me?.display_name ?? "—"}
           </h1>
@@ -234,7 +234,7 @@ function ProfileEditor({ profile }: { profile: PractitionerDetail }) {
               // eslint-disable-next-line @next/next/no-img-element
               <img src={assetUrl(form.photo_url)} alt="" className="size-full object-cover" />
             ) : (
-              <Camera className="size-7 text-dim transition-colors group-hover:text-accent" />
+              <Camera className="size-7 text-dim transition-colors group-hover:text-accent-strong" />
             )}
             {upload.isPending && (
               <span className="absolute inset-0 grid place-items-center bg-ink/50 text-xs text-white">

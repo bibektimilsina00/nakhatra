@@ -10,7 +10,7 @@ const BASE =
   "disabled:pointer-events-none disabled:opacity-40";
 
 const VARIANT: Record<ButtonVariant, string> = {
-  primary: "bg-accent-strong text-white hover:opacity-90",
+  primary: "bg-accent-strong text-white hover:bg-accent-ink",
   secondary: "bg-surface border border-line-strong text-ink hover:bg-cream",
   ghost: "bg-transparent text-accent-ink hover:bg-accent-wash",
   danger: "bg-danger text-white hover:opacity-90",

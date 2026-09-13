@@ -24,13 +24,13 @@ export function SouthIndianChart({
   chart,
   onSelectHouse,
   selectedHouse,
-  theme = "dark",
+  theme = "app",
 }: {
   chart: Chart;
   onSelectHouse?: (house: number) => void;
   selectedHouse?: number | null;
   /** "dark" is the app's sky; "patro" is parchment and a guru's two inks. */
-  theme?: "dark" | "patro";
+  theme?: "app" | "patro";
 }) {
   const { language } = useTranslation();
   const [hoveredHouse, setHoveredHouse] = useState<number | null>(null);
@@ -147,7 +147,7 @@ export function SouthIndianChart({
 
         {/* Center Space of South Indian Chart Grid */}
         <div className={`col-start-2 col-end-4 row-start-2 row-end-4 rounded-md border p-4 flex flex-col items-center justify-center text-center space-y-1 ${T.center}`}>
-          <span className={`font-serif text-sm font-bold ${T.centerTitle}`}>{centerTitle}</span>
+          <span className={`font-display text-sm font-bold ${T.centerTitle}`}>{centerTitle}</span>
           <span className={`text-xs font-bold ${T.centerAsc}`}>
             {language === "en" ? "Ascendant" : "लग्न"}: {getSignName(chart.lagna_sign, language)}
           </span>

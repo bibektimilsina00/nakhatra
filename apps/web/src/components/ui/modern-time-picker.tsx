@@ -80,12 +80,12 @@ export function ModernTimePicker({
       <button
         type="button"
         onClick={toggle}
-        className={`flex w-full items-center justify-between rounded-md border bg-surface px-4 py-3 text-xs font-semibold text-ink transition hover:border-accent-strong focus:outline-none ${
+        className={`flex min-h-11 w-full items-center justify-between rounded-md border bg-surface px-4 py-3 text-xs font-semibold text-ink transition hover:border-accent-strong focus:outline-none ${
           error ? "border-danger" : isOpen ? "border-ring ring-1 ring-ring" : "border-line-strong"
         }`}
       >
         <div className="flex items-center gap-2.5">
-          <Clock className="size-4 text-accent" />
+          <Clock className="size-4 text-accent-strong" />
           <span className={hour && minute ? "text-ink font-medium" : "text-dim"}>
             {formatDisplayTime()}
           </span>
@@ -148,7 +148,7 @@ export function ModernTimePicker({
                     className="rounded-md border border-line-strong bg-surface py-1.5 px-2 text-2xs font-semibold text-ink hover:border-accent-strong hover:text-accent-ink transition flex items-center justify-between"
                   >
                     <span className="flex items-center gap-1.5">
-                      <PresetIcon className="size-3.5 text-accent" />
+                      <PresetIcon className="size-3.5 text-accent-strong" />
                       {preset.label}
                     </span>
                     <span className="text-2xs text-muted">{preset.h}:{preset.m} {preset.ap}</span>
@@ -241,7 +241,7 @@ export function ModernTimePicker({
             <button
               type="button"
               onClick={() => setIsOpen(false)}
-              className="rounded-md bg-accent-strong px-4 py-1.5 text-xs font-bold text-white transition hover:opacity-90"
+              className="rounded-md bg-accent-strong px-4 py-1.5 text-xs font-bold text-white transition hover:bg-accent-ink"
             >
               Done
             </button>

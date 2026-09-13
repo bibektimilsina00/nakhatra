@@ -154,7 +154,7 @@ function LoginFormContent() {
           <NakhatraMark className="mx-auto mb-5 block size-12 text-accent-strong" />
 
           <div className="mb-7 text-center">
-            <h1 className="font-serif text-xl font-bold tracking-tight text-ink">
+            <h1 className="font-display text-xl font-bold tracking-tight text-ink">
               {isLogin ? "Sign in to Nakhatra" : "Create your Nakhatra account"}
             </h1>
             <p className="mt-1.5 text-sm text-muted">
@@ -250,10 +250,11 @@ function LoginFormContent() {
               </div>
             </div>
 
-            <button
+            <Button
               type="submit"
+              variant="primary"
               disabled={loading}
-              className="mt-2 flex w-full items-center justify-center gap-2 rounded-md bg-accent-strong py-2.5 text-sm font-semibold text-white transition-colors hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-strong focus-visible:ring-offset-2 focus-visible:ring-offset-surface disabled:cursor-not-allowed disabled:opacity-60"
+              className="mt-2 w-full font-semibold"
             >
               {loading ? (
                 <span className="inline-block size-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
@@ -263,7 +264,7 @@ function LoginFormContent() {
                   <ArrowRight className="size-4 stroke-[2.5]" />
                 </>
               )}
-            </button>
+            </Button>
           </form>
         </div>
 
@@ -286,7 +287,7 @@ export default function LoginPage() {
       <header className="relative z-10 mx-auto flex w-full max-w-7xl items-center justify-between px-6 py-5">
         <Link href="/" className="group flex items-center gap-2.5">
           <NakhatraMark className="size-8 text-accent-strong transition-colors group-hover:opacity-80" />
-          <span className="font-logo text-sm font-bold tracking-[0.16em] text-ink">
+          <span className="text-sm font-bold tracking-[0.16em] text-ink">
             NAKHATRA
           </span>
         </Link>

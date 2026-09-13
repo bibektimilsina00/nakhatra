@@ -67,7 +67,7 @@ export function KundaliCard({
             disabled={!openable || busy}
             onClick={onOpen}
             title={openable ? undefined : t.dashNotRecalculable}
-            className="flex min-h-11 flex-1 items-center justify-center rounded-sm bg-accent-strong px-2 text-xs font-bold text-white transition-colors hover:opacity-90 disabled:pointer-events-none disabled:opacity-40"
+            className="flex min-h-11 flex-1 items-center justify-center rounded-sm bg-accent-strong px-2 text-xs font-bold text-white transition-colors hover:bg-accent-ink disabled:pointer-events-none disabled:opacity-40"
           >
             {t.dashReadingAction}
           </button>

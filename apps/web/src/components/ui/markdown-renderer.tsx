@@ -36,19 +36,19 @@ export function MarkdownRenderer({
             </p>
           ),
           h1: ({ children }) => (
-            <h1 className="font-serif font-bold text-sm sm:text-base text-accent-ink border-b border-line-strong pb-1 mt-3 mb-2 flex items-center gap-2">
+            <h1 className="font-display font-bold text-sm sm:text-base text-accent-ink border-b border-line-strong pb-1 mt-3 mb-2 flex items-center gap-2">
               <span className="text-xs">✦</span>
               {children}
             </h1>
           ),
           h2: ({ children }) => (
-            <h2 className="font-serif font-bold text-xs sm:text-sm text-accent-ink mt-3 mb-1.5 flex items-center gap-1.5">
-              <span className="text-accent text-2xs">❖</span>
+            <h2 className="font-display font-bold text-xs sm:text-sm text-accent-ink mt-3 mb-1.5 flex items-center gap-1.5">
+              <span className="text-accent-strong text-2xs">❖</span>
               {children}
             </h2>
           ),
           h3: ({ children }) => (
-            <h3 className="font-serif font-bold text-xs text-accent-ink mt-2 mb-1">
+            <h3 className="font-display font-bold text-xs text-accent-ink mt-2 mb-1">
               {children}
             </h3>
           ),
@@ -70,7 +70,7 @@ export function MarkdownRenderer({
           ),
           li: ({ children }) => (
             <li className="flex items-start gap-2 text-xs sm:text-sm text-ink leading-relaxed">
-              <span className="text-accent shrink-0 text-xs mt-0.5">•</span>
+              <span className="text-accent-strong shrink-0 text-xs mt-0.5">•</span>
               <div className="flex-1 min-w-0">{children}</div>
             </li>
           ),
@@ -113,7 +113,7 @@ export function MarkdownRenderer({
             </div>
           ),
           thead: ({ children }) => (
-            <thead className="bg-cream text-accent-ink font-serif font-bold border-b border-line-strong">
+            <thead className="bg-cream text-accent-ink font-display font-bold border-b border-line-strong">
               {children}
             </thead>
           ),

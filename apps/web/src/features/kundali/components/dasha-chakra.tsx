@@ -56,11 +56,11 @@ export function DashaChakra({
 
   return (
     <div className="overflow-hidden rounded-lg border-2 border-accent-strong/60 bg-accent-tint text-ink">
-      <p className="border-b-2 border-accent-strong/60 px-4 py-2 text-center font-serif text-sm font-bold tracking-wide text-accent-strong">
+      <p className="border-b-2 border-accent-strong/60 px-4 py-2 text-center font-display text-sm font-bold tracking-wide text-accent-strong">
         {label(titles[scheme])}
       </p>
       <div className="overflow-x-auto">
-        <table className="w-full border-collapse text-center font-serif text-sm">
+        <table className="w-full border-collapse text-center font-display text-sm">
           <thead>
             <tr>
               <th className="border border-accent-strong/40 bg-accent-wash px-2 py-1.5 font-bold text-accent-strong">

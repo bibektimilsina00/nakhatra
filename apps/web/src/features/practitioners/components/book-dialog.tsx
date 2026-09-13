@@ -85,7 +85,7 @@ export function BookDialog({
         role="dialog"
         aria-modal="true"
         aria-label={t.bookTitle}
-        className="w-full max-w-[420px] rounded-lg border border-line-strong bg-surface p-5 shadow-2xl"
+        className="w-full max-w-[420px] rounded-lg border border-line-strong bg-surface p-5 shadow-overlay"
       >
         <div className="flex items-start justify-between gap-3">
           <h2 className="text-lg font-bold text-ink">{t.bookTitle}</h2>

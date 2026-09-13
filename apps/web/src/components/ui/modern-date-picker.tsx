@@ -110,12 +110,12 @@ export function ModernDatePicker({
       <button
         type="button"
         onClick={toggle}
-        className={`flex w-full items-center justify-between rounded-md border bg-surface px-4 py-3 text-xs font-semibold text-ink transition hover:border-accent-strong focus:outline-none ${
+        className={`flex min-h-11 w-full items-center justify-between rounded-md border bg-surface px-4 py-3 text-xs font-semibold text-ink transition hover:border-accent-strong focus:outline-none ${
           error ? "border-danger" : isOpen ? "border-ring ring-1 ring-ring" : "border-line-strong"
         }`}
       >
         <div className="flex items-center gap-2.5">
-          <Calendar className="size-4 text-accent" />
+          <Calendar className="size-4 text-accent-strong" />
           <span className={day && month && year ? "text-ink font-medium" : "text-dim"}>
             {formatDisplayDate()}
           </span>
@@ -257,7 +257,7 @@ export function ModernDatePicker({
             <button
               type="button"
               onClick={() => setIsOpen(false)}
-              className="rounded-md bg-accent-strong px-4 py-1.5 text-xs font-bold text-white transition hover:opacity-90"
+              className="rounded-md bg-accent-strong px-4 py-1.5 text-xs font-bold text-white transition hover:bg-accent-ink"
             >
               Done
             </button>

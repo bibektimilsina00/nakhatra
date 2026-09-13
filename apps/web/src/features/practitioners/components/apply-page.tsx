@@ -101,7 +101,7 @@ export function ApplyPage() {
     return (
       <AppShell>
         <main className="mx-auto w-full max-w-[640px] px-5 pb-24 pt-12 sm:px-8">
-          <span className={`text-2xs text-accent ${eyebrow}`}>{t.practRegister}</span>
+          <span className={`text-2xs text-accent-strong ${eyebrow}`}>{t.practRegister}</span>
           <h1 className="mt-3 text-2xl font-bold leading-tight text-ink">
             {t.practApplyTitle}
           </h1>
@@ -118,7 +118,7 @@ export function ApplyPage() {
           of it — the width was there, the page just refused to use it. */}
       <main className="mx-auto w-full max-w-[1120px] px-5 pb-28 pt-10 sm:px-8">
         <header className="max-w-2xl">
-          <span className={`text-2xs text-accent ${eyebrow}`}>{t.practRegister}</span>
+          <span className={`text-2xs text-accent-strong ${eyebrow}`}>{t.practRegister}</span>
           <h1 className="mt-3 text-2xl font-bold leading-tight text-ink">
             {t.practApplyTitle}
           </h1>
@@ -151,7 +151,7 @@ export function ApplyPage() {
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={assetUrl(form.photo_url)} alt="" className="size-full object-cover" />
                 ) : (
-                  <Camera className="size-7 text-dim transition-colors group-hover:text-accent" />
+                  <Camera className="size-7 text-dim transition-colors group-hover:text-accent-strong" />
                 )}
                 {upload.isPending && (
                   <span className="absolute inset-0 grid place-items-center bg-ink/50 text-xs text-white">
@@ -183,7 +183,7 @@ export function ApplyPage() {
 
             <section className={cardClasses()}>
               <h2 className="flex items-center gap-2 text-sm font-semibold text-ink">
-                <ShieldCheck className="size-4 text-accent" />
+                <ShieldCheck className="size-4 text-accent-strong" />
                 {t.applyNext}
               </h2>
               <p className="mt-2 text-xs leading-[1.75] text-dim">{t.practPendingNote}</p>
@@ -412,8 +412,8 @@ function SubmittedProfile({
   const { t } = useTranslation();
 
   const shown = {
-    submitted: { icon: Clock, label: t.practApplyPending, tone: "text-accent", ring: "border-line-strong" },
-    in_review: { icon: Clock, label: t.practApplyPending, tone: "text-accent", ring: "border-line-strong" },
+    submitted: { icon: Clock, label: t.practApplyPending, tone: "text-accent-strong", ring: "border-line-strong" },
+    in_review: { icon: Clock, label: t.practApplyPending, tone: "text-accent-strong", ring: "border-line-strong" },
     approved: {
       icon: CheckCircle2,
       label: t.practApplyApproved,
@@ -429,7 +429,7 @@ function SubmittedProfile({
   }[application.state] ?? {
     icon: Clock,
     label: t.practApplyPending,
-    tone: "text-accent",
+    tone: "text-accent-strong",
     ring: "border-line-strong",
   };
   const Icon = shown.icon;
@@ -460,7 +460,7 @@ function SubmittedProfile({
       {application.state === "approved" && (
         <Link
           href="/practitioners/me"
-          className="mt-4 inline-flex items-center gap-2 rounded-md bg-accent-strong px-4 py-2.5 text-sm font-bold text-white transition-colors hover:opacity-90"
+          className="mt-4 inline-flex items-center gap-2 rounded-md bg-accent-strong px-4 py-2.5 text-sm font-bold text-white transition-colors hover:bg-accent-ink"
         >
           {t.practDesk}
         </Link>
@@ -477,7 +477,7 @@ function SubmittedProfile({
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={assetUrl(application.photo_url)} alt="" className="size-full object-cover" />
               ) : (
-                <span className="text-lg font-bold text-accent">
+                <span className="text-lg font-bold text-accent-strong">
                   {application.full_name.charAt(0).toUpperCase()}
                 </span>
               )}

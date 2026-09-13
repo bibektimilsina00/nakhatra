@@ -72,10 +72,10 @@ export function ChatMessageBubble({
       {/* Who is speaking, and the quiet tools */}
       <div className="flex w-full items-center justify-between px-1">
         <div className="flex items-center gap-2">
-          <span className="grid size-6 shrink-0 place-items-center rounded-full bg-cream font-serif text-xs font-bold text-accent">
+          <span className="grid size-6 shrink-0 place-items-center rounded-full bg-cream font-display text-xs font-bold text-accent-strong">
             ॐ
           </span>
-          <span className="font-serif text-xs font-bold text-accent-strong">{masterAstrologerLabel}</span>
+          <span className="font-display text-xs font-bold text-accent-strong">{masterAstrologerLabel}</span>
           <span className="text-2xs text-dim">{message.timestamp}</span>
         </div>
         <div className="flex items-center gap-0.5 opacity-0 transition-opacity group-hover:opacity-100">
@@ -111,7 +111,7 @@ export function ChatMessageBubble({
             title={groundedInChartLabel}
             className="mt-1 flex min-h-11 cursor-pointer items-center gap-1.5 rounded-full border border-line-strong bg-cream px-2.5 py-1 text-xs font-medium text-muted transition hover:border-accent/50 hover:text-accent-strong active:scale-95"
           >
-            <Sparkles className="size-3 text-accent" />
+            <Sparkles className="size-3 text-accent-strong" />
             <span className="truncate">{message.astrologicalBasis}</span>
           </button>
         )}

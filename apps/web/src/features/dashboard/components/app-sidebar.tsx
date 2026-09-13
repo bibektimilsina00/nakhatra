@@ -125,7 +125,7 @@ export function AppSidebar({
     <div className="flex h-full flex-col bg-surface">
       <div className="px-4 py-4">
         <Link href="/dashboard" onClick={onNavigate} className="flex items-center gap-2.5">
-          <NakhatraMark className="size-7 text-accent" />
+          <NakhatraMark className="size-7 text-accent-strong" />
           <span className="text-sm font-bold tracking-[0.18em] text-ink">
             NAKHATRA
           </span>

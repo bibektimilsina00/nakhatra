@@ -98,7 +98,7 @@ export function CreateKundaliDialog({
           role="dialog"
           aria-modal="true"
           aria-label={t.dashNewKundali}
-          className="rounded-xl border border-line-strong bg-surface shadow-2xl"
+          className="rounded-xl border border-line-strong bg-surface shadow-overlay"
         >
           <div className="flex items-center justify-between rounded-t-xl border-b border-line px-5 py-4">
             <h2 className="text-base font-semibold text-ink">{t.dashNewKundali}</h2>

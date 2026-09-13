@@ -80,7 +80,7 @@ export function PhoneField({
         {open && (
           <ul
             role="listbox"
-            className="absolute left-0 top-[calc(100%+4px)] z-20 max-h-60 w-[132px] overflow-y-auto rounded-md border border-line-strong bg-surface py-1 shadow-2xl"
+            className="absolute left-0 top-[calc(100%+4px)] z-20 max-h-60 w-[132px] overflow-y-auto rounded-md border border-line-strong bg-surface py-1 shadow-raised"
           >
             {DIAL_CODES.map((row) => (
               <li key={row.code}>

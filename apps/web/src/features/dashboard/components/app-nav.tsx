@@ -96,7 +96,7 @@ export function AppNav({
 
   const toggle = (menu: Menu) => setOpen((current) => (current === menu ? null : menu));
   const panel =
-    "absolute right-0 z-50 mt-2 rounded-md border border-line-strong bg-surface p-1.5 shadow-lg";
+    "absolute right-0 z-50 mt-2 rounded-md border border-line-strong bg-surface p-1.5 shadow-raised";
   const trigger =
     "flex items-center gap-2 rounded-md border border-line-strong text-muted transition-colors hover:text-ink";
 

@@ -32,7 +32,7 @@ export function ReportSectionCard({
           <SectionIcon sectionId={section.id} />
         </span>
         <div>
-          <h3 className="font-serif text-base font-bold text-ink">{section.title}</h3>
+          <h3 className="font-display text-base font-bold text-ink">{section.title}</h3>
           <p className="text-xs text-muted">{section.subtitle}</p>
         </div>
       </div>
@@ -52,7 +52,7 @@ export function ReportSectionCard({
       {/* Every claim shows the placement it came from. This is the difference
           between a reading and a horoscope, so it is not optional chrome. */}
       <div className="border-t border-line-strong pt-3">
-        <p className="text-2xs font-bold uppercase tracking-wider text-accent mb-1.5">
+        <p className="text-2xs font-bold uppercase tracking-wider text-accent-strong mb-1.5">
           {footnotesLabel}
         </p>
         <div className="flex flex-wrap gap-2">
@@ -62,7 +62,7 @@ export function ReportSectionCard({
               onClick={() => onPlacementClick?.(reason.placement)}
               className="inline-flex min-h-11 items-center gap-1.5 rounded-lg border border-line-strong bg-cream px-2.5 py-1 text-xs text-ink hover:border-accent transition"
             >
-              <MapPin className="size-3.5 text-accent" />
+              <MapPin className="size-3.5 text-accent-strong" />
               <span>{reason.placement}</span>
             </button>
           ))}

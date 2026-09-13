@@ -875,7 +875,7 @@ export function LiveModeWorkspace() {
               router.back();
             }}
             aria-label={t.readingBack}
-            className="grid size-9 shrink-0 place-items-center rounded-lg border border-line text-muted transition-colors hover:border-line-strong hover:text-ink"
+            className="grid size-11 shrink-0 place-items-center rounded-lg border border-line text-muted transition-colors hover:border-line-strong hover:text-ink"
           >
             <ArrowLeft className="size-4" />
           </button>
@@ -905,7 +905,7 @@ export function LiveModeWorkspace() {
       {/* REAL-TIME AUDIO TELEMETRY & RECORDING DEBUG PANEL                  */}
       {/* =================================================================== */}
       {showDebugPanel && (
-        <div className="border-b border-accent/30 bg-surface p-5 z-40 text-xs font-mono space-y-4 shadow-2xl animate-fade-in">
+        <div className="border-b border-accent/30 bg-surface p-5 z-40 text-xs font-mono space-y-4 shadow-raised animate-fade-in">
           <div className="flex items-center justify-between border-b border-line pb-3">
             <div className="flex items-center gap-2">
               <span className="text-accent-strong font-bold text-sm">🐛 Live Audio Recording &amp; Voice Telemetry Console</span>
@@ -971,12 +971,12 @@ onClick={() => setupMicAnalyzer()}
               <span className="text-muted block text-2xs uppercase font-semibold">🗣️ Live Voice Listener</span>
               <p className="font-bold text-xs truncate">
                 {audioLevel > 14 ? (
-                  <span className="text-emerald-400 flex items-center gap-1.5 animate-pulse">
-                    <span className="size-2 rounded-full bg-emerald-400" />
+                  <span className="text-success flex items-center gap-1.5 animate-pulse">
+                    <span className="size-2 rounded-full bg-success" />
                     Voice Detected ({audioLevel}%)
                   </span>
                 ) : silenceCounterMs > 0 ? (
-                  <span className="text-accent">
+                  <span className="text-accent-strong">
                     ⏱️ Counting Silence ({silenceCounterMs}ms)
                   </span>
                 ) : voiceState === "thinking" ? (
@@ -1004,7 +1004,7 @@ onClick={() => setupMicAnalyzer()}
           {/* Test Action & Last Query Bar */}
           <div className="flex items-center justify-between bg-surface border border-line rounded-lg p-3">
             <div className="flex items-center gap-2">
-              <span className="text-accent font-bold text-xs">Last Transmitted Query:</span>
+              <span className="text-accent-strong font-bold text-xs">Last Transmitted Query:</span>
               <span className="text-ink font-semibold">{lastSubmittedQuery || "None yet"}</span>
             </div>
             <button
@@ -1015,7 +1015,7 @@ onClick={() => setupMicAnalyzer()}
                 addDebugLog("SIMULATED_TEST_QUERY", `Injected test query: "${sample}"`);
                 handleSend(sample);
               }}
-              className="rounded-lg bg-accent-strong hover:opacity-90 px-3 py-1 text-xs font-bold text-white transition"
+              className="rounded-lg bg-accent-strong hover:bg-accent-ink px-3 py-1 text-xs font-bold text-white transition"
             >
               🧪 Test Trigger Career Query
             </button>
@@ -1027,7 +1027,7 @@ onClick={() => setupMicAnalyzer()}
             {debugLogs.map((log, idx) => (
               <div key={idx} className="flex items-start gap-2 text-xs font-mono leading-tight py-0.5 border-b border-line">
                 <span className="text-muted text-2xs shrink-0">[{log.time}]</span>
-                <span className="text-accent font-bold shrink-0">{log.event}:</span>
+                <span className="text-accent-strong font-bold shrink-0">{log.event}:</span>
                 <span className="text-ink truncate">{log.detail}</span>
               </div>
             ))}
@@ -1049,7 +1049,7 @@ onClick={() => setupMicAnalyzer()}
             <div className="hidden lg:flex flex-col rounded-lg border border-line bg-surface min-h-0 overflow-hidden">
               <div className="border-b border-line px-4 py-3 shrink-0">
                 <div className="flex items-center justify-between gap-2">
-                  <span className="flex items-center gap-2 font-serif text-sm font-bold text-ink">
+                  <span className="flex items-center gap-2 font-display text-sm font-bold text-ink">
                     <span className="relative flex size-2">
                       <span className="absolute inline-flex size-full animate-ping rounded-full bg-accent-strong opacity-60" />
                       <span className="relative inline-flex size-2 rounded-full bg-accent-strong" />
@@ -1087,7 +1087,7 @@ onClick={() => setupMicAnalyzer()}
                       </div>
                     ) : (
                       <div key={m.id} className="flex items-start gap-2.5">
-                        <span className="mt-0.5 grid size-6 shrink-0 place-items-center rounded-full bg-cream font-serif text-xs font-bold text-accent">
+                        <span className="mt-0.5 grid size-6 shrink-0 place-items-center rounded-full bg-cream font-display text-xs font-bold text-accent-strong">
                           ॐ
                         </span>
                         <div className="min-w-0 max-w-[85%] rounded-xl rounded-tl-sm border border-line bg-cream px-3.5 py-2.5">
@@ -1099,8 +1099,8 @@ onClick={() => setupMicAnalyzer()}
                   )
                 ) : (
                   <div className="flex h-full flex-col items-center justify-center space-y-2 p-6 text-center">
-                    <span className="font-serif text-2xl text-accent">ॐ</span>
-                    <p className="font-serif text-xs font-semibold text-ink">{t.listeningToVoice}</p>
+                    <span className="font-display text-2xl text-accent-strong">ॐ</span>
+                    <p className="font-display text-xs font-semibold text-ink">{t.listeningToVoice}</p>
                     <p className="text-2xs text-muted">{t.askAnyQuestionOrb}</p>
                   </div>
                 )}
@@ -1161,7 +1161,7 @@ onClick={() => setupMicAnalyzer()}
                     </svg>
 
                     <div className="z-10 space-y-2 p-5 text-center">
-                      <span className="block font-serif text-2xl leading-none text-accent">ॐ</span>
+                      <span className="block font-display text-2xl leading-none text-accent-strong">ॐ</span>
                       <span className="block text-sm font-semibold leading-snug text-ink">
                         {voiceState === "speaking"
                           ? t.astrologerSpeaking
@@ -1228,7 +1228,7 @@ onClick={() => setupMicAnalyzer()}
                   ))}
                 </div>
 
-                <div className="rounded-lg border border-line bg-surface shadow-xl focus-within:border-ring focus-within:ring-1 focus-within:ring-ring">
+                <div className="rounded-lg border border-line bg-surface shadow-raised focus-within:border-ring focus-within:ring-1 focus-within:ring-ring">
                   <form
                     onSubmit={(e) => {
                       e.preventDefault();
@@ -1239,7 +1239,7 @@ onClick={() => setupMicAnalyzer()}
                     <button
                       type="button"
                       onClick={toggleDictation}
-                      className={`grid size-10 shrink-0 cursor-pointer place-items-center rounded-lg transition active:scale-95 ${
+                      className={`grid size-11 shrink-0 cursor-pointer place-items-center rounded-lg transition active:scale-95 ${
                         isDictating
                           ? "bg-danger/15 text-danger animate-pulse"
                           : "text-muted hover:bg-cream hover:text-accent-strong"
@@ -1258,7 +1258,7 @@ onClick={() => setupMicAnalyzer()}
                     <button
                       type="submit"
                       disabled={!inputQuery.trim() || isThinking}
-                      className="shrink-0 cursor-pointer rounded-lg bg-accent-strong px-5 py-2.5 text-xs font-bold text-white transition hover:opacity-90 active:scale-95 disabled:opacity-40"
+                      className="min-h-11 shrink-0 cursor-pointer rounded-lg bg-accent-strong px-5 py-2.5 text-xs font-bold text-white transition hover:bg-accent-ink active:scale-95 disabled:opacity-40"
                     >
                       {isThinking ? "..." : t.sendQuery}
                     </button>
@@ -1281,7 +1281,7 @@ onClick={() => setupMicAnalyzer()}
                           // microphone track is what actually goes quiet
                           webrtcClientRef.current?.setMuted(next);
                         }}
-                        className={`flex cursor-pointer items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-semibold transition ${
+                        className={`flex min-h-11 cursor-pointer items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-semibold transition ${
                           isMicMuted ? "bg-danger/15 text-danger" : "text-muted hover:bg-cream hover:text-ink"
                         }`}
                       >
@@ -1291,7 +1291,7 @@ onClick={() => setupMicAnalyzer()}
                       <button
                         type="button"
                         onClick={() => setShowChartDrawer(!showChartDrawer)}
-                        className={`flex cursor-pointer items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-semibold transition ${
+                        className={`flex min-h-11 cursor-pointer items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-semibold transition ${
                           showChartDrawer ? "bg-accent/15 text-accent-strong" : "text-muted hover:bg-cream hover:text-ink"
                         }`}
                       >
@@ -1314,7 +1314,7 @@ onClick={() => setupMicAnalyzer()}
                           toggleLiveVoiceMode(false);
                           router.push("/reading");
                         }}
-                        className="flex cursor-pointer items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-muted transition hover:bg-danger/10 hover:text-danger"
+                        className="flex min-h-11 cursor-pointer items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-muted transition hover:bg-danger/10 hover:text-danger"
                       >
                         <LogOut className="size-3.5" />
                         {t.exitVoice}
@@ -1331,12 +1331,12 @@ onClick={() => setupMicAnalyzer()}
               that consultation is about the pair. */}
           {showChartDrawer && (
             <div
-              className={`absolute right-5 top-5 z-30 max-h-[calc(100%-2.5rem)] animate-fade-in space-y-3 overflow-y-auto rounded-lg border border-line bg-surface p-4 shadow-2xl ${
+              className={`absolute right-5 top-5 z-30 max-h-[calc(100%-2.5rem)] animate-fade-in space-y-3 overflow-y-auto rounded-lg border border-line bg-surface p-4 shadow-raised ${
                 milanLive ? "w-[22rem] sm:w-[34rem]" : "w-80"
               }`}
             >
               <div className="flex items-center justify-between gap-3 border-b border-line pb-2">
-                <h4 className="min-w-0 truncate font-serif text-xs font-bold text-ink">
+                <h4 className="min-w-0 truncate font-display text-xs font-bold text-ink">
                   {milanLive
                     ? `${milanLive.self.name} & ${milanLive.partner.name}`
                     : `${activeBirth.name}'s D1 Kundali`}
@@ -1405,7 +1405,7 @@ onClick={() => setupMicAnalyzer()}
             
             {milanLive && (
               <div className="flex items-center gap-2.5 rounded-lg border border-accent/30 bg-accent/[0.08] px-3.5 py-2.5">
-                <Heart className="size-4 shrink-0 text-accent" />
+                <Heart className="size-4 shrink-0 text-accent-strong" />
                 <span className="min-w-0 flex-1">
                   <span className="block truncate text-xs font-semibold text-ink">
                     {milanLive.self.name} &amp; {milanLive.partner.name}
@@ -1435,7 +1435,7 @@ onClick={() => setupMicAnalyzer()}
             <button
               type="button"
               onClick={() => toggleLiveVoiceMode(true)}
-              className="group flex w-full cursor-pointer items-center gap-3.5 rounded-xl bg-accent-strong p-4 text-left text-white shadow-lg transition hover:opacity-90 active:scale-[0.99]"
+              className="group flex w-full cursor-pointer items-center gap-3.5 rounded-xl bg-accent-strong p-4 text-left text-white shadow-raised transition hover:bg-accent-ink active:scale-[0.99]"
             >
               <span className="relative grid size-11 shrink-0 place-items-center rounded-full bg-white/15">
                 <Headphones className="size-5 transition-transform group-hover:scale-110" />
@@ -1465,7 +1465,7 @@ onClick={() => setupMicAnalyzer()}
             <div className="space-y-4 rounded-xl border border-line bg-surface p-5">
               <div className="flex items-center justify-between border-b border-line pb-3">
                 <div className="flex items-center gap-2.5">
-                  <div className="size-8 rounded-full bg-gradient-to-br from-accent-strong to-accent text-white flex items-center justify-center font-bold text-xs shadow-md">
+                  <div className="size-8 rounded-full bg-gradient-to-br from-accent-strong to-accent text-white flex items-center justify-center font-bold text-xs shadow-raised">
                     {activeBirth.name.charAt(0)}
                   </div>
                   <div>
@@ -1499,7 +1499,7 @@ onClick={() => setupMicAnalyzer()}
               <div className="space-y-4 rounded-xl border border-accent/30 bg-surface p-5">
                 <div className="flex items-center justify-between border-b border-line pb-3">
                   <div className="flex items-center gap-2.5">
-                    <div className="grid size-8 place-items-center rounded-full bg-cream text-xs font-bold text-accent">
+                    <div className="grid size-8 place-items-center rounded-full bg-cream text-xs font-bold text-accent-strong">
                       {milanLive.partner.name.charAt(0)}
                     </div>
                     <div className="min-w-0">
@@ -1537,7 +1537,7 @@ onClick={() => setupMicAnalyzer()}
                   label={t.mahadashaLabel}
                   lord={getPlanetName(mahaLord, selectedLanguage)}
                   period={runningNow.maha}
-                  tone="text-accent"
+                  tone="text-accent-strong"
                 />
                 <DashaCell
                   label={t.antardashaLabel}
@@ -1603,7 +1603,7 @@ onClick={() => setupMicAnalyzer()}
                             {chip.query}
                           </span>
                         </span>
-                        <ArrowLeft className="mt-0.5 size-3.5 shrink-0 rotate-180 text-dim transition-colors group-hover:text-accent" />
+                        <ArrowLeft className="mt-0.5 size-3.5 shrink-0 rotate-180 text-dim transition-colors group-hover:text-accent-strong" />
                       </button>
                     ))}
                   </div>
@@ -1613,7 +1613,7 @@ onClick={() => setupMicAnalyzer()}
               {/* Thinking / Analyzing Indicator */}
               {isThinking && (
                 <div className="flex items-center gap-3 p-4 rounded-xl border border-line bg-surface/90 backdrop-blur-md max-w-xs animate-pulse">
-                  <span className="grid size-6 place-items-center rounded-full bg-cream font-serif text-xs font-bold text-accent">
+                  <span className="grid size-6 place-items-center rounded-full bg-cream font-display text-xs font-bold text-accent-strong">
                     ॐ
                   </span>
                   <div className="flex items-center gap-1.5 text-xs text-accent-strong font-medium">
@@ -1628,7 +1628,7 @@ onClick={() => setupMicAnalyzer()}
 
             {realtimeError && (
               <div className="mx-4 mb-2 flex shrink-0 items-center gap-2.5 rounded-lg border border-accent/30 bg-cream px-3.5 py-2.5">
-                <TriangleAlert className="size-4 shrink-0 text-accent" />
+                <TriangleAlert className="size-4 shrink-0 text-accent-strong" />
                 <span className="min-w-0 flex-1 text-xs leading-[1.6] text-muted">
                   {t.voiceFellBack}
                 </span>
@@ -1662,7 +1662,7 @@ onClick={() => setupMicAnalyzer()}
             </div>
 
             {/* Bottom Mic & Message Input Dock */}
-            <footer className="border-t border-line bg-surface/90 backdrop-blur-xl p-4 shadow-2xl">
+            <footer className="border-t border-line bg-surface/90 backdrop-blur-xl p-4 shadow-raised">
               <form
                 onSubmit={(e) => {
                   e.preventDefault();
@@ -1674,7 +1674,7 @@ onClick={() => setupMicAnalyzer()}
                 <button
                   type="button"
                   onClick={() => toggleLiveVoiceMode(true)}
-                  className="group grid size-11 shrink-0 cursor-pointer place-items-center rounded-lg bg-accent-strong text-white transition hover:opacity-90 active:scale-95"
+                  className="group grid size-11 shrink-0 cursor-pointer place-items-center rounded-lg bg-accent-strong text-white transition hover:bg-accent-ink active:scale-95"
                   title={
                     selectedLanguage === "ne"
                       ? "प्रत्यक्ष एआई भ्वाइस परामर्श सुरु गर्नुहोस्"
@@ -1712,7 +1712,7 @@ onClick={() => setupMicAnalyzer()}
                   {isDictating ? (
                     <MicOff className="size-5 text-danger" />
                   ) : (
-                    <Mic className="size-5 group-hover:scale-110 transition-transform text-accent" />
+                    <Mic className="size-5 group-hover:scale-110 transition-transform text-accent-strong" />
                   )}
                 </button>
 
@@ -1737,7 +1737,7 @@ onClick={() => setupMicAnalyzer()}
                 <button
                   type="submit"
                   disabled={!inputQuery.trim() || isThinking}
-                  className="rounded-lg bg-accent-strong px-6 py-3 text-xs font-bold text-white transition hover:opacity-90 disabled:opacity-40 cursor-pointer active:scale-95 shrink-0 sm:text-sm"
+                  className="min-h-11 rounded-lg bg-accent-strong px-6 py-3 text-xs font-bold text-white transition hover:bg-accent-ink disabled:opacity-40 cursor-pointer active:scale-95 shrink-0 sm:text-sm"
                 >
                   {isThinking ? "..." : t.sendQuery}
                 </button>

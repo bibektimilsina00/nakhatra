@@ -166,7 +166,7 @@ export function CustomPlaceInput({
             >
               <span
                 className={`shrink-0 transition-colors ${
-                  i === active ? "text-accent" : "text-dim"
+                  i === active ? "text-accent-strong" : "text-dim"
                 }`}
               >
                 <svg

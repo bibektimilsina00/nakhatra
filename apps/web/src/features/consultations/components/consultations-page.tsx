@@ -74,7 +74,7 @@ export function ConsultationsPage() {
             <p className="mx-auto mt-2 max-w-sm text-sm leading-[1.75] text-dim">
               {t.consultNoneNote}
             </p>
-            <Link href="/dashboard#jyotish" className={`mt-5 inline-block ${buttonClasses("primary")}`}>
+            <Link href="/dashboard#jyotish" className={`mt-5 ${buttonClasses("primary")}`}>
               {t.talkToAstrologer}
             </Link>
           </div>

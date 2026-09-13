@@ -84,7 +84,7 @@ export function BirthSky() {
             <ArrowLeft className="size-4" />
           </button>
           <div className="min-w-0">
-            <p className="truncate font-serif text-sm font-bold text-ink">
+            <p className="truncate font-display text-sm font-bold text-ink">
               {sk ? "जन्मकालीन आकाश" : "The Sky at Birth"}
               <Sparkles className="ml-1.5 inline size-3.5 text-accent-strong" />
             </p>
@@ -187,7 +187,7 @@ export function BirthSky() {
               <NakshatraCard name={selectedNak} janma={chart.panchang.nakshatra} />
             ) : selected === "Earth" ? (
               <div className="rounded-xl border border-line-strong bg-surface p-4">
-                <h3 className="mb-2 border-b border-line-strong pb-2 font-serif text-xs font-bold uppercase tracking-wider text-ink">
+                <h3 className="mb-2 border-b border-line-strong pb-2 font-display text-xs font-bold uppercase tracking-wider text-ink">
                   {sk ? "पृथ्वी" : "Earth"}
                 </h3>
                 <p className="text-xs leading-relaxed text-muted">
@@ -218,7 +218,7 @@ export function BirthSky() {
 function Card({ title, children }: { title: React.ReactNode; children: React.ReactNode }) {
   return (
     <div className="rounded-xl border border-line-strong bg-surface p-4">
-      <h3 className="mb-3 border-b border-line-strong pb-2 font-serif text-xs font-bold uppercase tracking-wider text-ink">
+      <h3 className="mb-3 border-b border-line-strong pb-2 font-display text-xs font-bold uppercase tracking-wider text-ink">
         {title}
       </h3>
       {children}
@@ -347,7 +347,7 @@ function Toggle({ on, onClick, label }: { on: boolean; onClick: () => void; labe
   return (
     <button
       onClick={onClick}
-      className={`flex items-center gap-1.5 rounded-xl border px-2.5 py-1.5 transition ${
+      className={`flex min-h-11 items-center gap-1.5 rounded-xl border px-2.5 py-1.5 transition ${
         on
           ? "border-accent-strong/50 bg-accent-wash text-accent-strong"
           : "border-line-strong bg-surface text-muted hover:text-ink"
@@ -419,7 +419,7 @@ function NakshatraCard({ name, janma }: { name: string; janma: string }) {
 
   return (
     <div className="rounded-xl border border-line-strong bg-surface p-4">
-      <h3 className="mb-2 flex items-center justify-between border-b border-line-strong pb-2 font-serif text-xs font-bold uppercase tracking-wider text-ink">
+      <h3 className="mb-2 flex items-center justify-between border-b border-line-strong pb-2 font-display text-xs font-bold uppercase tracking-wider text-ink">
         <span>{getNakshatraName(name, language)}</span>
         {isJanma && (
           <span className="rounded-lg border border-accent/40 px-1.5 py-0.5 text-2xs text-accent-strong">

@@ -112,7 +112,7 @@ export function MilanResult({
         <button
           type="button"
           onClick={askAboutMatch}
-          className="group flex w-full cursor-pointer items-center gap-3.5 rounded-xl bg-accent-strong p-4 text-left text-white transition hover:opacity-90 active:scale-[0.99]"
+          className="group flex w-full cursor-pointer items-center gap-3.5 rounded-xl bg-accent-strong p-4 text-left text-white transition hover:bg-accent-ink active:scale-[0.99]"
         >
           <span className="grid size-11 shrink-0 place-items-center rounded-full bg-white/15">
             <Headphones className="size-5 transition-transform group-hover:scale-110" />

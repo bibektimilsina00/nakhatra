@@ -126,7 +126,7 @@ function SkyCard({
   };
 
   return (
-    <div className="relative overflow-hidden rounded-lg border border-line-strong bg-black">
+    <div className="relative overflow-hidden rounded-lg border border-line-strong bg-ink">
       <div className="pointer-events-none h-[230px]">
         <BirthSky3D
           chart={chart}
@@ -156,7 +156,7 @@ function SkyCard({
             type="button"
             onClick={open}
             aria-label={language === "en" ? "Open the birth sky" : "जन्म आकाश खोल्नुहोस्"}
-            className="pointer-events-auto grid size-11 shrink-0 cursor-pointer place-items-center rounded-md bg-accent-strong text-white transition hover:opacity-90 active:scale-95"
+            className="pointer-events-auto grid size-11 shrink-0 cursor-pointer place-items-center rounded-md bg-accent-strong text-white transition hover:bg-accent-ink active:scale-95"
           >
             <Maximize2 className="size-3.5" />
           </button>

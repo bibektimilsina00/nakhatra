@@ -124,7 +124,7 @@ export function PractitionerDirectory({ onOpen }: { onOpen?: (id: string) => voi
         // An empty directory is the expected state before the first
         // practitioner is verified, so it says that rather than "no results".
         <div className="mt-5 rounded-lg border border-dashed border-line-strong px-6 py-12 text-center">
-          <span className="mx-auto grid size-11 place-items-center rounded-full border border-line-strong text-accent">
+          <span className="mx-auto grid size-11 place-items-center rounded-full border border-line-strong text-accent-strong">
             <UserRoundSearch className="size-5" />
           </span>
           <p className="mt-3 text-sm text-muted">{t.practNoneYet}</p>

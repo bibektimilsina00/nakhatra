@@ -21,8 +21,8 @@ export default function KundaliPage() {
       <header className="border-b border-line-strong">
         <div className="mx-auto flex w-full max-w-lg items-center justify-between px-4 py-3.5">
           <Link href="/dashboard" className="flex items-center gap-2.5">
-            <NakhatraMark className="size-6 text-accent" />
-            <span className="font-logo text-xs font-bold tracking-[0.18em] text-ink">
+            <NakhatraMark className="size-6 text-accent-strong" />
+            <span className="text-xs font-bold tracking-[0.18em] text-ink">
               NAKHATRA
             </span>
           </Link>

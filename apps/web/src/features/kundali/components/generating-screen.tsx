@@ -101,7 +101,7 @@ export function GeneratingScreen({
 
       {/* Progress Ticker */}
       <div className="mt-10 max-w-md space-y-3">
-        <h2 className="font-serif text-2xl font-bold text-ink">
+        <h2 className="font-display text-2xl font-bold text-ink">
           Precision Astronomy Computation
         </h2>
         <p className="text-sm font-semibold text-accent-strong transition-all duration-300 min-h-[24px]">

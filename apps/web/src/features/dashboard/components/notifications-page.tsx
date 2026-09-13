@@ -45,7 +45,7 @@ export function NotificationsPage() {
 
         {items.length === 0 ? (
           <div className="mt-10 rounded-lg border border-dashed border-line-strong px-6 py-16 text-center">
-            <span className="mx-auto grid size-12 place-items-center rounded-full border border-line-strong text-accent">
+            <span className="mx-auto grid size-12 place-items-center rounded-full border border-line-strong text-accent-strong">
               <Bell className="size-5" />
             </span>
             <p className="mt-4 text-sm text-muted">{t.dashNoNotifications}</p>

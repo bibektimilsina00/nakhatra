@@ -61,7 +61,7 @@ function getPlanetCoordinates(house: number, index: number, totalCount: number) 
  *  paint time via `var()` since an SVG fill/stroke attribute takes a colour
  *  string, not a Tailwind class. */
 const CHART_THEMES = {
-  dark: {
+  app: {
     svgBg: "bg-surface",
     fillA: "var(--color-surface)",
     fillB: "var(--color-accent-tint)",
@@ -95,7 +95,7 @@ export function NorthIndianChart({
   chart,
   onSelectHouse,
   selectedHouse,
-  theme = "dark",
+  theme = "app",
 }: {
   chart: Chart;
   onSelectHouse?: (house: number) => void;

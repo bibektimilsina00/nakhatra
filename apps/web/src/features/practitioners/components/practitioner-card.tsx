@@ -50,7 +50,7 @@ export function PractitionerCardView({
               {practitioner.display_name}
             </span>
             {practitioner.verified && (
-              <BadgeCheck className="size-4 shrink-0 text-accent" aria-label={t.dashVerified} />
+              <BadgeCheck className="size-4 shrink-0 text-accent-strong" aria-label={t.dashVerified} />
             )}
           </span>
           {practitioner.headline && (

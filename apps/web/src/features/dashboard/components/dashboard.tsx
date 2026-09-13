@@ -81,7 +81,7 @@ export function Dashboard() {
                       onClick={() => setCreating(true)}
                       className="group flex min-h-[224px] flex-col items-center justify-center gap-2.5 rounded-lg border border-dashed border-line-strong transition-colors hover:border-accent/50 hover:bg-accent-wash"
                     >
-                      <span className="grid size-10 place-items-center rounded-full border border-line-strong text-muted transition-colors group-hover:border-accent group-hover:text-accent">
+                      <span className="grid size-10 place-items-center rounded-full border border-line-strong text-muted transition-colors group-hover:border-accent-strong group-hover:text-accent-strong">
                         <Plus className="size-4" />
                       </span>
                       <span className="text-sm font-medium text-muted transition-colors group-hover:text-ink">

@@ -73,7 +73,7 @@ export function PractitionerProfile({ id }: { id: string }) {
       <AppShell sidebar={false}>
         <main className="mx-auto w-full max-w-[820px] px-5 py-20 text-center sm:px-8">
           <p className="text-sm text-dim">{t.profNotFound}</p>
-          <Link href="/dashboard#jyotish" className="mt-4 inline-block text-sm text-accent">
+          <Link href="/dashboard#jyotish" className="mt-4 inline-block text-sm text-accent-strong">
             {t.dashNavJyotish}
           </Link>
         </main>
@@ -109,7 +109,7 @@ export function PractitionerProfile({ id }: { id: string }) {
                   <h1 className="flex items-center gap-2 text-xl font-bold leading-tight text-ink">
                     <span className="truncate">{p.display_name}</span>
                     {p.verified && (
-                      <BadgeCheck className="size-[18px] shrink-0 text-accent" aria-label={t.dashVerified} />
+                      <BadgeCheck className="size-[18px] shrink-0 text-accent-strong" aria-label={t.dashVerified} />
                     )}
                   </h1>
                   {p.headline && <p className="mt-1 text-sm text-muted">{p.headline}</p>}

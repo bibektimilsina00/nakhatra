@@ -20,4 +20,9 @@ describe("tabClasses", () => {
     expect(tabClasses(false)).toMatch(/border-b-2/);
     expect(tabClasses(true)).toContain("transition-colors");
   });
+
+  it("gives tabs a 44px minimum touch target", () => {
+    expect(tabClasses(true)).toMatch(/min-h-11|h-11/);
+    expect(tabClasses(false)).toMatch(/min-h-11|h-11/);
+  });
 });
