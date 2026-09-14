@@ -50,11 +50,16 @@ def rasifal(
     summary="The week's or month's rasifal",
 )
 def rasifal_period(
+    session: SessionDep,
     span: Annotated[Literal["weekly", "monthly"], Query()] = "weekly",
     on: Annotated[
         date | None,
         Query(description="First day of the span. Defaults to today in Kathmandu."),
     ] = None,
+    language: Annotated[
+        Literal["ne", "hi", "en"],
+        Query(description="Language of the written reading."),
+    ] = "ne",
 ) -> PeriodRasifalOut:
     """All twelve rashis across a span, aggregated from every day in it.
 
@@ -65,4 +70,4 @@ def rasifal_period(
     start = on or today
     if abs(start - today) > _WINDOW:
         raise ValidationError("That date is outside the range this reads.")
-    return service.for_period(start, span)
+    return service.for_period(start, span, language, session)

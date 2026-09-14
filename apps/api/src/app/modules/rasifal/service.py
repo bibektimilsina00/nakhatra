@@ -88,9 +88,12 @@ def for_date(day: date, language: str = "ne", session: Session | None = None) ->
 SPAN_DAYS = {"weekly": 7, "monthly": 30}
 
 
-def for_period(start: date, span: str) -> PeriodRasifalOut:
+def for_period(
+    start: date, span: str, language: str = "ne", session: Session | None = None
+) -> PeriodRasifalOut:
     days = SPAN_DAYS[span]
     computed = rasifal.compute_period(start, days)
+    written = writer.published_period(session, start, span, language) if session is not None else {}
     return PeriodRasifalOut(
         start=computed.start,
         end=computed.end,
@@ -115,6 +118,11 @@ def for_period(start: date, span: str) -> PeriodRasifalOut:
                 iron_days=s.iron_days,
                 lucky_number=s.lucky_number,
                 lucky_colour=s.lucky_colour,
+                reading=(
+                    RashiReadingOut(**written[s.sign].model_dump(exclude={"sign"}))
+                    if s.sign in written
+                    else None
+                ),
             )
             for s in computed.signs
         ],

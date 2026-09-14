@@ -22,10 +22,10 @@ from datetime import date
 from pydantic import BaseModel, ValidationError
 from sqlmodel import Session
 
-from app.astrology_core.rasifal import Rasifal
+from app.astrology_core.rasifal import PeriodRasifal, Rasifal
 from app.integrations.llm import get_client, model_name, tuning
 from app.modules.rasifal import prompts, repository
-from app.modules.rasifal.models import DailyRashifal
+from app.modules.rasifal.models import DailyRashifal, PeriodRashifal
 
 logger = logging.getLogger(__name__)
 
@@ -158,3 +158,95 @@ async def generate(
     saved = repository.replace(session, row) if overwrite else repository.publish(session, row)
     logger.info("published rasifal %s/%s (%s)", on, language, saved.id)
     return published(session, day.for_date, language)
+
+
+def published_period(session: Session, start: date, span: str, language: str) -> dict[str, Reading]:
+    row = repository.get_period(session, start.isoformat(), span, language)
+    if row is None:
+        return {}
+    try:
+        raw = json.loads(row.content_json)
+        return {k: Reading(**v) for k, v in raw.items()}
+    except (ValueError, ValidationError) as exc:
+        logger.warning("period_rashifal %s/%s/%s is unreadable: %s", start, span, language, exc)
+        return {}
+
+
+def _period_findings(period: PeriodRasifal) -> dict:
+    return {
+        "start": period.start.isoformat(),
+        "end": period.end.isoformat(),
+        "days": period.days,
+        "signs": [asdict(s) for s in period.signs],
+    }
+
+
+async def generate_period(
+    session: Session,
+    period: PeriodRasifal,
+    span: str,
+    language: str,
+    *,
+    overwrite: bool = False,
+) -> dict[str, Reading]:
+    start_str = period.start.isoformat()
+    if not overwrite:
+        existing = published_period(session, period.start, span, language)
+        if existing:
+            logger.info(
+                "period_rashifal %s/%s/%s already published; nothing to do",
+                start_str, span, language,
+            )
+            return existing
+
+    system, user = prompts.build_period_prompt(period, span, language)
+    try:
+        response = await get_client().messages.create(
+            model=model_name(),
+            max_tokens=MAX_TOKENS,
+            system=system,
+            messages=[{"role": "user", "content": user}],
+            **tuning(),
+        )
+    except Exception as exc:
+        logger.error(
+            "rasifal period writer unavailable for %s/%s/%s: %s", start_str, span, language, exc
+        )
+        return {}
+
+    if getattr(response, "stop_reason", None) == "refusal":
+        logger.error("rasifal period writer refused for %s/%s/%s", start_str, span, language)
+        return {}
+
+    text = "".join(b.text for b in response.content if getattr(b, "type", "") == "text")
+    parsed = parse(text)
+    if parsed is None:
+        return {}
+
+    by_sign = {r.sign: r for r in parsed.signs}
+    if len(by_sign) < SIGNS_EXPECTED:
+        logger.error(
+            "rasifal period writer covered %d of %d signs for %s/%s/%s; not publishing",
+            len(by_sign), SIGNS_EXPECTED, start_str, span, language,
+        )
+        return {}
+
+    row = PeriodRashifal(
+        id=uuid.uuid4().hex,
+        start_date=start_str,
+        span=span,
+        language=language,
+        content_json=json.dumps(
+            {k: v.model_dump() for k, v in by_sign.items()}, ensure_ascii=False
+        ),
+        astrology_data_json=json.dumps(_period_findings(period), ensure_ascii=False, default=str),
+        model=model_name(),
+        prompt_version="period-writer-1",
+    )
+    saved = (
+        repository.replace_period(session, row)
+        if overwrite
+        else repository.publish_period(session, row)
+    )
+    logger.info("published period rasifal %s/%s/%s (%s)", start_str, span, language, saved.id)
+    return published_period(session, period.start, span, language)

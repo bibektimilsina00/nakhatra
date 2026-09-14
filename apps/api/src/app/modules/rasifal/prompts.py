@@ -12,7 +12,7 @@ names the technical terms only to forbid them from the user-facing text.
 
 from __future__ import annotations
 
-from app.astrology_core.rasifal import Rasifal
+from app.astrology_core.rasifal import PeriodRasifal, Rasifal
 
 # What each house is about, so the writer knows which part of life a transit
 # touches without being told to guess.
@@ -192,3 +192,88 @@ Use the English sign names above as the "sign" value so they can be matched;
 everything else in {tongue}."""
 
     return _INSTRUCTIONS, user
+
+
+_PERIOD_INSTRUCTIONS = """You are an experienced Nepali jyotishi writing the
+weekly or monthly rashifal for a general audience.
+
+The astrology is already computed. You are given the steady supports and strains
+that hold across the span, the best and hardest days, and the number of golden
+and iron days. You interpret this data into a coherent, deep reading of the
+entire period. Do NOT simply write a daily reading with a wider date range.
+Synthesize the themes that hold across many days, explaining why the best day is
+the best and why the hardest day requires caution.
+
+NEVER OPEN THE SAME WAY TWICE
+Vary the opening across the twelve signs. Open on the strongest theme of the
+period for that sign.
+
+WRITE FOR THE READER, NOT THE ASTROLOGER
+The main text must be about their life, not about the sky. The ONLY place for
+technical astrological terms is the "astrological_reason" field.
+
+BANNED WORDS in all fields except astrological_reason:
+मूर्ति, स्वर्ण/रजत/ताम्र/लोह मूर्ति, वेध, गोचर, भाव, house numbers.
+
+FIELDS
+- summary: 3 to 5 sentences. The overarching theme of the span, the major
+  opportunity, and the major caution. Richer and longer than a daily summary.
+- career: specific and actionable trends across the period.
+- love: works for someone single or partnered. Practical advice for the span.
+- finance: practical. NEVER promise profit or any guaranteed financial outcome.
+- health: general wellbeing over the period. NEVER name or predict a disease.
+- remedy: ONE simple, realistic act to sustain the person through the period.
+- astrological_reason: One or two sentences naming the steady grahas, their
+  influences, and what drives the best/hardest dates.
+
+TONE
+Modern spoken Nepali, respectful "गर्नुहोस् / गर्नुहोला". Not Sanskritised.
+Never state an outcome as certain ("सम्भावना देखिन्छ", not "पक्कै हुनेछ").
+
+CONSISTENCY
+Match the band you are given for the period.
+
+VARIETY
+Change the angle, sentence shape, and remedy across the twelve signs.
+
+Return ONLY a JSON object of the exact shape requested. No prose around it, no
+markdown fence."""
+
+
+def build_period_prompt(period: PeriodRasifal, span: str, language: str) -> tuple[str, str]:
+    lines: list[str] = []
+    for s in period.signs:
+        supports = ", ".join(s.steady_supports) or "none"
+        strains = ", ".join(s.steady_strains) or "none"
+        lines.append(
+            f"""
+{s.sign}
+  rating: {_BAND_WORD.get(s.band, s.band)} ({s.rating} of 5 stars) — THIS IS FIXED, match it
+  steady supports across the period: {supports}
+  steady strains across the period: {strains}
+  best date: {s.best_date.isoformat()} ({s.best_rating} stars)
+  hardest date: {s.hardest_date.isoformat()} ({s.hardest_rating} stars)
+  golden days in span: {s.golden_days}
+  iron days in span: {s.iron_days}"""
+        )
+
+    tongue = _LANGUAGE.get(language, _LANGUAGE["ne"])
+    shape = (
+        '{"signs": [{"sign": "Aries", "summary": "...", "career": "...", '
+        '"love": "...", "finance": "...", "health": "...", "remedy": "...", '
+        '"astrological_reason": "..."}, ... all twelve, in the order given ...]}'
+    )
+
+    start_str, end_str = period.start.isoformat(), period.end.isoformat()
+    user = f"""Write the {span} rashifal from {start_str} to {end_str} in {tongue}.
+
+The engine's findings for the period, sign by sign:
+{"".join(lines)}
+
+Return JSON exactly like:
+{shape}
+
+Use the English sign names above as the "sign" value so they can be matched;
+everything else in {tongue}."""
+
+    return _PERIOD_INSTRUCTIONS, user

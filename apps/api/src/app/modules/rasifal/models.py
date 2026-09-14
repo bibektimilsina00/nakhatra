@@ -45,3 +45,27 @@ class DailyRashifal(SQLModel, table=True):
 
     created_at: datetime = Field(default_factory=_now)
     updated_at: datetime = Field(default_factory=_now)
+
+
+class PeriodRashifal(SQLModel, table=True):
+    __tablename__ = "period_rashifal"
+    __table_args__ = (
+        UniqueConstraint(
+            "start_date", "span", "language", name="uq_period_rashifal_start_span_lang"
+        ),
+        Index("idx_period_rashifal_start_span", "start_date", "span"),
+    )
+
+    id: str = Field(primary_key=True, max_length=64)
+    start_date: str = Field(max_length=16)
+    span: str = Field(max_length=16)
+    language: str = Field(max_length=8)
+
+    content_json: str
+    astrology_data_json: str
+
+    model: str = Field(default="", max_length=128)
+    prompt_version: str = Field(default="", max_length=32)
+
+    created_at: datetime = Field(default_factory=_now)
+    updated_at: datetime = Field(default_factory=_now)

@@ -7,7 +7,7 @@ from datetime import UTC, datetime
 from sqlalchemy.exc import IntegrityError
 from sqlmodel import Session, select
 
-from app.modules.rasifal.models import DailyRashifal
+from app.modules.rasifal.models import DailyRashifal, PeriodRashifal
 
 
 def get(session: Session, on_date: str, language: str) -> DailyRashifal | None:
@@ -43,6 +43,46 @@ def replace(session: Session, row: DailyRashifal) -> DailyRashifal:
     existing = get(session, row.on_date, row.language)
     if existing is None:
         return publish(session, row)
+    existing.content_json = row.content_json
+    existing.astrology_data_json = row.astrology_data_json
+    existing.model = row.model
+    existing.prompt_version = row.prompt_version
+    existing.updated_at = datetime.now(UTC)
+    session.add(existing)
+    session.commit()
+    session.refresh(existing)
+    return existing
+
+
+def get_period(
+    session: Session, start_date: str, span: str, language: str
+) -> PeriodRashifal | None:
+    return session.exec(
+        select(PeriodRashifal)
+        .where(PeriodRashifal.start_date == start_date)
+        .where(PeriodRashifal.span == span)
+        .where(PeriodRashifal.language == language)
+    ).first()
+
+
+def publish_period(session: Session, row: PeriodRashifal) -> PeriodRashifal:
+    session.add(row)
+    try:
+        session.commit()
+    except IntegrityError:
+        session.rollback()
+        existing = get_period(session, row.start_date, row.span, row.language)
+        if existing is not None:
+            return existing
+        raise
+    session.refresh(row)
+    return row
+
+
+def replace_period(session: Session, row: PeriodRashifal) -> PeriodRashifal:
+    existing = get_period(session, row.start_date, row.span, row.language)
+    if existing is None:
+        return publish_period(session, row)
     existing.content_json = row.content_json
     existing.astrology_data_json = row.astrology_data_json
     existing.model = row.model
