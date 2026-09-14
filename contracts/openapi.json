@@ -3294,6 +3294,17 @@
             "title": "Rating",
             "type": "integer"
           },
+          "reading": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RashiReadingOut"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The written rashifal, when one was generated."
+          },
           "score": {
             "description": "Mean of the daily scores across the span.",
             "title": "Score",
@@ -7139,6 +7150,23 @@
               ],
               "description": "First day of the span. Defaults to today in Kathmandu.",
               "title": "On"
+            }
+          },
+          {
+            "description": "Language of the written reading.",
+            "in": "query",
+            "name": "language",
+            "required": false,
+            "schema": {
+              "default": "ne",
+              "description": "Language of the written reading.",
+              "enum": [
+                "ne",
+                "hi",
+                "en"
+              ],
+              "title": "Language",
+              "type": "string"
             }
           }
         ],

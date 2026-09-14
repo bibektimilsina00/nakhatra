@@ -2561,6 +2561,8 @@ export interface components {
             lucky_number: number;
             /** Rating */
             rating: number;
+            /** @description The written rashifal, when one was generated. */
+            reading?: components["schemas"]["RashiReadingOut"] | null;
             /**
              * Score
              * @description Mean of the daily scores across the span.
@@ -4651,6 +4653,8 @@ export interface operations {
                 span?: "weekly" | "monthly";
                 /** @description First day of the span. Defaults to today in Kathmandu. */
                 on?: string | null;
+                /** @description Language of the written reading. */
+                language?: "ne" | "hi" | "en";
             };
             header?: never;
             path?: never;
