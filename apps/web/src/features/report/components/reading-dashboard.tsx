@@ -32,6 +32,8 @@ import { Tabs } from "@/components/ui/tabs";
 import { AppShell } from "@/features/dashboard/components/app-shell";
 import { ChartSwitcher } from "@/features/kundali/components/chart-switcher";
 import { currentDasha, useToday } from "@/features/kundali/dasha";
+import { useSavedKundalis } from "@/features/vault/hooks/use-vault";
+import { useOpenKundali } from "@/features/dashboard/hooks/use-open-kundali";
 import { GeneratingScreen } from "@/features/kundali/components/generating-screen";
 import { ReadingSkeleton, ReadingStatus } from "@/features/report/components/reading-status";
 import { ASTROLOGER_VOICES } from "@/lib/constants/voices";
@@ -316,18 +318,39 @@ export function ReadingDashboard() {
 
   const [activeChart, setActiveChart] = useState<Chart | null>(null);
 
+  const { data: kundalis, isLoading: isLoadingKundalis } = useSavedKundalis();
+  const { open } = useOpenKundali((birth, chart) => {
+    setActiveBirth(birth);
+    setActiveChart(chart);
+  });
+  const [needsFallback, setNeedsFallback] = useState(false);
+
   useEffect(() => {
     const stored = loadKundaliFromStorage();
     if (stored) {
       setActiveBirth(stored.birth);
       setActiveChart(stored.chart);
     } else {
-      // Nothing chosen — ask, rather than reading somebody else's chart.
-      // Previously this computed a chart for hardcoded sample birth data and
-      // presented it as the visitor's own reading.
-      router.replace("/reading/choose");
+      setNeedsFallback(true);
     }
   }, []);
+
+  useEffect(() => {
+    if (needsFallback && !isLoadingKundalis) {
+      // Rows saved before tz_name was stored can't be recalculated (rule 5 —
+      // never guess a historical offset) and open() silently no-ops on one;
+      // picking the first OPENABLE row, not just the first row, is what
+      // keeps this from hanging on GeneratingScreen forever for an account
+      // whose most recent save happens to be one of those.
+      const openableKundali = kundalis?.find((k) => k.birth);
+      if (openableKundali) {
+        open(openableKundali);
+      } else {
+        router.replace("/reading/choose");
+      }
+      setNeedsFallback(false);
+    }
+  }, [needsFallback, isLoadingKundalis, kundalis, open, router]);
 
   // Streamed, not awaited: the model takes about a minute to write seven
   // sections, and there is no reason to hold all seven back until the last one
