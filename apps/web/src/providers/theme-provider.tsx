@@ -7,9 +7,9 @@ export type Theme = "light" | "dark";
 const STORAGE_KEY = "nakhatra-theme";
 
 /**
- * The app's two faces: light is the janma patrika — parchment, red rules,
- * ink — and dark is the night sky every screen was originally built in.
- * Light is the default: the patro is the thing this product is.
+ * The app's two faces: light is the janma patrika — parchment, ink — and
+ * dark is a warm near-black, not the old blue-navy. Light is the default:
+ * the patro is the thing this product is.
  *
  * The source of truth is <html data-theme>, stamped before first paint by
  * the inline script below. React reads it through useSyncExternalStore —

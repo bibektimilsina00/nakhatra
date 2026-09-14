@@ -12,7 +12,7 @@ export function ThemeToggle() {
       onClick={toggle}
       aria-label={theme === "light" ? "Switch to dark theme" : "Switch to light theme"}
       title={theme === "light" ? "अँध्यारो" : "उज्यालो"}
-      className="flex size-8 items-center justify-center rounded-[8px] border border-brd bg-panel text-mut transition hover:border-acc/50 hover:text-acc"
+      className="flex size-11 items-center justify-center rounded-md border border-line-strong bg-surface text-muted transition hover:border-accent/50 hover:text-accent-ink"
     >
       {theme === "light" ? <Moon className="size-4" /> : <Sun className="size-4" />}
     </button>

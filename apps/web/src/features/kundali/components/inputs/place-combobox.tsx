@@ -90,7 +90,7 @@ export function PlaceCombobox({
           )}
         </p>
       )}
-      {error && <p className="mt-1.5 text-xs text-rose-300">{error}</p>}
+      {error && <p className="mt-1.5 text-xs text-danger">{error}</p>}
 
       {open && (
         <ul
@@ -99,18 +99,18 @@ export function PlaceCombobox({
           className="absolute z-50 mt-2 max-h-72 w-full overflow-y-auto rounded-lg border border-line bg-surface elev-raised border border-line-strong"
         >
           {!searchable ? (
-            <li className="px-4 py-3 text-xs text-mut">
+            <li className="px-4 py-3 text-xs text-muted">
               Type at least two letters. Every populated place in Nepal and India
               is here, plus towns worldwide.
             </li>
           ) : loading ? (
-            <li className="px-4 py-3 text-xs text-mut">Searching…</li>
+            <li className="px-4 py-3 text-xs text-muted">Searching…</li>
           ) : failed ? (
-            <li className="px-4 py-3 text-xs text-rose-300">
+            <li className="px-4 py-3 text-xs text-danger">
               Could not reach the place index. Is the API running?
             </li>
           ) : results.length === 0 ? (
-            <li className="px-4 py-3 text-xs text-mut">
+            <li className="px-4 py-3 text-xs text-muted">
               Nothing found. Try a nearby larger town.
             </li>
           ) : (
@@ -127,13 +127,13 @@ export function PlaceCombobox({
                   }`}
                 >
                   <span className="min-w-0">
-                    <span className="block truncate text-sm text-fg">
+                    <span className="block truncate text-sm text-ink">
                       {place.name}
                       {place.matched_as && (
                         <span className="text-dim"> · {place.matched_as}</span>
                       )}
                     </span>
-                    <span className="block truncate text-2xs text-mut">
+                    <span className="block truncate text-2xs text-muted">
                       {[place.admin1, place.country].filter(Boolean).join(", ")}
                     </span>
                   </span>
@@ -151,4 +151,4 @@ export function PlaceCombobox({
 }
 
 const inputClass =
-  "w-full rounded-md border border-line bg-cream px-3.5 py-2.5 text-sm text-fg outline-none transition focus:border-accent-strong/60";
+  "w-full rounded-md border border-line bg-cream px-3.5 py-2.5 text-sm text-ink outline-none transition focus:border-accent-strong/60";

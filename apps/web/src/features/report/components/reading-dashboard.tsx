@@ -27,9 +27,13 @@ import {
   setPlaybackRate,
 } from "@/lib/utils/audio-speaker";
 import { OptionMenu } from "@/components/ui/option-menu";
+import { Button } from "@/components/ui/button";
+import { Tabs } from "@/components/ui/tabs";
 import { AppShell } from "@/features/dashboard/components/app-shell";
 import { ChartSwitcher } from "@/features/kundali/components/chart-switcher";
 import { currentDasha, useToday } from "@/features/kundali/dasha";
+import { useSavedKundalis } from "@/features/vault/hooks/use-vault";
+import { useOpenKundali } from "@/features/dashboard/hooks/use-open-kundali";
 import { GeneratingScreen } from "@/features/kundali/components/generating-screen";
 import { ReadingSkeleton, ReadingStatus } from "@/features/report/components/reading-status";
 import { ASTROLOGER_VOICES } from "@/lib/constants/voices";
@@ -314,18 +318,39 @@ export function ReadingDashboard() {
 
   const [activeChart, setActiveChart] = useState<Chart | null>(null);
 
+  const { data: kundalis, isLoading: isLoadingKundalis } = useSavedKundalis();
+  const { open } = useOpenKundali((birth, chart) => {
+    setActiveBirth(birth);
+    setActiveChart(chart);
+  });
+  const [needsFallback, setNeedsFallback] = useState(false);
+
   useEffect(() => {
     const stored = loadKundaliFromStorage();
     if (stored) {
       setActiveBirth(stored.birth);
       setActiveChart(stored.chart);
     } else {
-      // Nothing chosen — ask, rather than reading somebody else's chart.
-      // Previously this computed a chart for hardcoded sample birth data and
-      // presented it as the visitor's own reading.
-      router.replace("/reading/choose");
+      setNeedsFallback(true);
     }
   }, []);
+
+  useEffect(() => {
+    if (needsFallback && !isLoadingKundalis) {
+      // Rows saved before tz_name was stored can't be recalculated (rule 5 —
+      // never guess a historical offset) and open() silently no-ops on one;
+      // picking the first OPENABLE row, not just the first row, is what
+      // keeps this from hanging on GeneratingScreen forever for an account
+      // whose most recent save happens to be one of those.
+      const openableKundali = kundalis?.find((k) => k.birth);
+      if (openableKundali) {
+        open(openableKundali);
+      } else {
+        router.replace("/reading/choose");
+      }
+      setNeedsFallback(false);
+    }
+  }, [needsFallback, isLoadingKundalis, kundalis, open, router]);
 
   // Streamed, not awaited: the model takes about a minute to write seven
   // sections, and there is no reason to hold all seven back until the last one
@@ -435,7 +460,7 @@ export function ReadingDashboard() {
             type="button"
             onClick={() => router.back()}
             aria-label={t.readingBack}
-            className="grid size-9 shrink-0 place-items-center rounded-[8px] border border-brd text-mut transition-colors hover:border-brd2 hover:text-fg"
+            className="grid size-11 shrink-0 place-items-center rounded-lg border border-line text-muted transition-colors hover:border-line-strong hover:text-ink"
           >
             <ArrowLeft className="size-4" />
           </button>
@@ -449,10 +474,10 @@ export function ReadingDashboard() {
             }}
             trigger={
               <span className="min-w-0">
-                <span className="block truncate text-[14px] font-bold text-fg">
+                <span className="block truncate text-sm font-bold text-ink">
                   {activeBirth.name}&apos;s Kundali
                 </span>
-                <span className="block truncate text-[11px] text-dim">
+                <span className="block truncate text-xs text-dim">
                   {formatDateFor(activeBirth.date, language)} · {activeBirth.time} · {activeBirth.place_label.split("(")[0]}
                 </span>
               </span>
@@ -476,41 +501,41 @@ export function ReadingDashboard() {
           <aside className="space-y-6 lg:sticky lg:top-20 max-h-[calc(100vh-100px)] overflow-y-auto pr-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
 
             {/* 1. Dual Kundali Charts Widget (D1 Lagna & D9 Navamsha) */}
-            <div className="rounded-[8px] border border-red-800/30 bg-[#f7efdc] p-4 space-y-4">
-              <div className="flex items-center justify-between border-b border-red-800/30 pb-2.5">
+            <div className="rounded-lg border border-accent-strong/30 bg-accent-wash p-4 space-y-4">
+              <div className="flex items-center justify-between border-b border-accent-strong/30 pb-2.5">
                 <div>
-                  <h2 className="font-serif text-sm font-bold text-[#26221b]">{t.kundaliChartsTitle}</h2>
-                  <p className="text-[11px] text-[#7a6033]">{t.kundaliChartsSub}</p>
+                  <h2 className="font-display text-sm font-bold text-ink">{t.kundaliChartsTitle}</h2>
+                  <p className="text-xs text-dim">{t.kundaliChartsSub}</p>
                 </div>
-                
+
                 {/* North / South Toggle & Header Quick Action Icons */}
                 <div className="flex items-center gap-2">
-                  <div className="flex rounded-[8px] border border-red-800/30 bg-[#efe3c8] p-0.5 text-[10px]">
+                  <div className="flex rounded-lg border border-accent-strong/30 bg-accent-tint p-0.5 text-xs">
                     <button
                       onClick={() => setChartStyle("north")}
-                      className={`rounded-[6px] px-2.5 py-1 font-bold transition ${
-                        chartStyle === "north" ? "bg-[#9B1C1C] text-[#f7efdc]" : "text-[#7a6033]"
+                      className={`min-h-11 rounded-md px-2.5 py-1 font-bold transition ${
+                        chartStyle === "north" ? "bg-accent-strong text-white" : "text-dim"
                       }`}
                     >
                       North
                     </button>
                     <button
                       onClick={() => setChartStyle("south")}
-                      className={`rounded-[6px] px-2.5 py-1 font-bold transition ${
-                        chartStyle === "south" ? "bg-[#9B1C1C] text-[#f7efdc]" : "text-[#7a6033]"
+                      className={`min-h-11 rounded-md px-2.5 py-1 font-bold transition ${
+                        chartStyle === "south" ? "bg-accent-strong text-white" : "text-dim"
                       }`}
                     >
                       South
                     </button>
                   </div>
 
-                  <div className="flex items-center gap-1 border-l border-red-800/30 pl-2">
+                  <div className="flex items-center gap-1 border-l border-accent-strong/30 pl-2">
                     <button
                       onClick={handleDownloadPdf}
                       disabled={isExportingPdf}
                       title={isExportingPdf ? t.pdfGenerating : t.downloadPdf}
                       aria-label={t.downloadPdf}
-                      className="group flex size-7 items-center justify-center rounded-[6px] border border-red-800/50 bg-[#efe3c8] text-[#9B1C1C] transition-all duration-200 hover:bg-[#9B1C1C] hover:text-[#f7efdc] disabled:opacity-50 cursor-pointer"
+                      className="group flex size-11 items-center justify-center rounded-md border border-accent-strong/50 bg-accent-tint text-accent-strong transition-all duration-200 hover:bg-accent-strong hover:text-white disabled:opacity-50 cursor-pointer"
                     >
                       <Download className="size-3.5 transition-transform duration-200 group-hover:scale-110" />
                     </button>
@@ -518,7 +543,7 @@ export function ReadingDashboard() {
                       onClick={handleSharePage}
                       title={t.shareReading}
                       aria-label={t.shareReading}
-                      className="group flex size-7 items-center justify-center rounded-[6px] border border-red-800/30 bg-[#efe3c8] text-[#7a6033] transition-all duration-200 hover:border-[#9B1C1C] hover:text-[#9B1C1C] cursor-pointer"
+                      className="group flex size-11 items-center justify-center rounded-md border border-accent-strong/30 bg-accent-tint text-dim transition-all duration-200 hover:border-accent-strong hover:text-accent-strong cursor-pointer"
                     >
                       <Share2 className="size-3.5 transition-transform duration-200 group-hover:scale-110" />
                     </button>
@@ -535,8 +560,8 @@ export function ReadingDashboard() {
               {/* D1 Lagna Chart Display */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-[#9B1C1C]">{t.d1LagnaChartTitle}</span>
-                  <span className="text-[10px] text-[#7a6033]">
+                  <span className="text-xs font-bold text-accent-strong">{t.d1LagnaChartTitle}</span>
+                  <span className="text-2xs text-dim">
                     {t.ascendantLabel}: {getSignName(activeChart.lagna_sign, language)} ({toLocalizedDigit(activeChart.lagna_sign_index + 1, language)})
                   </span>
                 </div>
@@ -560,10 +585,10 @@ export function ReadingDashboard() {
               </div>
 
               {/* D9 Navamsha Chart Display */}
-              <div className="space-y-2 border-t border-red-800/30 pt-3">
+              <div className="space-y-2 border-t border-accent-strong/30 pt-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-[#9B1C1C]">{t.d9NavamshaChartTitle}</span>
-                  <span className="text-[10px] text-[#7a6033]">
+                  <span className="text-xs font-bold text-accent-strong">{t.d9NavamshaChartTitle}</span>
+                  <span className="text-2xs text-dim">
                     {t.ascendantLabel}: {getSignName(d9Chart.lagna_sign || activeChart.lagna_sign, language)} ({toLocalizedDigit((d9Chart.lagna_sign_index !== undefined ? d9Chart.lagna_sign_index : activeChart.lagna_sign_index) + 1, language)})
                   </span>
                 </div>
@@ -586,17 +611,17 @@ export function ReadingDashboard() {
 
               {/* House Detail Inspector Card */}
               {selectedHouseObj ? (
-                <div className="rounded-[8px] border border-red-800/50 bg-[#efe3c8] p-3 text-xs space-y-2">
-                  <div className="flex items-center justify-between border-b border-red-800/30 pb-1.5 font-bold">
-                    <span className="text-[#9B1C1C]">
+                <div className="rounded-lg border border-accent-strong/50 bg-accent-tint p-3 text-xs space-y-2">
+                  <div className="flex items-center justify-between border-b border-accent-strong/30 pb-1.5 font-bold">
+                    <span className="text-accent-strong">
                       {t.houseLabel} {toLocalizedDigit(selectedHouseObj.number, language)} · {getSignName(selectedHouseObj.sign || "House", language)}
                     </span>
-                    <span className="text-[#7a6033]">
+                    <span className="text-dim">
                       {selectedHouseObj.lord ? `${t.lordLabel}: ${getPlanetName(selectedHouseObj.lord, language)}` : ""}
                     </span>
                   </div>
                   {houseOccupants.length === 0 ? (
-                    <p className="text-[11px] text-[#7a6033] italic">
+                    <p className="text-xs text-dim italic">
                       {language === "ne"
                         ? `भाव ${toLocalizedDigit(selectedHouseObj.number, language)} मा कुनै ग्रह छैन।`
                         : language === "hi"
@@ -606,19 +631,19 @@ export function ReadingDashboard() {
                   ) : (
                     <div className="space-y-1">
                       {houseOccupants.map((p: any) => (
-                        <div key={p.name} className="flex justify-between items-center text-[11px]">
-                          <span className="font-semibold text-[#26221b]">
-                            {getPlanetName(p.name, language)} {p.retrograde && <span className="text-[#9B1C1C]">{language === "en" ? "℞" : " (व)"}</span>}
+                        <div key={p.name} className="flex justify-between items-center text-xs">
+                          <span className="font-semibold text-ink">
+                            {getPlanetName(p.name, language)} {p.retrograde && <span className="text-accent-strong">{language === "en" ? "℞" : " (व)"}</span>}
                           </span>
-                          <span className="text-[#9B1C1C]">{p.degree_in_sign ? fmtDeg(p.degree_in_sign, language) : ""}</span>
-                          <span className="text-[#7a6033] uppercase text-[9px]">{getDignity(p.dignity, language) || getAvastha(p.avastha, language)}</span>
+                          <span className="text-accent-strong">{p.degree_in_sign ? fmtDeg(p.degree_in_sign, language) : ""}</span>
+                          <span className="text-dim uppercase text-2xs">{getDignity(p.dignity, language) || getAvastha(p.avastha, language)}</span>
                         </div>
                       ))}
                     </div>
                   )}
                 </div>
               ) : (
-                <p className="text-center text-[11px] text-[#7a6033]">
+                <p className="text-center text-xs text-dim">
                   {t.tapHouseHelper}
                 </p>
               )}
@@ -626,23 +651,23 @@ export function ReadingDashboard() {
             </div>
 
             {/* 2. Planetary Positions & Longitudes */}
-            <div className="rounded-[8px] border border-red-800/30 bg-[#f7efdc] p-4 space-y-3">
-              <div className="flex items-center justify-between border-b border-red-800/30 pb-2">
-                <h3 className="font-serif text-xs font-bold uppercase tracking-wider text-[#26221b] flex items-center gap-1.5">
-                  <Orbit className="size-3.5 text-[#9B1C1C]" /> {t.planetaryPositionsTitle}
+            <div className="rounded-lg border border-accent-strong/30 bg-accent-wash p-4 space-y-3">
+              <div className="flex items-center justify-between border-b border-accent-strong/30 pb-2">
+                <h3 className="font-display text-xs font-bold uppercase tracking-wider text-ink flex items-center gap-1.5">
+                  <Orbit className="size-3.5 text-accent-strong" /> {t.planetaryPositionsTitle}
                 </h3>
                 <button
                   onClick={() => setShowFullPlanets(!showFullPlanets)}
-                  className="text-[10px] font-bold text-[#9B1C1C] hover:underline"
+                  className="text-2xs font-bold text-accent-strong hover:underline"
                 >
                   {showFullPlanets ? t.compactLabel : t.fullDetailsLabel}
                 </button>
               </div>
 
               <div className="overflow-x-auto">
-                <table className="w-full text-left text-[10px]">
+                <table className="w-full text-left text-2xs">
                   <thead>
-                    <tr className="border-b border-red-800/30 text-[#7a6033]">
+                    <tr className="border-b border-accent-strong/30 text-dim">
                       <th className="pb-1">{t.thPlanet}</th>
                       <th className="pb-1">{t.thSign}</th>
                       <th className="pb-1">{t.thHouse}</th>
@@ -655,36 +680,36 @@ export function ReadingDashboard() {
                       )}
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-brd">
-                    <tr className="hover:bg-fg/5 font-semibold text-[#26221b]">
-                      <td className="py-1 text-[#9B1C1C]">{getPlanetName("Ascendant", language)}</td>
+                  <tbody className="divide-y divide-line">
+                    <tr className="hover:bg-ink/5 font-semibold text-ink">
+                      <td className="py-1 text-accent-strong">{getPlanetName("Ascendant", language)}</td>
                       <td className="py-1">{getSignName(activeChart.lagna_sign, language)}</td>
-                      <td className="py-1 text-[#26221b]">{language === "en" ? "H1" : "भाव १"}</td>
-                      <td className="py-1 text-[#9B1C1C] font-mono">{fmtDeg(activeChart.lagna_degree, language)}</td>
+                      <td className="py-1 text-ink">{language === "en" ? "H1" : "भाव १"}</td>
+                      <td className="py-1 text-accent-strong font-mono">{fmtDeg(activeChart.lagna_degree, language)}</td>
                       {showFullPlanets && (
                         <>
-                          <td className="py-1 text-[#7a6033]">—</td>
-                          <td className="py-1 text-[#7a6033]">—</td>
+                          <td className="py-1 text-dim">—</td>
+                          <td className="py-1 text-dim">—</td>
                         </>
                       )}
                     </tr>
                     {activeChart.planets.map((p) => (
-                      <tr key={p.name} className="hover:bg-fg/5">
-                        <td className="py-1 font-semibold text-[#26221b]">
-                          {getPlanetName(p.name, language)} {p.retrograde && <span className="text-[#9B1C1C]">{language === "en" ? " ℞" : " (व)"}</span>}
+                      <tr key={p.name} className="hover:bg-ink/5">
+                        <td className="py-1 font-semibold text-ink">
+                          {getPlanetName(p.name, language)} {p.retrograde && <span className="text-accent-strong">{language === "en" ? " ℞" : " (व)"}</span>}
                         </td>
-                        <td className="py-1 text-[#7a6033]">{getSignName(p.sign, language)}</td>
-                        <td className="py-1 text-[#26221b]">
+                        <td className="py-1 text-dim">{getSignName(p.sign, language)}</td>
+                        <td className="py-1 text-ink">
                           {language === "en" ? "H" : "भाव "}{toLocalizedDigit(p.house, language)}
                         </td>
-                        <td className="py-1 text-[#9B1C1C] font-mono">{fmtDeg(p.degree_in_sign, language)}</td>
+                        <td className="py-1 text-accent-strong font-mono">{fmtDeg(p.degree_in_sign, language)}</td>
                         {showFullPlanets && (
                           <>
-                            <td className="py-1 text-[#7a6033]">
+                            <td className="py-1 text-dim">
                               {getNakshatraName(p.nakshatra.name, language)}
-                              <span className="text-[#b8a173]"> · {toLocalizedDigit(p.nakshatra.pada, language)}</span>
+                              <span className="text-dim"> · {toLocalizedDigit(p.nakshatra.pada, language)}</span>
                             </td>
-                            <td className="py-1 text-[#7a6033]">{getDignity(p.dignity, language) || getAvastha(p.avastha, language) || "—"}</td>
+                            <td className="py-1 text-dim">{getDignity(p.dignity, language) || getAvastha(p.avastha, language) || "—"}</td>
                           </>
                         )}
                       </tr>
@@ -695,10 +720,10 @@ export function ReadingDashboard() {
             </div>
 
             {/* 3. Active Dasha Systems & Predictions */}
-            <div className="rounded-[8px] border border-red-800/30 bg-[#f7efdc] p-4 space-y-3">
-              <div className="flex items-center justify-between border-b border-red-800/30 pb-2">
-                <h3 className="font-serif text-xs font-bold uppercase tracking-wider text-[#26221b] flex items-center gap-1.5">
-                  <Clock className="size-3.5 text-[#9B1C1C]" /> {t.activeDashaTitle}
+            <div className="rounded-lg border border-accent-strong/30 bg-accent-wash p-4 space-y-3">
+              <div className="flex items-center justify-between border-b border-accent-strong/30 pb-2">
+                <h3 className="font-display text-xs font-bold uppercase tracking-wider text-ink flex items-center gap-1.5">
+                  <Clock className="size-3.5 text-accent-strong" /> {t.activeDashaTitle}
                 </h3>
               </div>
 
@@ -731,53 +756,53 @@ export function ReadingDashboard() {
             </div>
 
             {/* 4. Avakhada Chakra Panel */}
-            <div className="rounded-[8px] border border-red-800/30 bg-[#f7efdc] p-4 space-y-3">
-              <div className="flex items-center justify-between border-b border-red-800/30 pb-2">
-                <h3 className="font-serif text-xs font-bold uppercase tracking-wider text-[#26221b] flex items-center gap-1.5">
-                  <Sparkles className="size-3.5 text-[#9B1C1C]" /> {t.avakhadaTitle}
+            <div className="rounded-lg border border-accent-strong/30 bg-accent-wash p-4 space-y-3">
+              <div className="flex items-center justify-between border-b border-accent-strong/30 pb-2">
+                <h3 className="font-display text-xs font-bold uppercase tracking-wider text-ink flex items-center gap-1.5">
+                  <Sparkles className="size-3.5 text-accent-strong" /> {t.avakhadaTitle}
                 </h3>
               </div>
 
 
               <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-xs">
-                <div className="flex justify-between border-b border-brd pb-1">
-                  <span className="text-[#4a3a22]">{t.moonSignLabel}</span>
-                  <span className="font-bold text-[#26221b]">{getSignName(activeChart.avakhada?.sign || "Sagittarius", language)}</span>
+                <div className="flex justify-between border-b border-line pb-1">
+                  <span className="text-muted">{t.moonSignLabel}</span>
+                  <span className="font-bold text-ink">{getSignName(activeChart.avakhada?.sign || "Sagittarius", language)}</span>
                 </div>
-                <div className="flex justify-between border-b border-brd pb-1">
-                  <span className="text-[#4a3a22]">{t.nakshatraLabel}</span>
-                  <span className="font-bold text-[#9B1C1C]">{getNakshatraName(activeChart.avakhada?.nakshatra || "Moola", language)}</span>
+                <div className="flex justify-between border-b border-line pb-1">
+                  <span className="text-muted">{t.nakshatraLabel}</span>
+                  <span className="font-bold text-accent-strong">{getNakshatraName(activeChart.avakhada?.nakshatra || "Moola", language)}</span>
                 </div>
-                <div className="flex justify-between border-b border-brd pb-1">
-                  <span className="text-[#4a3a22]">{t.nakshatraPadaLabel}</span>
-                  <span className="font-bold text-[#26221b]">
+                <div className="flex justify-between border-b border-line pb-1">
+                  <span className="text-muted">{t.nakshatraPadaLabel}</span>
+                  <span className="font-bold text-ink">
                     {language === "en" ? "Pada " : "चरण "}{toLocalizedDigit(activeChart.avakhada?.charan || 2, language)}
                   </span>
                 </div>
-                <div className="flex justify-between border-b border-brd pb-1">
-                  <span className="text-[#4a3a22]">{t.nameSyllableLabel}</span>
-                  <span className="font-bold text-[#9B1C1C]">{getNameSyllable(
+                <div className="flex justify-between border-b border-line pb-1">
+                  <span className="text-muted">{t.nameSyllableLabel}</span>
+                  <span className="font-bold text-accent-strong">{getNameSyllable(
                       activeChart.avakhada?.name_syllable ?? "",
                       activeChart.avakhada?.nakshatra,
                       activeChart.avakhada?.charan,
                       language,
                     ) || "—"}</span>
                 </div>
-                <div className="flex justify-between border-b border-brd pb-1">
-                  <span className="text-[#4a3a22]">{t.ganaLabel}</span>
-                  <span className="font-bold text-[#26221b]">{getAvakhadaTerm(activeChart.avakhada?.gana || "Rakshasa", language)}</span>
+                <div className="flex justify-between border-b border-line pb-1">
+                  <span className="text-muted">{t.ganaLabel}</span>
+                  <span className="font-bold text-ink">{getAvakhadaTerm(activeChart.avakhada?.gana || "Rakshasa", language)}</span>
                 </div>
-                <div className="flex justify-between border-b border-brd pb-1">
-                  <span className="text-[#4a3a22]">{t.nadiLabel}</span>
-                  <span className="font-bold text-[#26221b]">{getAvakhadaTerm(activeChart.avakhada?.nadi || "Adi", language)}</span>
+                <div className="flex justify-between border-b border-line pb-1">
+                  <span className="text-muted">{t.nadiLabel}</span>
+                  <span className="font-bold text-ink">{getAvakhadaTerm(activeChart.avakhada?.nadi || "Adi", language)}</span>
                 </div>
-                <div className="flex justify-between border-b border-brd pb-1">
-                  <span className="text-[#4a3a22]">{t.yoniLabel}</span>
-                  <span className="font-bold text-[#26221b]">{getAvakhadaTerm(activeChart.avakhada?.yoni || "Rat", language)}</span>
+                <div className="flex justify-between border-b border-line pb-1">
+                  <span className="text-muted">{t.yoniLabel}</span>
+                  <span className="font-bold text-ink">{getAvakhadaTerm(activeChart.avakhada?.yoni || "Rat", language)}</span>
                 </div>
-                <div className="flex justify-between border-b border-brd pb-1">
-                  <span className="text-[#4a3a22]">{t.varnaElementLabel}</span>
-                  <span className="font-bold text-[#26221b]">
+                <div className="flex justify-between border-b border-line pb-1">
+                  <span className="text-muted">{t.varnaElementLabel}</span>
+                  <span className="font-bold text-ink">
                     {getAvakhadaTerm(activeChart.avakhada?.varna || "Kshatriya", language)} · {getAvakhadaTerm(activeChart.avakhada?.tatva || "Fire", language)}
                   </span>
                 </div>
@@ -788,44 +813,44 @@ export function ReadingDashboard() {
             {(() => {
               const aus = getLocalizedAuspiciousElements(activeChart.lagna_sign, language);
               return (
-                <div className="rounded-[8px] border border-red-800/30 bg-[#f7efdc] p-4 space-y-3">
-                  <h3 className="font-serif text-xs font-bold uppercase tracking-wider text-[#26221b] flex items-center gap-1.5 border-b border-red-800/30 pb-2">
-                    <Gem className="size-3.5 text-[#9B1C1C]" /> {t.auspiciousTitle}
+                <div className="rounded-lg border border-accent-strong/30 bg-accent-wash p-4 space-y-3">
+                  <h3 className="font-display text-xs font-bold uppercase tracking-wider text-ink flex items-center gap-1.5 border-b border-accent-strong/30 pb-2">
+                    <Gem className="size-3.5 text-accent-strong" /> {t.auspiciousTitle}
                   </h3>
 
                   <div className="space-y-2.5 text-xs">
                     <div>
-                      <span className="font-bold text-[#10B981] flex items-center gap-1">
+                      <span className="font-bold text-success flex items-center gap-1">
                         {t.luckyColors}
                       </span>
-                      <p className="text-[#26221b] mt-0.5 leading-relaxed">
+                      <p className="text-ink mt-0.5 leading-relaxed">
                         {aus.luckyColors}
                       </p>
                     </div>
 
                     <div>
-                      <span className="font-bold text-[#EF4444] flex items-center gap-1">
+                      <span className="font-bold text-danger flex items-center gap-1">
                         {t.unluckyColors}
                       </span>
-                      <p className="text-[#4a3a22] mt-0.5 leading-relaxed">
+                      <p className="text-muted mt-0.5 leading-relaxed">
                         {aus.unluckyColors}
                       </p>
                     </div>
 
-                    <div className="border-t border-brd pt-2">
-                      <span className="font-bold text-[#10B981] flex items-center gap-1">
+                    <div className="border-t border-line pt-2">
+                      <span className="font-bold text-success flex items-center gap-1">
                         {t.luckyGemstones}
                       </span>
-                      <p className="text-[#9B1C1C] mt-0.5 leading-relaxed">
+                      <p className="text-accent-strong mt-0.5 leading-relaxed">
                         {aus.luckyGemstones}
                       </p>
                     </div>
 
                     <div>
-                      <span className="font-bold text-[#EF4444] flex items-center gap-1">
+                      <span className="font-bold text-danger flex items-center gap-1">
                         {t.unluckyGemstones}
                       </span>
-                      <p className="text-[#4a3a22] mt-0.5 leading-relaxed">
+                      <p className="text-muted mt-0.5 leading-relaxed">
                         {aus.unluckyGemstones}
                       </p>
                     </div>
@@ -846,7 +871,7 @@ export function ReadingDashboard() {
               type="button"
               onClick={() => router.push("/sky")}
               aria-label={language === "en" ? "Open the Birth Sky" : "जन्म आकाश खोल्नुहोस्"}
-              className="group relative block h-[300px] w-full overflow-hidden rounded-[8px] border border-brd bg-[#090A10] text-left"
+              className="group relative block h-[300px] w-full overflow-hidden rounded-lg border border-line-strong bg-ink text-left"
             >
               <div className="pointer-events-none absolute inset-0">
                 <BirthSky3D
@@ -861,23 +886,23 @@ export function ReadingDashboard() {
               </div>
               <div className="pointer-events-none absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 bg-gradient-to-t from-black/75 via-black/30 to-transparent px-4 pb-3 pt-10">
                 <span className="min-w-0">
-                  <span className="block font-serif text-[13.5px] font-bold text-[#F8FAFC]">
+                  <span className="block font-display text-sm font-bold text-white">
                     {language === "en" ? "The Sky at Birth" : "जन्मकालीन आकाश"}
                   </span>
-                  <span className="mt-0.5 block truncate text-[11px] text-[#94A3B8]">
+                  <span className="mt-0.5 block truncate text-xs text-white/70">
                     {language === "en"
                       ? "Every graha at its true degree — open to explore in 3D"
                       : "हरेक ग्रह आफ्नै वास्तविक अंशमा — 3D मा घुमाएर हेर्नुहोस्"}
                   </span>
                 </span>
-                <span className="flex size-8 shrink-0 items-center justify-center rounded-[8px] border border-white/20 bg-[#0B0E18]/80 text-[#F3C766] transition group-hover:border-[#E5A93C] group-hover:bg-[#E5A93C] group-hover:text-[#090A10]">
+                <span className="flex size-8 shrink-0 items-center justify-center rounded-lg border border-white/20 bg-ink/80 text-accent-tint transition group-hover:border-accent group-hover:bg-accent group-hover:text-accent-contrast">
                   <Maximize2 className="size-4" />
                 </span>
               </div>
             </button>
 
             {/* Hero Audio Player Bar (Sticky beneath top nav) */}
-            <div className="sticky top-[57px] z-30 rounded-[8px] border border-brd bg-panel p-4 space-y-3 shadow-xl backdrop-blur-md">
+            <div className="sticky top-[57px] z-30 rounded-lg border border-line-strong bg-surface p-4 space-y-3 shadow-raised backdrop-blur-md">
               {/* Top Row: Play Info on Left, Modern Action Icons on Top Right */}
               <div className="flex items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
@@ -925,7 +950,7 @@ export function ReadingDashboard() {
                         });
                       }
                     }}
-                    className="grid size-10 shrink-0 place-items-center rounded-[8px] bg-acc text-onacc font-bold transition hover:bg-acc2 active:scale-95 cursor-pointer shadow-md"
+                    className="grid size-11 shrink-0 place-items-center rounded-lg bg-accent-strong text-white font-bold transition hover:bg-accent-ink active:scale-95 cursor-pointer shadow-raised"
                     title={isPlaying ? "Pause Audio" : "Play Audio"}
                   >
                     {isPlaying ? (
@@ -937,10 +962,10 @@ export function ReadingDashboard() {
 
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="font-serif text-sm font-bold text-fg">{t.narrativeAudioTitle}</span>
+                      <span className="font-display text-sm font-bold text-ink">{t.narrativeAudioTitle}</span>
                     </div>
-                    <p className="text-[11px] text-mut">
-                      Voice: <strong className="text-acc2">{ASTROLOGER_VOICES.find(v => v.id === selectedVoice)?.name || "Acharya Dev"}</strong> ({ASTROLOGER_VOICES.find(v => v.id === selectedVoice)?.description[language as "en"|"ne"|"hi"] || "HD MP3 Stream Engine"})
+                    <p className="text-xs text-muted">
+                      Voice: <strong className="text-accent-strong">{ASTROLOGER_VOICES.find(v => v.id === selectedVoice)?.name || "Acharya Dev"}</strong> ({ASTROLOGER_VOICES.find(v => v.id === selectedVoice)?.description[language as "en"|"ne"|"hi"] || "HD MP3 Stream Engine"})
                     </p>
                   </div>
                 </div>
@@ -963,7 +988,7 @@ export function ReadingDashboard() {
                     onClick={handleDownloadAudio}
                     title={t.downloadAudio}
                     aria-label={t.downloadAudio}
-                    className="group relative flex size-8 items-center justify-center rounded-[8px] border border-acc/40 bg-inset text-acc transition-all duration-200 hover:border-acc hover:bg-acc hover:text-onacc hover:shadow-md hover:shadow-acc/20 active:scale-95 cursor-pointer"
+                    className="group relative flex size-11 items-center justify-center rounded-lg border border-accent/40 bg-cream text-accent-strong transition-all duration-200 hover:border-accent-strong hover:bg-accent-strong hover:text-white hover:shadow-raised active:scale-95 cursor-pointer"
                   >
                     <Download className="size-4 transition-transform duration-200 group-hover:scale-110" />
                   </button>
@@ -972,7 +997,7 @@ export function ReadingDashboard() {
                     onClick={handleShareAudio}
                     title={t.shareAudio}
                     aria-label={t.shareAudio}
-                    className="group relative flex size-8 items-center justify-center rounded-[8px] border border-brd bg-inset text-mid transition-all duration-200 hover:border-acc hover:bg-panel hover:text-acc2 hover:shadow-md active:scale-95 cursor-pointer"
+                    className="group relative flex size-11 items-center justify-center rounded-lg border border-line-strong bg-cream text-muted transition-all duration-200 hover:border-accent hover:bg-surface hover:text-accent-strong hover:shadow-raised active:scale-95 cursor-pointer"
                   >
                     <Share2 className="size-4 transition-transform duration-200 group-hover:scale-110" />
                   </button>
@@ -980,14 +1005,14 @@ export function ReadingDashboard() {
               </div>
 
               {/* Bottom Scrubber & Speed Controls Bar */}
-              <div className="flex flex-wrap items-center justify-between gap-3 border-t border-brd pt-2.5">
+              <div className="flex flex-wrap items-center justify-between gap-3 border-t border-line-strong pt-2.5">
                 <div className="flex items-center gap-3 flex-1">
                   <button
                     onClick={() => seekAudioBy(-10)}
                     title="Rewind 10 seconds"
-                    className="flex items-center gap-1 text-xs text-mut hover:text-fg font-mono transition active:scale-95 cursor-pointer"
+                    className="flex min-h-11 items-center gap-1 text-xs text-muted hover:text-ink font-mono transition active:scale-95 cursor-pointer"
                   >
-                    <RotateCcw className="size-3 text-acc" />
+                    <RotateCcw className="size-3 text-accent-strong" />
                     <span>10s</span>
                   </button>
 
@@ -1000,16 +1025,18 @@ export function ReadingDashboard() {
                         setAudioProgress(pct);
                         seekAudioToPercent(pct);
                       }}
-                      className="w-full h-2 rounded-[4px] bg-inset overflow-hidden cursor-pointer relative group border border-brd"
+                      className="flex min-h-11 w-full cursor-pointer items-center"
                       title="Click to seek"
                     >
-                      <div
-                        className="h-full bg-acc transition-all duration-100 group-hover:bg-acc2"
-                        style={{ width: `${audioProgress}%` }}
-                      />
+                      <div className="group relative h-2 w-full overflow-hidden rounded-sm border border-line-strong bg-cream">
+                        <div
+                          className="h-full bg-accent-strong transition-all duration-100"
+                          style={{ width: `${audioProgress}%` }}
+                        />
+                      </div>
                     </div>
                     {audioDuration > 0 && (
-                      <span className="text-[10px] font-mono text-mut shrink-0">
+                      <span className="text-2xs font-mono text-muted shrink-0">
                         {formatAudioTime(audioCurrentTime)} / {formatAudioTime(audioDuration)}
                       </span>
                     )}
@@ -1018,10 +1045,10 @@ export function ReadingDashboard() {
                   <button
                     onClick={() => seekAudioBy(10)}
                     title="Forward 10 seconds"
-                    className="flex items-center gap-1 text-xs text-mut hover:text-fg font-mono transition active:scale-95 cursor-pointer"
+                    className="flex min-h-11 items-center gap-1 text-xs text-muted hover:text-ink font-mono transition active:scale-95 cursor-pointer"
                   >
                     <span>10s</span>
-                    <RotateCw className="size-3 text-acc" />
+                    <RotateCw className="size-3 text-accent-strong" />
                   </button>
                 </div>
 
@@ -1041,32 +1068,35 @@ export function ReadingDashboard() {
 
             {/* Audio Telemetry & Live Teleprompter Debug Panel */}
             {(isPlaying || audioDebugText) && (
-              <div className="rounded-[8px] border border-acc/40 bg-inset p-4 space-y-3 shadow-xl transition-all">
-                <div className="flex items-center justify-between border-b border-brd pb-2.5">
+              <div className="rounded-lg border border-accent/40 bg-cream p-4 space-y-3 shadow-raised transition-all">
+                <div className="flex items-center justify-between border-b border-line-strong pb-2.5">
                   <div className="flex items-center gap-2">
-                    <span className="inline-block size-2 rounded-full bg-acc animate-pulse" />
-                    <span className="font-mono text-xs font-bold uppercase tracking-wider text-acc2 flex items-center gap-1.5">
-                      <Activity className="size-3.5 text-acc" /> {t.telemetryTitle}
+                    <span className="inline-block size-2 rounded-full bg-accent animate-pulse" />
+                    <span className="font-mono text-xs font-bold uppercase tracking-wider text-accent-strong flex items-center gap-1.5">
+                      <Activity className="size-3.5 text-accent-strong" /> {t.telemetryTitle}
                     </span>
                   </div>
 
-                  <div className="flex items-center gap-2 text-[11px]">
-                    <span className="rounded bg-panel px-2 py-0.5 font-mono text-mut border border-brd">
+                  <div className="flex items-center gap-2 text-xs">
+                    <span className="rounded-sm bg-surface px-2 py-0.5 font-mono text-muted border border-line-strong">
                       Engine: {audioSource || "hd_mp3_audio_engine"}
                     </span>
-                    <span className="rounded bg-acc px-2 py-0.5 font-bold text-onacc">
+                    <span className="rounded-sm bg-accent-strong px-2 py-0.5 font-bold text-white">
                       {isPlaying ? "PLAYING" : "PAUSED"}
                     </span>
                   </div>
                 </div>
 
                 <div className="space-y-1.5">
-                  <div className="flex items-center justify-between text-[11px] text-mut">
+                  <div className="flex items-center justify-between text-xs text-muted">
                     <span>{t.activeScriptLabel}</span>
-                    <span className="font-mono text-acc2">Playback Rate: {playbackSpeed}</span>
+                    <span className="font-mono text-accent-strong">Playback Rate: {playbackSpeed}</span>
                   </div>
-                  <div className="max-h-36 overflow-y-auto rounded-[6px] border border-brd bg-panel p-3 text-xs leading-relaxed text-fg font-sans selection:bg-acc selection:text-onacc">
-                    <p className="border-l-2 border-acc pl-2.5 text-acc2 font-medium leading-relaxed">
+                  <div
+                    className="max-h-36 overflow-y-auto rounded-md border border-line-strong bg-surface p-3 text-xs leading-relaxed text-ink font-sans
+                      selection:bg-accent-strong selection:text-white"
+                  >
+                    <p className="border-l-2 border-accent pl-2.5 text-accent-strong font-medium leading-relaxed">
                       {audioDebugText || "Synthesizing spoken audio script stream..."}
                     </p>
                   </div>
@@ -1074,28 +1104,20 @@ export function ReadingDashboard() {
               </div>
             )}
 
-            {/* 2. Category Navigation Pills */}
-            <div className="flex gap-2 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-              {[
-                ["all", t.catOverview],
-                ["personality", t.catPersonality],
-                ["career-finance", t.catCareer],
-                ["love-marriage", t.catMarriage],
-                ["current-dasha", t.catDasha],
-                ["remedies", t.catRemedies],
-              ].map(([id, label]) => (
-                <button
-                  key={id}
-                  onClick={() => filterCategory(id)}
-                  className={`shrink-0 rounded-[8px] px-4 py-1.5 text-xs font-semibold transition ${
-                    activeCategory === id
-                      ? "bg-acc text-onacc"
-                      : "border border-brd bg-panel text-mut hover:text-fg"
-                  }`}
-                >
-                  {label}
-                </button>
-              ))}
+            {/* 2. Category Navigation Tabs */}
+            <div className="overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+              <Tabs
+                items={[
+                  { value: "all", label: t.catOverview },
+                  { value: "personality", label: t.catPersonality },
+                  { value: "career-finance", label: t.catCareer },
+                  { value: "love-marriage", label: t.catMarriage },
+                  { value: "current-dasha", label: t.catDasha },
+                  { value: "remedies", label: t.catRemedies },
+                ]}
+                value={activeCategory}
+                onChange={filterCategory}
+              />
             </div>
 
             {/* 3. Deep Narrative Reading Cards */}
@@ -1117,16 +1139,13 @@ export function ReadingDashboard() {
             </div>
 
             {/* Bottom Fixed Banner / Floating CTA */}
-            <div className="rounded-[8px] border border-acc/40 bg-panel p-6 text-center space-y-3">
-              <p className="font-serif text-base font-bold text-fg">
+            <div className="rounded-lg border border-accent/40 bg-surface p-6 text-center space-y-3">
+              <p className="font-display text-base font-bold text-ink">
                 {t.bottomCtaQuestion}
               </p>
-              <button
-                onClick={() => router.push("/reading/live")}
-                className="inline-flex items-center gap-2 rounded-[8px] bg-acc hover:bg-acc2 px-6 py-3 text-sm font-bold text-onacc transition cursor-pointer"
-              >
+              <Button variant="primary" onClick={() => router.push("/reading/live")}>
                 <span>{t.bottomCtaBtn}</span>
-              </button>
+              </Button>
             </div>
 
           </div>
@@ -1137,37 +1156,37 @@ export function ReadingDashboard() {
       <div
         ref={pdfReportRef}
         style={{ display: "none" }}
-        className="bg-inset text-fg p-8 space-y-8 font-sans max-w-[1100px] mx-auto"
+        className="bg-cream text-ink p-8 space-y-8 font-sans max-w-[1100px] mx-auto"
       >
-        <div className="border-b border-acc pb-6 flex items-center justify-between">
+        <div className="border-b border-accent pb-6 flex items-center justify-between">
           <div>
-            <h1 className="font-serif text-2xl font-bold text-acc2">
+            <h1 className="font-display text-2xl font-bold text-accent-strong">
               {activeBirth.name}&apos;s Complete Janma Kundali Report
             </h1>
-            <p className="text-sm text-mut mt-1">
+            <p className="text-sm text-muted mt-1">
               {formatDateFor(activeBirth.date, language)} · {activeBirth.time} · {activeBirth.place_label}
             </p>
             {activeChart && (
-              <p className="text-xs text-acc mt-1">
+              <p className="text-xs text-accent-strong mt-1">
                 {t.lagnaAscendant}: {getSignName(activeChart.lagna_sign, language)} · {t.moonSign}: {getSignName(activeChart.avakhada?.sign || "Sagittarius", language)} · {t.nakshatra}: {getNakshatraName(activeChart.avakhada?.nakshatra || "Moola", language)}
               </p>
             )}
           </div>
           <div className="text-right">
-            <span className="font-serif text-lg font-bold text-acc">Nakhatra</span>
-            <p className="text-xs text-mut">Sidereal Ephemeris Analysis</p>
+            <span className="font-display text-lg font-bold text-accent-strong">Nakhatra</span>
+            <p className="text-xs text-muted">Sidereal Ephemeris Analysis</p>
           </div>
         </div>
 
         {/* Dual Charts side-by-side */}
         {activeChart && (
           <div className="grid grid-cols-2 gap-6">
-            <div className="rounded-[8px] border border-brd bg-panel p-4 space-y-2">
-              <h3 className="font-serif text-xs font-bold text-acc2 uppercase tracking-wider">{t.d1LagnaChartTitle}</h3>
+            <div className="rounded-lg border border-line-strong bg-surface p-4 space-y-2">
+              <h3 className="font-display text-xs font-bold text-accent-strong uppercase tracking-wider">{t.d1LagnaChartTitle}</h3>
               <NorthIndianChart chart={activeChart} />
             </div>
-            <div className="rounded-[8px] border border-brd bg-panel p-4 space-y-2">
-              <h3 className="font-serif text-xs font-bold text-acc2 uppercase tracking-wider">{t.d9NavamshaChartTitle}</h3>
+            <div className="rounded-lg border border-line-strong bg-surface p-4 space-y-2">
+              <h3 className="font-display text-xs font-bold text-accent-strong uppercase tracking-wider">{t.d9NavamshaChartTitle}</h3>
               <NorthIndianChart chart={d9Chart} />
             </div>
           </div>
@@ -1176,32 +1195,32 @@ export function ReadingDashboard() {
         {/* Avakhada & Auspicious Tables side-by-side */}
         {activeChart && (
           <div className="grid grid-cols-2 gap-6 text-xs">
-            <div className="rounded-[8px] border border-brd bg-panel p-4 space-y-3">
-              <h3 className="font-serif text-xs font-bold text-fg uppercase tracking-wider flex items-center gap-1.5">
-                <Sparkles className="size-3.5 text-acc" /> {t.avakhadaTitle}
+            <div className="rounded-lg border border-line-strong bg-surface p-4 space-y-3">
+              <h3 className="font-display text-xs font-bold text-ink uppercase tracking-wider flex items-center gap-1.5">
+                <Sparkles className="size-3.5 text-accent-strong" /> {t.avakhadaTitle}
               </h3>
               <div className="grid grid-cols-2 gap-2">
-                <div><span className="text-mut">{t.moonSignLabel}</span> <strong>{getSignName(activeChart.avakhada?.sign || "Sagittarius", language)}</strong></div>
-                <div><span className="text-mut">{t.nakshatraLabel}</span> <strong>{getNakshatraName(activeChart.avakhada?.nakshatra || "Moola", language)}</strong></div>
-                <div><span className="text-mut">{t.ganaLabel}</span> <strong>{getAvakhadaTerm(activeChart.avakhada?.gana || "Rakshasa", language)}</strong></div>
-                <div><span className="text-mut">{t.nadiLabel}</span> <strong>{getAvakhadaTerm(activeChart.avakhada?.nadi || "Adi", language)}</strong></div>
-                <div><span className="text-mut">{t.yoniLabel}</span> <strong>{getAvakhadaTerm(activeChart.avakhada?.yoni || "Rat", language)}</strong></div>
-                <div><span className="text-mut">{t.varnaElementLabel}</span> <strong>{getAvakhadaTerm(activeChart.avakhada?.varna || "Kshatriya", language)} · {getAvakhadaTerm(activeChart.avakhada?.tatva || "Fire", language)}</strong></div>
+                <div><span className="text-muted">{t.moonSignLabel}</span> <strong>{getSignName(activeChart.avakhada?.sign || "Sagittarius", language)}</strong></div>
+                <div><span className="text-muted">{t.nakshatraLabel}</span> <strong>{getNakshatraName(activeChart.avakhada?.nakshatra || "Moola", language)}</strong></div>
+                <div><span className="text-muted">{t.ganaLabel}</span> <strong>{getAvakhadaTerm(activeChart.avakhada?.gana || "Rakshasa", language)}</strong></div>
+                <div><span className="text-muted">{t.nadiLabel}</span> <strong>{getAvakhadaTerm(activeChart.avakhada?.nadi || "Adi", language)}</strong></div>
+                <div><span className="text-muted">{t.yoniLabel}</span> <strong>{getAvakhadaTerm(activeChart.avakhada?.yoni || "Rat", language)}</strong></div>
+                <div><span className="text-muted">{t.varnaElementLabel}</span> <strong>{getAvakhadaTerm(activeChart.avakhada?.varna || "Kshatriya", language)} · {getAvakhadaTerm(activeChart.avakhada?.tatva || "Fire", language)}</strong></div>
               </div>
             </div>
 
             {(() => {
               const aus = getLocalizedAuspiciousElements(activeChart.lagna_sign, language);
               return (
-                <div className="rounded-[8px] border border-brd bg-panel p-4 space-y-3">
-                  <h3 className="font-serif text-xs font-bold text-fg uppercase tracking-wider flex items-center gap-1.5">
-                    <Gem className="size-3.5 text-acc" /> {t.auspiciousTitle}
+                <div className="rounded-lg border border-line-strong bg-surface p-4 space-y-3">
+                  <h3 className="font-display text-xs font-bold text-ink uppercase tracking-wider flex items-center gap-1.5">
+                    <Gem className="size-3.5 text-accent-strong" /> {t.auspiciousTitle}
                   </h3>
                   <div className="space-y-1.5 text-xs">
-                    <p><strong className="text-[#10B981]">{t.luckyColors}</strong> {aus.luckyColors}</p>
-                    <p><strong className="text-[#EF4444]">{t.unluckyColors}</strong> {aus.unluckyColors}</p>
-                    <p><strong className="text-[#10B981]">{t.luckyGemstones}</strong> {aus.luckyGemstones}</p>
-                    <p><strong className="text-[#EF4444]">{t.unluckyGemstones}</strong> {aus.unluckyGemstones}</p>
+                    <p><strong className="text-success">{t.luckyColors}</strong> {aus.luckyColors}</p>
+                    <p><strong className="text-danger">{t.unluckyColors}</strong> {aus.unluckyColors}</p>
+                    <p><strong className="text-success">{t.luckyGemstones}</strong> {aus.luckyGemstones}</p>
+                    <p><strong className="text-danger">{t.unluckyGemstones}</strong> {aus.unluckyGemstones}</p>
                   </div>
                 </div>
               );
@@ -1211,22 +1230,22 @@ export function ReadingDashboard() {
 
         {/* Planetary Table */}
         {activeChart && (
-          <div className="rounded-[8px] border border-brd bg-panel p-4 space-y-3">
-            <h3 className="font-serif text-xs font-bold text-fg uppercase tracking-wider flex items-center gap-1.5">
-              <Orbit className="size-3.5 text-acc" /> {t.planetaryPositionsTitle}
+          <div className="rounded-lg border border-line-strong bg-surface p-4 space-y-3">
+            <h3 className="font-display text-xs font-bold text-ink uppercase tracking-wider flex items-center gap-1.5">
+              <Orbit className="size-3.5 text-accent-strong" /> {t.planetaryPositionsTitle}
             </h3>
             <table className="w-full text-left text-xs">
               <thead>
-                <tr className="border-b border-brd text-mut">
+                <tr className="border-b border-line-strong text-muted">
                   <th className="pb-1">{t.thPlanet}</th>
                   <th className="pb-1">{t.thSign}</th>
                   <th className="pb-1">{t.thHouse}</th>
                   <th className="pb-1">{t.thDegree}</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-brd">
+              <tbody className="divide-y divide-line">
                 <tr>
-                  <td className="py-1 text-acc2">{getPlanetName("Ascendant", language)}</td>
+                  <td className="py-1 text-accent-strong">{getPlanetName("Ascendant", language)}</td>
                   <td className="py-1">{getSignName(activeChart.lagna_sign, language)}</td>
                   <td className="py-1">{language === "en" ? "H1" : "भाव १"}</td>
                   <td className="py-1 font-mono">{fmtDeg(activeChart.lagna_degree, language)}</td>
@@ -1246,19 +1265,19 @@ export function ReadingDashboard() {
 
         {/* ALL Narrative Report Sections - Complete without tab filtering */}
         <div className="space-y-6">
-          <h2 className="font-serif text-lg font-bold text-acc2 border-b border-brd pb-2">
+          <h2 className="font-display text-lg font-bold text-accent-strong border-b border-line-strong pb-2">
             {t.tabAnalysis} (Complete Kundali Analysis)
           </h2>
           {reportSections.map((section) => (
-            <div key={section.id} className="rounded-[8px] border border-brd bg-panel p-5 space-y-3">
+            <div key={section.id} className="rounded-lg border border-line-strong bg-surface p-5 space-y-3">
               <div className="flex items-center gap-2">
-                <span className="grid size-7 place-items-center rounded-[6px] bg-inset border border-brd">
-                  <SectionIcon sectionId={section.id} className="size-4 text-acc" />
+                <span className="grid size-7 place-items-center rounded-md bg-cream border border-line-strong">
+                  <SectionIcon sectionId={section.id} className="size-4 text-accent-strong" />
                 </span>
-                <h3 className="font-serif text-base font-bold text-fg">{section.title}</h3>
+                <h3 className="font-display text-base font-bold text-ink">{section.title}</h3>
               </div>
-              <p className="text-xs text-acc2 font-semibold">{section.summary}</p>
-              <div className="space-y-2 text-xs leading-relaxed text-mid">
+              <p className="text-xs text-accent-strong font-semibold">{section.summary}</p>
+              <div className="space-y-2 text-xs leading-relaxed text-muted">
                 {section.content?.map((para: string, idx: number) => (
                   <p key={idx}>{para}</p>
                 ))}
@@ -1274,21 +1293,21 @@ export function ReadingDashboard() {
           guru's two inks, in either theme. */}
       {running.maha && (
         <div className="mx-auto w-full max-w-[1600px] px-6 pb-16 lg:px-10">
-          <div className="space-y-7 rounded-[8px] border-2 border-double border-red-800/50 bg-[#f7efdc] p-6 sm:p-8">
-            <div className="border-b-2 border-red-800/30 pb-3">
-              <h2 className="flex items-center gap-2 font-serif text-lg font-bold text-[#26221b]">
-                <Clock className="size-5 text-[#9B1C1C]" /> {t.dashaOverviewTitle}
+          <div className="space-y-7 rounded-lg border-2 border-double border-accent-strong/50 bg-accent-wash p-6 sm:p-8">
+            <div className="border-b-2 border-accent-strong/30 pb-3">
+              <h2 className="flex items-center gap-2 font-display text-lg font-bold text-ink">
+                <Clock className="size-5 text-accent-strong" /> {t.dashaOverviewTitle}
               </h2>
             </div>
 
             {/* Side by side on wide screens: the explainer earns its column,
                 and the running pair sits beside it instead of below. */}
             <div className="grid gap-6 lg:grid-cols-2">
-              <div className="rounded-[8px] border border-red-800/25 bg-[#efe3c8]/60 p-5">
-                <h3 className="mb-2 font-serif text-sm font-bold text-[#9B1C1C]">
+              <div className="rounded-lg border border-accent-strong/25 bg-accent-tint/60 p-5">
+                <h3 className="mb-2 font-display text-sm font-bold text-accent-strong">
                   {t.dashaOverviewWhatIs}
                 </h3>
-                <p className="text-sm leading-[1.75] text-[#4a3a22]">
+                <p className="text-sm leading-[1.75] text-muted">
                   {t.dashaOverviewWhatIsDesc}
                 </p>
               </div>
@@ -1296,7 +1315,7 @@ export function ReadingDashboard() {
               {/* What is running now: the mahadasha carries the ink, the
                   antardasha sits beside it as the smaller of the two. */}
               <div>
-                <h3 className="mb-3 font-serif text-sm font-bold text-[#26221b]">
+                <h3 className="mb-3 font-display text-sm font-bold text-ink">
                   {t.dashaOverviewYourCurrent}
                 </h3>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -1331,8 +1350,8 @@ export function ReadingDashboard() {
                       })()}
                     />
                   ) : (
-                    <div className="flex items-center rounded-[8px] border border-red-800/25 bg-[#efe3c8]/60 p-5">
-                      <p className="text-sm italic text-[#7a6033]">{t.dashaOverviewNoPeriod}</p>
+                    <div className="flex items-center rounded-lg border border-accent-strong/25 bg-accent-tint/60 p-5">
+                      <p className="text-sm italic text-dim">{t.dashaOverviewNoPeriod}</p>
                     </div>
                   )}
                 </div>
@@ -1342,14 +1361,14 @@ export function ReadingDashboard() {
             {/* The whole 120 years, as a list that can be read down. */}
             {activeChart.dasha?.periods && activeChart.dasha.periods.length > 0 && (
               <div>
-                <h3 className="mb-3 font-serif text-sm font-bold text-[#26221b]">
+                <h3 className="mb-3 font-display text-sm font-bold text-ink">
                   {language === "ne"
                     ? "तपाईंको जीवनका सबै महादशा अवधिहरू"
                     : language === "hi"
                       ? "आपके जीवन की सभी महादशा अवधियाँ"
                       : "All Mahadasha Periods in Your Life"}
                 </h3>
-                <div className="overflow-hidden rounded-[8px] border border-red-800/25">
+                <div className="overflow-hidden rounded-lg border border-accent-strong/25">
                   {activeChart.dasha.periods.map((p, idx) => {
                     const isNow =
                       new Date(p.start).getTime() <= todayMs && todayMs < new Date(p.end).getTime();
@@ -1361,34 +1380,34 @@ export function ReadingDashboard() {
                       <div
                         key={`${p.lord}-${p.start}`}
                         className={`flex flex-wrap items-center gap-x-4 gap-y-1 px-4 py-3 sm:px-5 ${
-                          idx !== 0 ? "border-t border-red-800/15" : ""
-                        } ${isNow ? "border-l-2 border-l-[#9B1C1C] bg-[#efe3c8]" : "bg-[#fdf8ec]/40"}`}
+                          idx !== 0 ? "border-t border-accent-strong/15" : ""
+                        } ${isNow ? "border-l-2 border-l-accent-strong bg-accent-tint" : "bg-accent-wash/40"}`}
                       >
                         <span
-                          className={`flex min-w-0 flex-1 items-center gap-2.5 font-serif text-sm font-bold ${
-                            isNow ? "text-[#9B1C1C]" : past ? "text-[#a38e63]" : "text-[#26221b]"
+                          className={`flex min-w-0 flex-1 items-center gap-2.5 font-display text-sm font-bold ${
+                            isNow ? "text-accent-strong" : past ? "text-dim" : "text-ink"
                           }`}
                         >
                           {isNow && (
-                            <span className="size-1.5 shrink-0 rounded-full bg-[#9B1C1C]" />
+                            <span className="size-1.5 shrink-0 rounded-full bg-accent-strong" />
                           )}
                           <span className="truncate">{getPlanetName(p.lord, language)}</span>
                           {isNow && (
-                            <span className="shrink-0 rounded-[4px] border border-red-800/40 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-[#9B1C1C]">
+                            <span className="shrink-0 rounded-sm border border-accent-strong/40 px-1.5 py-0.5 text-2xs font-bold uppercase tracking-wider text-accent-strong">
                               {language === "ne" ? "हाल चालू" : language === "hi" ? "वर्तमान" : "Now"}
                             </span>
                           )}
                         </span>
                         <span
-                          className={`shrink-0 font-mono text-[11px] tabular-nums ${
-                            past ? "text-[#a38e63]" : "text-[#7a6033]"
+                          className={`shrink-0 font-mono text-xs tabular-nums ${
+                            past ? "text-dim" : "text-dim"
                           }`}
                         >
                           {formatDateFor(p.start, language)} → {formatDateFor(p.end, language)}
                         </span>
                         <span
                           className={`w-[76px] shrink-0 text-right text-xs font-semibold tabular-nums ${
-                            isNow ? "text-[#9B1C1C]" : past ? "text-[#a38e63]" : "text-[#4a3a22]"
+                            isNow ? "text-accent-strong" : past ? "text-dim" : "text-muted"
                           }`}
                         >
                           ~{Math.round(years)} {t.dashaOverviewYears}
@@ -1405,20 +1424,21 @@ export function ReadingDashboard() {
 
       {/* Sticky Floating Live Astrologer Action Button */}
       <div className="fixed bottom-6 right-6 z-40">
-        <button
+        <Button
+          variant="primary"
           onClick={() => router.push("/reading/live")}
-          className="group flex items-center gap-2.5 rounded-[8px] bg-acc hover:bg-acc2 px-4 py-3 text-xs font-bold text-onacc shadow-2xl shadow-acc/40 border border-acc2/50 transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer"
+          className="shadow-overlay hover:scale-105 active:scale-95"
           title={t.talkToAstrologer}
         >
-          <MessageSquareText className="size-4 text-onacc" />
+          <MessageSquareText className="size-4 text-white" />
           <span>{language === "ne" ? "AI ज्योतिषीसँग बोल्नुहोस् (निःशुल्क)" : language === "hi" ? "AI ज्योतिषी से बात करें (निःशुल्क)" : "Talk to AI Astrologer (FREE)"}</span>
-        </button>
+        </Button>
       </div>
 
       {/* Floating Toast Notification */}
       {toastMessage && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 rounded-[8px] border border-acc bg-panel px-5 py-2.5 text-xs font-bold text-acc2 shadow-2xl animate-fade-in flex items-center gap-2">
-          <Sparkles className="size-4 text-acc" />
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 rounded-lg border border-accent bg-surface px-5 py-2.5 text-xs font-bold text-accent-strong shadow-overlay animate-fade-in flex items-center gap-2">
+          <Sparkles className="size-4 text-accent-strong" />
           <span>{toastMessage}</span>
         </div>
       )}
@@ -1445,18 +1465,18 @@ function PeriodCard({
 }) {
   return (
     <div
-      className={`rounded-[8px] p-5 ${
+      className={`rounded-lg p-5 ${
         accent
-          ? "border-2 border-red-800/50 bg-[#efe3c8]"
-          : "border border-red-800/25 bg-[#efe3c8]/60"
+          ? "border-2 border-accent-strong/50 bg-accent-tint"
+          : "border border-accent-strong/25 bg-accent-tint/60"
       }`}
     >
-      <p className="text-[10px] font-bold uppercase tracking-wider text-[#9B1C1C]">{label}</p>
-      <p className="mt-1.5 font-serif text-2xl font-bold text-[#26221b]">{lord}</p>
-      <p className="mt-2 font-mono text-[11px] tabular-nums text-[#7a6033]">
-        {start} <span className="text-[#a38e63]">→</span> {end}
+      <p className="text-2xs font-bold uppercase tracking-wider text-accent-strong">{label}</p>
+      <p className="mt-1.5 font-display text-2xl font-bold text-ink">{lord}</p>
+      <p className="mt-2 font-mono text-xs tabular-nums text-dim">
+        {start} <span className="text-dim">→</span> {end}
       </p>
-      <p className="mt-1 text-xs font-semibold text-[#4a3a22]">{span}</p>
+      <p className="mt-1 text-xs font-semibold text-muted">{span}</p>
     </div>
   );
 }

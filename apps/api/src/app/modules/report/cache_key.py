@@ -14,6 +14,13 @@ model can see it can write about:
 - **tz_name**, not an offset (CLAUDE.md rule 5).
 - **name**, because it is in the prompt and the model addresses the reader by
   it. A cached reading under someone else's name reads as an obvious mistake.
+- **place_label**, because it appears verbatim in the SEEKER VERIFIED BIRTH DATA
+  block and the model can write about the place of birth. Changing the label
+  changes what goes into the prompt.
+- **siddhanta**, because it selects which computation system (Surya Siddhanta vs
+  Drik) produced the planet positions, panchang, dashas, and vargas. Two
+  siddhantas share the same birth moment but produce meaningfully different
+  charts; serving one's reading for the other would describe the wrong positions.
 - **engine_version**, because a bumped engine can move positions, and a reading
   describing the old ones is stale rather than merely old (CLAUDE.md rule 4).
 
@@ -41,6 +48,13 @@ def chart_key(birth: BirthDetailsIn, engine_version: str) -> str:
         "latitude": round(birth.latitude, 7),
         "longitude": round(birth.longitude, 7),
         "tz_name": birth.tz_name,
+        # place_label appears verbatim in the prompt; the model can write about
+        # the birth city by name, so a different label must not hit the same row.
+        "place_label": birth.place_label,
+        # siddhanta controls the entire computation (planets, panchang, dashas,
+        # vargas). Surya Siddhanta and Drik produce different charts for the same
+        # birth moment; a reading written for one is wrong for the other.
+        "siddhanta": birth.siddhanta,
     }
     # `sort_keys` so the digest does not depend on dict ordering, which is an
     # implementation detail that has changed between Python versions before.

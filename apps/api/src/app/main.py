@@ -12,6 +12,7 @@ from sqlmodel import Session, select
 from app.core.config import get_settings
 from app.core.db import get_engine
 from app.core.errors import install_error_handlers
+from app.modules.admin.router import router as admin_router
 from app.modules.auth.router import router as auth_router
 from app.modules.billing.router import router as billing_router
 from app.modules.chat.router import router as chat_router
@@ -82,6 +83,7 @@ def create_app() -> FastAPI:
         )
 
     install_error_handlers(app)
+    app.include_router(admin_router)
     app.include_router(auth_router)
     app.include_router(vault_router)
     app.include_router(milan_router)

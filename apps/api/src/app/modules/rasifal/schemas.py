@@ -93,6 +93,9 @@ class RashiPeriodOut(BaseModel):
     iron_days: int
     lucky_number: int
     lucky_colour: str
+    reading: RashiReadingOut | None = Field(
+        default=None, description="The written rashifal, when one was generated."
+    )
 
 
 class PeriodRasifalOut(BaseModel):

@@ -4,8 +4,11 @@ from __future__ import annotations
 
 from typing import Annotated
 
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, Depends, Query
 
+from app.core.db import SessionDep
+from app.modules.auth.router_deps import get_optional_user
+from app.modules.kundali.repository import record_guest_generation
 from app.modules.kundali.schemas import BirthDetailsIn, ChartOut
 from app.modules.kundali.service import (
     DEFAULT_DASHA_DEPTH,
@@ -30,6 +33,8 @@ router = APIRouter(prefix="/v1/kundali", tags=["kundali"])
 )
 async def create_kundali(
     details: BirthDetailsIn,
+    session: SessionDep,
+    user_id: Annotated[str | None, Depends(get_optional_user)],
     dasha_depth: Annotated[
         int,
         Query(
@@ -44,4 +49,8 @@ async def create_kundali(
         ),
     ] = DEFAULT_DASHA_DEPTH,
 ) -> ChartOut:
+    if user_id is None:
+        record_guest_generation(session)
+
     return generate_chart(details, dasha_depth=dasha_depth)
+

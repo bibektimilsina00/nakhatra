@@ -80,52 +80,52 @@ export function ModernTimePicker({
       <button
         type="button"
         onClick={toggle}
-        className={`flex w-full items-center justify-between rounded-[8px] border bg-inset px-4 py-3 text-xs font-semibold text-fg transition hover:border-acc focus:outline-none ${
-          error ? "border-rose-500" : isOpen ? "border-acc ring-1 ring-acc" : "border-brd"
+        className={`flex min-h-11 w-full items-center justify-between rounded-md border bg-surface px-4 py-3 text-xs font-semibold text-ink transition hover:border-accent-strong focus:outline-none ${
+          error ? "border-danger" : isOpen ? "border-ring ring-1 ring-ring" : "border-line-strong"
         }`}
       >
         <div className="flex items-center gap-2.5">
-          <Clock className="size-4 text-acc" />
-          <span className={hour && minute ? "text-fg font-medium" : "text-mut/50"}>
+          <Clock className="size-4 text-accent-strong" />
+          <span className={hour && minute ? "text-ink font-medium" : "text-dim"}>
             {formatDisplayTime()}
           </span>
         </div>
         <div className="flex items-center gap-2">
-          <span className="rounded bg-panel px-2 py-0.5 text-[10px] font-bold text-acc border border-brd">
+          <span className="rounded-sm bg-accent-tint px-2 py-0.5 text-2xs font-bold text-accent-strong border border-line-strong">
             {curAmPm}
           </span>
           <ChevronDown
-            className={`size-4 text-mut transition-transform duration-200 ${isOpen ? "rotate-180 text-acc" : ""}`}
+            className={`size-4 text-muted transition-transform duration-200 ${isOpen ? "rotate-180 text-accent-strong" : ""}`}
           />
         </div>
       </button>
 
       {/* Floating Popover Time Picker Modal */}
       {isOpen && (
-        <div className={`absolute left-0 z-50 w-full max-w-sm overflow-y-auto rounded-[8px] border border-acc/30 bg-panel p-4 shadow-2xl space-y-4 animate-in fade-in zoom-in-95 duration-150 ${placementClass(fit.placement)}`}
+        <div className={`absolute left-0 z-50 w-full max-w-sm overflow-y-auto rounded-lg border border-line-strong bg-surface p-4 shadow-raised space-y-4 animate-in fade-in zoom-in-95 duration-150 ${placementClass(fit.placement)}`}
           style={{ maxHeight: fit.maxHeight }}
         >
           
           {/* Header Digital Clock Readout & AM/PM Toggle */}
-          <div className="flex items-center justify-between border-b border-brd pb-3">
-            <div className="flex items-center gap-1 font-mono text-2xl font-bold tracking-widest text-acc2">
+          <div className="flex items-center justify-between border-b border-line pb-3">
+            <div className="flex items-center gap-1 font-mono text-2xl font-bold tracking-widest text-accent-ink">
               <span>{curHour}</span>
               <span className="animate-pulse">:</span>
               <span>{curMinute}</span>
-              <span className="text-xs text-acc ml-1">{curAmPm}</span>
+              <span className="text-xs text-accent-strong ml-1">{curAmPm}</span>
             </div>
 
             {/* AM / PM Segmented Control */}
-            <div className="flex rounded-[6px] border border-brd bg-inset p-1 text-xs font-bold">
+            <div className="flex rounded-md border border-line-strong bg-cream p-1 text-xs font-bold">
               {(["AM", "PM"] as const).map((ap) => (
                 <button
                   key={ap}
                   type="button"
                   onClick={() => onTimeChange(curHour, curMinute, ap)}
-                  className={`rounded-[4px] px-3 py-1 transition ${
+                  className={`rounded-sm px-3 py-1 transition ${
                     curAmPm === ap
-                      ? "bg-acc text-onacc"
-                      : "text-mut hover:text-fg"
+                      ? "bg-accent-strong text-white"
+                      : "text-muted hover:text-ink"
                   }`}
                 >
                   {ap}
@@ -136,7 +136,7 @@ export function ModernTimePicker({
 
           {/* Quick Presets Strip */}
           <div className="space-y-1.5">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-mut">Quick Time Presets</span>
+            <span className="text-2xs font-bold uppercase tracking-wider text-muted">Quick Time Presets</span>
             <div className="grid grid-cols-2 gap-1.5">
               {PRESET_TIMES.map((preset) => {
                 const PresetIcon = preset.Icon;
@@ -145,13 +145,13 @@ export function ModernTimePicker({
                     key={preset.label}
                     type="button"
                     onClick={() => onTimeChange(preset.h, preset.m, preset.ap)}
-                    className="rounded-[6px] border border-brd bg-inset py-1.5 px-2 text-[11px] font-semibold text-mid hover:border-acc hover:text-acc2 transition flex items-center justify-between"
+                    className="rounded-md border border-line-strong bg-surface py-1.5 px-2 text-2xs font-semibold text-ink hover:border-accent-strong hover:text-accent-ink transition flex items-center justify-between"
                   >
                     <span className="flex items-center gap-1.5">
-                      <PresetIcon className="size-3.5 text-acc" />
+                      <PresetIcon className="size-3.5 text-accent-strong" />
                       {preset.label}
                     </span>
-                    <span className="text-[10px] text-mut">{preset.h}:{preset.m} {preset.ap}</span>
+                    <span className="text-2xs text-muted">{preset.h}:{preset.m} {preset.ap}</span>
                   </button>
                 );
               })}
@@ -160,7 +160,7 @@ export function ModernTimePicker({
 
           {/* Hours Picker Grid (1-12) */}
           <div className="space-y-1.5">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-mut">Select Hour</span>
+            <span className="text-2xs font-bold uppercase tracking-wider text-muted">Select Hour</span>
             <div className="grid grid-cols-6 gap-1 text-center">
               {Array.from({ length: 12 }, (_, i) => String(i + 1).padStart(2, "0")).map((h) => {
                 const isSelected = curHour === h;
@@ -169,10 +169,10 @@ export function ModernTimePicker({
                     key={h}
                     type="button"
                     onClick={() => onTimeChange(h, curMinute, curAmPm)}
-                    className={`rounded-[6px] py-1.5 text-xs font-bold transition ${
+                    className={`rounded-md py-1.5 text-xs font-bold transition ${
                       isSelected
-                        ? "bg-acc text-onacc shadow"
-                        : "text-mid hover:bg-fg/10 hover:text-fg"
+                        ? "bg-accent-strong text-white shadow-xs"
+                        : "text-ink hover:bg-accent-wash"
                     }`}
                   >
                     {h}
@@ -185,20 +185,20 @@ export function ModernTimePicker({
           {/* Minutes Picker Grid (00..55) & Fine Control */}
           <div className="space-y-1.5">
             <div className="flex items-center justify-between">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-mut">Select Minute</span>
+              <span className="text-2xs font-bold uppercase tracking-wider text-muted">Select Minute</span>
               <div className="flex items-center gap-1">
                 <button
                   type="button"
                   onClick={() => adjustMinute(-1)}
-                  className="size-6 rounded border border-brd bg-inset text-xs font-bold text-fg hover:border-acc flex items-center justify-center"
+                  className="size-6 rounded-sm border border-line-strong bg-surface text-xs font-bold text-ink hover:border-accent-strong flex items-center justify-center"
                 >
                   <Minus className="size-3" />
                 </button>
-                <span className="text-xs font-bold font-mono text-acc2 px-1">{curMinute}</span>
+                <span className="text-xs font-bold font-mono text-accent-ink px-1">{curMinute}</span>
                 <button
                   type="button"
                   onClick={() => adjustMinute(1)}
-                  className="size-6 rounded border border-brd bg-inset text-xs font-bold text-fg hover:border-acc flex items-center justify-center"
+                  className="size-6 rounded-sm border border-line-strong bg-surface text-xs font-bold text-ink hover:border-accent-strong flex items-center justify-center"
                 >
                   <Plus className="size-3" />
                 </button>
@@ -213,10 +213,10 @@ export function ModernTimePicker({
                     key={m}
                     type="button"
                     onClick={() => onTimeChange(curHour, m, curAmPm)}
-                    className={`rounded-[6px] py-1.5 text-xs font-bold transition ${
+                    className={`rounded-md py-1.5 text-xs font-bold transition ${
                       isSelected
-                        ? "bg-acc text-onacc shadow"
-                        : "text-mid hover:bg-fg/10 hover:text-fg"
+                        ? "bg-accent-strong text-white shadow-xs"
+                        : "text-ink hover:bg-accent-wash"
                     }`}
                   >
                     {m}
@@ -227,13 +227,13 @@ export function ModernTimePicker({
           </div>
 
           {/* Approximate Checkbox & Done Button */}
-          <div className="flex items-center justify-between border-t border-brd pt-3">
-            <label className="flex items-center gap-2 text-xs text-mut cursor-pointer">
+          <div className="flex items-center justify-between border-t border-line pt-3">
+            <label className="flex items-center gap-2 text-xs text-muted cursor-pointer">
               <input
                 type="checkbox"
                 checked={approximateTime}
                 onChange={(e) => onApproximateChange(e.target.checked)}
-                className="rounded border-brd2 bg-inset text-acc focus:ring-0"
+                className="rounded-sm border-line-strong bg-surface text-accent-strong focus:ring-0"
               />
               <span>Approximate time</span>
             </label>
@@ -241,7 +241,7 @@ export function ModernTimePicker({
             <button
               type="button"
               onClick={() => setIsOpen(false)}
-              className="rounded-[6px] bg-acc px-4 py-1.5 text-xs font-bold text-onacc transition hover:bg-acc2"
+              className="rounded-md bg-accent-strong px-4 py-1.5 text-xs font-bold text-white transition hover:bg-accent-ink"
             >
               Done
             </button>

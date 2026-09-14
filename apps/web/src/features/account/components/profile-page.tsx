@@ -4,14 +4,11 @@ import { useState } from "react";
 import Link from "next/link";
 import { MessagesSquare, ScrollText, Sparkles } from "lucide-react";
 
+import { Button } from "@/components/ui/button";
+import { cardClasses } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import { useSession, useUpdateProfile } from "@/features/auth/hooks/use-auth";
-import {
-  AccountCard,
-  AccountShell,
-  accountButton,
-  accountField,
-  accountLabel,
-} from "@/features/account/components/account-shell";
+import { AccountCard, AccountShell, accountLabel } from "@/features/account/components/account-shell";
 import { useChatSessions, useSavedKundalis } from "@/features/vault/hooks/use-vault";
 import { useTranslation } from "@/lib/i18n/language-context";
 
@@ -43,14 +40,14 @@ export function ProfilePage() {
     <AccountShell title={t.acctProfile}>
       <AccountCard title={t.acctYourAccount}>
         <div className="flex flex-wrap items-center gap-4">
-          <span className="grid size-16 shrink-0 place-items-center rounded-full bg-acc text-[20px] font-bold text-ink">
+          <span className="grid size-16 shrink-0 place-items-center rounded-full bg-accent-tint text-xl font-bold text-accent-ink">
             {initials}
           </span>
           <div className="min-w-0">
-            <p className="truncate text-[17px] font-bold text-fg">{user?.full_name}</p>
-            <p className="mt-0.5 truncate text-[12.5px] text-mut">{user?.email}</p>
-            <p className="mt-1 flex flex-wrap items-center gap-2 text-[11.5px] text-dim">
-              <span className="rounded-[6px] border border-white/[0.10] px-2 py-0.5 capitalize">
+            <p className="truncate text-lg font-bold text-ink">{user?.full_name}</p>
+            <p className="mt-0.5 truncate text-sm text-muted">{user?.email}</p>
+            <p className="mt-1 flex flex-wrap items-center gap-2 text-xs text-dim">
+              <span className="rounded-sm border border-line-strong px-2 py-0.5 capitalize">
                 {t.acctRole}: {user?.role ?? "seeker"}
               </span>
               {user?.created_at && (
@@ -63,7 +60,7 @@ export function ProfilePage() {
         </div>
 
         <form
-          className="mt-6 border-t border-white/[0.07] pt-5"
+          className="mt-6 border-t border-line pt-5"
           onSubmit={(event) => {
             event.preventDefault();
             const full_name = name.trim();
@@ -72,43 +69,41 @@ export function ProfilePage() {
         >
           <label className="block">
             <span className={accountLabel}>{t.acctName}</span>
-            <input
+            <Input
               required
               autoComplete="name"
               maxLength={100}
               value={name}
               onChange={(event) => setName(event.target.value)}
-              className={accountField}
             />
           </label>
-          <p className="mt-1.5 text-[11.5px] text-dim">{t.acctNameNote}</p>
+          <p className="mt-1.5 text-xs text-dim">{t.acctNameNote}</p>
 
           <label className="mt-4 block">
             <span className={accountLabel}>{t.acctEmail}</span>
             {/* Shown, not editable — and disabled rather than hidden, because
                 "you cannot change this here" is information. */}
-            <input disabled value={user?.email ?? ""} className={accountField} />
+            <Input disabled value={user?.email ?? ""} />
           </label>
-          <p className="mt-1.5 text-[11.5px] text-dim">{t.acctEmailNote}</p>
+          <p className="mt-1.5 text-xs text-dim">{t.acctEmailNote}</p>
 
           {update.isError && (
-            <p role="alert" className="mt-3 text-[12.5px] text-rose-300">
+            <p role="alert" className="mt-3 text-sm text-danger">
               {update.error.message}
             </p>
           )}
 
           <div className="mt-5 flex items-center gap-3">
-            <button
+            <Button
               type="submit"
               disabled={
                 update.isPending || !name.trim() || name.trim() === user?.full_name
               }
-              className={accountButton}
             >
               {t.acctSave}
-            </button>
+            </Button>
             {update.isSuccess && (
-              <span className="text-[12.5px] text-emerald-300">{t.acctSaved}</span>
+              <span className="text-sm text-success">{t.acctSaved}</span>
             )}
           </div>
         </form>
@@ -154,11 +149,11 @@ function Stat({
   return (
     <Link
       href={href}
-      className="rounded-[10px] border border-white/[0.09] bg-app p-3.5 transition-colors hover:border-acc/35"
+      className={cardClasses({ className: "transition-colors hover:border-accent" })}
     >
-      <span className="flex items-center gap-2 text-acc">{icon}</span>
-      <span className="mt-2 block text-[20px] font-bold tabular-nums text-fg">{value}</span>
-      <span className="mt-0.5 block truncate text-[11.5px] text-dim">{label}</span>
+      <span className="flex items-center gap-2 text-accent-strong">{icon}</span>
+      <span className="mt-2 block text-xl font-bold tabular-nums text-ink">{value}</span>
+      <span className="mt-0.5 block truncate text-xs text-dim">{label}</span>
     </Link>
   );
 }

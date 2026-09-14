@@ -14,6 +14,8 @@ import {
   UserRound,
 } from "lucide-react";
 
+import { buttonClasses } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { LanguageMenu } from "@/components/ui/language-menu";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { useLogout } from "@/features/auth/hooks/use-auth";
@@ -95,19 +97,19 @@ export function AppNav({
 
   const toggle = (menu: Menu) => setOpen((current) => (current === menu ? null : menu));
   const panel =
-    "absolute right-0 z-50 mt-2 rounded-[8px] border border-white/12 bg-inset p-1.5 shadow-2xl shadow-black/50";
+    "absolute right-0 z-50 mt-2 rounded-md border border-line-strong bg-surface p-1.5 shadow-raised";
   const trigger =
-    "flex items-center gap-2 rounded-[8px] border border-brd text-mut transition-colors hover:border-brd2 hover:text-fg";
+    "flex items-center gap-2 rounded-md border border-line-strong text-muted transition-colors hover:text-ink";
 
   return (
-    <header className="sticky top-0 z-40 border-b border-brd bg-inset">
+    <header className="sticky top-0 z-40 border-b border-line-strong bg-surface">
       <div ref={bar} className="flex items-center gap-4 px-5 py-3 sm:px-8">
         {onOpenMenu && (
           <button
             type="button"
             onClick={onOpenMenu}
             aria-label={t.dashMenu}
-            className="rounded-[8px] p-1.5 text-mut transition-colors hover:text-fg lg:hidden"
+            className="grid size-11 place-items-center rounded-md text-muted transition-colors hover:text-ink lg:hidden"
           >
             <Menu className="size-5" />
           </button>
@@ -117,24 +119,24 @@ export function AppNav({
         <label className="relative hidden max-w-[380px] flex-1 items-center md:flex">
           <Search className="pointer-events-none absolute left-3 size-4 text-dim" />
           <span className="sr-only">{t.dashSearch}</span>
-          <input
+          <Input
             ref={search}
             value={query}
             onChange={(event) => onQueryChange(event.target.value)}
             placeholder={t.dashSearch}
-            className="w-full rounded-[8px] border border-white/[0.09] bg-panel/50 py-2 pl-9 pr-10 text-[13.5px] text-fg placeholder-faint focus:border-acc/45 focus:outline-none"
+            className="pl-9 pr-10 text-sm"
           />
           {query ? (
             <button
               type="button"
               onClick={() => onQueryChange("")}
               aria-label={t.dashClear}
-              className="absolute right-2 rounded px-1.5 text-[11px] text-dim hover:text-fg"
+              className="absolute inset-y-0 right-0 flex w-11 items-center justify-center rounded-md text-xs text-dim hover:text-ink"
             >
               ✕
             </button>
           ) : (
-            <span className="absolute right-2.5 text-[10px] text-dim">⌘K</span>
+            <span className="absolute right-2.5 text-2xs text-dim">⌘K</span>
           )}
         </label>
         )}
@@ -144,8 +146,8 @@ export function AppNav({
               handler cannot see this bar's state, so closing on mousedown here
               is what keeps two panels from being open at once. */}
           <span className="flex items-center gap-1.5" onMouseDown={() => setOpen(null)}>
-            <ThemeToggle />
             <LanguageMenu />
+            <ThemeToggle />
           </span>
 
           {user ? (
@@ -157,11 +159,11 @@ export function AppNav({
               onClick={() => toggle("bell")}
               aria-expanded={open === "bell"}
               aria-label={t.dashNotifications}
-              className={`${trigger} relative size-9 justify-center`}
+              className={`${trigger} relative size-11 justify-center`}
             >
               <Bell className="size-[17px]" />
               {unread > 0 && (
-                <span className="absolute -right-1 -top-1 grid size-[17px] place-items-center rounded-full bg-acc text-[9.5px] font-bold text-ink">
+                <span className="absolute -right-1 -top-1 grid size-[17px] place-items-center rounded-full bg-accent text-2xs font-bold text-accent-contrast">
                   {unread}
                 </span>
               )}
@@ -169,15 +171,15 @@ export function AppNav({
 
             {open === "bell" && (
               <div className={`${panel} w-[320px] !p-0`}>
-                <div className="flex items-center justify-between gap-3 border-b border-white/[0.08] px-3.5 py-2.5">
-                  <span className="text-[13px] font-semibold text-fg">{t.dashNotifications}</span>
+                <div className="flex items-center justify-between gap-3 border-b border-line px-3.5 py-2.5">
+                  <span className="text-sm font-semibold text-ink">{t.dashNotifications}</span>
                   {/* Only offered when it would do something — a permanently
                       enabled "mark all as read" over an empty list is noise. */}
                   {unread > 0 && (
                     <button
                       type="button"
                       onClick={markAllRead}
-                      className="inline-flex items-center gap-1.5 text-[11px] text-mut transition-colors hover:text-acc"
+                      className="flex min-h-11 items-center gap-1.5 text-xs text-muted transition-colors hover:text-accent-strong"
                     >
                       <CheckCheck className="size-3.5" />
                       {t.notifMarkAllRead}
@@ -186,22 +188,22 @@ export function AppNav({
                 </div>
 
                 {items.length === 0 ? (
-                  <p className="px-3.5 py-6 text-center text-[12.5px] text-dim">
+                  <p className="px-3.5 py-6 text-center text-sm text-dim">
                     {t.dashNoNotifications}
                   </p>
                 ) : (
                   <ul className="max-h-[320px] overflow-y-auto">
                     {items.map((item) => (
                       <li key={item.id}>
-                        <div className="flex gap-3 border-b border-white/[0.05] px-3.5 py-3 last:border-0">
+                        <div className="flex gap-3 border-b border-line px-3.5 py-3 last:border-0">
                           <span
-                            className={`mt-1.5 size-1.5 shrink-0 rounded-full ${item.unread ? "bg-acc" : "bg-transparent"}`}
+                            className={`mt-1.5 size-1.5 shrink-0 rounded-full ${item.unread ? "bg-accent" : "bg-transparent"}`}
                           />
                           <span className="min-w-0">
-                            <span className="block truncate text-[13px] leading-[1.5] text-fg">
+                            <span className="block truncate text-sm leading-[1.5] text-ink">
                               {item.title}
                             </span>
-                            <span className="mt-0.5 block text-[10.5px] text-dim">
+                            <span className="mt-0.5 block text-2xs text-dim">
                               {t[item.detail]} · {relativeTime(item.at, now)}
                             </span>
                           </span>
@@ -216,11 +218,11 @@ export function AppNav({
                 <Link
                   href="/notifications"
                   onClick={close}
-                  className="flex items-center justify-center gap-1.5 border-t border-white/[0.08] px-3.5 py-2.5 text-[12px] text-mut transition-colors hover:text-acc"
+                  className="flex items-center justify-center gap-1.5 border-t border-line px-3.5 py-3.5 text-xs text-muted transition-colors hover:text-accent-strong"
                 >
                   {t.notifSeeAll}
                   {total > items.length && (
-                    <span className="text-[10.5px] text-dim">({total})</span>
+                    <span className="text-2xs text-dim">({total})</span>
                   )}
                 </Link>
               </div>
@@ -234,7 +236,7 @@ export function AppNav({
               onClick={() => toggle("account")}
               aria-expanded={open === "account"}
               aria-label={user.full_name}
-              className="grid size-9 place-items-center rounded-full bg-acc text-[13.5px] font-bold text-ink"
+              className="grid size-11 place-items-center rounded-full bg-accent text-sm font-bold text-accent-contrast"
             >
               {user.full_name.trim().charAt(0).toUpperCase()}
             </button>
@@ -242,18 +244,18 @@ export function AppNav({
             {open === "account" && (
               <div className={`${panel} w-[236px]`}>
                 <div className="flex items-center gap-2.5 px-2 py-2">
-                  <span className="grid size-9 shrink-0 place-items-center rounded-full bg-acc text-[13.5px] font-bold text-ink">
+                  <span className="grid size-9 shrink-0 place-items-center rounded-full bg-accent text-sm font-bold text-accent-contrast">
                     {user.full_name.trim().charAt(0).toUpperCase()}
                   </span>
                   <span className="min-w-0">
-                    <span className="block truncate text-[13.5px] font-medium text-fg">
+                    <span className="block truncate text-sm font-medium text-ink">
                       {user.full_name}
                     </span>
-                    <span className="block truncate text-[11.5px] text-dim">{user.email}</span>
+                    <span className="block truncate text-xs text-dim">{user.email}</span>
                   </span>
                 </div>
 
-                <div className="my-1 h-px bg-white/[0.08]" />
+                <div className="my-1 h-px bg-line" />
 
                 {/* One entry, three meanings: apply, check on an application,
                     or go to the desk once approved. Hidden entirely while the
@@ -267,7 +269,7 @@ export function AppNav({
                           : "/practitioners/apply"
                       }
                       onClick={close}
-                      className="flex items-center gap-2.5 rounded-[6px] px-2.5 py-2 text-[13px] text-acc transition-colors hover:bg-acc/[0.08]"
+                      className="flex items-center gap-2.5 rounded-sm px-2.5 py-3 text-sm text-accent-ink transition-colors hover:bg-accent-wash"
                     >
                       <Sparkles className="size-3.5" />
                       {application.data?.state === "approved"
@@ -285,7 +287,7 @@ export function AppNav({
                       <Link
                         href="/admin"
                         onClick={close}
-                        className="flex items-center gap-2.5 rounded-[6px] px-2.5 py-2 text-[13px] text-mut transition-colors hover:bg-fg/[0.05] hover:text-fg"
+                        className="flex items-center gap-2.5 rounded-sm px-2.5 py-3 text-sm text-muted transition-colors hover:bg-cream hover:text-ink"
                       >
                         <ShieldCheck className="size-3.5" />
                         Admin
@@ -294,14 +296,14 @@ export function AppNav({
                   </>
                 )}
 
-                <div className="my-1 h-px bg-white/[0.08]" />
+                <div className="my-1 h-px bg-line" />
 
                 {/* Real pages. Both of these used to be `#account`, an anchor
                     that existed on no page in the app. */}
                 <Link
                   href="/profile"
                   onClick={close}
-                  className="flex items-center gap-2.5 rounded-[6px] px-2.5 py-2 text-[13px] text-mut transition-colors hover:bg-fg/[0.05] hover:text-fg"
+                  className="flex items-center gap-2.5 rounded-sm px-2.5 py-3 text-sm text-muted transition-colors hover:bg-cream hover:text-ink"
                 >
                   <UserRound className="size-3.5" />
                   {t.dashProfile}
@@ -309,18 +311,18 @@ export function AppNav({
                 <Link
                   href="/settings"
                   onClick={close}
-                  className="flex items-center gap-2.5 rounded-[6px] px-2.5 py-2 text-[13px] text-mut transition-colors hover:bg-fg/[0.05] hover:text-fg"
+                  className="flex items-center gap-2.5 rounded-sm px-2.5 py-3 text-sm text-muted transition-colors hover:bg-cream hover:text-ink"
                 >
                   <Settings className="size-3.5" />
                   {t.dashSettings}
                 </Link>
 
-                <div className="my-1 h-px bg-white/[0.08]" />
+                <div className="my-1 h-px bg-line" />
 
                 <button
                   type="button"
                   onClick={logout}
-                  className="flex w-full items-center gap-2.5 rounded-[6px] px-2.5 py-2 text-left text-[13px] text-mut transition-colors hover:bg-fg/[0.05] hover:text-fg"
+                  className="flex w-full items-center gap-2.5 rounded-sm px-2.5 py-3 text-left text-sm text-muted transition-colors hover:bg-cream hover:text-ink"
                 >
                   <LogOut className="size-3.5" />
                   {t.dashSignOut}
@@ -330,10 +332,7 @@ export function AppNav({
           </div>
             </>
           ) : (
-            <Link
-              href="/login"
-              className="inline-flex items-center rounded-[8px] border border-brd px-5 py-1.5 text-[13.5px] text-mut transition-colors hover:border-brd2 hover:text-fg"
-            >
+            <Link href="/login" className={buttonClasses("secondary")}>
               {t.dashSignIn}
             </Link>
           )}

@@ -55,34 +55,37 @@ function getPlanetCoordinates(house: number, index: number, totalCount: number) 
   return { x: targetX, y: targetY };
 }
 
-/** The two looks a chart is drawn in: the app's dark sky, or the parchment
- *  and red-and-green ink of a hand-written patro. */
+/** The two looks a chart is drawn in — the app's saffron brand ink, or the
+ *  parchment tone of a hand-written patro. Both are drawn from design tokens
+ *  (design.md §7: "never hardcoded hex, so it follows the theme"), read at
+ *  paint time via `var()` since an SVG fill/stroke attribute takes a colour
+ *  string, not a Tailwind class. */
 const CHART_THEMES = {
-  dark: {
-    svgBg: "bg-inset",
-    fillA: "#090A10",
-    fillB: "#121626",
-    activeFill: "#1E2640",
-    activeStroke: "#E5A93C",
-    frame: "#E5A93C",
-    lagnaNum: "#F3C766",
-    num: "#CBD5E1",
-    planet: "#FFFFFF",
-    exalted: "#FDE68A",
-    retro: "#E5A93C",
+  app: {
+    svgBg: "bg-surface",
+    fillA: "var(--color-surface)",
+    fillB: "var(--color-accent-tint)",
+    activeFill: "var(--color-accent-wash)",
+    activeStroke: "var(--color-accent-strong)",
+    frame: "var(--color-accent-strong)",
+    lagnaNum: "var(--color-accent-strong)",
+    num: "var(--color-muted)",
+    planet: "var(--color-ink)",
+    exalted: "var(--color-benefic)",
+    retro: "var(--color-retrograde)",
   },
   patro: {
-    svgBg: "bg-[#f7efdc]",
-    fillA: "#f7efdc",
-    fillB: "#efe0c2",
-    activeFill: "#ecd9b0",
-    activeStroke: "#9B1C1C",
-    frame: "#9B1C1C",
-    lagnaNum: "#9B1C1C",
-    num: "#4a3a22",
-    planet: "#1a3a1a",
-    exalted: "#9B1C1C",
-    retro: "#9B1C1C",
+    svgBg: "bg-accent-tint",
+    fillA: "var(--color-accent-tint)",
+    fillB: "var(--color-accent-wash)",
+    activeFill: "var(--color-accent-tint)",
+    activeStroke: "var(--color-accent-strong)",
+    frame: "var(--color-accent-strong)",
+    lagnaNum: "var(--color-accent-strong)",
+    num: "var(--color-accent-ink)",
+    planet: "var(--color-ink)",
+    exalted: "var(--color-accent-strong)",
+    retro: "var(--color-retrograde)",
   },
 } as const;
 
@@ -92,7 +95,7 @@ export function NorthIndianChart({
   chart,
   onSelectHouse,
   selectedHouse,
-  theme = "dark",
+  theme = "app",
 }: {
   chart: Chart;
   onSelectHouse?: (house: number) => void;
@@ -113,7 +116,7 @@ export function NorthIndianChart({
   return (
     <svg
       viewBox={`-1 -1 ${S + 2} ${S + 2}`}
-      className={`w-full max-w-[500px] select-none rounded-[8px] ${T.svgBg}`}
+      className={`w-full max-w-[500px] select-none rounded-xl ${T.svgBg}`}
       role="img"
       aria-label="North Indian birth chart"
     >

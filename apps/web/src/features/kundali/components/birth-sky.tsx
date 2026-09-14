@@ -5,7 +5,15 @@ import { useRouter } from "next/navigation";
 import { ArrowLeft, Eye, EyeOff, Sparkles } from "lucide-react";
 
 import { AppShell } from "@/features/dashboard/components/app-shell";
-import {BirthSky3D, MoonPhase3D, PLANET_COLORS, YOGATARA } from "@/features/kundali/components/birth-sky-3d";
+import { BirthSky3D, MoonPhase3D, YOGATARA } from "@/features/kundali/components/birth-sky-3d";
+import {
+  PLANET_COLORS,
+  PLANET_FALLBACK_COLOR,
+  RAHU_GRADIENT_COLOR,
+  RAHU_GRADIENT_STOP,
+  KETU_GRADIENT_COLOR,
+  KETU_GRADIENT_STOP,
+} from "@/features/kundali/constants/planet-colors";
 import { loadKundaliFromStorage } from "@/features/kundali/store/kundali-store";
 import type { BirthDetailsIn, Chart, Planet } from "@/features/kundali/types";
 import { useTranslation } from "@/lib/i18n/language-context";
@@ -79,16 +87,16 @@ export function BirthSky() {
           <button
             onClick={() => router.back()}
             aria-label="Back"
-            className="flex size-8 shrink-0 items-center justify-center rounded-[8px] border border-white/10 bg-[#161B2B] text-[#94A3B8] transition hover:border-[#E5A93C]/50 hover:text-[#F3C766]"
+            className="flex size-11 shrink-0 items-center justify-center rounded-xl border border-line-strong bg-surface text-muted transition hover:border-accent-strong/50 hover:text-accent-strong"
           >
             <ArrowLeft className="size-4" />
           </button>
           <div className="min-w-0">
-            <p className="truncate font-serif text-[14px] font-bold text-[#F8FAFC]">
+            <p className="truncate font-display text-sm font-bold text-ink">
               {sk ? "जन्मकालीन आकाश" : "The Sky at Birth"}
-              <Sparkles className="ml-1.5 inline size-3.5 text-[#E5A93C]" />
+              <Sparkles className="ml-1.5 inline size-3.5 text-accent-strong" />
             </p>
-            <p className="truncate text-[11px] text-[#94A3B8]">
+            <p className="truncate text-2xs text-muted">
               {birth.name} · {formatDateFor(birth.date, language)} · {birth.time} ·{" "}
               {birth.place_label.split("(")[0]}
             </p>
@@ -99,9 +107,9 @@ export function BirthSky() {
       <main className="w-full px-2 py-2 lg:px-3">
         <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-start">
           {/* The wheel — edge to edge, the chrome floats over it */}
-          <div className="relative overflow-hidden rounded-[12px] border border-white/10 bg-[#090A10]">
+          <div className="relative overflow-hidden rounded-xl border border-line-strong bg-cream">
             {/* view toggles live on the sky itself */}
-            <div className="absolute right-3 top-3 z-10 flex items-center gap-2 text-[10px] font-bold">
+            <div className="absolute right-3 top-3 z-10 flex items-center gap-2 text-2xs font-bold">
               <Toggle
                 on={showNakshatras}
                 onClick={() => setShowNakshatras((v) => !v)}
@@ -114,7 +122,7 @@ export function BirthSky() {
               />
             </div>
             <BirthSky3D
-              className="relative h-[calc(100dvh-92px)] min-h-[520px] w-full overflow-hidden rounded-[12px]"
+              className="relative h-[calc(100dvh-92px)] min-h-[520px] w-full overflow-hidden rounded-xl"
               chart={chart}
               selected={selected}
               onSelect={(name) => {
@@ -133,20 +141,20 @@ export function BirthSky() {
               <button
                 key="Earth"
                 onClick={() => setSelected((s) => (s === "Earth" ? null : "Earth"))}
-                className={`flex size-[54px] flex-col items-center justify-center gap-1 rounded-[10px] border backdrop-blur-md transition ${
+                className={`flex size-[54px] flex-col items-center justify-center gap-1 rounded-xl border backdrop-blur-md transition ${
                   selected === "Earth"
-                    ? "border-[#E5A93C] bg-[#E5A93C]/15"
-                    : "border-white/10 bg-[#0B0E18]/75 hover:border-white/30"
+                    ? "border-accent-strong bg-accent-wash"
+                    : "border-line-strong bg-surface/95 hover:border-accent-strong/40"
                 }`}
                 title={sk ? "पृथ्वी" : "Earth"}
               >
                 <span
-                  className="size-6 rounded-full border border-white/20 bg-cover bg-center"
+                  className="size-6 rounded-full border border-line-strong bg-cover bg-center"
                   style={planetFace("Earth")}
                 />
                 <span
-                  className={`max-w-[50px] truncate text-[8px] font-bold leading-none ${
-                    selected === "Earth" ? "text-[#F3C766]" : "text-[#94A3B8]"
+                  className={`max-w-[50px] truncate text-2xs font-bold leading-none ${
+                    selected === "Earth" ? "text-accent-strong" : "text-muted"
                   }`}
                 >
                   {sk ? "पृथ्वी" : "Earth"}
@@ -156,24 +164,24 @@ export function BirthSky() {
                 <button
                   key={p.name}
                   onClick={() => setSelected((s) => (s === p.name ? null : p.name))}
-                  className={`flex size-[54px] flex-col items-center justify-center gap-1 rounded-[10px] border backdrop-blur-md transition ${
+                  className={`flex size-[54px] flex-col items-center justify-center gap-1 rounded-xl border backdrop-blur-md transition ${
                     selected === p.name
-                      ? "border-[#E5A93C] bg-[#E5A93C]/15"
-                      : "border-white/10 bg-[#0B0E18]/75 hover:border-white/30"
+                      ? "border-accent-strong bg-accent-wash"
+                      : "border-line-strong bg-surface/95 hover:border-accent-strong/40"
                   }`}
                   title={getPlanetName(p.name, language)}
                 >
                   <span
-                    className="size-6 rounded-full border border-white/20 bg-cover bg-center"
+                    className="size-6 rounded-full border border-line-strong bg-cover bg-center"
                     style={planetFace(p.name)}
                   />
                   <span
-                    className={`max-w-[50px] truncate text-[8px] font-bold leading-none ${
-                      selected === p.name ? "text-[#F3C766]" : "text-[#94A3B8]"
+                    className={`max-w-[50px] truncate text-2xs font-bold leading-none ${
+                      selected === p.name ? "text-accent-strong" : "text-muted"
                     }`}
                   >
                     {getPlanetName(p.name, language)}
-                    {p.retrograde && <span className="text-[#E5A93C]"> ℞</span>}
+                    {p.retrograde && <span className="text-retrograde"> ℞</span>}
                   </span>
                 </button>
               ))}
@@ -186,11 +194,11 @@ export function BirthSky() {
             {selectedNak ? (
               <NakshatraCard name={selectedNak} janma={chart.panchang.nakshatra} />
             ) : selected === "Earth" ? (
-              <div className="rounded-[8px] border border-brd bg-panel p-4">
-                <h3 className="mb-2 border-b border-brd pb-2 font-serif text-xs font-bold uppercase tracking-wider text-fg">
+              <div className="rounded-xl border border-line-strong bg-surface p-4">
+                <h3 className="mb-2 border-b border-line-strong pb-2 font-display text-xs font-bold uppercase tracking-wider text-ink">
                   {sk ? "पृथ्वी" : "Earth"}
                 </h3>
-                <p className="text-[12px] leading-relaxed text-mut">
+                <p className="text-xs leading-relaxed text-muted">
                   {sk
                     ? "यही ठाउँबाट सारा कुण्डली देखिन्छ — हरेक ग्रहको स्थिति पृथ्वीबाट हेरिएको हो। जन्मस्थान यही गोलामा छ।"
                     : "The one place the whole chart is seen from — every graha's position is as viewed from here. The birthplace sits on this globe."}
@@ -199,7 +207,7 @@ export function BirthSky() {
             ) : selectedPlanet ? (
               <PlanetCard planet={selectedPlanet} />
             ) : (
-              <div className="rounded-[8px] border border-white/10 bg-[#161B2B] p-4 text-[12px] text-[#94A3B8]">
+              <div className="rounded-xl border border-line-strong bg-surface p-4 text-xs text-muted">
                 {sk
                   ? "कुनै ग्रह छान्नुहोस् — चक्रमा वा तलका चिप्समा थिच्नुहोस्।"
                   : "Select a graha — tap it on the wheel or in the chips."}
@@ -217,8 +225,8 @@ export function BirthSky() {
 
 function Card({ title, children }: { title: React.ReactNode; children: React.ReactNode }) {
   return (
-    <div className="rounded-[8px] border border-white/10 bg-[#161B2B] p-4">
-      <h3 className="mb-3 border-b border-white/10 pb-2 font-serif text-xs font-bold uppercase tracking-wider text-[#F8FAFC]">
+    <div className="rounded-xl border border-line-strong bg-surface p-4">
+      <h3 className="mb-3 border-b border-line-strong pb-2 font-display text-xs font-bold uppercase tracking-wider text-ink">
         {title}
       </h3>
       {children}
@@ -228,9 +236,9 @@ function Card({ title, children }: { title: React.ReactNode; children: React.Rea
 
 function Row({ k, v }: { k: string; v: React.ReactNode }) {
   return (
-    <div className="flex items-baseline justify-between gap-3 py-1 text-[12px]">
-      <span className="text-[#94A3B8]">{k}</span>
-      <span className="text-right font-semibold text-[#F8FAFC]">{v}</span>
+    <div className="flex items-baseline justify-between gap-3 py-1 text-xs">
+      <span className="text-muted">{k}</span>
+      <span className="text-right font-semibold text-ink">{v}</span>
     </div>
   );
 }
@@ -247,7 +255,7 @@ function PlanetCard({ planet }: { planet: Planet }) {
   const { language } = useTranslation();
   const sk = language !== "en";
   const n = (x: number | string) => toLocalizedDigit(x, language);
-  const color = PLANET_COLORS[planet.name] ?? "#F8FAFC";
+  const color = PLANET_COLORS[planet.name] ?? PLANET_FALLBACK_COLOR;
 
   return (
     <Card
@@ -255,8 +263,15 @@ function PlanetCard({ planet }: { planet: Planet }) {
         <span className="flex items-center gap-2">
           <span className="inline-block size-2.5 rounded-full" style={{ background: color }} />
           {getPlanetName(planet.name, language)}
-          {planet.retrograde && <span className="text-[#E5A93C]">℞ {sk ? "वक्री" : "retrograde"}</span>}
-          {planet.combust && <span className="text-[#FFB347]">{sk ? "अस्त" : "combust"}</span>}
+          {planet.retrograde && <span className="text-retrograde">℞ {sk ? "वक्री" : "retrograde"}</span>}
+          {planet.combust && (
+            <span
+              title={sk ? "अस्त — सूर्यको नजिक" : "Combust — close to the Sun"}
+              className="rounded-sm border border-line px-1.5 py-0.5 text-2xs font-medium text-combust"
+            >
+              C
+            </span>
+          )}
         </span>
       }
     >
@@ -327,7 +342,7 @@ function LagnaCard({ chart }: { chart: Chart }) {
         <Row k={sk ? "सूर्योदय" : "Sunrise"} v={p.sunrise.slice(11, 16)} />
       )}
       {p.sunset && <Row k={sk ? "सूर्यास्त" : "Sunset"} v={p.sunset.slice(11, 16)} />}
-      <p className="mt-2 border-t border-white/10 pt-2 text-[10px] leading-relaxed text-[#94A3B8]">
+      <p className="mt-2 border-t border-line-strong pt-2 text-2xs leading-relaxed text-muted">
         {sk
           ? "सबै स्थितिहरू जन्मकुण्डलीकै हुन् — निरयण, लाहिरी अयनांश।"
           : "All positions are this kundali's own — sidereal, Lahiri ayanamsa."}
@@ -340,10 +355,10 @@ function Toggle({ on, onClick, label }: { on: boolean; onClick: () => void; labe
   return (
     <button
       onClick={onClick}
-      className={`flex items-center gap-1.5 rounded-[8px] border px-2.5 py-1.5 transition ${
+      className={`flex min-h-11 items-center gap-1.5 rounded-xl border px-2.5 py-1.5 transition ${
         on
-          ? "border-[#E5A93C]/50 bg-[#E5A93C]/10 text-[#F3C766]"
-          : "border-white/10 bg-[#161B2B] text-[#94A3B8] hover:text-[#F8FAFC]"
+          ? "border-accent-strong/50 bg-accent-wash text-accent-strong"
+          : "border-line-strong bg-surface text-muted hover:text-ink"
       }`}
     >
       {on ? <Eye className="size-3.5" /> : <EyeOff className="size-3.5" />}
@@ -379,8 +394,8 @@ function planetFace(name: string): React.CSSProperties {
   return {
     background:
       name === "Rahu"
-        ? "radial-gradient(circle at 35% 35%, #8B7BC7, #141026 75%)"
-        : "radial-gradient(circle at 35% 35%, #C77B58, #1c0f08 75%)",
+        ? `radial-gradient(circle at 35% 35%, ${RAHU_GRADIENT_COLOR}, ${RAHU_GRADIENT_STOP} 75%)`
+        : `radial-gradient(circle at 35% 35%, ${KETU_GRADIENT_COLOR}, ${KETU_GRADIENT_STOP} 75%)`,
   };
 }
 
@@ -411,36 +426,36 @@ function NakshatraCard({ name, janma }: { name: string; janma: string }) {
   const isJanma = canonicalNakshatra(janma) === canonicalNakshatra(name);
 
   return (
-    <div className="rounded-[8px] border border-brd bg-panel p-4">
-      <h3 className="mb-2 flex items-center justify-between border-b border-brd pb-2 font-serif text-xs font-bold uppercase tracking-wider text-fg">
+    <div className="rounded-xl border border-line-strong bg-surface p-4">
+      <h3 className="mb-2 flex items-center justify-between border-b border-line-strong pb-2 font-display text-xs font-bold uppercase tracking-wider text-ink">
         <span>{getNakshatraName(name, language)}</span>
         {isJanma && (
-          <span className="rounded-[4px] border border-acc/40 px-1.5 py-0.5 text-[9px] text-acc">
+          <span className="rounded-lg border border-accent/40 px-1.5 py-0.5 text-2xs text-accent-strong">
             {sk ? "जन्म नक्षत्र" : "Janma nakshatra"}
           </span>
         )}
       </h3>
-      <div className="space-y-1 text-[12px]">
+      <div className="space-y-1 text-xs">
         <div className="flex justify-between gap-3">
-          <span className="text-mut">{sk ? "योगतारा" : "Yogatara"}</span>
-          <span className="text-right font-semibold text-fg">{entry.star}</span>
+          <span className="text-muted">{sk ? "योगतारा" : "Yogatara"}</span>
+          <span className="text-right font-semibold text-ink">{entry.star}</span>
         </div>
         <div className="flex justify-between gap-3">
-          <span className="text-mut">{sk ? "स्वामी ग्रह" : "Lord"}</span>
-          <span className="font-semibold text-fg">{getPlanetName(lord, language)}</span>
+          <span className="text-muted">{sk ? "स्वामी ग्रह" : "Lord"}</span>
+          <span className="font-semibold text-ink">{getPlanetName(lord, language)}</span>
         </div>
         <div className="flex justify-between gap-3">
-          <span className="text-mut">{sk ? "विस्तार" : "Extent"}</span>
-          <span className="text-right font-semibold text-fg">
+          <span className="text-muted">{sk ? "विस्तार" : "Extent"}</span>
+          <span className="text-right font-semibold text-ink">
             {seg(start)} – {seg(end)}
           </span>
         </div>
         <div className="flex justify-between gap-3">
-          <span className="text-mut">{sk ? "चरण" : "Padas"}</span>
-          <span className="font-semibold text-fg">{n(4)} × {n("3")}°{n("20")}&apos;</span>
+          <span className="text-muted">{sk ? "चरण" : "Padas"}</span>
+          <span className="font-semibold text-ink">{n(4)} × {n("3")}°{n("20")}&apos;</span>
         </div>
       </div>
-      <p className="mt-2 border-t border-brd pt-2 text-[10px] leading-relaxed text-mut">
+      <p className="mt-2 border-t border-line-strong pt-2 text-2xs leading-relaxed text-muted">
         {sk
           ? "यो तारा आकाशमा आफ्नै वास्तविक स्थानमा छ — नक्षत्र भनेको यसैको वरिपरि कोरिएको १३°२०' को खण्ड हो।"
           : "The star stands at its true place in the sky — the nakshatra is the 13°20' arc drawn around it."}

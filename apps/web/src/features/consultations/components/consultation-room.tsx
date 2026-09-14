@@ -10,6 +10,9 @@ import { useSession } from "@/features/auth/hooks/use-auth";
 import { SessionMeter } from "@/features/consultations/components/session-meter";
 import { CallPanel } from "@/features/consultations/components/call-panel";
 import { useCall } from "@/features/consultations/hooks/use-call";
+import { Button } from "@/components/ui/button";
+import { Card, cardClasses } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import { useConsultationSocket } from "@/features/consultations/hooks/use-consultation-socket";
 import {
   useConsultation,
@@ -66,7 +69,7 @@ export function ConsultationRoom({ id }: { id: string }) {
     return (
       <AppShell>
         <main className="mx-auto w-full max-w-[900px] px-5 pt-10 sm:px-8">
-          <div className="h-[180px] animate-pulse rounded-[12px] border border-white/[0.07] bg-panel" />
+          <div className="h-[180px] animate-pulse rounded-xl border border-line bg-surface" />
         </main>
       </AppShell>
     );
@@ -74,8 +77,6 @@ export function ConsultationRoom({ id }: { id: string }) {
 
   const c = consultation.data;
   const isPractitioner = user?.id === c.practitioner_user_id;
-  const button =
-    "rounded-[8px] px-4 py-2 text-[13px] font-semibold transition-colors disabled:pointer-events-none disabled:opacity-40";
 
   return (
     <AppShell>
@@ -83,7 +84,7 @@ export function ConsultationRoom({ id }: { id: string }) {
         <button
           type="button"
           onClick={() => router.push("/consultations")}
-          className="mb-5 inline-flex items-center gap-2 text-[12.5px] text-mut transition-colors hover:text-fg"
+          className="mb-5 inline-flex items-center gap-2 text-xs text-muted transition-colors hover:text-ink"
         >
           <ArrowLeft className="size-4" />
           {t.chatTab}
@@ -100,18 +101,18 @@ export function ConsultationRoom({ id }: { id: string }) {
               className="size-10 shrink-0 rounded-full object-cover"
             />
           ) : (
-            <span className="grid size-10 shrink-0 place-items-center rounded-full bg-acc/[0.12] text-[13px] font-bold text-acc">
+            <span className="grid size-10 shrink-0 place-items-center rounded-full bg-accent-tint text-sm font-bold text-accent-ink">
               {(c.counterpart_name || "?").charAt(0).toUpperCase()}
             </span>
           )}
           <div className="min-w-0">
-            <p className="truncate text-[15px] font-semibold text-fg">
+            <p className="truncate text-base font-semibold text-ink">
               {c.counterpart_name || t.dashJyotish}
             </p>
             {!isPractitioner && (
               <Link
                 href={`/practitioners/${c.profile_id}`}
-                className="text-[11.5px] text-acc hover:underline"
+                className="text-xs text-accent-ink hover:underline"
               >
                 {t.profAbout}
               </Link>
@@ -132,65 +133,47 @@ export function ConsultationRoom({ id }: { id: string }) {
         {live && !socketUp && (
           // Said out loud rather than degrading silently: updates still arrive,
           // just more slowly, and the reader should know which they are getting.
-          <p className="mt-2 text-[11.5px] text-dim">{t.consultReconnecting}</p>
+          <p className="mt-2 text-xs text-dim">{t.consultReconnecting}</p>
         )}
 
-        <div className="mt-4 flex flex-wrap gap-2">
+        <div className="mt-4 flex flex-wrap items-center gap-2">
           {isPractitioner && c.state === "requested" && (
             <>
-              <button
-                type="button"
-                onClick={() => act.mutate("accept")}
-                className={`${button} bg-acc text-ink hover:bg-acc2`}
-              >
+              <Button variant="primary" onClick={() => act.mutate("accept")}>
                 {t.consultAccept}
-              </button>
-              <button
-                type="button"
-                onClick={() => act.mutate("decline")}
-                className={`${button} border border-white/12 text-mut hover:border-brd2 hover:text-fg`}
-              >
+              </Button>
+              <Button variant="secondary" onClick={() => act.mutate("decline")}>
                 {t.consultDecline}
-              </button>
+              </Button>
             </>
           )}
 
           {!isPractitioner && c.state === "requested" && (
             <>
-              <span className="text-[13px] text-dim">{t.consultWaiting}</span>
-              <button
-                type="button"
-                onClick={() => act.mutate("cancel")}
-                className={`${button} border border-white/12 text-mut hover:border-brd2 hover:text-fg`}
-              >
+              <span className="text-sm text-dim">{t.consultWaiting}</span>
+              <Button variant="secondary" onClick={() => act.mutate("cancel")}>
                 {t.consultCancel}
-              </button>
+              </Button>
             </>
           )}
 
           {c.state === "accepted" && (
-            <button
-              type="button"
+            <Button
+              variant="primary"
               onClick={() => act.mutate("connect")}
               disabled={act.isPending}
-              className={`${button} bg-acc text-ink hover:bg-acc2`}
             >
               {t.consultStart}
-            </button>
+            </Button>
           )}
 
           {c.state === "active" && (
-            <button
-              type="button"
-              onClick={() => act.mutate("end")}
-              disabled={act.isPending}
-              className={`${button} border border-rose-400/40 text-rose-300 hover:bg-rose-500/10`}
-            >
+            <Button variant="danger" onClick={() => act.mutate("end")} disabled={act.isPending}>
               {t.consultEnd}
-            </button>
+            </Button>
           )}
 
-          {c.state === "ended" && <span className="text-[13px] text-dim">{t.consultEnded}</span>}
+          {c.state === "ended" && <span className="text-sm text-dim">{t.consultEnded}</span>}
         </div>
 
         {c.state === "ended" && !isPractitioner && (
@@ -202,25 +185,24 @@ export function ConsultationRoom({ id }: { id: string }) {
         )}
 
         {act.isError && (
-          <p role="alert" className="mt-3 text-[13px] text-rose-300">
+          <p role="alert" className="mt-3 text-sm text-danger">
             {/* A 402 here means the wallet cannot fund the minimum session. The
                 message from the server says so; adding our own would guess. */}
             {act.error.message}
           </p>
         )}
 
-        <div
-          ref={feed}
-          className="mt-6 max-h-[46vh] space-y-3 overflow-y-auto rounded-[12px] border border-white/[0.09] bg-panel p-4"
-        >
+        <Card ref={feed} className="mt-6 max-h-[46vh] space-y-3 overflow-y-auto">
           {messages.data && messages.data.length > 0 ? (
             messages.data.map((message) => {
               const mine = message.sender_id === user?.id;
               return (
                 <div key={message.id} className={`flex ${mine ? "justify-end" : "justify-start"}`}>
                   <span
-                    className={`max-w-[76%] rounded-[10px] px-3.5 py-2.5 text-[13.5px] leading-[1.65] ${
-                      mine ? "bg-acc text-ink" : "border border-white/[0.09] bg-app text-fg"
+                    className={`max-w-[76%] rounded-lg px-3.5 py-2.5 text-sm leading-[1.65] ${
+                      mine
+                        ? "bg-accent text-accent-contrast"
+                        : "border border-line-strong bg-cream text-ink"
                     }`}
                   >
                     {message.body}
@@ -229,9 +211,9 @@ export function ConsultationRoom({ id }: { id: string }) {
               );
             })
           ) : (
-            <p className="py-8 text-center text-[12.5px] text-dim">{t.consultPlaceholder}</p>
+            <p className="py-8 text-center text-xs text-dim">{t.consultPlaceholder}</p>
           )}
-        </div>
+        </Card>
 
         <form
           className="mt-3 flex items-center gap-2"
@@ -243,21 +225,17 @@ export function ConsultationRoom({ id }: { id: string }) {
             setDraft("");
           }}
         >
-          <input
+          <Input
             value={draft}
             onChange={(event) => setDraft(event.target.value)}
             placeholder={t.consultPlaceholder}
             disabled={c.state === "declined" || c.state === "cancelled"}
-            className="min-w-0 flex-1 rounded-[8px] border border-white/[0.09] bg-panel px-3.5 py-2.5 text-[13.5px] text-fg placeholder-faint focus:border-acc/45 focus:outline-none disabled:opacity-50"
+            className="min-w-0 flex-1"
           />
-          <button
-            type="submit"
-            disabled={!draft.trim() || send.isPending}
-            className={`${button} inline-flex items-center gap-1.5 bg-acc text-ink hover:bg-acc2`}
-          >
+          <Button type="submit" variant="primary" disabled={!draft.trim() || send.isPending}>
             <Send className="size-3.5" />
             {t.consultSend}
-          </button>
+          </Button>
         </form>
       </main>
     </AppShell>
@@ -286,19 +264,19 @@ function ReviewForm({
   const review = useLeaveReview(consultationId, practitionerUserId);
 
   if (done || review.isSuccess) {
-    return <p className="mt-4 text-[13px] text-acc2">{t.reviewThanks}</p>;
+    return <p className="mt-4 text-sm text-accent-ink">{t.reviewThanks}</p>;
   }
 
   return (
     <form
-      className="mt-5 rounded-[12px] border border-white/[0.09] bg-panel p-4"
+      className={cardClasses({ className: "mt-5" })}
       onSubmit={(event) => {
         event.preventDefault();
         if (rating > 0) review.mutate({ rating, body: body.trim() });
       }}
     >
-      <p className="text-[14px] font-semibold text-fg">{t.reviewTitle}</p>
-      <p className="mt-1 text-[11.5px] text-dim">{t.reviewNote}</p>
+      <p className="text-sm font-semibold text-ink">{t.reviewTitle}</p>
+      <p className="mt-1 text-xs text-dim">{t.reviewNote}</p>
 
       <div className="mt-3 flex gap-1">
         {[1, 2, 3, 4, 5].map((star) => (
@@ -312,7 +290,7 @@ function ReviewForm({
           >
             <Star
               className={`size-6 transition-colors ${
-                star <= rating ? "fill-gold text-acc" : "text-white/20 hover:text-white/40"
+                star <= rating ? "fill-star text-star" : "text-line-strong hover:text-muted"
               }`}
             />
           </button>
@@ -325,22 +303,18 @@ function ReviewForm({
         onChange={(event) => setBody(event.target.value)}
         placeholder={t.reviewPlaceholder}
         maxLength={2000}
-        className="mt-3 w-full resize-none rounded-[8px] border border-white/[0.09] bg-app px-3 py-2 text-[13px] leading-[1.7] text-fg placeholder-faint focus:border-acc/45 focus:outline-none"
+        className="mt-3 w-full resize-none rounded-md border border-line-strong bg-surface px-3 py-2 text-sm leading-[1.7] text-ink placeholder:text-dim focus-visible:outline-none focus-visible:border-ring"
       />
 
       {review.isError && (
-        <p role="alert" className="mt-2 text-[12.5px] text-rose-300">
+        <p role="alert" className="mt-2 text-xs text-danger">
           {review.error.message}
         </p>
       )}
 
-      <button
-        type="submit"
-        disabled={rating === 0 || review.isPending}
-        className="mt-3 rounded-[8px] bg-acc px-4 py-2 text-[13px] font-semibold text-ink disabled:opacity-40"
-      >
+      <Button type="submit" variant="primary" disabled={rating === 0 || review.isPending} className="mt-3">
         {t.reviewSubmit}
-      </button>
+      </Button>
     </form>
   );
 }

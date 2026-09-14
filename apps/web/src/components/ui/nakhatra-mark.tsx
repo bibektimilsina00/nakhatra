@@ -14,7 +14,7 @@
  * Below ~24px use `public/favicon.svg` instead, which drops the diagonals.
  */
 export function NakhatraMark({
-  className = "size-9 text-acc",
+  className = "size-9 text-accent-ink",
 }: {
   className?: string;
 }) {

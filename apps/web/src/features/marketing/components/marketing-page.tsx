@@ -21,7 +21,7 @@ export function MarketingPage() {
   useReveal();
 
   return (
-    <div className="bg-ink font-sys text-muted antialiased">
+    <div className="bg-cream font-body text-ink antialiased">
       <SiteHeader />
       <Hero />
       <CreateKundaliSection />

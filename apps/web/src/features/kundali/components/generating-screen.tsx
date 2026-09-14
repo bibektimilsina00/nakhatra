@@ -36,12 +36,17 @@ export function GeneratingScreen({
   }, [onComplete]);
 
   return (
-    <div className="min-h-dvh bg-gradient-to-b from-[#090A10] via-[#0D101A] to-[#0F121E] flex flex-col items-center justify-center p-6 text-center">
+    <div className="min-h-dvh bg-cream flex flex-col items-center justify-center p-6 text-center">
       {/* Sacred Geometry SVG Chart with Gold Stroke Animation */}
       <div className="relative size-72 sm:size-80 flex items-center justify-center">
-        <div className="absolute inset-0 rounded-full bg-acc/10 blur-3xl animate-pulse" />
+        <div className="absolute inset-0 rounded-full bg-accent-wash blur-3xl animate-pulse" />
 
-        <svg className="size-full stroke-acc" viewBox="0 0 300 300" fill="none">
+        <svg
+          className="size-full"
+          style={{ stroke: "var(--color-accent-strong)" }}
+          viewBox="0 0 300 300"
+          fill="none"
+        >
           {/* Outer Square */}
           <rect
             x="10"
@@ -80,7 +85,7 @@ export function GeneratingScreen({
             cx="150"
             cy="150"
             r="45"
-            stroke="#F3C766"
+            style={{ stroke: "var(--color-star)" }}
             strokeWidth="1"
             className="animate-pulse"
           />
@@ -88,7 +93,7 @@ export function GeneratingScreen({
             cx="150"
             cy="150"
             r="15"
-            fill="#E5A93C"
+            style={{ fill: "var(--color-accent-strong)" }}
             className="animate-ping opacity-40"
           />
         </svg>
@@ -96,10 +101,10 @@ export function GeneratingScreen({
 
       {/* Progress Ticker */}
       <div className="mt-10 max-w-md space-y-3">
-        <h2 className="font-serif text-2xl font-bold text-fg">
+        <h2 className="font-display text-2xl font-bold text-ink">
           Precision Astronomy Computation
         </h2>
-        <p className="text-sm font-semibold text-acc2 transition-all duration-300 min-h-[24px]">
+        <p className="text-sm font-semibold text-accent-strong transition-all duration-300 min-h-[24px]">
           {STEPS[currentStepIndex]}
         </p>
 
@@ -110,8 +115,8 @@ export function GeneratingScreen({
               key={idx}
               className={`h-1.5 rounded-full transition-all duration-500 ${
                 idx <= currentStepIndex
-                  ? "w-8 bg-acc"
-                  : "w-2 bg-white/20"
+                  ? "w-8 bg-accent-strong"
+                  : "w-2 bg-line-strong"
               }`}
             />
           ))}

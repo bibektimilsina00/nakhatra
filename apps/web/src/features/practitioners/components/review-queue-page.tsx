@@ -3,7 +3,9 @@
 import { useState } from "react";
 import { Check, ShieldQuestion, X } from "lucide-react";
 
-import { AppShell } from "@/features/dashboard/components/app-shell";
+import { Button } from "@/components/ui/button";
+import { cardClasses } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import { useReview, useReviewQueue } from "@/features/practitioners/hooks/use-practitioners";
 import type { ApplicationReview } from "@/features/practitioners/types";
 import { useLatinTracking, useTranslation } from "@/lib/i18n/language-context";
@@ -25,60 +27,58 @@ export function ReviewQueuePage() {
   const queue = useReviewQueue(state, true);
 
   return (
-    <AppShell>
-      <main className="mx-auto w-full max-w-[900px] px-5 pb-24 pt-10 sm:px-8">
-        <span className={`text-[11px] text-acc ${eyebrow}`}>Admin</span>
-        <h1 className="mt-3 text-[26px] font-bold leading-tight text-fg sm:text-[30px]">
-          {t.practReviewQueue}
-        </h1>
+    <main className="mx-auto w-full max-w-[900px] px-5 pb-24 pt-10 sm:px-8">
+      <span className={`text-2xs text-accent-strong ${eyebrow}`}>Admin</span>
+      <h1 className="mt-3 text-2xl font-bold leading-tight text-ink">
+        {t.practReviewQueue}
+      </h1>
 
-        <div className="mt-6 flex flex-wrap gap-2">
-          {STATES.map((value) => (
-            <button
-              key={value}
-              type="button"
-              onClick={() => setState(value)}
-              aria-pressed={state === value}
-              className={`rounded-[6px] border px-2.5 py-1 text-[11.5px] transition-colors ${
-                state === value
-                  ? "border-acc/50 bg-acc/[0.09] text-acc2"
-                  : "border-white/[0.10] text-mut hover:border-brd2 hover:text-fg"
-              }`}
-            >
-              {value.replace("_", " ")}
-            </button>
+      <div className="mt-6 flex flex-wrap gap-2">
+        {STATES.map((value) => (
+          <button
+            key={value}
+            type="button"
+            onClick={() => setState(value)}
+            aria-pressed={state === value}
+            className={`flex min-h-11 items-center rounded-sm border px-2.5 text-xs transition-colors ${
+              state === value
+                ? "border-accent bg-accent-tint text-accent-ink"
+                : "border-line-strong text-muted hover:border-accent hover:text-ink"
+            }`}
+          >
+            {value.replace("_", " ")}
+          </button>
+        ))}
+      </div>
+
+      {queue.isError ? (
+        <p className="mt-8 text-sm text-dim">
+          This account cannot review applications.
+        </p>
+      ) : queue.isPending ? (
+        <div className="mt-6 space-y-3">
+          {[0, 1].map((row) => (
+            <div
+              key={row}
+              className="h-[120px] animate-pulse rounded-lg border border-line-strong bg-surface"
+            />
           ))}
         </div>
-
-        {queue.isError ? (
-          <p className="mt-8 text-[13.5px] text-dim">
-            This account cannot review applications.
-          </p>
-        ) : queue.isPending ? (
-          <div className="mt-6 space-y-3">
-            {[0, 1].map((row) => (
-              <div
-                key={row}
-                className="h-[120px] animate-pulse rounded-[12px] border border-white/[0.07] bg-panel"
-              />
-            ))}
-          </div>
-        ) : queue.data && queue.data.length > 0 ? (
-          <ul className="mt-6 space-y-3">
-            {queue.data.map((application) => (
-              <ApplicationRow key={application.id} application={application} />
-            ))}
-          </ul>
-        ) : (
-          <div className="mt-6 rounded-[12px] border border-dashed border-white/[0.14] px-6 py-12 text-center">
-            <span className="mx-auto grid size-11 place-items-center rounded-full border border-white/[0.10] text-acc">
-              <ShieldQuestion className="size-5" />
-            </span>
-            <p className="mt-3 text-[13.5px] text-mut">Nothing in this queue.</p>
-          </div>
-        )}
-      </main>
-    </AppShell>
+      ) : queue.data && queue.data.length > 0 ? (
+        <ul className="mt-6 space-y-3">
+          {queue.data.map((application) => (
+            <ApplicationRow key={application.id} application={application} />
+          ))}
+        </ul>
+      ) : (
+        <div className="mt-6 rounded-lg border border-dashed border-line-strong px-6 py-12 text-center">
+          <span className="mx-auto grid size-11 place-items-center rounded-full border border-line-strong text-accent-strong">
+            <ShieldQuestion className="size-5" />
+          </span>
+          <p className="mt-3 text-sm text-muted">Nothing in this queue.</p>
+        </div>
+      )}
+    </main>
   );
 }
 
@@ -89,43 +89,43 @@ function ApplicationRow({ application }: { application: ApplicationReview }) {
   const decided = application.state === "approved" || application.state === "rejected";
 
   return (
-    <li className="rounded-[12px] border border-white/[0.09] bg-panel p-5">
+    <li className={cardClasses()}>
       <div className="flex flex-wrap items-baseline justify-between gap-3">
         <div className="min-w-0">
-          <p className="text-[15px] font-semibold text-fg">{application.full_name}</p>
-          <p className="mt-0.5 text-[12px] text-dim">
+          <p className="text-lg font-semibold text-ink">{application.full_name}</p>
+          <p className="mt-0.5 text-xs text-dim">
             {application.practice_type} · {application.city || application.country} ·{" "}
             {application.years_experience} {t.dashYears} ·{" "}
             {(application.languages ?? []).join(", ") || "—"}
           </p>
         </div>
-        <span className="rounded-[6px] border border-white/[0.10] px-2 py-0.5 text-[10.5px] uppercase text-mut">
+        <span className="rounded-sm border border-line-strong px-2 py-0.5 text-2xs uppercase text-muted">
           {application.state.replace("_", " ")}
         </span>
       </div>
 
       {application.credentials && (
-        <p className="mt-3 text-[13px] leading-[1.7] text-mut">{application.credentials}</p>
+        <p className="mt-3 text-sm leading-[1.7] text-muted">{application.credentials}</p>
       )}
 
       {application.sample_reading && (
         <details className="mt-3">
-          <summary className="cursor-pointer text-[12.5px] text-acc">Sample reading</summary>
-          <p className="mt-2 whitespace-pre-wrap text-[13px] leading-[1.75] text-mut">
+          <summary className="cursor-pointer text-xs text-accent-strong">Sample reading</summary>
+          <p className="mt-2 whitespace-pre-wrap text-sm leading-[1.75] text-muted">
             {application.sample_reading}
           </p>
         </details>
       )}
 
       {!decided && (
-        <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-white/[0.07] pt-4">
-          <input
+        <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-line pt-4">
+          <Input
             value={note}
             onChange={(event) => setNote(event.target.value)}
             placeholder="Note to the applicant"
-            className="min-w-0 flex-1 rounded-[8px] border border-white/[0.09] bg-app px-3 py-2 text-[12.5px] text-fg placeholder-faint focus:border-acc/45 focus:outline-none"
+            className="min-w-0 flex-1"
           />
-          <button
+          <Button
             type="button"
             disabled={review.isPending}
             onClick={() =>
@@ -134,13 +134,13 @@ function ApplicationRow({ application }: { application: ApplicationReview }) {
                 decision: { decision: "approve", decision_note: note, reviewer_note: "" },
               })
             }
-            className="inline-flex items-center gap-1.5 rounded-[8px] bg-acc px-3.5 py-2 text-[12.5px] font-bold text-ink transition-colors hover:bg-acc2 disabled:opacity-40"
           >
             <Check className="size-3.5" />
             {t.practApprove}
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
+            variant="danger"
             disabled={review.isPending}
             onClick={() =>
               review.mutate({
@@ -148,16 +148,15 @@ function ApplicationRow({ application }: { application: ApplicationReview }) {
                 decision: { decision: "reject", decision_note: note, reviewer_note: "" },
               })
             }
-            className="inline-flex items-center gap-1.5 rounded-[8px] border border-white/12 px-3.5 py-2 text-[12.5px] text-mut transition-colors hover:border-rose-400/40 hover:text-rose-300 disabled:opacity-40"
           >
             <X className="size-3.5" />
             {t.practReject}
-          </button>
+          </Button>
         </div>
       )}
 
       {application.decision_note && decided && (
-        <p className="mt-3 border-t border-white/[0.07] pt-3 text-[12.5px] text-dim">
+        <p className="mt-3 border-t border-line pt-3 text-xs text-dim">
           {application.decision_note}
         </p>
       )}

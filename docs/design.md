@@ -166,16 +166,15 @@ Section padding is 24 on mobile, 48+ on desktop.
 
 | Token | px | Use |
 |---|---:|---|
-| `sm` | 2 | Chips, badges, small inputs |
-| `md` | 3 | Buttons, inputs, list thumbnails |
-| `lg` | 4 | Cards, category tiles |
-| `xl` | 6 | Hero banner, bottom sheets |
+| `sm` | 6 | Chips, badges, small inputs |
+| `md` | 10 | Buttons, inputs, list thumbnails |
+| `lg` | 14 | Cards, category tiles |
+| `xl` | 20 | Hero banner, bottom sheets |
 | `full` | 9999 | Rating pills, avatars, nav indicator |
 
-**Corners are squared.** Sharp edges read as utility and information density,
-which is what an astrology portal wants — every feature one click away, nothing
-hidden behind soft consumer-app chrome. `full` survives only where roundness
-carries meaning (avatars, rating pills), not as decoration.
+**Corners are rounded and soft.** Warm, friendly curvature that feels approachable
+and modern while keeping data legible. `full` survives where roundness carries
+meaning (avatars, rating pills), not as the primary container geometry.
 
 **Elevation.** The mockups are nearly flat — depth comes from the cream/white
 contrast, not from shadows. Use sparingly:
@@ -200,8 +199,11 @@ Never a black shadow above 12% on cream — it turns muddy grey.
 | Danger | `danger` | white | Destructive, always confirmed |
 
 Height 48 (mobile) / 44 (desktop), radius `md`, weight 500. Minimum touch
-target **44×44** including padding. Disabled = 40% opacity **plus** removed
-pointer events — never opacity alone, which still looks tappable.
+target **44×44** including padding. Disabled = `line-strong` fill, `dim`
+text, plus removed pointer events — never opacity alone (still looks
+tappable), and never a faded brand fill either: fading `accent-strong`
+keeps its own text-vs-fill contrast but blends the whole button into the
+page, which reads as illegible rather than disabled.
 
 ### Cards
 

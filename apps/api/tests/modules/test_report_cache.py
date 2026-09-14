@@ -151,6 +151,42 @@ def test_a_new_engine_version_does_not_serve_the_old_reading(
     assert model.calls == 2
 
 
+def test_a_different_siddhanta_is_a_different_reading(
+    headers: dict, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Surya Siddhanta and Drik produce different planet positions and panchang.
+
+    Serving a reading computed for one to a request for the other describes the
+    wrong chart — positions can differ by a degree or more near a nakshatra
+    boundary, which changes the dasha lord and with it the whole reading.
+    """
+    model = CountingModel()
+    monkeypatch.setattr(service, "get_client", model)
+
+    _post(headers)
+    drik = {**CASE["birth"], "siddhanta": "drik"}
+    _post(headers, birth=drik)
+    assert model.calls == 2
+
+
+def test_a_different_place_label_is_a_different_reading(
+    headers: dict, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """place_label appears verbatim in the prompt; the model can name the city.
+
+    A cached reading that says 'born in Kathmandu' must not be served to a
+    request whose label says 'born in Pokhara', even if the coordinates happen
+    to be identical — the model wrote the text for a different label.
+    """
+    model = CountingModel()
+    monkeypatch.setattr(service, "get_client", model)
+
+    _post(headers)
+    renamed = {**CASE["birth"], "place_label": "Somewhere Else, Nepal"}
+    _post(headers, birth=renamed)
+    assert model.calls == 2
+
+
 def test_one_users_reading_is_never_served_to_another(
     headers: dict, monkeypatch: pytest.MonkeyPatch
 ) -> None:

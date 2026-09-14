@@ -46,7 +46,7 @@ export function LanguageMenu({
         aria-expanded={open}
         aria-haspopup="true"
         aria-label={LANGUAGES.find((l) => l.code === language)?.label ?? "Language"}
-        className="flex items-center gap-1.5 rounded-[6px] px-2.5 py-2 text-mut transition-colors hover:text-fg"
+        className="flex items-center gap-1.5 rounded-md px-2.5 py-2 text-muted transition-colors hover:text-ink"
       >
         <svg
           className="size-[15px]"
@@ -59,7 +59,7 @@ export function LanguageMenu({
           <ellipse cx="12" cy="12" rx="4" ry="9" />
           <path d="M3.3 9h17.4M3.3 15h17.4" />
         </svg>
-        <span className="font-mono text-[11.5px] uppercase tracking-[0.1em]">{language}</span>
+        <span className="font-mono text-2xs uppercase tracking-[0.1em]">{language}</span>
         <svg
           className={`size-3 transition-transform ${open ? "rotate-180" : ""}`}
           viewBox="0 0 12 12"
@@ -76,7 +76,7 @@ export function LanguageMenu({
         <div
           className={`absolute right-0 z-50 ${dropUp ? "bottom-full pb-3" : "top-full pt-3"}`}
         >
-          <div className="w-[168px] rounded-[8px] border border-white/12 bg-inset/95 p-1.5 shadow-2xl shadow-black/50 backdrop-blur-xl">
+          <div className="w-[168px] rounded-lg border border-line-strong bg-surface p-1.5 shadow-raised">
             {LANGUAGES.map((l) => (
               <button
                 key={l.code}
@@ -86,10 +86,10 @@ export function LanguageMenu({
                   setLanguage(l.code);
                   setOpen(false);
                 }}
-                className={`flex w-full items-center justify-between rounded-[6px] px-2.5 py-2 text-left text-[13.5px] transition-colors ${
+                className={`flex w-full items-center justify-between rounded-md px-2.5 py-2 text-left text-sm transition-colors ${
                   l.code === language
-                    ? "bg-white/[0.05] text-acc"
-                    : "text-mut hover:bg-fg/[0.04] hover:text-fg"
+                    ? "bg-accent-wash text-accent-ink"
+                    : "text-muted hover:bg-cream hover:text-ink"
                 }`}
               >
                 <span>{l.nativeName}</span>

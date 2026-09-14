@@ -4,7 +4,10 @@ import { useRef, useState } from "react";
 import Link from "next/link";
 import { Camera, CheckCircle2, Clock, ShieldCheck, XCircle } from "lucide-react";
 
+import { Button } from "@/components/ui/button";
+import { cardClasses } from "@/components/ui/card";
 import { CustomPlaceInput } from "@/components/ui/custom-place-input";
+import { Input } from "@/components/ui/input";
 import { assetUrl } from "@/lib/api/client";
 import { AppShell } from "@/features/dashboard/components/app-shell";
 import {
@@ -86,22 +89,20 @@ export function ApplyPage() {
     });
 
   const application = existing.data;
-  const labelText = "mb-1.5 block text-[12px] text-mut";
-  const field =
-    "w-full rounded-[8px] border border-white/[0.09] bg-app px-3 py-2.5 text-[13.5px] text-fg placeholder-faint focus:border-acc/45 focus:outline-none";
+  const labelText = "mb-1.5 block text-xs text-muted";
   const chip = (active: boolean) =>
-    `rounded-[8px] border px-3 py-1.5 text-[12px] capitalize transition-colors ${
+    `flex min-h-11 items-center rounded-md border px-3 text-xs capitalize transition-colors ${
       active
-        ? "border-acc/50 bg-acc/[0.09] text-acc2"
-        : "border-white/[0.10] text-mut hover:border-brd2 hover:text-fg"
+        ? "border-accent bg-accent-tint text-accent-ink"
+        : "border-line-strong text-muted hover:border-accent hover:text-ink"
     }`;
 
   if (application) {
     return (
       <AppShell>
         <main className="mx-auto w-full max-w-[640px] px-5 pb-24 pt-12 sm:px-8">
-          <span className={`text-[11px] text-acc ${eyebrow}`}>{t.practRegister}</span>
-          <h1 className="mt-3 text-[26px] font-bold leading-tight text-fg sm:text-[30px]">
+          <span className={`text-2xs text-accent-strong ${eyebrow}`}>{t.practRegister}</span>
+          <h1 className="mt-3 text-2xl font-bold leading-tight text-ink">
             {t.practApplyTitle}
           </h1>
           <SubmittedProfile application={application} />
@@ -117,11 +118,11 @@ export function ApplyPage() {
           of it — the width was there, the page just refused to use it. */}
       <main className="mx-auto w-full max-w-[1120px] px-5 pb-28 pt-10 sm:px-8">
         <header className="max-w-2xl">
-          <span className={`text-[11px] text-acc ${eyebrow}`}>{t.practRegister}</span>
-          <h1 className="mt-3 text-[26px] font-bold leading-tight text-fg sm:text-[30px]">
+          <span className={`text-2xs text-accent-strong ${eyebrow}`}>{t.practRegister}</span>
+          <h1 className="mt-3 text-2xl font-bold leading-tight text-ink">
             {t.practApplyTitle}
           </h1>
-          <p className="mt-3 text-[14px] leading-[1.75] text-mut">{t.practApplyLead}</p>
+          <p className="mt-3 text-base leading-[1.75] text-muted">{t.practApplyLead}</p>
         </header>
 
         <form
@@ -140,28 +141,28 @@ export function ApplyPage() {
               stacked on top of it — it is what a seeker looks at first, and
               what an applicant is most likely to skip. */}
           <aside className="space-y-4 lg:sticky lg:top-[76px]">
-            <section className="rounded-[14px] border border-white/[0.09] bg-panel p-5 text-center">
+            <section className={`${cardClasses()} text-center`}>
               <button
                 type="button"
                 onClick={() => filePicker.current?.click()}
-                className="group relative mx-auto grid size-28 place-items-center overflow-hidden rounded-full border border-dashed border-white/[0.16] bg-app transition-colors hover:border-acc/45"
+                className="group relative mx-auto grid size-28 place-items-center overflow-hidden rounded-full border border-dashed border-line-strong bg-cream transition-colors hover:border-accent"
               >
                 {form.photo_url ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={assetUrl(form.photo_url)} alt="" className="size-full object-cover" />
                 ) : (
-                  <Camera className="size-7 text-dim transition-colors group-hover:text-acc" />
+                  <Camera className="size-7 text-dim transition-colors group-hover:text-accent-strong" />
                 )}
                 {upload.isPending && (
-                  <span className="absolute inset-0 grid place-items-center bg-black/50 text-[11px] text-fg">
+                  <span className="absolute inset-0 grid place-items-center bg-ink/50 text-xs text-white">
                     …
                   </span>
                 )}
               </button>
-              <p className="mt-3 text-[13px] font-medium text-fg">{t.practPhoto}</p>
-              <p className="mt-1 text-[11.5px] leading-[1.6] text-dim">{t.practPhotoNote}</p>
+              <p className="mt-3 text-sm font-medium text-ink">{t.practPhoto}</p>
+              <p className="mt-1 text-xs leading-[1.6] text-dim">{t.practPhotoNote}</p>
               {upload.isError && (
-                <p role="alert" className="mt-1.5 text-[11.5px] text-rose-300">
+                <p role="alert" className="mt-1.5 text-xs text-danger">
                   {upload.error.message}
                 </p>
               )}
@@ -180,12 +181,12 @@ export function ApplyPage() {
               />
             </section>
 
-            <section className="rounded-[14px] border border-white/[0.09] bg-panel p-5">
-              <h2 className="flex items-center gap-2 text-[12.5px] font-semibold text-fg">
-                <ShieldCheck className="size-4 text-acc" />
+            <section className={cardClasses()}>
+              <h2 className="flex items-center gap-2 text-sm font-semibold text-ink">
+                <ShieldCheck className="size-4 text-accent-strong" />
                 {t.applyNext}
               </h2>
-              <p className="mt-2 text-[11.5px] leading-[1.75] text-dim">{t.practPendingNote}</p>
+              <p className="mt-2 text-xs leading-[1.75] text-dim">{t.practPendingNote}</p>
             </section>
           </aside>
 
@@ -194,21 +195,20 @@ export function ApplyPage() {
               <div className="grid gap-4 sm:grid-cols-2">
                 <label className="block">
                   <span className={labelText}>{t.fullName}</span>
-                  <input
+                  <Input
                     required
                     autoComplete="name"
                     maxLength={255}
                     placeholder={t.practNamePlaceholder}
                     value={form.full_name}
                     onChange={(e) => setForm({ ...form, full_name: e.target.value })}
-                    className={field}
                   />
                 </label>
 
                 <label className="block">
                   <span className={labelText}>{t.practYears}</span>
                   <span className="relative block">
-                    <input
+                    <Input
                       type="number"
                       inputMode="numeric"
                       min={0}
@@ -221,9 +221,9 @@ export function ApplyPage() {
                           years_experience: Math.min(100, Math.max(0, Number(e.target.value) || 0)),
                         })
                       }
-                      className={`${field} pr-16`}
+                      className="pr-16"
                     />
-                    <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-[12px] text-dim">
+                    <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-xs text-dim">
                       {t.practYearsSuffix}
                     </span>
                   </span>
@@ -232,14 +232,13 @@ export function ApplyPage() {
 
               <label className="mt-4 block">
                 <span className={labelText}>{t.practHeadline}</span>
-                <input
+                <Input
                   value={form.headline}
                   onChange={(e) => setForm({ ...form, headline: e.target.value })}
                   placeholder={t.practHeadlinePlaceholder}
                   maxLength={160}
-                  className={field}
                 />
-                <span className="mt-1 block text-right text-[11px] tabular-nums text-dim">
+                <span className="mt-1 block text-right text-2xs tabular-nums text-dim">
                   {(form.headline ?? "").length}/160
                 </span>
               </label>
@@ -261,7 +260,7 @@ export function ApplyPage() {
                     </button>
                   ))}
                 </div>
-                <p className="mt-1.5 text-[11.5px] text-dim">{t.practBothNote}</p>
+                <p className="mt-1.5 text-xs text-dim">{t.practBothNote}</p>
               </fieldset>
 
               <fieldset className="mt-5">
@@ -317,7 +316,7 @@ export function ApplyPage() {
                     }
                   />
                   {form.country && (
-                    <p className="mt-1.5 text-[11.5px] text-dim">
+                    <p className="mt-1.5 text-xs text-dim">
                       {t.practCountry}: {form.country}
                     </p>
                   )}
@@ -338,9 +337,9 @@ export function ApplyPage() {
                     }}
                   />
                   <p
-                    className={`mt-1.5 text-[11.5px] ${
+                    className={`mt-1.5 text-xs ${
                       phoneTouched && digits.length > 0 && digits.length < MIN_DIGITS
-                        ? "text-rose-300"
+                        ? "text-danger"
                         : "text-dim"
                     }`}
                   >
@@ -353,19 +352,18 @@ export function ApplyPage() {
             </Card>
 
             {apply.isError && (
-              <p role="alert" className="text-[13px] text-rose-300">
+              <p role="alert" className="text-sm text-danger">
                 {apply.error.message}
               </p>
             )}
 
             <div className="flex flex-wrap items-center justify-end gap-3">
-              <button
+              <Button
                 type="submit"
                 disabled={apply.isPending || !form.full_name.trim()}
-                className="rounded-[9px] bg-acc px-6 py-2.5 text-[13.5px] font-bold text-ink transition-colors hover:bg-acc2 disabled:pointer-events-none disabled:opacity-40"
               >
                 {t.practApplySubmit}
-              </button>
+              </Button>
             </div>
           </div>
         </form>
@@ -377,8 +375,8 @@ export function ApplyPage() {
 /** One group of related questions. Sections beat one long ungrouped scroll. */
 function Card({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <section className="rounded-[14px] border border-white/[0.09] bg-panel p-5 sm:p-6">
-      <h2 className="text-[11px] uppercase tracking-[0.14em] text-dim">{title}</h2>
+    <section className={cardClasses()}>
+      <h2 className="text-2xs uppercase tracking-[0.14em] text-dim">{title}</h2>
       <div className="mt-4">{children}</div>
     </section>
   );
@@ -414,25 +412,25 @@ function SubmittedProfile({
   const { t } = useTranslation();
 
   const shown = {
-    submitted: { icon: Clock, label: t.practApplyPending, tone: "text-acc", ring: "border-acc/30" },
-    in_review: { icon: Clock, label: t.practApplyPending, tone: "text-acc", ring: "border-acc/30" },
+    submitted: { icon: Clock, label: t.practApplyPending, tone: "text-accent-strong", ring: "border-line-strong" },
+    in_review: { icon: Clock, label: t.practApplyPending, tone: "text-accent-strong", ring: "border-line-strong" },
     approved: {
       icon: CheckCircle2,
       label: t.practApplyApproved,
-      tone: "text-emerald-400",
-      ring: "border-emerald-400/30",
+      tone: "text-success",
+      ring: "border-line-strong",
     },
     rejected: {
       icon: XCircle,
       label: t.practApplyRejected,
-      tone: "text-rose-300",
-      ring: "border-rose-400/30",
+      tone: "text-danger",
+      ring: "border-line-strong",
     },
   }[application.state] ?? {
     icon: Clock,
     label: t.practApplyPending,
-    tone: "text-acc",
-    ring: "border-acc/30",
+    tone: "text-accent-strong",
+    ring: "border-line-strong",
   };
   const Icon = shown.icon;
   const pending = application.state === "submitted" || application.state === "in_review";
@@ -445,15 +443,15 @@ function SubmittedProfile({
 
   return (
     <>
-      <div className={`mt-8 flex items-start gap-3 rounded-[12px] border bg-panel px-4 py-3.5 ${shown.ring}`}>
+      <div className={`mt-8 flex items-start gap-3 rounded-lg border bg-surface px-4 py-3.5 ${shown.ring}`}>
         <Icon className={`mt-0.5 size-5 shrink-0 ${shown.tone}`} />
         <div className="min-w-0">
-          <p className={`text-[14px] font-medium ${shown.tone}`}>{shown.label}</p>
+          <p className={`text-base font-medium ${shown.tone}`}>{shown.label}</p>
           {application.decision_note ? (
-            <p className="mt-1 text-[13px] leading-[1.7] text-mut">{application.decision_note}</p>
+            <p className="mt-1 text-sm leading-[1.7] text-muted">{application.decision_note}</p>
           ) : (
             pending && (
-              <p className="mt-1 text-[12.5px] leading-[1.7] text-dim">{t.practPendingNote}</p>
+              <p className="mt-1 text-xs leading-[1.7] text-dim">{t.practPendingNote}</p>
             )
           )}
         </div>
@@ -462,34 +460,34 @@ function SubmittedProfile({
       {application.state === "approved" && (
         <Link
           href="/practitioners/me"
-          className="mt-4 inline-flex items-center gap-2 rounded-[8px] bg-acc px-4 py-2.5 text-[13.5px] font-bold text-ink transition-colors hover:bg-acc2"
+          className="mt-4 inline-flex items-center gap-2 rounded-md bg-accent-strong px-4 py-2.5 text-sm font-bold text-white transition-colors hover:bg-accent-ink"
         >
           {t.practDesk}
         </Link>
       )}
 
       <section className="mt-8">
-        <h2 className="text-[11px] uppercase tracking-[0.14em] text-dim">{t.practSubmitted}</h2>
+        <h2 className="text-2xs uppercase tracking-[0.14em] text-dim">{t.practSubmitted}</h2>
 
-        <div className="mt-4 rounded-[12px] border border-white/[0.09] bg-panel p-5">
+        <div className={`mt-4 ${cardClasses()}`}>
           <div className="flex items-start gap-4">
-            <span className="grid size-16 shrink-0 place-items-center overflow-hidden rounded-full border border-white/[0.09] bg-app">
+            <span className="grid size-16 shrink-0 place-items-center overflow-hidden rounded-full border border-line-strong bg-cream">
               {application.photo_url ? (
                 // Served by our own endpoint; next/image adds a loader for nothing.
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={assetUrl(application.photo_url)} alt="" className="size-full object-cover" />
               ) : (
-                <span className="text-[18px] font-bold text-acc">
+                <span className="text-lg font-bold text-accent-strong">
                   {application.full_name.charAt(0).toUpperCase()}
                 </span>
               )}
             </span>
             <div className="min-w-0 flex-1">
-              <p className="text-[16px] font-semibold text-fg">{application.full_name}</p>
+              <p className="text-base font-semibold text-ink">{application.full_name}</p>
               {application.headline && (
-                <p className="mt-0.5 text-[12.5px] text-mut">{application.headline}</p>
+                <p className="mt-0.5 text-xs text-muted">{application.headline}</p>
               )}
-              <p className="mt-1 text-[11.5px] text-dim">
+              <p className="mt-1 text-xs text-dim">
                 {[application.city || application.country,
                   application.years_experience > 0 &&
                     `${application.years_experience} ${t.dashYears}`]
@@ -500,11 +498,11 @@ function SubmittedProfile({
           </div>
 
           {facets.length > 0 && (
-            <div className="mt-4 flex flex-wrap gap-1.5 border-t border-white/[0.07] pt-4">
+            <div className="mt-4 flex flex-wrap gap-1.5 border-t border-line pt-4">
               {facets.map((tag) => (
                 <span
                   key={tag}
-                  className="rounded-[6px] border border-white/[0.10] px-2 py-0.5 text-[10.5px] capitalize text-mut"
+                  className="rounded-sm border border-line-strong px-2 py-0.5 text-xs capitalize text-muted"
                 >
                   {tag}
                 </span>

@@ -115,18 +115,18 @@ export function AppSidebar({
     })[0]?.href;
 
   const item = (active: boolean) =>
-    `flex items-center gap-3 rounded-[8px] px-2.5 py-2 text-[13.5px] transition-colors ${
+    `flex items-center gap-3 rounded-md px-2.5 py-2 text-sm transition-colors ${
       active
-        ? "bg-acc/[0.11] font-medium text-acc2"
-        : "text-mut hover:bg-fg/[0.04] hover:text-fg"
+        ? "bg-accent-tint font-medium text-ink"
+        : "text-muted hover:bg-cream hover:text-ink"
     }`;
 
   return (
-    <div className="flex h-full flex-col bg-inset">
+    <div className="flex h-full flex-col bg-surface">
       <div className="px-4 py-4">
         <Link href="/dashboard" onClick={onNavigate} className="flex items-center gap-2.5">
-          <NakhatraMark className="size-7 text-acc" />
-          <span className="font-logo text-sm font-bold tracking-[0.18em] text-fg">
+          <NakhatraMark className="size-7 text-accent-strong" />
+          <span className="text-sm font-bold tracking-[0.18em] text-ink">
             NAKHATRA
           </span>
         </Link>
@@ -146,7 +146,7 @@ export function AppSidebar({
                   <span className="shrink-0">{link.icon}</span>
                   <span className="truncate">{link.label}</span>
                   {link.badge && (
-                    <span className="ml-auto rounded-[4px] bg-[#0D1A16] px-1.5 py-0.5 text-[9.5px] text-emerald-300">
+                    <span className="ml-auto rounded-sm bg-success-tint px-1.5 py-0.5 text-2xs text-success">
                       {link.badge}
                     </span>
                   )}
@@ -175,27 +175,27 @@ export function AppSidebar({
           ))}
         </ul>
 
-        <p className={`mt-7 px-2.5 text-[10px] text-dim ${label}`}>{t.dashNavLibrary}</p>
+        <p className={`mt-7 px-2.5 text-2xs text-dim ${label}`}>{t.dashNavLibrary}</p>
         <ul className="mt-2 space-y-0.5">
           <li>
             <Link href="/dashboard#kundalis" onClick={onNavigate} className={item(false)}>
               <Sparkles className="size-[16px] shrink-0" />
               <span className="truncate">{t.dashSaved}</span>
-              <span className="ml-auto text-[11px] text-dim">{kundalis.length}</span>
+              <span className="ml-auto text-xs text-dim">{kundalis.length}</span>
             </Link>
           </li>
           <li>
             <Link href="/reading/choose?mode=live" onClick={onNavigate} className={item(false)}>
               <MessageCircle className="size-[16px] shrink-0" />
               <span className="truncate">{t.dashConversations}</span>
-              <span className="ml-auto text-[11px] text-dim">{sessionCount}</span>
+              <span className="ml-auto text-xs text-dim">{sessionCount}</span>
             </Link>
           </li>
         </ul>
 
         {kundalis.length > 0 && (
           <>
-            <p className={`mt-7 px-2.5 text-[10px] text-dim ${label}`}>{t.dashNavRecent}</p>
+            <p className={`mt-7 px-2.5 text-2xs text-dim ${label}`}>{t.dashNavRecent}</p>
             <ul className="mt-2 space-y-0.5">
               {/* Five: enough to find the chart you were just reading, few
                   enough that the sidebar does not become the list. */}
@@ -209,9 +209,9 @@ export function AppSidebar({
                       open(k);
                     }}
                     title={k.birth ? k.name : t.dashNotRecalculable}
-                    className="flex w-full items-center gap-3 rounded-[8px] px-2.5 py-2 text-left text-[13px] text-mut transition-colors hover:bg-fg/[0.04] hover:text-fg disabled:opacity-40"
+                    className="flex w-full items-center gap-3 rounded-md px-2.5 py-2 text-left text-sm text-muted transition-colors hover:bg-cream hover:text-ink disabled:opacity-40"
                   >
-                    <span className="grid size-[17px] shrink-0 place-items-center rounded-[4px] border border-acc/30 text-[9px] text-acc">
+                    <span className="grid size-[17px] shrink-0 place-items-center rounded-sm border border-accent/30 text-2xs text-accent-ink">
                       {k.name.trim().charAt(0).toUpperCase()}
                     </span>
                     <span className="truncate">
@@ -225,7 +225,7 @@ export function AppSidebar({
         )}
       </nav>
 
-      <div className="border-t border-brd px-2.5 py-2.5">
+      <div className="border-t border-line-strong px-2.5 py-2.5">
         <a href="mailto:support@nakhatra.com" className={item(false)}>
           <HelpCircle className="size-[16px] shrink-0" />
           <span>{t.dashHelp}</span>

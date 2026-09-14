@@ -68,7 +68,7 @@ export function KundaliPanel({ redirectOnCreate = false }: {
   return (
     <div className="space-y-4">
       {banner && (
-        <div className="mx-auto max-w-lg rounded-md border border-rose-500/30 bg-rose-500/10 px-4 py-3 text-sm text-rose-200">
+        <div className="mx-auto max-w-lg rounded-md border border-danger/30 bg-danger-tint px-4 py-3 text-sm text-danger">
           {banner}
         </div>
       )}
@@ -90,7 +90,7 @@ export function KundaliPanel({ redirectOnCreate = false }: {
 /** Same box as the form, so nothing shifts when it swaps in. */
 function FormSkeleton() {
   return (
-    <div className="mx-auto h-[520px] w-full max-w-lg animate-pulse rounded-[8px] border border-brd bg-panel" />
+    <div className="mx-auto h-[520px] w-full max-w-lg animate-pulse rounded-xl border border-line-strong bg-surface" />
   );
 }
 

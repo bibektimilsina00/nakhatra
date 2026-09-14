@@ -519,7 +519,7 @@ export function SolarSystem() {
       >
         <div
           ref={chipRef}
-          className="whitespace-nowrap rounded-[6px] border border-white/15 bg-[#0B0E18]/90 px-2 py-1 font-mono text-[10px] leading-none text-gold backdrop-blur-md"
+          className="whitespace-nowrap rounded-md border border-line bg-surface/90 px-2 py-1 font-mono text-xs leading-none text-accent-ink backdrop-blur-md"
         />
       </div>
     </>

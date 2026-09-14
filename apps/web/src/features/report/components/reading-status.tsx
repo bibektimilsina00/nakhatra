@@ -41,26 +41,26 @@ export function ReadingSkeleton({ count = 3 }: { count?: number }) {
   return (
     <div className="space-y-6" aria-hidden>
       {Array.from({ length: count }, (_, card) => (
-        <div key={card} className="rounded-[8px] border border-brd bg-panel p-5">
+        <div key={card} className="rounded-lg border border-line-strong bg-surface p-5">
           <div className="flex items-center gap-3">
-            <div className="size-9 shrink-0 animate-pulse rounded-[8px] bg-fg/[0.06]" />
+            <div className="size-9 shrink-0 animate-pulse rounded-lg bg-line" />
             <div className="min-w-0 flex-1 space-y-2">
-              <div className="h-3.5 w-40 animate-pulse rounded bg-fg/[0.06]" />
-              <div className="h-2.5 w-56 animate-pulse rounded bg-fg/[0.04]" />
+              <div className="h-3.5 w-40 animate-pulse rounded-sm bg-line" />
+              <div className="h-2.5 w-56 animate-pulse rounded-sm bg-line" />
             </div>
           </div>
           <div className="mt-5 space-y-2.5">
             {[100, 96, 88, 92, 64].map((w, i) => (
               <div
                 key={w}
-                className="h-2.5 animate-pulse rounded bg-white/[0.05]"
+                className="h-2.5 animate-pulse rounded-sm bg-line"
                 style={{ width: `${w}%`, animationDelay: `${i * 90}ms` }}
               />
             ))}
           </div>
           <div className="mt-5 flex gap-2">
             {[120, 148, 96].map((w) => (
-              <div key={w} className="h-6 animate-pulse rounded-[6px] bg-fg/[0.04]" style={{ width: w }} />
+              <div key={w} className="h-6 animate-pulse rounded-md bg-line" style={{ width: w }} />
             ))}
           </div>
         </div>

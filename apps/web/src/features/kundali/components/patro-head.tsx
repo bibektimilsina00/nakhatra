@@ -55,8 +55,10 @@ export function PatroHead({
   ) : (
     <EnglishPatro chart={chart} birth={birth} />
   );
-  const frame =
-    "overflow-hidden rounded-lg border-4 border-double border-red-800/70 bg-[#f7efdc] text-[#1a3a1a] shadow-sm dark:border-red-900/80";
+  const frame = [
+    "overflow-hidden rounded-lg border-4 border-double border-accent-strong/70 bg-accent-tint",
+    "text-ink shadow-raised",
+  ].join(" ");
 
   if (!collapsible) {
     return (
@@ -68,18 +70,18 @@ export function PatroHead({
 
   return (
     <details className={`group ${frame}`}>
-      <summary className="flex cursor-pointer items-center justify-between px-6 py-3 font-serif marker:content-none sm:px-8 [&::-webkit-details-marker]:hidden">
-        <span className="text-lg font-bold tracking-wide text-red-800">
+      <summary className="flex cursor-pointer items-center justify-between px-6 py-3 font-display marker:content-none sm:px-8 [&::-webkit-details-marker]:hidden">
+        <span className="text-lg font-bold tracking-wide text-accent-strong">
           ॥ श्रीगणेशाय नमः ॥{" "}
-          <span className="text-sm font-semibold text-red-900/70">
+          <span className="text-sm font-semibold text-accent-ink">
             {isSanskrit(language) ? "जन्मपत्रिका" : "Janma Patrika"}
           </span>
         </span>
-        <span className="text-xs text-red-900/60 transition group-open:rotate-180">
+        <span className="text-xs text-accent-ink transition group-open:rotate-180">
           ▼
         </span>
       </summary>
-      <div className="border-t border-red-800/30 px-6 py-6 sm:px-10">{body}</div>
+      <div className="border-t border-accent-strong/30 px-6 py-6 sm:px-10">{body}</div>
     </details>
   );
 }
@@ -87,14 +89,14 @@ export function PatroHead({
 /** A value the guru would write by hand — inked darker than the printed text. */
 function Fill({ children }: { children: React.ReactNode }) {
   return (
-    <span className="mx-0.5 font-bold text-[#26221b] underline decoration-dotted decoration-red-800/40 underline-offset-4">
+    <span className="mx-0.5 font-bold text-ink underline decoration-dotted decoration-accent-strong/40 underline-offset-4">
       {children}
     </span>
   );
 }
 
 function Blank() {
-  return <span className="mx-1 tracking-widest text-red-900/50">………</span>;
+  return <span className="mx-1 tracking-widest text-dim">………</span>;
 }
 
 const SHLOKAS = [
@@ -128,27 +130,27 @@ function SanskritPatro({ chart, birth }: { chart: Chart; birth: BirthDetailsIn }
   const nadiNe = AVAKHADA_TRANSLATIONS[a.nadi]?.ne;
 
   return (
-    <div className="space-y-5 font-serif leading-8 [text-wrap:pretty]">
+    <div className="space-y-5 font-display leading-8 [text-wrap:pretty]">
       <header className="space-y-3 text-center">
-        <p className="text-2xl font-bold tracking-wide text-red-800">
+        <p className="text-2xl font-bold tracking-wide text-accent-strong">
           ॥ श्रीगणेशाय नमः ॥
         </p>
-        <p className="text-sm text-red-800/90">
+        <p className="text-sm text-accent-ink">
           श्रीमन्मङ्गलमूर्त्तये नमः ॥ सर्वारम्भे प्रत्यूहनिवारणाय
           मङ्गलमाचरणीयमिति शिष्टाचारान्मङ्गलानि लिख्यन्ते ॥
         </p>
       </header>
 
-      <div className="space-y-2 text-center text-[13px] leading-7 text-red-900/85">
+      <div className="space-y-2 text-center text-sm leading-7 text-accent-ink">
         {SHLOKAS.map((s) => (
           <p key={s.slice(-8)}>{s}</p>
         ))}
-        <p className="pt-1 font-semibold tracking-wide text-red-800">
+        <p className="pt-1 font-semibold tracking-wide text-accent-strong">
           अथाग्रे पद्धतिः ।
         </p>
       </div>
 
-      <p className="text-[15px] leading-9">
+      <p className="text-base leading-9">
         श्रीशालिवाहनीय शकः <Fill>{n(p.shaka_samvat)}</Fill>{" "}
         श्रीवीरविक्रमादित्यसम्वत् <Fill>{n(p.vikram_samvat)}</Fill> ईसवीयसन्{" "}
         <Fill>{n(birthDate.getFullYear())}</Fill> अत्रास्मिन् वर्षे{" "}
@@ -170,7 +172,7 @@ function SanskritPatro({ chart, birth }: { chart: Chart; birth: BirthDetailsIn }
         <Fill>{dev(KARANA_DEV, p.karana)}</Fill> करणे जन्मेति पञ्चाङ्गम् ॥
       </p>
 
-      <p className="text-[15px] leading-9">
+      <p className="text-base leading-9">
         अथ सौरमानेन <Fill>{dev(MASA_DEV, p.masa)}</Fill> मासे, तदनुसार{" "}
         <Fill>{n(birthDate.getFullYear())}</Fill> ईसवीयमास{" "}
         <Fill>{AD_MONTH_DEV[birthDate.getMonth()]}</Fill>{" "}
@@ -199,7 +201,7 @@ function SanskritPatro({ chart, birth }: { chart: Chart; birth: BirthDetailsIn }
         नाम्नीदेव्याः सुवर्णमयकुक्षौ रत्नमजीजनत् ।
       </p>
 
-      <p className="text-[15px] leading-9">
+      <p className="text-base leading-9">
         अस्य होराशास्त्रप्रमाणेन{" "}
         <Fill>{getNakshatraName(p.nakshatra, language)}</Fill> नक्षत्रस्य{" "}
         <Fill>{CHARAN_DEV[(a.charan ?? 1) - 1] ?? n(a.charan)}</Fill> चरणत्वेन{" "}
@@ -243,19 +245,19 @@ function EnglishPatro({ chart, birth }: { chart: Chart; birth: BirthDetailsIn })
   const bhabhoga = chart.dasha.bhabhoga_ghati ?? 0;
 
   return (
-    <div className="space-y-5 font-serif leading-8">
+    <div className="space-y-5 font-display leading-8">
       <header className="space-y-2 text-center">
-        <p className="text-2xl font-bold tracking-wide text-red-800">
+        <p className="text-2xl font-bold tracking-wide text-accent-strong">
           ॥ Obeisance to Śrī Gaṇeśa ॥
         </p>
-        <p className="text-sm italic text-red-900/85">
+        <p className="text-sm italic text-accent-ink">
           May Brahmā grant long life, may Viṣṇu grant prosperity, and may Hara
           guard the limbs of the one whose birth-scroll this is. Herewith the
           record proceeds.
         </p>
       </header>
 
-      <p className="text-[15px]">
+      <p className="text-base">
         In the Śālivāhana Śaka year <Fill>{p.shaka_samvat}</Fill>, the Vikram
         Samvat <Fill>{p.vikram_samvat}</Fill>, the year of the Christian era{" "}
         <Fill>{birthDate.getFullYear()}</Fill>, in the samvatsara named{" "}
@@ -271,7 +273,7 @@ function EnglishPatro({ chart, birth }: { chart: Chart; birth: BirthDetailsIn })
         the panchanga of the birth.
       </p>
 
-      <p className="text-[15px]">
+      <p className="text-base">
         By the solar reckoning, in the month of <Fill>{p.masa}</Fill> —{" "}
         <Fill>
           {birthDate.toLocaleDateString("en-GB", {
@@ -302,7 +304,7 @@ function EnglishPatro({ chart, birth }: { chart: Chart; birth: BirthDetailsIn })
         wife <Blank />, this child was born as a jewel.
       </p>
 
-      <p className="text-[15px]">
+      <p className="text-base">
         By the authority of the horā-śāstra: born in the{" "}
         <Fill>{ordinal(a.charan ?? 1)}</Fill> quarter of{" "}
         <Fill>{p.nakshatra}</Fill>, the naming syllable is{" "}

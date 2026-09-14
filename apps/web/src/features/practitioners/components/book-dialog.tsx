@@ -3,6 +3,8 @@
 import { useRef, useState } from "react";
 import { X } from "lucide-react";
 
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { useRequestConsultation } from "@/features/consultations/hooks/use-consultations";
 import { formatMinor } from "@/features/consultations/money";
 import type { RateOut } from "@/features/practitioners/types";
@@ -77,21 +79,21 @@ export function BookDialog({
   };
 
   return (
-    <div className="fixed inset-0 z-50 grid place-items-center bg-black/70 p-4">
+    <div className="fixed inset-0 z-50 grid place-items-center bg-ink/70 p-4">
       <div
         ref={panel}
         role="dialog"
         aria-modal="true"
         aria-label={t.bookTitle}
-        className="w-full max-w-[420px] rounded-[14px] border border-white/[0.10] bg-panel p-5 shadow-2xl"
+        className="w-full max-w-[420px] rounded-lg border border-line-strong bg-surface p-5 shadow-overlay"
       >
         <div className="flex items-start justify-between gap-3">
-          <h2 className="text-[16px] font-bold text-fg">{t.bookTitle}</h2>
+          <h2 className="text-lg font-bold text-ink">{t.bookTitle}</h2>
           <button
             type="button"
             onClick={onClose}
             aria-label={t.dashClose}
-            className="text-dim transition-colors hover:text-fg"
+            className="flex min-h-11 min-w-11 items-center justify-center text-dim transition-colors hover:text-ink"
           >
             <X className="size-4.5" />
           </button>
@@ -99,7 +101,7 @@ export function BookDialog({
 
         <form onSubmit={submit} className="mt-4 space-y-4">
           <fieldset>
-            <legend className="text-[11px] uppercase tracking-[0.12em] text-dim">
+            <legend className="text-2xs uppercase tracking-[0.12em] text-dim">
               {t.bookMedium}
             </legend>
             <div className="mt-2 flex flex-wrap gap-2">
@@ -109,10 +111,10 @@ export function BookDialog({
                   type="button"
                   onClick={() => setMedium(row.medium)}
                   aria-pressed={medium === row.medium}
-                  className={`rounded-[8px] border px-3 py-1.5 text-[12.5px] capitalize transition-colors ${
+                  className={`flex min-h-11 items-center rounded-sm border px-3 text-xs capitalize transition-colors ${
                     medium === row.medium
-                      ? "border-acc/50 bg-acc/[0.09] text-acc2"
-                      : "border-white/[0.10] text-mut hover:border-brd2"
+                      ? "border-accent bg-accent-tint text-accent-ink"
+                      : "border-line-strong text-muted hover:border-accent"
                   }`}
                 >
                   {row.medium}
@@ -120,16 +122,16 @@ export function BookDialog({
               ))}
             </div>
             {rate ? (
-              <p className="mt-2 text-[12px] tabular-nums text-mut">
+              <p className="mt-2 text-xs tabular-nums text-muted">
                 {formatMinor(rate.per_minute_minor, rate.currency)}/{t.consultPerMinute}
               </p>
             ) : (
-              <p className="mt-2 text-[12px] text-dim">{t.bookUnpriced}</p>
+              <p className="mt-2 text-xs text-dim">{t.bookUnpriced}</p>
             )}
           </fieldset>
 
           <fieldset>
-            <legend className="text-[11px] uppercase tracking-[0.12em] text-dim">
+            <legend className="text-2xs uppercase tracking-[0.12em] text-dim">
               {t.bookWhen}
             </legend>
             <div className="mt-2 flex gap-2">
@@ -142,10 +144,10 @@ export function BookDialog({
                   type="button"
                   onClick={() => setLater(option.value)}
                   aria-pressed={later === option.value}
-                  className={`flex-1 rounded-[8px] border px-3 py-1.5 text-[12.5px] transition-colors ${
+                  className={`flex min-h-11 flex-1 items-center justify-center rounded-sm border px-3 text-xs transition-colors ${
                     later === option.value
-                      ? "border-acc/50 bg-acc/[0.09] text-acc2"
-                      : "border-white/[0.10] text-mut hover:border-brd2"
+                      ? "border-accent bg-accent-tint text-accent-ink"
+                      : "border-line-strong text-muted hover:border-accent"
                   }`}
                 >
                   {option.label}
@@ -156,23 +158,23 @@ export function BookDialog({
             {later && (
               <div className="mt-2.5 grid grid-cols-2 gap-2">
                 <label className="block">
-                  <span className="text-[11px] text-dim">{t.bookDate}</span>
-                  <input
+                  <span className="text-xs text-dim">{t.bookDate}</span>
+                  <Input
                     type="date"
                     required
                     value={date}
                     onChange={(event) => setDate(event.target.value)}
-                    className="mt-1 w-full rounded-[8px] border border-white/[0.09] bg-app px-3 py-2 text-[13px] text-fg focus:border-acc/45 focus:outline-none"
+                    className="mt-1"
                   />
                 </label>
                 <label className="block">
-                  <span className="text-[11px] text-dim">{t.bookTime}</span>
-                  <input
+                  <span className="text-xs text-dim">{t.bookTime}</span>
+                  <Input
                     type="time"
                     required
                     value={time}
                     onChange={(event) => setTime(event.target.value)}
-                    className="mt-1 w-full rounded-[8px] border border-white/[0.09] bg-app px-3 py-2 text-[13px] text-fg focus:border-acc/45 focus:outline-none"
+                    className="mt-1"
                   />
                 </label>
               </div>
@@ -180,29 +182,25 @@ export function BookDialog({
           </fieldset>
 
           <label className="block">
-            <span className="text-[11px] uppercase tracking-[0.12em] text-dim">{t.bookNote}</span>
+            <span className="text-2xs uppercase tracking-[0.12em] text-dim">{t.bookNote}</span>
             <textarea
               rows={3}
               value={note}
               onChange={(event) => setNote(event.target.value)}
               maxLength={2000}
-              className="mt-2 w-full resize-none rounded-[8px] border border-white/[0.09] bg-app px-3 py-2 text-[13px] leading-[1.7] text-fg placeholder-faint focus:border-acc/45 focus:outline-none"
+              className="mt-2 w-full resize-none rounded-md border border-line-strong bg-surface px-3 py-2 text-sm leading-[1.7] text-ink placeholder:text-dim focus-visible:outline-none focus-visible:border-ring"
             />
           </label>
 
           {(error || request.isError) && (
-            <p role="alert" className="text-[12.5px] text-rose-300">
+            <p role="alert" className="text-xs text-danger">
               {error ?? request.error?.message}
             </p>
           )}
 
-          <button
-            type="submit"
-            disabled={request.isPending || !rate}
-            className="w-full rounded-[9px] bg-acc px-4 py-2.5 text-[13px] font-semibold text-ink transition-opacity hover:opacity-90 disabled:opacity-50"
-          >
+          <Button type="submit" disabled={request.isPending || !rate} className="w-full">
             {t.bookConfirm}
-          </button>
+          </Button>
         </form>
       </div>
     </div>

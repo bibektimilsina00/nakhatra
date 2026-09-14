@@ -21,7 +21,8 @@ export async function exportElementToPdf(element: HTMLElement, fileName: string)
     const canvas = await html2canvas(element, {
       scale: 2,
       useCORS: true,
-      backgroundColor: "#090A10",
+      // This literal must be manually kept in sync with globals.css's light --t-cream since a PWA manifest / export-lib config is read outside any rendered DOM and can't reference a CSS custom property.
+      backgroundColor: "#ede3d3",
       logging: false,
       windowWidth: 1200,
     } as any);

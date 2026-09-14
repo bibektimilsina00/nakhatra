@@ -46,7 +46,7 @@ export function useOpenKundali(
         onOpened(saved.birth, chart);
         setOpeningId(null);
       } else {
-        router.push("/reading");
+        router.push(`/reading?id=${saved.id}`);
       }
     } catch {
       setFailedId(saved.id);

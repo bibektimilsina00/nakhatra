@@ -23,17 +23,17 @@ export function ReportSectionCard({
 }) {
   return (
     <div
-      className={`rounded-[8px] border border-brd bg-panel p-6 space-y-4 transition-all duration-200 ${
-        isHighlighted ? "border-l-4 border-l-[#E5A93C]" : ""
+      className={`rounded-lg border border-line-strong bg-surface p-6 space-y-4 transition-all duration-200 ${
+        isHighlighted ? "border-l-4 border-l-accent-strong" : ""
       }`}
     >
       <div className="flex items-center gap-3">
-        <span className="grid size-9 place-items-center rounded-[8px] bg-inset border border-brd">
+        <span className="grid size-9 place-items-center rounded-lg bg-cream border border-line-strong">
           <SectionIcon sectionId={section.id} />
         </span>
         <div>
-          <h3 className="font-serif text-base font-bold text-fg">{section.title}</h3>
-          <p className="text-xs text-mid">{section.subtitle}</p>
+          <h3 className="font-display text-base font-bold text-ink">{section.title}</h3>
+          <p className="text-xs text-muted">{section.subtitle}</p>
         </div>
       </div>
 
@@ -45,14 +45,14 @@ export function ReportSectionCard({
         <MarkdownRenderer content={section.content.join("\n\n")} />
       </div>
 
-      <div className="rounded-[8px] border border-acc/40 bg-inset p-3 text-xs font-bold text-acc2">
+      <div className="rounded-lg border border-accent/40 bg-cream p-3 text-xs font-bold text-accent-strong">
         {section.summary}
       </div>
 
       {/* Every claim shows the placement it came from. This is the difference
           between a reading and a horoscope, so it is not optional chrome. */}
-      <div className="border-t border-brd pt-3">
-        <p className="text-[11px] font-bold uppercase tracking-wider text-acc mb-1.5">
+      <div className="border-t border-line-strong pt-3">
+        <p className="text-2xs font-bold uppercase tracking-wider text-accent-strong mb-1.5">
           {footnotesLabel}
         </p>
         <div className="flex flex-wrap gap-2">
@@ -60,9 +60,9 @@ export function ReportSectionCard({
             <button
               key={idx}
               onClick={() => onPlacementClick?.(reason.placement)}
-              className="inline-flex items-center gap-1.5 rounded-[8px] border border-brd bg-inset px-2.5 py-1 text-xs text-fg hover:border-acc transition"
+              className="inline-flex min-h-11 items-center gap-1.5 rounded-lg border border-line-strong bg-cream px-2.5 py-1 text-xs text-ink hover:border-accent transition"
             >
-              <MapPin className="size-3.5 text-[#6366F1]" />
+              <MapPin className="size-3.5 text-accent-strong" />
               <span>{reason.placement}</span>
             </button>
           ))}

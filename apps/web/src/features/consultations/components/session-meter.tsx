@@ -10,6 +10,8 @@ import {
   formatMinor,
 } from "@/features/consultations/money";
 import type { Consultation, Wallet } from "@/features/consultations/types";
+import { Card } from "@/components/ui/card";
+import { Pill } from "@/components/ui/pill";
 import { useTranslation } from "@/lib/i18n/language-context";
 
 /** Warn while there is still time to do something about it. */
@@ -53,44 +55,38 @@ export function SessionMeter({
   const low = running && wallet !== undefined && remaining <= WARN_SECONDS;
 
   return (
-    <div className="rounded-[12px] border border-white/[0.09] bg-panel p-4">
+    <Card>
       <div className="flex flex-wrap items-baseline justify-between gap-3">
-        <span className="text-[11px] uppercase tracking-[0.14em] text-dim">
+        <span className="text-2xs uppercase tracking-[0.14em] text-dim">
           {formatMinor(consultation.rate_per_minute_minor, consultation.currency)}
           {" / "}
           {t.consultPerMinute}
         </span>
-        <span
-          className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-[10.5px] uppercase tracking-[0.12em] ${
-            running
-              ? "border-emerald-400/30 bg-[#0D1A16] text-emerald-300/90"
-              : "border-white/[0.10] text-dim"
-          }`}
-        >
-          {running && <span className="size-1.5 animate-pulse rounded-full bg-emerald-400" />}
+        <Pill tone={running ? "success" : "neutral"}>
+          {running && <span className="size-1.5 animate-pulse rounded-full bg-white" />}
           {consultation.state}
-        </span>
+        </Pill>
       </div>
 
       <div className="mt-3 flex items-end justify-between gap-4">
         <span>
-          <span className="block text-[11px] text-dim">{t.consultElapsed}</span>
-          <span className="block text-[26px] font-bold leading-none tabular-nums text-fg">
+          <span className="block text-xs text-dim">{t.consultElapsed}</span>
+          <span className="block text-2xl font-bold leading-none tabular-nums text-ink">
             {formatDuration(elapsed)}
           </span>
         </span>
         <span className="text-right">
-          <span className="block text-[11px] text-dim">{t.consultCost}</span>
-          <span className="block text-[26px] font-bold leading-none tabular-nums text-acc">
+          <span className="block text-xs text-dim">{t.consultCost}</span>
+          <span className="block text-2xl font-bold leading-none tabular-nums text-accent-ink">
             {formatMinor(cost, consultation.currency)}
           </span>
         </span>
       </div>
 
       {wallet && (
-        <div className="mt-3 flex items-baseline justify-between border-t border-white/[0.07] pt-2.5 text-[12px]">
+        <div className="mt-3 flex items-baseline justify-between border-t border-line pt-2.5 text-xs">
           <span className="text-dim">{t.consultBalance}</span>
-          <span className="tabular-nums text-mut">
+          <span className="tabular-nums text-muted">
             {formatMinor(wallet.available_minor, wallet.currency)}
             {running && ` · ${formatDuration(remaining)} ${t.consultLeft}`}
           </span>
@@ -100,12 +96,12 @@ export function SessionMeter({
       {low && (
         // Said at two minutes, not at zero. A warning that arrives as the call
         // ends is not a warning.
-        <p className="mt-3 flex items-start gap-2 rounded-[8px] border border-acc/30 bg-[#1A150B] px-3 py-2 text-[12px] leading-[1.6] text-acc2">
+        <p className="mt-3 flex items-start gap-2 rounded-md border border-accent/30 bg-accent-wash px-3 py-2 text-xs leading-[1.6] text-accent-ink">
           <TriangleAlert className="mt-0.5 size-3.5 shrink-0" />
           {t.consultLowBalance}
         </p>
       )}
-    </div>
+    </Card>
   );
 }
 

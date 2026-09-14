@@ -25,8 +25,8 @@ export function Section({
     <section id={id} className="scroll-mt-24">
       <div className="mb-5 flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h2 className="font-display text-2xl text-fg">{title}</h2>
-          {note && <p className="mt-1.5 max-w-xl text-xs leading-relaxed text-mut">{note}</p>}
+          <h2 className="font-display text-2xl text-ink">{title}</h2>
+          {note && <p className="mt-1.5 max-w-xl text-xs leading-relaxed text-muted">{note}</p>}
         </div>
         {action}
       </div>
@@ -50,7 +50,7 @@ export function ViewMore({
   return (
     <button
       onClick={onToggle}
-      className="mt-5 w-full rounded-lg border border-dashed border-line py-3 text-sm text-mut transition hover:border-accent-strong/40 hover:text-accent-ink"
+      className="mt-5 w-full rounded-lg border border-dashed border-line py-3 text-sm text-muted transition hover:border-accent-strong/40 hover:text-accent-ink"
     >
       {expanded ? "Show less" : `View ${count} more ${label}`}
     </button>

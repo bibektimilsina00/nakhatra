@@ -116,7 +116,7 @@ export default async function SignPage({ params }: { params: Promise<{ sign: str
   const path = `/rasifal/${route.slug}`;
 
   return (
-    <div className="theme-dark min-h-dvh bg-ink text-paper">
+    <div className="min-h-dvh bg-cream font-body text-ink antialiased">
       <JsonLd
         json={graph([
           breadcrumbLd([
@@ -136,74 +136,74 @@ export default async function SignPage({ params }: { params: Promise<{ sign: str
       <SiteHeader />
 
       <main className="mx-auto w-full max-w-[760px] px-5 pt-10 pb-20 sm:px-8">
-        <nav aria-label="Breadcrumb" className="text-[12.5px] text-faint">
-          <Link href="/rasifal" className="hover:text-gold2">
+        <nav aria-label="Breadcrumb" className="text-xs text-dim">
+          <Link href="/rasifal" className="min-h-11 inline-flex items-center hover:text-accent-ink">
             आजको राशिफल
           </Link>
-          <span className="mx-1.5">›</span>
+          <span className="mx-1.5 text-dim">›</span>
           <span className="text-muted">{name}</span>
         </nav>
 
         <header className="mt-6 flex items-start gap-4">
-          <span className="grid size-16 shrink-0 place-items-center rounded-full border border-gold/25 bg-gradient-to-br from-gold/[0.18] to-gold/[0.04] text-gold">
+          <span className="grid size-16 shrink-0 place-items-center rounded-full border border-accent/25 bg-accent-wash text-accent-ink">
             <RashiGlyph index={day.sign_index} className="size-8" />
           </span>
           <div className="min-w-0">
-            <h1 className="text-[28px] font-bold leading-tight sm:text-[34px]">
+            <h1 className="font-display text-2xl font-bold leading-tight text-ink sm:text-3xl">
               {name} राशिफल <span className="text-muted">· {route.roman} Rashifal</span>
             </h1>
-            <p className="mt-1.5 text-[14px] text-muted">
+            <p className="mt-1.5 text-sm text-muted">
               {when} · {RASHI_SYLLABLES[day.sign_index].join(" ")}
             </p>
           </div>
         </header>
 
-        <section className="mt-6 rounded-[12px] border border-brd bg-card p-5">
+        <section className="mt-6 rounded-lg border border-line-strong bg-surface p-5">
           <p className="flex flex-wrap items-center gap-x-3 gap-y-1">
-            <span className="text-[20px] leading-none text-gold" aria-label={`${day.rating} / 5`}>
+            <span className="text-xl leading-none text-star" aria-label={`${day.rating} / 5`}>
               {"★".repeat(day.rating)}
-              <span className="text-faint/50">{"☆".repeat(5 - day.rating)}</span>
+              <span className="text-dim">{"☆".repeat(5 - day.rating)}</span>
             </span>
-            <span className="text-[15px] font-semibold text-gold2">
+            <span className="text-sm font-semibold text-accent-ink">
               {bandLabel(day.band ?? "", day.rating, LANG)}
             </span>
           </p>
 
-          <p className="mt-4 text-[16.5px] leading-[1.85] text-paper/90">{summary}</p>
+          <p className="mt-4 text-base leading-relaxed text-ink">{summary}</p>
 
           {day.reading && (
             <dl className="mt-5 space-y-3">
               {SECTIONS.map((key) =>
                 day.reading?.[key] ? (
-                  <div key={key} className="text-[15px] leading-[1.75]">
-                    <dt className="inline font-semibold text-paper">{SECTION_LABELS[key][LANG]}</dt>
+                  <div key={key} className="text-sm leading-relaxed">
+                    <dt className="inline font-semibold text-ink">{SECTION_LABELS[key][LANG]}</dt>
                     <dd className="ml-1.5 inline text-muted">{day.reading[key]}</dd>
                   </div>
                 ) : null,
               )}
               {day.reading.remedy && (
-                <div className="rounded-[8px] border border-gold/25 bg-gold/[0.06] p-3 text-[15px] leading-[1.75]">
-                  <dt className="inline font-semibold text-gold2">{SECTION_LABELS.remedy[LANG]}</dt>
-                  <dd className="ml-1.5 inline text-paper/90">{day.reading.remedy}</dd>
+                <div className="rounded-lg border border-accent/25 bg-accent-wash p-3 text-sm leading-relaxed">
+                  <dt className="inline font-semibold text-accent-ink">{SECTION_LABELS.remedy[LANG]}</dt>
+                  <dd className="ml-1.5 inline text-ink">{day.reading.remedy}</dd>
                 </div>
               )}
             </dl>
           )}
 
-          <dl className="mt-5 flex flex-wrap gap-x-6 gap-y-2 border-t border-brd pt-4 text-[14px]">
+          <dl className="mt-5 flex flex-wrap gap-x-6 gap-y-2 border-t border-line pt-4 text-sm">
             <div>
-              <dt className="inline text-faint">शुभ रङ:</dt>{" "}
-              <dd className="inline font-semibold text-paper">{colourName(day.lucky_colour, LANG)}</dd>
+              <dt className="inline text-dim">शुभ रङ:</dt>{" "}
+              <dd className="inline font-semibold text-ink">{colourName(day.lucky_colour, LANG)}</dd>
             </div>
             <div>
-              <dt className="inline text-faint">शुभ अंक:</dt>{" "}
-              <dd className="inline font-semibold text-gold2">
+              <dt className="inline text-dim">शुभ अंक:</dt>{" "}
+              <dd className="inline font-semibold text-accent-ink">
                 {toLocalizedDigit(String(day.lucky_number), LANG)}
               </dd>
             </div>
             <div>
-              <dt className="inline text-faint">चन्द्रमाको मूर्ति:</dt>{" "}
-              <dd className="inline font-semibold text-paper">{murtiName(day.murti, LANG)}</dd>
+              <dt className="inline text-dim">चन्द्रमाको मूर्ति:</dt>{" "}
+              <dd className="inline font-semibold text-ink">{murtiName(day.murti, LANG)}</dd>
             </div>
           </dl>
         </section>
@@ -211,17 +211,17 @@ export default async function SignPage({ params }: { params: Promise<{ sign: str
         {/* The working. Nobody else publishes this, and it is what makes the
             page about this sign on this day rather than a horoscope. */}
         <section className="mt-6">
-          <h2 className="text-[17px] font-semibold">आजको गोचर — {name} राशिबाट</h2>
-          <ul className="mt-3 divide-y divide-brd rounded-[12px] border border-brd bg-card text-[14px]">
+          <h2 className="font-display text-base font-semibold text-ink">आजको गोचर — {name} राशिबाट</h2>
+          <ul className="mt-3 divide-y divide-line rounded-lg border border-line-strong bg-surface text-sm">
             {day.transits.map((t) => (
               <li key={t.name} className="flex items-center justify-between gap-3 px-4 py-2.5">
-                <span className="text-paper">
+                <span className="text-ink">
                   {getPlanetName(t.name, LANG)}
-                  {t.retrograde && <span className="ml-1.5 text-[11px] text-faint">(वक्री)</span>}
+                  {t.retrograde && <span className="ml-1.5 text-xs text-retrograde">(वक्री)</span>}
                 </span>
                 <span className="text-muted">
                   {getSignName(t.sign, LANG)} · {toLocalizedDigit(String(t.house), LANG)} भाव ·{" "}
-                  <span className={t.favourable && !t.obstructed ? "text-emerald-300" : t.obstructed ? "text-amber-300" : "text-rose-300"}>
+                  <span className={t.favourable && !t.obstructed ? "font-semibold text-benefic" : t.obstructed ? "font-semibold text-accent-ink" : "font-semibold text-malefic"}>
                     {t.obstructed ? "वेध" : t.favourable ? "शुभ" : "अशुभ"}
                   </span>
                 </span>
@@ -229,28 +229,28 @@ export default async function SignPage({ params }: { params: Promise<{ sign: str
             ))}
           </ul>
           {day.reading?.astrological_reason && (
-            <p className="mt-3 text-[13.5px] leading-[1.75] text-muted">{day.reading.astrological_reason}</p>
+            <p className="mt-3 text-xs leading-relaxed text-muted">{day.reading.astrological_reason}</p>
           )}
         </section>
 
         {/* Every other sign, so the crawler and the reader can both get to
             all twelve from any one. */}
         <section className="mt-8">
-          <h2 className="text-[15px] font-semibold text-muted">अन्य राशिहरूको आजको राशिफल</h2>
+          <h2 className="font-display text-sm font-semibold text-muted">अन्य राशिहरूको आजको राशिफल</h2>
           <ul className="mt-3 flex flex-wrap gap-2">
             {SIGN_ROUTES.filter((r) => r.slug !== route.slug).map((r) => (
               <li key={r.slug}>
                 <Link
                   href={`/rasifal/${r.slug}`}
-                  className="inline-block rounded-full border border-brd px-3 py-1.5 text-[13px] text-muted transition hover:border-gold/40 hover:text-gold2"
+                  className="min-h-11 inline-flex items-center rounded-full border border-line px-3.5 py-1.5 text-xs text-muted transition hover:border-accent hover:text-accent-ink hover:bg-surface"
                 >
                   {getSignName(r.sign, LANG)}
                 </Link>
               </li>
             ))}
           </ul>
-          <p className="mt-4 text-[13px] text-faint">
-            <Link href="/rasifal" className="hover:text-gold2">
+          <p className="mt-4 text-xs text-dim">
+            <Link href="/rasifal" className="min-h-11 inline-flex items-center hover:text-accent-ink hover:underline">
               बाह्रै राशिको आजको राशिफल एकै पृष्ठमा →
             </Link>
           </p>

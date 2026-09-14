@@ -1,6 +1,101 @@
 {
   "components": {
     "schemas": {
+      "AdminStatsOverview": {
+        "properties": {
+          "practitioner_applications": {
+            "$ref": "#/components/schemas/PractitionerApplicationStats"
+          },
+          "total_chat_messages": {
+            "title": "Total Chat Messages",
+            "type": "integer"
+          },
+          "total_chat_sessions": {
+            "title": "Total Chat Sessions",
+            "type": "integer"
+          },
+          "total_consultations": {
+            "title": "Total Consultations",
+            "type": "integer"
+          },
+          "total_guest_kundalis_all_time": {
+            "title": "Total Guest Kundalis All Time",
+            "type": "integer"
+          },
+          "total_guest_kundalis_last_7_days": {
+            "title": "Total Guest Kundalis Last 7 Days",
+            "type": "integer"
+          },
+          "total_saved_kundalis": {
+            "title": "Total Saved Kundalis",
+            "type": "integer"
+          },
+          "total_users": {
+            "title": "Total Users",
+            "type": "integer"
+          },
+          "users_last_30_days": {
+            "title": "Users Last 30 Days",
+            "type": "integer"
+          },
+          "users_last_7_days": {
+            "title": "Users Last 7 Days",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "total_users",
+          "users_last_7_days",
+          "users_last_30_days",
+          "total_saved_kundalis",
+          "total_chat_sessions",
+          "total_chat_messages",
+          "total_guest_kundalis_all_time",
+          "total_guest_kundalis_last_7_days",
+          "practitioner_applications",
+          "total_consultations"
+        ],
+        "title": "AdminStatsOverview",
+        "type": "object"
+      },
+      "AdminUserItem": {
+        "properties": {
+          "chat_session_count": {
+            "title": "Chat Session Count",
+            "type": "integer"
+          },
+          "created_at": {
+            "title": "Created At",
+            "type": "string"
+          },
+          "email": {
+            "title": "Email",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "kundali_count": {
+            "title": "Kundali Count",
+            "type": "integer"
+          },
+          "role": {
+            "title": "Role",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "email",
+          "role",
+          "created_at",
+          "kundali_count",
+          "chat_session_count"
+        ],
+        "title": "AdminUserItem",
+        "type": "object"
+      },
       "ApplicationIn": {
         "description": "Setting up a practitioner profile.\n\nShort on purpose. This was an essay \u2014 where you trained, and a written\nsample reading \u2014 which is a reasonable thing to ask a stranger and a\nterrible thing to put between someone and joining. What a reader actually\nchooses on is the name, the photograph, the languages and what you practise;\neverything else can be filled in later from the desk.",
         "properties": {
@@ -859,6 +954,17 @@
       },
       "ChatSessionIn": {
         "properties": {
+          "chart_key": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Chart Key"
+          },
           "kundali_id": {
             "anyOf": [
               {
@@ -883,6 +989,17 @@
       },
       "ChatSessionOut": {
         "properties": {
+          "chart_key": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Chart Key"
+          },
           "created_at": {
             "title": "Created At",
             "type": "string"
@@ -2646,6 +2763,29 @@
         "title": "PlanetOut",
         "type": "object"
       },
+      "PractitionerApplicationStats": {
+        "properties": {
+          "approved": {
+            "title": "Approved",
+            "type": "integer"
+          },
+          "pending": {
+            "title": "Pending",
+            "type": "integer"
+          },
+          "rejected": {
+            "title": "Rejected",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "pending",
+          "approved",
+          "rejected"
+        ],
+        "title": "PractitionerApplicationStats",
+        "type": "object"
+      },
       "PractitionerCard": {
         "description": "One row of the directory.\n\nRating and consultation count are absent until reviews exist \u2014 a card that\ninvents `4.9 \u00b7 1,204 readings` for someone who has taken no consultations\nis a fabricated credential, and the preview data in the web app is already\nlabelled as such for the same reason.",
         "properties": {
@@ -3201,6 +3341,17 @@
             "minimum": 1.0,
             "title": "Rating",
             "type": "integer"
+          },
+          "reading": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RashiReadingOut"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The written rashifal, when one was generated."
           },
           "score": {
             "description": "Mean of the daily scores across the span.",
@@ -4137,6 +4288,55 @@
         "title": "TransitOut",
         "type": "object"
       },
+      "UpdateRoleRequest": {
+        "properties": {
+          "role": {
+            "enum": [
+              "seeker",
+              "practitioner",
+              "admin"
+            ],
+            "title": "Role",
+            "type": "string"
+          }
+        },
+        "required": [
+          "role"
+        ],
+        "title": "UpdateRoleRequest",
+        "type": "object"
+      },
+      "UserListResponse": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/AdminUserItem"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "limit": {
+            "title": "Limit",
+            "type": "integer"
+          },
+          "page": {
+            "title": "Page",
+            "type": "integer"
+          },
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "total",
+          "page",
+          "limit"
+        ],
+        "title": "UserListResponse",
+        "type": "object"
+      },
       "UserLoginIn": {
         "properties": {
           "email": {
@@ -4532,6 +4732,218 @@
         "summary": "Approve, reject, or move an application to in-review",
         "tags": [
           "practitioners"
+        ]
+      }
+    },
+    "/v1/admin/stats": {
+      "get": {
+        "description": "Returns aggregate system statistics for the admin dashboard.\n\nNever exposes PII. Used for high-level health monitoring.",
+        "operationId": "get_stats_v1_admin_stats_get",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminStatsOverview"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get admin dashboard stats",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/v1/admin/users": {
+      "get": {
+        "operationId": "list_users_v1_admin_users_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "default": 1,
+              "minimum": 1,
+              "title": "Page",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 20,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "description": "Search by email substring",
+            "in": "query",
+            "name": "search",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Search by email substring",
+              "title": "Search"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserListResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List users",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/v1/admin/users/{user_id}/role": {
+      "patch": {
+        "operationId": "update_user_role_v1_admin_users__user_id__role_patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "user_id",
+            "required": true,
+            "schema": {
+              "title": "User Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateRoleRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "title": "Response Update User Role V1 Admin Users  User Id  Role Patch",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Update user role",
+        "tags": [
+          "admin"
         ]
       }
     },
@@ -5775,6 +6187,22 @@
               "title": "Dasha Depth",
               "type": "integer"
             }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
           }
         ],
         "requestBody": {
@@ -6998,6 +7426,23 @@
               "description": "First day of the span. Defaults to today in Kathmandu.",
               "title": "On"
             }
+          },
+          {
+            "description": "Language of the written reading.",
+            "in": "query",
+            "name": "language",
+            "required": false,
+            "schema": {
+              "default": "ne",
+              "description": "Language of the written reading.",
+              "enum": [
+                "ne",
+                "hi",
+                "en"
+              ],
+              "title": "Language",
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -7823,6 +8268,66 @@
       }
     },
     "/v1/vault/sessions/{session_id}/messages": {
+      "get": {
+        "operationId": "get_session_messages_v1_vault_sessions__session_id__messages_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "session_id",
+            "required": true,
+            "schema": {
+              "title": "Session Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ChatMessageOut"
+                  },
+                  "title": "Response Get Session Messages V1 Vault Sessions  Session Id  Messages Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Session Messages",
+        "tags": [
+          "vault"
+        ]
+      },
       "post": {
         "operationId": "add_message_v1_vault_sessions__session_id__messages_post",
         "parameters": [

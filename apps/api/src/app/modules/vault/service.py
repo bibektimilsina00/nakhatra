@@ -101,6 +101,7 @@ def create_session(session: Session, body: ChatSessionIn, user_id: str) -> ChatS
             id=f"ses_{uuid.uuid4().hex[:12]}",
             user_id=user_id,
             kundali_id=body.kundali_id,
+            chart_key=body.chart_key,
             title=body.title,
             created_at=now_iso,
             updated_at=now_iso,
@@ -112,6 +113,17 @@ def create_session(session: Session, body: ChatSessionIn, user_id: str) -> ChatS
 def delete_session(session: Session, session_id: str, user_id: str) -> None:
     if repository.delete_session(session, session_id, user_id) == 0:
         raise SessionNotFoundError()
+
+
+def list_session_messages(
+    session: Session, session_id: str, user_id: str
+) -> list[ChatMessageOut]:
+    chat_session = repository.find_session(session, session_id, user_id)
+    if not chat_session:
+        raise SessionNotFoundError()
+    return [
+        ChatMessageOut(**m.model_dump()) for m in repository.list_messages(session, session_id)
+    ]
 
 
 def add_message(

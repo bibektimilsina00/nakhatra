@@ -55,24 +55,27 @@ export function DashaChakra({
         : lord.slice(0, 3);
 
   return (
-    <div className="overflow-hidden rounded-lg border-2 border-red-800/60 bg-[#f7efdc] text-[#26221b]">
-      <p className="border-b-2 border-red-800/60 px-4 py-2 text-center font-serif text-sm font-bold tracking-wide text-red-800">
+    <div
+      className="overflow-hidden rounded-lg border-2 border-accent-strong/60 bg-accent-tint
+        text-ink"
+    >
+      <p className="border-b-2 border-accent-strong/60 px-4 py-2 text-center font-display text-sm font-bold tracking-wide text-accent-strong">
         {label(titles[scheme])}
       </p>
       <div className="overflow-x-auto">
-        <table className="w-full border-collapse text-center font-serif text-sm">
+        <table className="w-full border-collapse text-center font-display text-sm">
           <thead>
             <tr>
-              <th className="border border-red-800/40 bg-red-800/[0.06] px-2 py-1.5 font-bold text-red-800">
+              <th className="border border-accent-strong/40 bg-accent-wash px-2 py-1.5 font-bold text-accent-strong">
                 {sk ? "ग्र." : "Lord"}
               </th>
               {periods.map((p) => (
                 <th
                   key={`${p.lord}-${p.start}`}
-                  className={`border border-red-800/40 px-2 py-1.5 font-bold ${
+                  className={`border border-accent-strong/40 px-2 py-1.5 font-bold ${
                     isActive(p, now)
-                      ? "bg-amber-300/50 text-red-900"
-                      : "text-red-800"
+                      ? "bg-accent/40 text-accent-contrast"
+                      : "text-accent-strong"
                   }`}
                   title={`${p.lord}  ${p.start} → ${p.end}`}
                 >
@@ -84,7 +87,7 @@ export function DashaChakra({
           <tbody>
             {rows.map((pair, rowIdx) => (
               <tr key={pair[1]}>
-                <td className="border border-red-800/40 bg-red-800/[0.06] px-2 py-1.5 font-semibold text-red-800">
+                <td className="border border-accent-strong/40 bg-accent-wash px-2 py-1.5 font-semibold text-accent-strong">
                   {label(pair)}
                 </td>
                 {periods.map((p) => {
@@ -111,8 +114,8 @@ export function DashaChakra({
                   return (
                     <td
                       key={`${p.lord}-${p.start}-${pair[1]}`}
-                      className={`border border-red-800/40 px-2 py-1.5 tabular-nums ${
-                        isActive(p, now) ? "bg-amber-300/30 font-semibold" : ""
+                      className={`border border-accent-strong/40 px-2 py-1.5 tabular-nums ${
+                        isActive(p, now) ? "bg-accent/20 font-semibold" : ""
                       }`}
                     >
                       {n(cell)}

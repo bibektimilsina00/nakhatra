@@ -26,7 +26,7 @@ const ICONS: Record<string, typeof User> = {
   remedies: ShieldCheck,
 };
 
-export function SectionIcon({ sectionId, className = "size-5 text-acc" }: {
+export function SectionIcon({ sectionId, className = "size-5 text-accent-strong" }: {
   sectionId: string;
   className?: string;
 }) {

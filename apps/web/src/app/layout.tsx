@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Cinzel, JetBrains_Mono, Sora } from "next/font/google";
+import { Inter, Poppins } from "next/font/google";
 import Script from "next/script";
 
 import { SessionSync } from "@/features/auth/components/session-sync";
@@ -10,24 +10,17 @@ import { THEME_INIT_SCRIPT, ThemeProvider } from "@/providers/theme-provider";
 
 import "./globals.css";
 
-const sora = Sora({
+const inter = Inter({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-sora",
+  weight: ["400", "500", "600"],
+  variable: "--font-inter",
   display: "swap",
 });
 
-const jetbrains = JetBrains_Mono({
+const poppins = Poppins({
   subsets: ["latin"],
-  weight: ["400", "500"],
-  variable: "--font-jetbrains",
-  display: "swap",
-});
-
-const cinzel = Cinzel({
-  subsets: ["latin"],
-  weight: ["500", "600", "700", "800"],
-  variable: "--font-serif-face",
+  weight: ["500", "600", "700"],
+  variable: "--font-poppins",
   display: "swap",
 });
 
@@ -127,13 +120,13 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${cinzel.variable} ${sora.variable} ${jetbrains.variable} dark`}
+      className={`${inter.variable} ${poppins.variable}`}
     >
       <head>
-        {/* Before paint, so the patro theme never flashes dark first. */}
+        {/* Before paint, so the page never flashes the wrong theme. */}
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
       </head>
-      <body className="font-body antialiased bg-app text-mut min-h-dvh">
+      <body className="font-body antialiased bg-cream text-ink min-h-dvh">
         <ThemeProvider>
         <LanguageProvider>
           <QueryProvider>

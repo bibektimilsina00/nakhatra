@@ -28,41 +28,41 @@ export function RashiCard({ day }: { day: RashiDay }) {
 
   const tone =
     day.rating >= 4
-      ? "border-emerald-400/30"
+      ? "border-benefic/30"
       : day.rating <= 2
-        ? "border-rose-400/30"
-        : "border-brd";
+        ? "border-malefic/30"
+        : "border-line-strong";
 
   return (
-    <article className={`flex flex-col rounded-[12px] border bg-card p-4.5 ${tone}`}>
-      <header className="flex items-start justify-between gap-3 border-b border-brd pb-3">
+    <article className={`flex flex-col rounded-lg border bg-surface p-4 ${tone}`}>
+      <header className="flex items-start justify-between gap-3 border-b border-line pb-3">
         <div className="flex min-w-0 items-center gap-2.5">
-          <span className="grid size-10 shrink-0 place-items-center rounded-full border border-gold/25 bg-gradient-to-br from-gold/[0.18] to-gold/[0.04] text-gold shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]">
-            <RashiGlyph index={day.sign_index} className="size-[22px]" />
+          <span className="grid size-10 shrink-0 place-items-center rounded-full border border-accent/25 bg-accent-wash text-accent-ink">
+            <RashiGlyph index={day.sign_index} className="size-5" />
           </span>
           <div className="min-w-0">
           {/* A link, so each sign's own page is one click and one crawl
               away from the page everyone arrives at. */}
-          <h3 className="font-serif text-[17px] font-bold leading-tight text-paper">
-            <Link href={`/rasifal/${slugFor(day.sign)}`} className="hover:text-gold2">
+          <h3 className="font-display text-lg font-bold leading-tight text-ink">
+            <Link href={`/rasifal/${slugFor(day.sign)}`} className="hover:text-accent-ink">
               {getSignName(day.sign, language)}
             </Link>
           </h3>
             {/* The naming syllables, as a panchanga prints them under the sign. */}
-            <p className="mt-0.5 truncate text-[11.5px] tracking-wide text-faint">
+            <p className="mt-0.5 truncate text-xs tracking-wide text-dim">
               {RASHI_SYLLABLES[day.sign_index].join(" ")}
             </p>
           </div>
         </div>
         <div className="shrink-0 text-right">
           <span
-            className="block text-[14px] leading-none text-gold"
+            className="block text-sm leading-none text-star"
             aria-label={`${day.rating} / 5`}
           >
             {"★".repeat(day.rating)}
-            <span className="text-faint/50">{"☆".repeat(5 - day.rating)}</span>
+            <span className="opacity-40">{"☆".repeat(5 - day.rating)}</span>
           </span>
-          <span className="mt-1 block text-[11px] font-semibold text-muted">
+          <span className="mt-1 block text-2xs font-semibold text-muted">
             {bandLabel(day.band ?? "", day.rating, language)}
           </span>
         </div>
@@ -70,7 +70,7 @@ export function RashiCard({ day }: { day: RashiDay }) {
 
       {/* The written reading when the writer has been round; the composed one
           from the findings while it has not. Never a blank card. */}
-      <p className="mt-3 text-[14px] leading-[1.75] text-paper/90">
+      <p className="mt-3 text-sm leading-relaxed text-ink">
         {day.reading?.summary || readingFor(day, language)}
       </p>
 
@@ -78,8 +78,8 @@ export function RashiCard({ day }: { day: RashiDay }) {
         <dl className="mt-3.5 flex-1 space-y-2.5">
           {SECTIONS.map((key) =>
             day.reading?.[key] ? (
-              <div key={key} className="text-[13px] leading-[1.6]">
-                <dt className="inline font-semibold text-paper">
+              <div key={key} className="text-sm leading-relaxed">
+                <dt className="inline font-semibold text-ink">
                   {SECTION_LABELS[key][language]}
                 </dt>
                 <dd className="ml-1.5 inline text-muted">{day.reading[key]}</dd>
@@ -88,24 +88,24 @@ export function RashiCard({ day }: { day: RashiDay }) {
           )}
 
           {day.reading.remedy && (
-            <div className="rounded-[8px] border border-gold/25 bg-gold/[0.06] p-2.5 text-[13px] leading-[1.6]">
-              <dt className="inline font-semibold text-gold2">
+            <div className="rounded-lg border border-accent/25 bg-accent-wash p-2.5 text-sm leading-relaxed">
+              <dt className="inline font-semibold text-accent-ink">
                 {SECTION_LABELS.remedy[language]}
               </dt>
-              <dd className="ml-1.5 inline text-paper/90">{day.reading.remedy}</dd>
+              <dd className="ml-1.5 inline text-ink">{day.reading.remedy}</dd>
             </div>
           )}
         </dl>
       )}
 
-      <dl className="mt-3.5 flex flex-wrap items-center gap-x-5 gap-y-1.5 border-t border-brd pt-3 text-[12.5px]">
+      <dl className="mt-3.5 flex flex-wrap items-center gap-x-5 gap-y-1.5 border-t border-line pt-3 text-xs">
         <div className="flex items-center gap-1.5">
-          <dt className="text-faint">{language === "en" ? "Lucky colour" : "शुभ रङ"}:</dt>
-          <dd className="font-semibold text-paper">{colourName(day.lucky_colour, language)}</dd>
+          <dt className="text-dim">{language === "en" ? "Lucky colour" : "शुभ रङ"}:</dt>
+          <dd className="font-semibold text-ink">{colourName(day.lucky_colour, language)}</dd>
         </div>
         <div className="flex items-center gap-1.5">
-          <dt className="text-faint">{language === "en" ? "Lucky number" : "शुभ अंक"}:</dt>
-          <dd className="font-semibold text-gold2">
+          <dt className="text-dim">{language === "en" ? "Lucky number" : "शुभ अंक"}:</dt>
+          <dd className="font-semibold text-accent-ink">
             {toLocalizedDigit(String(day.lucky_number), language)}
           </dd>
         </div>
@@ -115,7 +115,7 @@ export function RashiCard({ day }: { day: RashiDay }) {
         <button
           type="button"
           onClick={() => setOpen((v) => !v)}
-          className="ml-auto cursor-pointer text-[11.5px] font-medium text-faint transition hover:text-gold2"
+          className="ml-auto min-h-11 inline-flex items-center cursor-pointer text-xs font-medium text-dim transition hover:text-accent-ink"
         >
           {open
             ? language === "ne"
@@ -132,36 +132,34 @@ export function RashiCard({ day }: { day: RashiDay }) {
 
       </dl>
 
-
-
       {open && (
-        <p className="mt-2.5 text-[10.5px] text-faint/70">
+        <p className="mt-2.5 text-2xs text-dim">
           {language === "en" ? "Murti" : "मूर्ति"}: {murtiName(day.murti, language)}
         </p>
       )}
 
       {open && day.reading?.astrological_reason && (
-        <p className="mt-2.5 rounded-[8px] border border-brd bg-ink2 p-3 text-[11.5px] leading-[1.75] text-muted">
+        <p className="mt-2.5 rounded-lg border border-line-strong bg-surface p-3 text-xs leading-relaxed text-muted">
           {day.reading.astrological_reason}
         </p>
       )}
 
       {open && (
-        <ul className="mt-2 space-y-1 rounded-[8px] border border-brd bg-ink2 p-3">
+        <ul className="mt-2 space-y-1 rounded-lg border border-line bg-surface p-3">
           {day.transits.map((t) => (
-            <li key={t.name} className="flex items-baseline justify-between gap-2 text-[11px]">
+            <li key={t.name} className="flex items-baseline justify-between gap-2 text-2xs">
               <span className="text-muted">
                 {getPlanetName(t.name, language)}
-                {t.retrograde && <span className="ml-1 text-rose-400">℞</span>}
+                {t.retrograde && <span className="ml-1 text-retrograde">℞</span>}
               </span>
               <span className="text-right">
-                <span className="text-faint">
+                <span className="text-dim">
                   {getSignName(t.sign, language)} ·{" "}
                   {language === "en" ? `H${t.house}` : `भाव ${toLocalizedDigit(String(t.house), language)}`}
                 </span>
                 <span
                   className={`ml-2 font-semibold ${
-                    t.obstructed ? "text-gold2" : t.favourable ? "text-emerald-400" : "text-rose-400"
+                    t.obstructed ? "text-accent-ink" : t.favourable ? "text-benefic" : "text-malefic"
                   }`}
                 >
                   {t.obstructed
