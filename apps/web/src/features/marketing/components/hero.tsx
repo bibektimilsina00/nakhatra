@@ -24,7 +24,17 @@ export function Hero() {
   const focus = d1.focus ?? d9.focus;
 
   return (
-    <section id="top" className="grain relative min-h-screen overflow-hidden bg-cream">
+    // The sky is a real starfield with real bloom — it needs a dark stage to
+    // read at all, in either app theme. `data-theme="dark"` isn't a root-only
+    // switch: every token in globals.css resolves through [data-theme], so
+    // stamping it here scopes just this section to the dark palette (every
+    // class below still comes from the token system, nothing hardcoded) while
+    // the rest of the page keeps following the real light/dark toggle.
+    <section
+      id="top"
+      data-theme="dark"
+      className="grain relative min-h-screen overflow-hidden bg-cream"
+    >
       <HeroSky />
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_78%_62%_at_50%_46%,transparent_0%,var(--color-accent-wash)_58%,var(--color-cream)_90%)]" />
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-cream to-transparent" />

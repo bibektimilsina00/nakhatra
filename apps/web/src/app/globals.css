@@ -128,6 +128,37 @@
   --t-retrograde: #eca23c;
 }
 
+/* @theme only maps --color-* to --t-* once, effectively at :root — so a
+   nested [data-theme] element gets its own --t-* correctly, but --color-*
+   is inherited as whatever was already computed at :root and never
+   re-resolves further down. This re-declares the same mapping on
+   [data-theme] itself (root's stamp included), so any element that scopes
+   its own data-theme — not just <html> — gets --color-* recomputed from
+   the --t-* now in scope at THAT element instead of an ancestor's frozen
+   value. Needed for the marketing hero (a real starfield, permanently
+   dark regardless of the app theme) to work with zero hardcoded colors. */
+[data-theme] {
+  --color-cream: var(--t-cream);
+  --color-surface: var(--t-surface);
+  --color-line: var(--t-line);
+  --color-line-strong: var(--t-line-strong);
+  --color-ink: var(--t-ink);
+  --color-muted: var(--t-muted);
+  --color-dim: var(--t-dim);
+  --color-accent-strong: var(--t-accent-strong);
+  --color-accent-ink: var(--t-accent-ink);
+  --color-accent-wash: var(--t-accent-wash);
+  --color-accent-tint: var(--t-accent-tint);
+  --color-danger: var(--t-danger);
+  --color-danger-tint: var(--t-danger-tint);
+  --color-danger-ink: var(--t-danger-ink);
+  --color-benefic: var(--t-benefic);
+  --color-malefic: var(--t-malefic);
+  --color-neutral-dignity: var(--t-muted);
+  --color-retrograde: var(--t-retrograde);
+  --color-combust: var(--t-dim);
+}
+
 @media (prefers-color-scheme: dark) {
   /* Only when the visitor has never chosen explicitly — THEME_INIT_SCRIPT
      always stamps data-theme before paint once a choice exists. */
