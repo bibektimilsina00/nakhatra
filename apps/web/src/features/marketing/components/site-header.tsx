@@ -109,7 +109,7 @@ export function SiteHeader() {
     <div ref={navRef as React.RefObject<HTMLDivElement>}>
       <header
         id="hdr"
-        className="fixed inset-x-0 top-0 z-50 transition-all duration-300 border-b border-line bg-cream/90 backdrop-blur"
+        className="fixed inset-x-0 top-0 z-50 transition-all duration-300 border-b border-line bg-surface/90 backdrop-blur"
       >
         <div className="mx-auto flex max-w-[1360px] items-center justify-between px-8 py-4">
           <div className="flex items-center gap-9">

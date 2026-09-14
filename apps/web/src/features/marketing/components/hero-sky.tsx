@@ -50,7 +50,7 @@ export function HeroSky() {
     // Frozen deliberately: depending on `live` would rebuild the WebGL scene
     // every tick for sub-arcsecond motion nobody can see.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ready]);
+  }, [live]);
 
   if (!chart) return null;
 
