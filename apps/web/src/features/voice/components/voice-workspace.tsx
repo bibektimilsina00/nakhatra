@@ -1142,9 +1142,9 @@ onClick={() => setupMicAnalyzer()}
                     }}
                     className={`group relative flex size-48 cursor-pointer items-center justify-center overflow-hidden rounded-full border-2 bg-surface transition-all duration-700 md:size-52 ${
                       voiceState === "speaking"
-                        ? "scale-105 border-accent-strong shadow-[0_0_70px_rgba(229,169,60,0.35)]"
+                        ? "scale-105 border-accent-strong shadow-[0_0_70px_color-mix(in_srgb,var(--color-accent-strong)_35%,transparent)]"
                         : voiceState === "listening"
-                          ? "border-accent/50 shadow-[0_0_50px_rgba(229,169,60,0.18)]"
+                          ? "border-accent/50 shadow-[0_0_50px_color-mix(in_srgb,var(--color-accent-strong)_18%,transparent)]"
                           : voiceState === "thinking"
                             ? "border-accent/70"
                             : "border-line opacity-80"
@@ -1692,7 +1692,7 @@ onClick={() => setupMicAnalyzer()}
                   onClick={toggleDictation}
                   className={`grid size-11 shrink-0 place-items-center rounded-lg border transition group cursor-pointer active:scale-95 ${
                     isDictating
-                      ? "bg-danger/20 border-danger text-danger shadow-[0_0_15px_rgba(239,68,68,0.4)] animate-pulse"
+                      ? "bg-danger/20 border-danger text-danger shadow-[0_0_15px_color-mix(in_srgb,var(--color-danger)_40%,transparent)] animate-pulse"
                       : "border-line bg-cream text-muted hover:text-accent-strong hover:border-accent/50"
                   }`}
                   title={

@@ -27,17 +27,14 @@ import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
 import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
 import { UnrealBloomPass } from "three/addons/postprocessing/UnrealBloomPass.js";
 
-export const PLANET_COLORS: Record<string, string> = {
-  Sun: "rgb(255, 179, 71)",
-  Moon: "rgb(232, 236, 244)",
-  Mars: "rgb(255, 107, 90)",
-  Mercury: "rgb(126, 217, 87)",
-  Jupiter: "rgb(243, 199, 102)",
-  Venus: "rgb(247, 200, 224)",
-  Saturn: "rgb(122, 156, 198)",
-  Rahu: "rgb(139, 123, 199)",
-  Ketu: "rgb(199, 123, 88)",
-};
+import {
+  ASPECT_LINE_COLOR,
+  aspectLineColor,
+  PLANET_COLORS,
+  PLANET_FALLBACK_COLOR,
+} from "@/features/kundali/constants/planet-colors";
+
+export { PLANET_COLORS };
 
 /** U+FE0E pins the glyphs to text presentation, so they take our gold tint
  *  instead of rendering as colour emoji. */
@@ -460,7 +457,7 @@ export function BirthSky3D({
       // the name floating bare over the sphere, constant screen size
       const label = makeLabel(
         getPlanetAbbrev(p.name, language) + (p.retrograde ? " ℞" : ""),
-        PLANET_COLORS[p.name] ?? "rgb(248, 250, 252)", 42,
+        PLANET_COLORS[p.name] ?? PLANET_FALLBACK_COLOR, 42,
       );
       label.position.copy(at(lon, shell.r, shell.size + 7));
       pivot.add(label);
@@ -520,9 +517,9 @@ export function BirthSky3D({
       const g = cnv.getContext("2d")!;
       const grad = g.createRadialGradient(256, 256, 40, 256, 256, 256);
       grad.addColorStop(0, "rgba(122,156,198,0)");
-      grad.addColorStop(0.72, "rgba(229,169,60,0)");
-      grad.addColorStop(0.88, "rgba(229,169,60,0.10)");
-      grad.addColorStop(1, "rgba(229,169,60,0)");
+      grad.addColorStop(0.72, aspectLineColor(0));
+      grad.addColorStop(0.88, aspectLineColor(0.10));
+      grad.addColorStop(1, aspectLineColor(0));
       g.fillStyle = grad;
       g.fillRect(0, 0, 512, 512);
       const glow = new THREE.Mesh(
@@ -707,7 +704,7 @@ export function BirthSky3D({
           geo,
           new THREE.LineDashedMaterial({
             color: new THREE.Color(
-              name === "Moon" ? "rgb(243, 199, 102)" : PLANET_COLORS[name] ?? "rgb(229, 169, 60)",
+              name === "Moon" ? "rgb(243, 199, 102)" : PLANET_COLORS[name] ?? ASPECT_LINE_COLOR,
             ),
             transparent: true, opacity: 0.38, dashSize: 4, gapSize: 4,
           }),
@@ -1044,7 +1041,7 @@ function makeLabel(
   ctx.scale(2, 2);
   if (opts.pill) {
     ctx.fillStyle = "rgba(9,10,16,0.78)";
-    ctx.strokeStyle = "rgba(229,169,60,0.35)";
+    ctx.strokeStyle = aspectLineColor(0.35);
     ctx.lineWidth = 1.5;
     ctx.beginPath();
     ctx.roundRect(1, 1, w - 2, h - 2, h / 2);

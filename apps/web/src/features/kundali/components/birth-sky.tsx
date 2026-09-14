@@ -5,7 +5,15 @@ import { useRouter } from "next/navigation";
 import { ArrowLeft, Eye, EyeOff, Sparkles } from "lucide-react";
 
 import { AppShell } from "@/features/dashboard/components/app-shell";
-import {BirthSky3D, MoonPhase3D, PLANET_COLORS, YOGATARA } from "@/features/kundali/components/birth-sky-3d";
+import { BirthSky3D, MoonPhase3D, YOGATARA } from "@/features/kundali/components/birth-sky-3d";
+import {
+  PLANET_COLORS,
+  PLANET_FALLBACK_COLOR,
+  RAHU_GRADIENT_COLOR,
+  RAHU_GRADIENT_STOP,
+  KETU_GRADIENT_COLOR,
+  KETU_GRADIENT_STOP,
+} from "@/features/kundali/constants/planet-colors";
 import { loadKundaliFromStorage } from "@/features/kundali/store/kundali-store";
 import type { BirthDetailsIn, Chart, Planet } from "@/features/kundali/types";
 import { useTranslation } from "@/lib/i18n/language-context";
@@ -247,7 +255,7 @@ function PlanetCard({ planet }: { planet: Planet }) {
   const { language } = useTranslation();
   const sk = language !== "en";
   const n = (x: number | string) => toLocalizedDigit(x, language);
-  const color = PLANET_COLORS[planet.name] ?? "rgb(248, 250, 252)";
+  const color = PLANET_COLORS[planet.name] ?? PLANET_FALLBACK_COLOR;
 
   return (
     <Card
@@ -386,8 +394,8 @@ function planetFace(name: string): React.CSSProperties {
   return {
     background:
       name === "Rahu"
-        ? "radial-gradient(circle at 35% 35%, rgb(139, 123, 199), rgb(20, 16, 38) 75%)"
-        : "radial-gradient(circle at 35% 35%, rgb(199, 123, 88), rgb(28, 15, 8) 75%)",
+        ? `radial-gradient(circle at 35% 35%, ${RAHU_GRADIENT_COLOR}, ${RAHU_GRADIENT_STOP} 75%)`
+        : `radial-gradient(circle at 35% 35%, ${KETU_GRADIENT_COLOR}, ${KETU_GRADIENT_STOP} 75%)`,
   };
 }
 

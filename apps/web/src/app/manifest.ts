@@ -12,8 +12,9 @@ export default function manifest(): MetadataRoute.Manifest {
       "Your chart, computed exactly by Swiss Ephemeris. Your questions, answered from it.",
     start_url: "/",
     display: "standalone",
-    background_color: "#090A10",
-    theme_color: "#090A10",
+    // This literal must be manually kept in sync with globals.css's light --t-cream since a PWA manifest / export-lib config is read outside any rendered DOM and can't reference a CSS custom property.
+    background_color: "#ede3d3",
+    theme_color: "#ede3d3",
     icons: [
       { src: "/icon-192.png", sizes: "192x192", type: "image/png", purpose: "any" },
       { src: "/icon-512.png", sizes: "512x512", type: "image/png", purpose: "any" },
