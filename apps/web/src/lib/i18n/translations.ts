@@ -485,6 +485,7 @@ export interface TranslationCatalog {
   dashYoni: string;
   dashTatva: string;
   dashVarna: string;
+  chatSignUpPrompt: string;
 }
 
 export const translations: Record<Language, TranslationCatalog> = {
@@ -827,6 +828,7 @@ export const translations: Record<Language, TranslationCatalog> = {
     dashSignIn: "Sign in",
     dashNavHome: "Home",
     dashNavNew: "New kundali",
+    chatSignUpPrompt: "Please sign in or create an account to save and continue this conversation.",
     dashNavReading: "Reading",
     dashNavLive: "Live astrologer",
     dashNavMilan: "Kundali Milan",
@@ -1306,6 +1308,7 @@ export const translations: Record<Language, TranslationCatalog> = {
     dashSignIn: "साइन इन",
     dashNavHome: "गृह",
     dashNavNew: "नयाँ कुण्डली",
+    chatSignUpPrompt: "यो कुराकानी सुरक्षित गर्न र जारी राख्न कृपया साइन इन वा खाता सिर्जना गर्नुहोस्।",
     dashNavReading: "कुण्डली विश्लेषण",
     dashNavLive: "प्रत्यक्ष ज्योतिषी",
     dashNavMilan: "कुण्डली मिलान",
@@ -1787,6 +1790,7 @@ export const translations: Record<Language, TranslationCatalog> = {
     dashSignIn: "साइन इन",
     dashNavHome: "होम",
     dashNavNew: "नई कुंडली",
+    chatSignUpPrompt: "इस बातचीत को सहेजने और जारी रखने के लिए कृपया साइन इन करें या खाता बनाएं।",
     dashNavReading: "कुंडली विश्लेषण",
     dashNavLive: "लाइव ज्योतिषी",
     dashNavMilan: "कुंडली मिलान",
