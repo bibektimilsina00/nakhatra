@@ -369,53 +369,6 @@ export function BirthSky3D({
       nodeFx.push({ shell, glow, phase: nodeFx.length * Math.PI });
     }
 
-    // Every graha's own silhouette edge. Bloom used to be what separated a
-    // lit sphere from whatever sat behind it — bright enough to read against
-    // near-black, and (once bloom is off, see `bloom` prop) still bright
-    // enough against warm cream too, EXCEPT bloom's replacement is nothing:
-    // a pale planet (Saturn, Moon-toned bodies) has almost the same luminance
-    // as the light theme's cream page and just disappears into it. A diffuse
-    // dark halo behind the sphere was tried first and was too subtle to read
-    // as separation — the same warm-brown family as the page itself just
-    // blended into it. What actually works: the exact fresnel rim technique
-    // dressNode already uses for Rahu/Ketu, but dark and normal-blended
-    // instead of bright and additive (additive can only brighten a pixel,
-    // which does nothing against a background already brighter than the
-    // planet). A crisp dark line right at the silhouette's grazing edge
-    // reads as a defined shape on any background, the way a flat illustration
-    // outlines a circle to keep it legible — on the dark page it stays
-    // near-invisible (the near-black backdrop already gives planets contrast
-    // on its own), so the effect only shows up where it's actually needed.
-    function groundPlanet(mesh: THREE.Mesh, size: number, parent: THREE.Object3D) {
-      const mat = new THREE.ShaderMaterial({
-        uniforms: {
-          uColor: { value: new THREE.Color(0x2b1710) },
-          uPow: { value: 2.0 },
-          uGain: { value: isLightInit ? 1.1 : 0.04 },
-        },
-        vertexShader: `
-          varying vec3 vN; varying vec3 vV;
-          void main() {
-            vec4 wp = modelMatrix * vec4(position, 1.0);
-            vN = normalize(mat3(modelMatrix) * normal);
-            vV = normalize(cameraPosition - wp.xyz);
-            gl_Position = projectionMatrix * viewMatrix * wp;
-          }`,
-        fragmentShader: `
-          uniform vec3 uColor; uniform float uPow; uniform float uGain;
-          varying vec3 vN; varying vec3 vV;
-          void main() {
-            float rim = pow(1.0 - abs(dot(normalize(vN), normalize(vV))), uPow);
-            gl_FragColor = vec4(uColor, rim * uGain);
-          }`,
-        transparent: true,
-        depthWrite: false,
-      });
-      themeUpdaters.push((isLight) => { mat.uniforms.uGain.value = isLight ? 1.1 : 0.04; });
-      const rim = new THREE.Mesh(new THREE.SphereGeometry(size * 1.08, 48, 32), mat);
-      rim.position.copy(mesh.position);
-      parent.add(rim);
-    }
 
     /* ── the nine grahas, each at its engine longitude ───────────── */
     type GrahaMesh = { name: string; mesh: THREE.Mesh; r: number; lon: number; label: THREE.Sprite; pivot: THREE.Group };
@@ -498,7 +451,6 @@ export function BirthSky3D({
       );
       mesh.position.copy(at(lon, shell.r));
       pivot.add(mesh);
-      groundPlanet(mesh, shell.size, pivot);
 
       if (p.name === "Saturn") {
         const ring = new THREE.Mesh(
@@ -549,7 +501,6 @@ export function BirthSky3D({
     }
 
     grahas.push({ name: "Earth", mesh: earth, r: 10, lon: 0, label: earthLabel, pivot: earthPivot });
-    groundPlanet(earth, 10, scene);
 
     /* ── the nodal axis: Rahu and Ketu are one serpent, always opposite ──
        A faint dotted line from each node toward the Earth, stopping short of
