@@ -56,10 +56,10 @@ export function SnackHost({ children }: { children: React.ReactNode }) {
           <div
             key={s.id}
             role="status"
-            className={`pointer-events-auto flex w-full max-w-md items-start gap-2.5 rounded-[10px] border p-3 shadow-lg shadow-black/30 backdrop-blur ${
+            className={`pointer-events-auto flex w-full max-w-md items-start gap-2.5 rounded-lg border p-3 shadow-overlay backdrop-blur ${
               s.tone === "ok"
-                ? "border-emerald-400/30 bg-emerald-500/12 text-emerald-200"
-                : "border-rose-400/30 bg-rose-500/12 text-rose-200"
+                ? "border-success/30 bg-success-tint text-success-ink"
+                : "border-danger/30 bg-danger-tint text-danger-ink"
             }`}
           >
             {s.tone === "ok" ? (
@@ -67,7 +67,7 @@ export function SnackHost({ children }: { children: React.ReactNode }) {
             ) : (
               <TriangleAlert className="mt-0.5 size-4 shrink-0" />
             )}
-            <span className="min-w-0 flex-1 text-[12.5px] leading-[1.6] break-words">{s.text}</span>
+            <span className="min-w-0 flex-1 text-xs leading-relaxed break-words">{s.text}</span>
             {s.action && (
               <button
                 type="button"
@@ -75,7 +75,7 @@ export function SnackHost({ children }: { children: React.ReactNode }) {
                   s.action!.run();
                   close(s.id);
                 }}
-                className="shrink-0 cursor-pointer rounded-[6px] border border-current/30 px-2 py-1 text-[11.5px] font-semibold hover:bg-white/10"
+                className="shrink-0 min-h-11 inline-flex items-center cursor-pointer rounded-md border border-current/30 px-2.5 py-1 text-xs font-semibold hover:bg-white/10"
               >
                 {s.action.label}
               </button>
@@ -84,9 +84,9 @@ export function SnackHost({ children }: { children: React.ReactNode }) {
               type="button"
               onClick={() => close(s.id)}
               aria-label="Close"
-              className="shrink-0 cursor-pointer opacity-60 hover:opacity-100"
+              className="shrink-0 min-h-11 min-w-11 inline-flex items-center justify-center cursor-pointer opacity-60 hover:opacity-100"
             >
-              <X className="size-3.5" />
+              <X className="size-4" />
             </button>
           </div>
         ))}

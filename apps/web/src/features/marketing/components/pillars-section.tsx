@@ -67,16 +67,16 @@ const PILLARS = [
 
 export function PillarsSection() {
   return (
-    <section className="border-t border-brd bg-[#0D101A] py-20" id="platform">
+    <section className="border-t border-line bg-surface py-20" id="platform">
       <div className="mx-auto max-w-6xl space-y-12 px-6">
         <div className="mx-auto max-w-2xl space-y-3 text-center">
-          <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-[#E5A93C]">
+          <span className="text-xs font-bold uppercase tracking-wider text-accent-ink">
             The platform
           </span>
-          <h2 className="text-balance font-serif text-2xl font-bold text-[#F8FAFC] sm:text-3xl">
+          <h2 className="text-balance font-display text-2xl font-bold text-ink sm:text-3xl">
             Everything from casting the chart to sitting with an astrologer
           </h2>
-          <p className="text-[15px] leading-relaxed text-[#94A3B8]">
+          <p className="text-base leading-relaxed text-muted">
             Four things you can do today, and the one we are building next.
           </p>
         </div>
@@ -86,27 +86,27 @@ export function PillarsSection() {
             <Link
               key={n}
               href={href}
-              className="group flex flex-col gap-4 rounded-[12px] border border-brd bg-[#161B2B] p-6 transition-colors hover:border-[#E5A93C]/45"
+              className="group flex flex-col gap-4 rounded-xl border border-line bg-card p-6 shadow-raised transition-colors hover:border-accent/45"
             >
               <div className="flex items-start justify-between gap-3">
-                <span className="flex size-11 items-center justify-center rounded-[10px] border border-brd bg-[#090A10] text-[#E5A93C]">
+                <span className="flex size-11 items-center justify-center rounded-lg border border-line bg-surface text-accent-ink">
                   <Icon className="size-5" />
                 </span>
                 {live ? (
-                  <span className="font-mono text-[11px] text-[#64748B]">{n}</span>
+                  <span className="font-mono text-xs text-dim">{n}</span>
                 ) : (
-                  <span className="rounded-full border border-[#E5A93C]/40 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-[#E5A93C]">
+                  <span className="rounded-full border border-accent/40 bg-accent-tint px-2 py-0.5 text-xs font-bold uppercase tracking-wider text-accent-ink">
                     Soon
                   </span>
                 )}
               </div>
 
               <div className="flex-1 space-y-2">
-                <h3 className="font-serif text-lg font-bold text-[#F8FAFC]">{title}</h3>
-                <p className="text-[14px] leading-relaxed text-[#94A3B8]">{body}</p>
+                <h3 className="font-display text-lg font-bold text-ink">{title}</h3>
+                <p className="text-sm leading-relaxed text-muted">{body}</p>
               </div>
 
-              <span className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-[#E5A93C] transition-colors group-hover:text-[#F3C766]">
+              <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-accent-ink transition-colors group-hover:text-accent-ink/80">
                 {cta}
                 <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-0.5" />
               </span>
@@ -114,15 +114,15 @@ export function PillarsSection() {
           ))}
 
           {/* Sixth cell: the throughline, rather than a sixth feature. */}
-          <div className="flex flex-col justify-center gap-3 rounded-[12px] border border-dashed border-brd p-6">
-            <p className="text-[14px] leading-relaxed text-[#94A3B8]">
+          <div className="flex flex-col justify-center gap-3 rounded-xl border border-dashed border-line p-6">
+            <p className="text-sm leading-relaxed text-muted">
               The chart is computed once and carried through all of it — the reading,
               the conversation, the matching, and eventually the astrologer you sit
               with.
             </p>
             <a
               href="#form"
-              className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-[#F8FAFC] hover:text-[#F3C766]"
+              className="inline-flex min-h-[44px] items-center gap-1.5 text-sm font-semibold text-ink hover:text-accent-ink"
             >
               Start with your chart
               <ArrowRight className="size-3.5" />

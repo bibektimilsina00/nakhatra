@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
+import { Button } from "@/components/ui/button";
 import { PanchangPanel } from "@/features/patro/components/panchang-panel";
 import { usePatro } from "@/features/patro/hooks/use-patro";
 import { bsMonthName, num, PAKSHA, WEEKDAY_SHORT } from "@/features/patro/patro-i18n";
@@ -71,15 +72,15 @@ export function PatroPage() {
   };
 
   return (
-    <div className="min-h-dvh bg-ink font-sys antialiased">
+    <div className="min-h-dvh bg-cream font-body text-ink antialiased">
       <SiteHeader />
       <main className="mx-auto w-full max-w-[1280px] px-5 pb-20 pt-24 sm:px-8 sm:pt-28">
         <header className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3">
           <div className="min-w-0">
-            <h1 className="font-serif text-[26px] font-bold leading-none text-paper sm:text-[30px]">
+            <h1 className="font-display text-2xl font-bold leading-tight text-ink sm:text-3xl">
               {language === "en" ? "Nepali Patro" : "नेपाली पात्रो"}
             </h1>
-            <p className="mt-1.5 text-[12.5px] text-faint">
+            <p className="mt-1.5 text-xs text-dim">
               {language === "ne"
                 ? "निरयण (लाहिरी) गणना — तिथि सूर्योदयको समयमा"
                 : language === "hi"
@@ -93,40 +94,40 @@ export function PatroPage() {
               type="button"
               onClick={() => step(-1)}
               aria-label="Previous month"
-              className="grid size-9 cursor-pointer place-items-center rounded-[8px] border border-brd text-muted transition hover:border-gold/50 hover:text-paper"
+              className="grid size-11 cursor-pointer place-items-center rounded-md border border-line-strong text-muted transition hover:border-accent-strong/50 hover:text-ink"
             >
               <ChevronLeft className="size-4" />
             </button>
-            <span className="min-w-[10.5rem] rounded-[8px] border border-brd bg-card px-4 py-2.5 text-center font-serif text-[17px] font-bold text-paper">
+            <span className="inline-flex min-h-11 min-w-[10.5rem] items-center justify-center rounded-md border border-line-strong bg-surface px-4 py-2 text-center font-display text-lg font-bold text-ink">
               {bsMonthName(bsMonth, language)} {num(bsYear, language)}
             </span>
             <button
               type="button"
               onClick={() => step(1)}
               aria-label="Next month"
-              className="grid size-9 cursor-pointer place-items-center rounded-[8px] border border-brd text-muted transition hover:border-gold/50 hover:text-paper"
+              className="grid size-11 cursor-pointer place-items-center rounded-md border border-line-strong text-muted transition hover:border-accent-strong/50 hover:text-ink"
             >
               <ChevronRight className="size-4" />
             </button>
-            <button
+            <Button
               type="button"
+              variant="secondary"
               onClick={goToday}
-              className="cursor-pointer rounded-[8px] border border-gold/50 px-3 py-2 text-[12.5px] font-medium text-gold2 transition hover:bg-gold/10"
             >
               {language === "en" ? "Today" : "आज"}
-            </button>
+            </Button>
           </div>
         </header>
 
         <div className="mt-5 grid items-start gap-4 lg:grid-cols-[1fr_400px]">
           {/* The month */}
-          <section className="rounded-[12px] border border-brd bg-card p-4 sm:p-5">
+          <section className="rounded-lg border border-line-strong bg-surface p-4 sm:p-5">
             <div className="grid grid-cols-7 gap-2 sm:gap-2.5">
               {WEEKDAY_SHORT[language].map((w, i) => (
                 <div
                   key={w}
-                  className={`pb-2.5 text-center text-[15px] font-semibold ${
-                    i === 0 || i === 6 ? "text-rose-400" : "text-muted"
+                  className={`pb-2.5 text-center text-sm font-semibold ${
+                    i === 0 || i === 6 ? "text-danger-ink" : "text-muted"
                   }`}
                 >
                   {w}
@@ -134,7 +135,7 @@ export function PatroPage() {
               ))}
 
               {Array.from({ length: leading }).map((_, i) => (
-                <div key={`pad-${i}`} className="rounded-[8px] border border-brd/40" />
+                <div key={`pad-${i}`} className="rounded-lg border border-line/40" />
               ))}
 
               {Array.from({ length: daysInMonth }).map((_, i) => {
@@ -152,31 +153,31 @@ export function PatroPage() {
                     key={ad.iso}
                     type="button"
                     onClick={() => setSelected(ad.iso)}
-                    className={`flex min-h-[112px] cursor-pointer flex-col justify-between rounded-[10px] border p-2.5 text-left transition ${
+                    className={`flex min-h-[112px] cursor-pointer flex-col justify-between rounded-lg border p-2.5 text-left transition ${
                       isActive
-                        ? "border-gold bg-gold/[0.14] ring-1 ring-gold/40"
+                        ? "border-accent bg-accent-wash ring-1 ring-accent"
                         : isToday
-                          ? "border-gold/60 bg-gold/[0.04]"
-                          : "border-brd hover:border-gold/40 hover:bg-paper/[0.02]"
+                          ? "border-accent/60 bg-accent-wash/50"
+                          : "border-line hover:border-accent/40 hover:bg-surface"
                     }`}
                   >
-                    <span className="block truncate text-[12px] leading-tight text-muted">
+                    <span className="block truncate text-xs leading-tight text-muted">
                       {day
                         ? `${PAKSHA[day.paksha]?.[language] ?? ""} ${tithiName(day.tithi.name, language)}`.trim()
                         : ""}
                     </span>
                     <span
-                      className={`block text-center font-serif text-[30px] font-bold leading-none ${
-                        holiday || festival ? "text-rose-400" : "text-paper"
+                      className={`block text-center font-display text-2xl font-bold leading-none ${
+                        holiday || festival ? "text-danger-ink" : "text-ink"
                       }`}
                     >
                       {num(bsDay, language)}
                     </span>
                     <span className="flex items-end justify-between gap-1">
-                      <span className="min-w-0 truncate text-[10.5px] leading-tight text-gold2">
+                      <span className="min-w-0 truncate text-2xs leading-tight text-accent-ink">
                         {festival ?? ""}
                       </span>
-                      <span className="shrink-0 text-[11px] text-faint">
+                      <span className="shrink-0 text-2xs text-dim">
                         {new Date(ad.iso + "T12:00:00").getDate()}
                       </span>
                     </span>
@@ -186,7 +187,7 @@ export function PatroPage() {
             </div>
 
             {isPending && (
-              <p className="mt-4 text-center text-[12px] text-muted">
+              <p className="mt-4 text-center text-xs text-muted">
                 {language === "en" ? "Reading the sky…" : "आकाश पढ्दै…"}
               </p>
             )}

@@ -1,33 +1,46 @@
 @import "tailwindcss";
 
 @theme {
-  --color-cream: #fffbf6;
-  --color-surface: #ffffff;
-  --color-line: #f0eae1;
-  --color-line-strong: #e3dacd;
+  /* Every semantic token resolves through a --t-* variable so [data-theme]
+     can flip the whole palette at runtime — see the light/dark blocks below.
+     Never hardcode a hex value here; add or change a step in the --t-* blocks
+     instead, the way docs/design.md §2 requires.
 
-  --color-ink: #1f1d1b;
-  --color-muted: #6e6862;
-  --color-dim: #7a736c;
+     Two palettes, chosen deliberately per theme rather than one re-lit twice:
+     light is "Temple Ember" (sindoor red carries the primary action, warm
+     stone paper), dark is "Night Sky" (indigo-black ground, marigold carries
+     the primary action) — a birth chart's two real settings, ritual by day
+     and sky by night, not the same brand color dimmed. */
+  --color-cream: var(--t-cream);
+  --color-surface: var(--t-surface);
+  --color-line: var(--t-line);
+  --color-line-strong: var(--t-line-strong);
 
-  --color-accent: #e8931f;        /* saffron-500 — fill, dark text on top */
-  --color-accent-strong: #a66916; /* saffron-700 — button fill, white text */
-  --color-accent-ink: #824f11;    /* saffron-800 — ghost button text, pressed states */
-  --color-accent-wash: #fdf4e7;   /* saffron-50 */
-  --color-accent-tint: #fae6c9;   /* saffron-100 */
-  --color-ring: #c97a12;          /* saffron-600 — focus ring only */
+  --color-ink: var(--t-ink);
+  --color-muted: var(--t-muted);
+  --color-dim: var(--t-dim);
 
-  --color-success: #3a863d;
-  --color-success-tint: #eaf4ea;
-  --color-danger: #dc382d;
-  --color-danger-tint: #fdedec;
+  --color-accent: #e8931f;        /* marigold — fill, ALWAYS paired with --color-accent-contrast, never --color-ink (ink flips light in dark mode; a flipped light ink on this fill fails contrast — see --color-accent-contrast below). */
+  --color-accent-contrast: #1f1d1b; /* fixed dark ink for text/icons on the marigold fill — never flips with the theme, because the fill itself doesn't get darker in dark mode. */
+  --color-accent-strong: var(--t-accent-strong); /* the primary-action fill — sindoor red by day, marigold-gold by night. Always paired with white text; both steps are measured for that. */
+  --color-accent-ink: var(--t-accent-ink); /* the brand color used AS TEXT on the page — must flip with the background. */
+  --color-accent-wash: var(--t-accent-wash);
+  --color-accent-tint: var(--t-accent-tint);
+  --color-ring: var(--t-ring);     /* focus ring — needs to stay visible against either background. */
+
+  --color-success: #3a863d;       /* fill/text pairing, same in both themes */
+  --color-success-tint: var(--t-success-tint);
+  --color-success-ink: var(--t-success-ink); /* success used as page text */
+  --color-danger: var(--t-danger);   /* fill/text pairing — a distinct maroon in the light theme so it never reads as the same red as the sindoor primary action; a standard red in dark, where the primary action is gold. */
+  --color-danger-tint: var(--t-danger-tint);
+  --color-danger-ink: var(--t-danger-ink);   /* danger used as page text */
   --color-star: #f5a623;
 
-  --color-benefic: #2f7d4f;
-  --color-malefic: #b4342a;
-  --color-neutral-dignity: #6e6862;
-  --color-retrograde: #8a5406;
-  --color-combust: #7a736c;
+  --color-benefic: var(--t-benefic);
+  --color-malefic: var(--t-malefic);
+  --color-neutral-dignity: var(--t-muted);
+  --color-retrograde: var(--t-retrograde);
+  --color-combust: var(--t-dim);
 
   --radius-sm: 2px;
   --radius-md: 3px;
@@ -35,23 +48,116 @@
   --radius-xl: 6px;
 
   /* Poppins for display, Inter for body — next/font/google, wired in
-     layout.tsx. font-serif and font-logo are gone with the marketing
-     Cinzel wordmark island; see Task 2. */
+   * layout.tsx. font-serif and font-logo are gone with the marketing
+   * Cinzel wordmark island; see Task 2. */
   --font-display: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
   --font-body: var(--font-inter), ui-sans-serif, system-ui, -apple-system,
     "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 
   --text-2xs: 0.6875rem; /* 11px */
 
-  /* Elevation — design.md §4. "raised" is sheets, popovers, the place
-     dropdown; never a black shadow above 12% on cream. */
-  --shadow-raised: 0 1px 2px rgba(31, 29, 27, 0.04), 0 4px 12px rgba(31, 29, 27, 0.05);
-  --shadow-overlay: 0 8px 32px rgba(31, 29, 27, 0.12);
+  /* Elevation — design.md §4. "raised"/"overlay" shadows use a fixed warm-ink
+     black in both themes (a shadow is already implicitly darker than its
+     surface either way); never a bare Tailwind black shadow. */
+  --shadow-raised: 0 1px 2px rgba(0, 0, 0, 0.16), 0 4px 12px rgba(0, 0, 0, 0.2);
+  --shadow-overlay: 0 8px 32px rgba(0, 0, 0, 0.28);
+}
+
+/* ── Light: "Temple Ember" (default) ── measured against WCAG AA.
+   Warm stone paper, not bright cream — sindoor red carries the one primary
+   action, marigold stays the secondary/decorative brand color.
+   cream bg: ink 13.4, muted 5.5, dim 4.6 (the floor — nothing lighter). */
+:root, [data-theme="light"] {
+  color-scheme: light;
+  --t-cream: #ede3d3;
+  --t-surface: #f7f0e3;
+  --t-line: #ddccb0;
+  --t-line-strong: #c9b48f;
+
+  --t-ink: #2b1710;
+  --t-muted: #6b5642;
+  --t-dim: #79604a;
+
+  --t-accent-strong: #a32d22; /* sindoor red, 7.10:1 with white — the primary action */
+  --t-accent-ink: #8a2419;    /* sindoor used as text/links, 7.04:1 on cream */
+  --t-accent-wash: #f8ece6;
+  --t-accent-tint: #f0d5c9;
+  --t-ring: #8a2419;
+
+  --t-danger: #7a1f1f;        /* a cooler maroon than sindoor, so "destructive" never reads as the same red as the primary action */
+  --t-success-tint: #eaf4ea;
+  --t-success-ink: #2c6b2f;
+  --t-danger-tint: #f7e9e7;
+  --t-danger-ink: #6b1c1c;
+
+  --t-benefic: #2f7d4f;
+  --t-malefic: #b4342a;
+  --t-retrograde: #8a5406;
+}
+
+/* ── Dark: "Night Sky" ── indigo-black ground, not the old blue-navy and not
+   a dimmed copy of the light theme. Marigold carries the primary action here
+   — the birth chart's other setting, the sky itself, not paper by candlelight.
+   Measured the same way: #14131f bg: ink 15.38, muted 7.53, dim 4.81 (floor),
+   accent-ink 10.29, accent-strong (gold) 4.59 with white. */
+[data-theme="dark"] {
+  color-scheme: dark;
+  --t-cream: #14131f;
+  --t-surface: #1d1c2c;
+  --t-line: #262536;
+  --t-line-strong: #33314a;
+
+  --t-ink: #ede9f5;
+  --t-muted: #a6a3be;
+  --t-dim: #827fa0;
+
+  --t-accent-strong: #a8660f; /* marigold-gold, 4.59:1 with white — the primary action (saffron-700's dark cousin, richer than the light theme's saffron-700 so it still clears AA on this cooler ground) */
+  --t-accent-ink: #f0b866;    /* marigold used as text/links, 10.29:1 on this ground */
+  --t-accent-wash: rgba(232, 147, 31, 0.12);
+  --t-accent-tint: rgba(232, 147, 31, 0.18);
+  --t-ring: #eca23c;
+
+  --t-danger: #dc382d;
+  --t-success-tint: rgba(58, 134, 61, 0.18);
+  --t-success-ink: #6fcb77;
+  --t-danger-tint: rgba(220, 56, 45, 0.18);
+  --t-danger-ink: #f0776d;
+
+  --t-benefic: #5fb87f;
+  --t-malefic: #e0685c;
+  --t-retrograde: #eca23c;
+}
+
+@media (prefers-color-scheme: dark) {
+  /* Only when the visitor has never chosen explicitly — THEME_INIT_SCRIPT
+     always stamps data-theme before paint once a choice exists. */
+  :root:not([data-theme]) {
+    color-scheme: dark;
+    --t-cream: #14131f;
+    --t-surface: #1d1c2c;
+    --t-line: #262536;
+    --t-line-strong: #33314a;
+    --t-ink: #ede9f5;
+    --t-muted: #a6a3be;
+    --t-dim: #827fa0;
+    --t-accent-strong: #a8660f;
+    --t-accent-ink: #f0b866;
+    --t-accent-wash: rgba(232, 147, 31, 0.12);
+    --t-accent-tint: rgba(232, 147, 31, 0.18);
+    --t-ring: #eca23c;
+    --t-danger: #dc382d;
+    --t-success-tint: rgba(58, 134, 61, 0.18);
+    --t-success-ink: #6fcb77;
+    --t-danger-tint: rgba(220, 56, 45, 0.18);
+    --t-danger-ink: #f0776d;
+    --t-benefic: #5fb87f;
+    --t-malefic: #e0685c;
+    --t-retrograde: #eca23c;
+  }
 }
 
 html {
-  color-scheme: light;
-  background-color: #fffbf6;
+  background-color: var(--t-cream);
 }
 
 body {
@@ -197,25 +303,25 @@ input:focus-visible, textarea:focus-visible, select:focus-visible { outline:none
             transition:opacity .18s ease, transform .18s ease, visibility .18s }
 .navmenu[data-open="true"] > .navpanel { opacity:1; visibility:visible; transform:translateY(0) }
 .navmenu[data-open="true"] .navchev { transform:rotate(180deg) }
-.navmenu[data-open="true"] > .navbtn { color:#F8FAFC }
+.navmenu[data-open="true"] > .navbtn { color:var(--color-ink) }
 
 /* Hero charts. Cells are built once and only their contents change, so
    these transitions survive a tick and hover/selection is never lost. */
-.cell { fill:#E5A93C; fill-opacity:0; pointer-events:all; cursor:pointer;
+.cell { fill:var(--color-accent); fill-opacity:0; pointer-events:all; cursor:pointer;
         transition:fill-opacity .3s ease }
 .cell.lagna { fill-opacity:.10 }
 .cell.sel   { fill-opacity:.22 }
 .cell:hover { fill-opacity:.18 }   /* last, so it wins the tie on specificity */
-.cellt { fill:#E5A93C; fill-opacity:.72; pointer-events:none;
+.cellt { fill:var(--color-accent); fill-opacity:.72; pointer-events:none;
          transition:opacity .55s ease }
 
 .pv { opacity:0; transition:opacity .45s ease }
 
 details.faq > summary { list-style:none }
 details.faq > summary::-webkit-details-marker { display:none }
-details.faq[open] .chev { transform:rotate(45deg); border-color:rgba(229,169,60,.55);
-                          background:rgba(229,169,60,.1) }
-details.faq[open] > summary { color:#F3C766 }
+details.faq[open] .chev { transform:rotate(45deg); border-color:var(--color-accent);
+                          background:var(--color-accent-wash) }
+details.faq[open] > summary { color:var(--color-accent-ink) }
 
 @media (prefers-reduced-motion: reduce) {
   .reveal { opacity:1; transform:none }

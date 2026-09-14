@@ -108,7 +108,9 @@ export function DatePicker({
                 type="button"
                 onClick={() => setEra("AD")}
                 className={`rounded-md px-3 py-1 font-bold transition ${
-                  era === "AD" ? "bg-accent-strong text-white" : "text-muted hover:text-ink"
+                  era === "AD"
+                    ? "bg-accent-strong text-white"
+                    : "text-muted hover:text-ink"
                 }`}
               >
                 AD (Gregorian)
@@ -117,7 +119,9 @@ export function DatePicker({
                 type="button"
                 onClick={() => setEra("BS")}
                 className={`rounded-md px-3 py-1 font-bold transition ${
-                  era === "BS" ? "bg-accent-strong text-white" : "text-muted hover:text-ink"
+                  era === "BS"
+                    ? "bg-accent-strong text-white"
+                    : "text-muted hover:text-ink"
                 }`}
               >
                 BS (Bikram Sambat)
@@ -190,7 +194,8 @@ export function DatePicker({
                       className={`min-h-11 rounded-md py-1.5 text-xs font-semibold transition ${
                         selected
                           ? "bg-accent-strong text-white font-bold"
-                          : "text-ink hover:bg-accent-wash"
+                          : "text-ink " +
+                            "hover:bg-accent-wash"
                       }`}
                     >
                       {day}
@@ -257,7 +262,8 @@ export function DatePicker({
                       className={`min-h-11 rounded-md py-1.5 text-xs font-semibold transition ${
                         selected
                           ? "bg-accent-strong text-white font-bold"
-                          : "text-ink hover:bg-accent-wash"
+                          : "text-ink " +
+                            "hover:bg-accent-wash"
                       }`}
                     >
                       {day}

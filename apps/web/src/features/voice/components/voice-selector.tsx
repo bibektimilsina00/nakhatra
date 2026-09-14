@@ -146,7 +146,7 @@ export function CustomVoiceSelector({
                   onClick={() => handleSelect(voice.id)}
                   className={`group relative flex items-center justify-between rounded-md p-2.5 text-xs transition-all duration-150 cursor-pointer ${
                     isSelected
-                      ? "bg-accent/15 border border-accent/50 text-ink"
+                      ? "bg-accent/15 border border-accent/50 text-accent-contrast"
                       : "hover:bg-ink/5 border border-transparent text-muted"
                   }`}
                 >

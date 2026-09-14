@@ -42,8 +42,8 @@ const TIKTOK_PRIVACY: Record<string, string> = {
   PUBLIC_TO_EVERYONE: "Public",
 };
 
-const field = "rounded-[8px] border border-brd bg-inset px-3 py-2 text-[13.5px] text-fg";
-const label = "block text-[12px] font-medium text-mut";
+const field = "min-h-11 rounded-md border border-line-strong bg-cream px-3 py-2 text-sm text-ink focus:border-accent focus:outline-none";
+const label = "block text-xs font-medium text-muted";
 
 export function StudioSettingsPanel({
   config,
@@ -84,8 +84,8 @@ export function StudioSettingsPanel({
       className="grid gap-4"
     >
       {/* ── Voice & caption ─────────────────────────────────────────── */}
-      <section className="rounded-[10px] border border-brd bg-panel p-4">
-        <h2 className="text-[15px] font-semibold text-fg">Voice &amp; caption</h2>
+      <section className="rounded-lg border border-line-strong bg-surface p-4">
+        <h2 className="text-sm font-semibold text-ink">Voice &amp; caption</h2>
         <div className="mt-3 grid gap-3 sm:grid-cols-2">
           <label>
             <span className={label}>Voice</span>
@@ -110,16 +110,16 @@ export function StudioSettingsPanel({
       </section>
 
       {/* ── Every day ───────────────────────────────────────────────── */}
-      <section className="rounded-[10px] border border-brd bg-panel p-4">
+      <section className="rounded-lg border border-line-strong bg-surface p-4">
         <div className="flex items-center justify-between gap-3">
-          <h2 className="text-[15px] font-semibold text-fg">Every day, by itself</h2>
+          <h2 className="text-sm font-semibold text-ink">Every day, by itself</h2>
           <Toggle
             checked={s.daily.enabled}
             onChange={(enabled) => patch({ daily: { ...s.daily, enabled } })}
             label={s.daily.enabled ? "On" : "Off"}
           />
         </div>
-        <p className="mt-1 text-[12.5px] leading-[1.7] text-mut">
+        <p className="mt-1 text-xs leading-relaxed text-muted">
           Renders both parts at this time (Kathmandu) without anyone pressing the button, then hands
           them to whichever channel below is on. The day&apos;s reading is written a little before 2:00, so
           keep this after that.
@@ -136,9 +136,9 @@ export function StudioSettingsPanel({
       </section>
 
       {/* ── Channels ────────────────────────────────────────────────── */}
-      <section className="rounded-[10px] border border-brd bg-panel p-4">
-        <h2 className="text-[15px] font-semibold text-fg">Channels</h2>
-        <p className="mt-1 text-[12.5px] leading-[1.7] text-mut">
+      <section className="rounded-lg border border-line-strong bg-surface p-4">
+        <h2 className="text-sm font-semibold text-ink">Channels</h2>
+        <p className="mt-1 text-xs leading-relaxed text-muted">
           Where a finished day goes. Uploads happen right after a render — by the clock above or by the
           button — and only to channels that are connected and switched on.
         </p>
@@ -148,7 +148,7 @@ export function StudioSettingsPanel({
           <ChannelCard
             channel="tiktok"
             name="TikTok"
-            icon={<Music2 className="size-4 text-fg" />}
+            icon={<Music2 className="size-4 text-ink" />}
             conn={tt}
             publish={publish.tiktok}
             date={date}
@@ -164,7 +164,7 @@ export function StudioSettingsPanel({
                 accepts a post only if the account itself is private — the visibility list here is the
                 account&apos;s own, read when it was connected.
                 {tt.connected && tt.maxDurationSec > 0 && tt.maxDurationSec < 160 && (
-                  <span className="mt-1 block text-amber-300/90">
+                  <span className="mt-1 block text-accent-ink font-medium">
                     This account accepts videos up to {tt.maxDurationSec}s, and a part runs about 150s.
                     Longer posts will be refused.
                   </span>
@@ -192,7 +192,7 @@ export function StudioSettingsPanel({
           <ChannelCard
             channel="youtube"
             name="YouTube"
-            icon={<Video className="size-4 text-rose-400" />}
+            icon={<Video className="size-4 text-danger-ink" />}
             conn={yt}
             publish={publish.youtube}
             date={date}
@@ -243,12 +243,12 @@ export function StudioSettingsPanel({
               needs: "The same Meta app with pages_manage_posts, reviewed, and a Page to post to.",
             },
           ].map((p) => (
-            <div key={p.name} className="rounded-[8px] border border-dashed border-brd p-3.5">
+            <div key={p.name} className="rounded-lg border border-dashed border-line-strong p-3.5">
               <div className="flex items-center justify-between gap-3">
-                <span className="text-[14px] font-semibold text-fg">{p.name}</span>
-                <span className="rounded-full border border-brd px-2 py-0.5 text-[10.5px] text-mut">needs an app</span>
+                <span className="text-sm font-semibold text-ink">{p.name}</span>
+                <span className="rounded-full border border-line-strong px-2 py-0.5 text-2xs text-muted">needs an app</span>
               </div>
-              <p className="mt-1.5 text-[12px] leading-[1.7] text-mut">
+              <p className="mt-1.5 text-xs leading-relaxed text-muted">
                 {p.needs} Once you have its id and secret, the connection is the same shape as TikTok&apos;s.
               </p>
             </div>
@@ -260,7 +260,7 @@ export function StudioSettingsPanel({
         <button
           type="submit"
           disabled={!dirty || save.isPending}
-          className="rounded-[8px] bg-acc px-4 py-2 text-[14px] font-semibold text-onacc disabled:cursor-not-allowed disabled:opacity-50"
+          className="min-h-11 cursor-pointer rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-accent-contrast hover:bg-accent-strong disabled:cursor-not-allowed disabled:opacity-50"
         >
           {save.isPending ? "Saving…" : "Save settings"}
         </button>
@@ -311,13 +311,13 @@ function ChannelCard({
   const both = posted(publish?.part1) && posted(publish?.part2);
 
   return (
-    <div className="rounded-[8px] border border-brd bg-inset p-3.5">
+    <div className="rounded-lg border border-line-strong bg-cream p-3.5">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <span className="flex items-center gap-2 text-[14px] font-semibold text-fg">
+        <span className="flex items-center gap-2 text-sm font-semibold text-ink">
           {icon}
           {name}
           {conn.connected && (
-            <span className="rounded-full border border-emerald-400/40 bg-emerald-500/10 px-2 py-0.5 text-[10.5px] text-emerald-300">
+            <span className="rounded-full border border-success/40 bg-success-tint px-2 py-0.5 text-2xs text-success-ink">
               {conn.channel}
             </span>
           )}
@@ -327,7 +327,7 @@ function ChannelCard({
             <button
               type="button"
               onClick={() => disconnect.mutate()}
-              className="rounded-[6px] border border-brd px-2.5 py-1 text-[12px] text-mut hover:border-brd2 hover:text-fg"
+              className="min-h-11 cursor-pointer rounded-md border border-line-strong px-3 py-2 text-xs font-medium text-muted hover:border-accent hover:text-ink"
             >
               Disconnect
             </button>
@@ -340,7 +340,7 @@ function ChannelCard({
                   onError: (err) => snack({ tone: "error", text: err.message }),
                 })
               }
-              className="rounded-[6px] bg-acc px-3 py-1.5 text-[12px] font-semibold text-onacc disabled:opacity-50"
+              className="min-h-11 cursor-pointer rounded-md bg-accent px-3 py-2 text-xs font-semibold text-accent-contrast hover:bg-accent-strong disabled:cursor-not-allowed disabled:opacity-50"
             >
               Connect {name}
             </button>
@@ -349,10 +349,9 @@ function ChannelCard({
         </span>
       </div>
 
-      {!conn.configured && <p className="mt-2 text-[12px] text-amber-300/90">{unconfigured}</p>}
+      {!conn.configured && <p className="mt-2 text-xs font-medium text-accent-ink">{unconfigured}</p>}
 
-      <p className="mt-2 text-[12px] leading-[1.7] text-mut">{note}</p>
-
+      <p className="mt-2 text-xs leading-relaxed text-muted">{note}</p>
 
       {/* The channel's own controls and its own button, on one line: what
           to post as, and post it. Naming a channel is its own instruction,
@@ -371,13 +370,11 @@ function ChannelCard({
                 ? "Render the day first"
                 : `Post both parts of ${date} to ${name}${both ? ", again" : ""}`
           }
-          className="cursor-pointer rounded-[8px] bg-acc px-4 py-2 text-[13px] font-semibold text-onacc transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
+          className="min-h-11 cursor-pointer rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-accent-contrast transition-colors hover:bg-accent-strong disabled:cursor-not-allowed disabled:opacity-40"
         >
           {busy ? "Publishing…" : "Publish"}
         </button>
       </div>
-
-
     </div>
   );
 }
@@ -389,16 +386,16 @@ function Toggle({ checked, onChange, label }: { checked: boolean; onChange: (v: 
       role="switch"
       aria-checked={checked}
       onClick={() => onChange(!checked)}
-      className="flex items-center gap-2 text-[12px] text-mut"
+      className="min-h-11 inline-flex cursor-pointer items-center gap-2 text-xs text-muted hover:text-ink"
     >
       {/* inline-block, not a bare span: a span is inline and ignores its
           height and width, so the track sized itself from the line box and
           the knob sat wherever the text put it. */}
       <span
-        className={`relative inline-block h-5 w-9 shrink-0 rounded-full transition-colors ${checked ? "bg-acc" : "bg-brd2"}`}
+        className={`relative inline-block h-5 w-9 shrink-0 rounded-full transition-colors ${checked ? "bg-accent" : "bg-line-strong"}`}
       >
         <span
-          className={`absolute top-0.5 left-0.5 size-4 rounded-full bg-white shadow-sm transition-transform ${checked ? "translate-x-4" : ""}`}
+          className={`absolute top-0.5 left-0.5 size-4 rounded-full bg-white shadow-raised transition-transform ${checked ? "translate-x-4" : ""}`}
         />
       </span>
       {label}

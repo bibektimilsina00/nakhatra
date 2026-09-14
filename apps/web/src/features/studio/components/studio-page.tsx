@@ -5,6 +5,8 @@ import { Check, ExternalLink } from "lucide-react";
 
 import { AdminOnly } from "@/features/admin/components/admin-only";
 import { AppShell } from "@/features/dashboard/components/app-shell";
+import { Button } from "@/components/ui/button";
+import { inputClasses } from "@/components/ui/input";
 import type {
   PartPublish,
   PublishState,
@@ -36,7 +38,7 @@ import { useLatinTracking } from "@/lib/i18n/language-context";
 const todayInNepal = () =>
   new Date(Date.now() + (5 * 60 + 45) * 60000).toISOString().slice(0, 10);
 
-const card = "rounded-[10px] border border-brd bg-panel p-4";
+const card = "rounded-lg border border-line-strong bg-surface p-4";
 
 /**
  * A link to where this part ended up.
@@ -53,7 +55,7 @@ function PublishLine({ label, state }: { label: string; state?: PartPublish }) {
       href={state.url}
       target="_blank"
       rel="noreferrer"
-      className="flex items-center gap-1.5 text-[12.5px] text-emerald-300 hover:underline"
+      className="flex items-center gap-1.5 text-xs text-success-ink hover:underline"
     >
       <Check className="size-3.5" /> {label} · {state.url} <ExternalLink className="size-3" />
     </a>
@@ -83,10 +85,10 @@ function Part({
   return (
     <section className={card}>
       <div className="flex items-baseline justify-between gap-3">
-        <h3 className="text-[15px] font-semibold text-fg">
+        <h3 className="font-display text-base font-semibold text-ink">
           भाग {part === "1" ? "१" : "२"} · {part === "1" ? "मेष–कन्या" : "तुला–मीन"}
         </h3>
-        {mb && <span className="text-[11.5px] text-mut">{mb} MB</span>}
+        {mb && <span className="text-xs text-muted">{mb} MB</span>}
       </div>
 
       {/* The films are 1080×1920, so the frame is too. Given the shape up
@@ -103,10 +105,10 @@ function Part({
             // page with two 16 MB films on it should not fetch either.
             preload="none"
             playsInline
-            className="aspect-[9/16] w-full max-w-[220px] rounded-[10px] border border-brd bg-black object-cover"
+            className="aspect-[9/16] w-full max-w-[220px] rounded-lg border border-line-strong bg-black object-cover"
           />
         ) : (
-          <div className="grid aspect-[9/16] w-full max-w-[220px] place-items-center rounded-[10px] border border-dashed border-brd text-[12px] text-mut">
+          <div className="grid aspect-[9/16] w-full max-w-[220px] place-items-center rounded-lg border border-dashed border-line-strong text-xs text-muted">
             not rendered
           </div>
         )}
@@ -117,7 +119,7 @@ function Part({
           <a
             href={file.url}
             download={file.name}
-            className="rounded-[8px] border border-brd px-3 py-1.5 text-[13px] font-medium text-fg hover:border-acc"
+            className="min-h-11 inline-flex items-center rounded-md border border-line-strong bg-surface px-3 py-1.5 text-xs font-medium text-ink transition hover:border-accent hover:bg-cream"
           >
             Download mp4
           </a>
@@ -130,7 +132,7 @@ function Part({
               setCopied(true);
               setTimeout(() => setCopied(false), 1500);
             }}
-            className="cursor-pointer rounded-[8px] border border-brd px-3 py-1.5 text-[13px] font-medium text-fg hover:border-acc"
+            className="min-h-11 inline-flex items-center cursor-pointer rounded-md border border-line-strong bg-surface px-3 py-1.5 text-xs font-medium text-ink transition hover:border-accent hover:bg-cream"
           >
             {copied ? "Copied" : "Copy caption"}
           </button>
@@ -146,10 +148,10 @@ function Part({
           open it pushed everything else off the screen. */}
       {text && (
         <details className="mt-3 group">
-          <summary className="cursor-pointer list-none text-[12px] text-mut hover:text-fg">
+          <summary className="cursor-pointer list-none text-xs text-muted hover:text-ink">
             Caption ▾
           </summary>
-          <pre className="mt-2 max-h-52 overflow-auto rounded-[8px] bg-inset p-3 text-[12.5px] leading-[1.7] whitespace-pre-wrap text-mid">
+          <pre className="mt-2 max-h-52 overflow-auto rounded-lg border border-line bg-cream p-3 text-xs leading-relaxed whitespace-pre-wrap text-muted">
             {text}
           </pre>
         </details>
@@ -281,18 +283,18 @@ function Studio() {
     <AppShell>
       <AdminOnly>
         <main className="mx-auto w-full max-w-[960px] px-5 pt-10 pb-24 sm:px-8">
-          <span className={`text-[11px] text-acc ${eyebrow}`}>Admin</span>
-          <h1 className="mt-3 text-[26px] font-bold leading-tight text-fg sm:text-[30px]">Rasifal studio</h1>
-          <p className="mt-2 text-[14px] text-mut">
+          <span className={`text-xs font-semibold text-accent-ink ${eyebrow}`}>Admin</span>
+          <h1 className="mt-3 font-display text-2xl font-bold leading-tight text-ink sm:text-3xl">Rasifal studio</h1>
+          <p className="mt-2 text-sm text-muted">
             बाह्र स्लाइड, नेपाली आवाज र दुई भागको भिडियो — एउटै थिचाइमा।
           </p>
 
           {notice && (
             <p
-              className={`mt-4 rounded-[8px] border p-3 text-[13px] ${
+              className={`mt-4 rounded-md border p-3 text-xs ${
                 notice.ok
-                  ? "border-emerald-400/30 bg-emerald-500/10 text-emerald-300"
-                  : "border-rose-400/30 bg-rose-500/10 text-rose-300"
+                  ? "border-success/30 bg-success-tint text-success-ink"
+                  : "border-danger/30 bg-danger-tint text-danger-ink"
               }`}
             >
               {notice.text}
@@ -301,20 +303,20 @@ function Studio() {
 
           {/* ── At a glance ────────────────────────────────────────── */}
           {s && (
-            <div className="mt-5 grid gap-2 text-[12.5px] sm:grid-cols-3">
+            <div className="mt-5 grid gap-2 text-xs sm:grid-cols-3">
               <div className={`${card} !p-3`}>
-                <span className="text-mut">Every day</span>
-                <p className="mt-0.5 font-semibold text-fg">
+                <span className="text-muted">Every day</span>
+                <p className="mt-0.5 font-semibold text-ink">
                   {s.daily.enabled ? `On · renders at ${s.daily.time}` : "Off · by the button only"}
                 </p>
               </div>
               <div className={`${card} !p-3`}>
-                <span className="text-mut">Voice</span>
-                <p className="mt-0.5 font-semibold text-fg">{s.voice}</p>
+                <span className="text-muted">Voice</span>
+                <p className="mt-0.5 font-semibold text-ink">{s.voice}</p>
               </div>
               <div className={`${card} !p-3`}>
-                <span className="text-mut">Posts to</span>
-                <p className="mt-0.5 font-semibold text-fg">
+                <span className="text-muted">Posts to</span>
+                <p className="mt-0.5 font-semibold text-ink">
                   {live.length ? live.join(" · ") : "Nowhere yet"}
                 </p>
               </div>
@@ -323,16 +325,16 @@ function Studio() {
 
           {/* ── Render ─────────────────────────────────────────────── */}
           <section className={`mt-5 ${card}`}>
-            <h2 className="text-[15px] font-semibold text-fg">Render</h2>
+            <h2 className="font-display text-base font-semibold text-ink">Render</h2>
             <div className="mt-3 flex flex-wrap items-center gap-3">
               <input
                 type="date"
                 value={date}
                 max={todayInNepal() > date ? undefined : date}
                 onChange={(e) => setDate(e.target.value)}
-                className="rounded-[8px] border border-brd bg-inset px-3 py-2 text-[14px] text-fg"
+                className={inputClasses({ className: "!w-auto" })}
               />
-              <button
+              <Button
                 type="button"
                 disabled={running || start.isPending}
                 onClick={() =>
@@ -340,26 +342,25 @@ function Studio() {
                     onError: (err) => snack({ tone: "error", text: err.message }),
                   })
                 }
-                className="cursor-pointer rounded-[8px] bg-acc px-4 py-2 text-[14px] font-semibold text-onacc disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {running ? `Rendering… ${elapsed(status.data)}` : done ? "Render again" : "Generate the day's video"}
-              </button>
+              </Button>
               {done && !running && (
-                <button
+                <Button
                   type="button"
+                  variant="secondary"
                   disabled={!live.length || publish.isPending || status.data?.publishing}
                   onClick={() => runPublish({})}
                   title={live.length ? `Upload to ${live.join(" and ")}` : "Connect a channel below and switch it on"}
-                  className="cursor-pointer rounded-[8px] border border-brd px-4 py-2 text-[14px] font-medium text-fg hover:border-acc disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   {publish.isPending || status.data?.publishing ? "Publishing…" : "Publish now"}
-                </button>
+                </Button>
               )}
-              {running && <span className="text-[13px] text-mut">About six minutes.</span>}
+              {running && <span className="text-xs text-muted">About six minutes.</span>}
             </div>
 
             {status.data?.log && (
-              <pre className="mt-4 max-h-56 overflow-auto rounded-[8px] border border-brd bg-inset p-3 text-[12px] leading-[1.6] whitespace-pre-wrap text-mid">
+              <pre className="mt-4 max-h-56 overflow-auto rounded-md border border-line-strong bg-cream p-3 text-xs leading-relaxed whitespace-pre-wrap text-muted">
                 {status.data.log}
               </pre>
             )}
@@ -402,14 +403,14 @@ function Studio() {
                 onPublish={(channel, force) => runPublish({ channel, force })}
               />
             ) : (
-              <p className="text-[13px] text-mut">{config.error ? config.error.message : "Loading settings…"}</p>
+              <p className="text-xs text-muted">{config.error ? config.error.message : "Loading settings…"}</p>
             )}
           </div>
 
           {/* ── History ────────────────────────────────────────────── */}
           {(status.data?.days.length ?? 0) > 0 && (
             <section className={`mt-8 ${card}`}>
-              <h2 className="text-[15px] font-semibold text-fg">Past days</h2>
+              <h2 className="font-display text-base font-semibold text-ink">Past days</h2>
               <div className="mt-3 flex flex-wrap gap-2">
                 {status.data!.days.map((d) => (
                   <button
@@ -417,8 +418,10 @@ function Studio() {
                     type="button"
                     onClick={() => setDate(d)}
                     aria-pressed={d === date}
-                    className={`rounded-[6px] border px-2.5 py-1 text-[12px] transition-colors ${
-                      d === date ? "border-acc/50 bg-acc/[0.09] text-acc2" : "border-brd text-mut hover:border-brd2 hover:text-fg"
+                    className={`min-h-11 cursor-pointer rounded-md border px-3 py-1.5 text-xs font-medium transition-colors ${
+                      d === date
+                        ? "border-accent bg-accent-wash text-accent-ink"
+                        : "border-line-strong text-muted hover:border-accent hover:text-ink hover:bg-surface"
                     }`}
                   >
                     {d}

@@ -52,7 +52,7 @@ export function ChatMessageBubble({
   if (isUser) {
     return (
       <div className="group ml-auto flex max-w-[85%] animate-fade-in flex-col items-end space-y-1 sm:max-w-[78%]">
-        <div className="relative rounded-lg border border-accent/30 bg-accent/10 px-4 py-3 text-xs leading-relaxed text-ink sm:text-sm">
+        <div className="relative rounded-lg border border-accent/30 bg-accent/10 px-4 py-3 text-xs leading-relaxed text-accent-contrast sm:text-sm">
           <p className="whitespace-pre-wrap">{message.text}</p>
           <button
             onClick={handleCopy}

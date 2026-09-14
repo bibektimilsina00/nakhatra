@@ -33,7 +33,7 @@ export function LiveChart({
 
   return (
     <svg viewBox="-2 -2 104 104" className="w-full">
-      <g fill="none" stroke="#E5A93C" strokeOpacity=".42" strokeWidth=".7">
+      <g fill="none" stroke="var(--color-accent)" strokeOpacity=".42" strokeWidth=".7">
         <rect x="0" y="0" width="100" height="100" />
         <path d="M50 0 L100 50 L50 100 L0 50 Z" />
         <path d="M0 0 L100 100 M100 0 L0 100" strokeOpacity=".22" />
@@ -85,7 +85,7 @@ export function ChartCaption({ sky, focus, isD9 }: { sky: Sky; focus: Focus; isD
     ).map((b) => `${AB[b]} ${degIn(sky[b], isD9).toFixed(1)}°`);
     return (
       <>
-        <span style={{ color: "#F3C766" }}>
+        <span className="text-accent-ink">
           House {focus.house + 1} · {SIGNS[sign]}
         </span>
         <br />

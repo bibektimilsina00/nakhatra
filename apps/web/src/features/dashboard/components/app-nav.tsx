@@ -17,6 +17,7 @@ import {
 import { buttonClasses } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { LanguageMenu } from "@/components/ui/language-menu";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { useLogout } from "@/features/auth/hooks/use-auth";
 import { MARKETPLACE_LIVE } from "@/features/practitioners/marketplace";
 import { useMyApplication } from "@/features/practitioners/hooks/use-practitioners";
@@ -146,6 +147,7 @@ export function AppNav({
               is what keeps two panels from being open at once. */}
           <span className="flex items-center gap-1.5" onMouseDown={() => setOpen(null)}>
             <LanguageMenu />
+            <ThemeToggle />
           </span>
 
           {user ? (
@@ -161,7 +163,7 @@ export function AppNav({
             >
               <Bell className="size-[17px]" />
               {unread > 0 && (
-                <span className="absolute -right-1 -top-1 grid size-[17px] place-items-center rounded-full bg-accent text-2xs font-bold text-ink">
+                <span className="absolute -right-1 -top-1 grid size-[17px] place-items-center rounded-full bg-accent text-2xs font-bold text-accent-contrast">
                   {unread}
                 </span>
               )}
@@ -234,7 +236,7 @@ export function AppNav({
               onClick={() => toggle("account")}
               aria-expanded={open === "account"}
               aria-label={user.full_name}
-              className="grid size-11 place-items-center rounded-full bg-accent text-sm font-bold text-ink"
+              className="grid size-11 place-items-center rounded-full bg-accent text-sm font-bold text-accent-contrast"
             >
               {user.full_name.trim().charAt(0).toUpperCase()}
             </button>
@@ -242,7 +244,7 @@ export function AppNav({
             {open === "account" && (
               <div className={`${panel} w-[236px]`}>
                 <div className="flex items-center gap-2.5 px-2 py-2">
-                  <span className="grid size-9 shrink-0 place-items-center rounded-full bg-accent text-sm font-bold text-ink">
+                  <span className="grid size-9 shrink-0 place-items-center rounded-full bg-accent text-sm font-bold text-accent-contrast">
                     {user.full_name.trim().charAt(0).toUpperCase()}
                   </span>
                   <span className="min-w-0">

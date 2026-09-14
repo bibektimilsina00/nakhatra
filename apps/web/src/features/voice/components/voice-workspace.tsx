@@ -1292,7 +1292,9 @@ onClick={() => setupMicAnalyzer()}
                         type="button"
                         onClick={() => setShowChartDrawer(!showChartDrawer)}
                         className={`flex min-h-11 cursor-pointer items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-semibold transition ${
-                          showChartDrawer ? "bg-accent/15 text-accent-strong" : "text-muted hover:bg-cream hover:text-ink"
+                          showChartDrawer
+                            ? "bg-accent/15 text-accent-strong"
+                            : "text-muted hover:bg-cream hover:text-ink"
                         }`}
                       >
                         <Map className="size-3.5" />

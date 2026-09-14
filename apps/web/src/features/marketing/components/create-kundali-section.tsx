@@ -20,41 +20,41 @@ export function CreateKundaliSection() {
     <section id="form" className="scroll-mt-24 py-24">
       <div className="mx-auto grid max-w-[1360px] items-start gap-14 px-8 lg:grid-cols-2 lg:gap-20">
         <div>
-          <span className={`font-mono text-[11px] text-gold ${eyebrow}`}>{m.eyebrow}</span>
-          <h2 className="mt-4 font-disp text-[30px] font-bold leading-[1.12] tracking-[-0.015em] text-paper sm:text-[38px]">
+          <span className={`font-mono text-2xs text-accent-ink ${eyebrow}`}>{m.eyebrow}</span>
+          <h2 className="mt-4 font-display text-3xl font-bold leading-tight tracking-tight text-ink sm:text-4xl">
             {m.title}
           </h2>
-          <p className="mt-5 max-w-lg text-[15px] leading-[1.85] text-muted">
+          <p className="mt-5 max-w-lg text-sm leading-relaxed text-muted">
             {m.body}
           </p>
 
           <div className="mt-10">
-            <div className={`font-mono text-[10px] text-gold ${label}`}>{m.thenLabel}</div>
-            <ul className="mt-3 max-w-lg border-t border-brd">
+            <div className={`font-mono text-2xs text-accent-ink ${label}`}>{m.thenLabel}</div>
+            <ul className="mt-3 max-w-lg border-t border-line">
               {m.steps.map((step, i) => (
-                <li key={step.title} className="flex gap-4 border-b border-brd py-4 last:border-0">
-                  <span className="mt-px font-mono text-[11px] tabular-nums text-gold">{String(i + 1).padStart(2, "0")}</span>
+                <li key={step.title} className="flex gap-4 border-b border-line py-4 last:border-0">
+                  <span className="mt-px font-mono text-2xs tabular-nums text-accent-ink">{String(i + 1).padStart(2, "0")}</span>
                   <span>
-                    <span className="block text-[13.5px] font-medium text-paper">{step.title}</span>
-                    <span className="mt-1 block text-[13px] leading-[1.65] text-faint">{step.body}</span>
+                    <span className="block text-xs font-medium text-ink">{step.title}</span>
+                    <span className="mt-1 block text-xs leading-relaxed text-dim">{step.body}</span>
                   </span>
                 </li>
               ))}
             </ul>
           </div>
 
-          <dl className="mt-9 max-w-lg border-t border-brd text-[14px]">
+          <dl className="mt-9 max-w-lg border-t border-line text-xs">
             {m.checks.map((line) => (
-              <div key={line} className="flex items-baseline gap-3 border-b border-brd py-3.5">
-                <span className="text-gold">✓</span>
+              <div key={line} className="flex items-baseline gap-3 border-b border-line py-3.5">
+                <span className="text-accent-ink">✓</span>
                 <span className="text-muted">{line}</span>
               </div>
             ))}
           </dl>
 
-          <p className="mt-6 max-w-lg text-[12.5px] leading-[1.65] text-faint">
+          <p className="mt-6 max-w-lg text-xs leading-relaxed text-dim">
             {m.zoneNoteA}<span className="font-mono text-muted">Asia/Kathmandu</span>{m.zoneNoteB}
-            <a href="#accuracy" className="underline decoration-white/25 underline-offset-4 transition-colors hover:text-gold">
+            <a href="#accuracy" className="underline decoration-line-strong underline-offset-4 transition-colors hover:text-accent-ink">
               {m.zoneLink}
             </a>.
           </p>

@@ -43,46 +43,46 @@ export function PanchangPanel({
 
   return (
     <aside className="space-y-4 lg:sticky lg:top-24 lg:self-start">
-      <section className="rounded-[12px] border border-brd bg-card p-5">
+      <section className="rounded-xl border border-line-strong bg-surface p-5">
         <div>
-          <h2 className="font-serif text-[26px] font-bold leading-none text-paper">
+          <h2 className="font-display text-2xl font-bold leading-none text-ink">
             {num(bs.year, language)} {bsMonthName(bs.month, language)} {num(bs.day, language)}
           </h2>
           <p className="mt-1.5 flex items-baseline gap-2.5">
-            <span className="text-[14px] font-semibold text-rose-400">
+            <span className="text-sm font-semibold text-danger">
               {WEEKDAY_FULL[day.weekday]?.[language] ?? day.weekday}
             </span>
-            <span className="text-[12.5px] text-faint">{day.on}</span>
+            <span className="text-xs text-dim">{day.on}</span>
           </p>
         </div>
 
-        <dl className="mt-3.5 grid grid-cols-2 gap-x-4 gap-y-2 border-t border-brd pt-3.5 text-[12.5px]">
+        <dl className="mt-3.5 grid grid-cols-2 gap-x-4 gap-y-2 border-t border-line pt-3.5 text-xs">
           <Rise label={en ? "Sunrise" : "सूर्योदय"} value={clock(day.sunrise, language)} />
           <Rise label={en ? "Sunset" : "सूर्यास्त"} value={clock(day.sunset, language)} />
           <Rise label={en ? "Moonrise" : "चन्द्रोदय"} value={clock(day.moonrise, language)} />
           <Rise label={en ? "Moonset" : "चन्द्रास्त"} value={clock(day.moonset, language)} />
         </dl>
 
-        <div className="mt-3.5 flex flex-wrap gap-x-5 gap-y-2 border-t border-brd pt-3.5 text-[13px]">
+        <div className="mt-3.5 flex flex-wrap gap-x-5 gap-y-2 border-t border-line pt-3.5 text-sm">
           <Pair k={en ? "Ritu" : "ऋतु"} v={rituForBsMonth(bs.month, language)} />
           <Pair k={en ? "Ayana" : "अयन"} v={AYANA[day.ayana]?.[language] ?? day.ayana} />
           <Pair k={en ? "Moon" : "चन्द्र"} v={signName(day.moon_sign, language)} />
         </div>
 
         {day.festivals.length > 0 && (
-          <p className="mt-3.5 rounded-[8px] border border-gold/30 bg-gold/10 px-3.5 py-2.5 text-[14px] font-semibold text-gold2">
+          <p className="mt-3.5 rounded-lg border border-accent/30 bg-accent-wash px-3.5 py-2.5 text-sm font-semibold text-accent-ink">
             {day.festivals.join(" · ")}
           </p>
         )}
       </section>
 
-      <section className="rounded-[12px] border border-brd bg-card p-5">
-        <h3 className="text-[15px] font-semibold text-paper">
+      <section className="rounded-xl border border-line-strong bg-surface p-5">
+        <h3 className="text-base font-semibold text-ink">
           {en ? "Panchang" : "पञ्चाङ्ग विवरण"}
         </h3>
-        <dl className="mt-3.5 space-y-3 text-[14px]">
+        <dl className="mt-3.5 space-y-3 text-sm">
           <Row k={en ? "Paksha" : "पक्ष"}>
-            <span className="text-gold2">{PAKSHA[day.paksha]?.[language] ?? day.paksha}</span>
+            <span className="text-accent-ink">{PAKSHA[day.paksha]?.[language] ?? day.paksha}</span>
           </Row>
           <Row k={en ? "Tithi" : "तिथि"}>
             <Element el={day.tithi} render={tithiName} />
@@ -99,25 +99,25 @@ export function PanchangPanel({
         </dl>
       </section>
 
-      <section className="rounded-[12px] border border-brd bg-card p-5">
-        <h3 className="text-[15px] font-semibold text-paper">
+      <section className="rounded-xl border border-line-strong bg-surface p-5">
+        <h3 className="text-base font-semibold text-ink">
           {en ? "Graha positions" : "ग्रह गोचर"}
         </h3>
         <div className="mt-3.5 grid grid-cols-1 gap-2 sm:grid-cols-2">
           {day.grahas.map((g) => (
             <div
               key={g.name}
-              className="flex items-baseline justify-between gap-2 rounded-[6px] border border-brd bg-ink2 px-2.5 py-1.5 text-[12px]"
+              className="flex items-baseline justify-between gap-2 rounded-md border border-line bg-surface px-2.5 py-1.5 text-xs"
             >
               <span className="text-muted">
                 {grahaName(g.name, language)}
-                {g.retrograde && <span className="ml-1 text-rose-400">℞</span>}
+                {g.retrograde && <span className="ml-1 text-retrograde">℞</span>}
               </span>
               <span className="text-right">
-                <span className="block font-mono tabular-nums text-paper">
+                <span className="block font-mono tabular-nums text-ink">
                   {dms(g.degree_in_sign, language)}
                 </span>
-                <span className="block text-[11px] text-faint">{signName(g.sign, language)}</span>
+                <span className="block text-2xs text-dim">{signName(g.sign, language)}</span>
               </span>
             </div>
           ))}
@@ -130,8 +130,8 @@ export function PanchangPanel({
 function Rise({ label, value }: { label: string; value: string }) {
   return (
     <div className="min-w-0">
-      <dt className="text-[10.5px] text-faint">{label}</dt>
-      <dd className="font-mono text-[13px] tabular-nums text-paper">{value}</dd>
+      <dt className="text-2xs text-dim">{label}</dt>
+      <dd className="font-mono text-xs tabular-nums text-ink">{value}</dd>
     </div>
   );
 }
@@ -139,16 +139,16 @@ function Rise({ label, value }: { label: string; value: string }) {
 function Pair({ k, v }: { k: string; v: string }) {
   return (
     <span className="flex items-baseline gap-1.5">
-      <span className="text-faint">{k}:</span>
-      <span className="font-semibold text-paper">{v}</span>
+      <span className="text-dim">{k}:</span>
+      <span className="font-semibold text-ink">{v}</span>
     </span>
   );
 }
 
 function Row({ k, children }: { k: string; children: React.ReactNode }) {
   return (
-    <div className="flex items-baseline gap-2 border-b border-dashed border-brd/50 pb-2.5 last:border-0">
-      <dt className="shrink-0 text-faint">{k}</dt>
+    <div className="flex items-baseline gap-2 border-b border-dashed border-line/50 pb-2.5 last:border-0">
+      <dt className="shrink-0 text-dim">{k}</dt>
       <span className="min-w-3 flex-1" aria-hidden />
       <dd className="text-right leading-snug">{children}</dd>
     </div>
@@ -166,13 +166,13 @@ function Element({
   const { language } = useTranslation();
   return (
     <span>
-      <span className="font-semibold text-gold2">{render(el.name, language)}</span>
+      <span className="font-semibold text-accent-ink">{render(el.name, language)}</span>
       {el.ends_at && el.next_name && (
         <span className="text-muted">
           {" · "}
           {clock(el.ends_at, language)}
           {language === "en" ? " → " : " बाट "}
-          <span className="text-paper">{render(el.next_name, language)}</span>
+          <span className="text-ink">{render(el.next_name, language)}</span>
         </span>
       )}
     </span>

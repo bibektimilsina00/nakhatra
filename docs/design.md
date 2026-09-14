@@ -200,8 +200,11 @@ Never a black shadow above 12% on cream — it turns muddy grey.
 | Danger | `danger` | white | Destructive, always confirmed |
 
 Height 48 (mobile) / 44 (desktop), radius `md`, weight 500. Minimum touch
-target **44×44** including padding. Disabled = 40% opacity **plus** removed
-pointer events — never opacity alone, which still looks tappable.
+target **44×44** including padding. Disabled = `line-strong` fill, `dim`
+text, plus removed pointer events — never opacity alone (still looks
+tappable), and never a faded brand fill either: fading `accent-strong`
+keeps its own text-vs-fill contrast but blends the whole button into the
+page, which reads as illegible rather than disabled.
 
 ### Cards
 

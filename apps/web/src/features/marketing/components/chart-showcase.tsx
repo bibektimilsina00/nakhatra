@@ -26,7 +26,7 @@ export function ChartShowcase() {
     <div className="grid items-center gap-10 lg:grid-cols-2">
       <div className="mx-auto w-full max-w-[460px]">
         <NorthIndianChart chart={chart} selectedHouse={house} onSelectHouse={setHouse} />
-        <p className="mt-3 text-center text-[13px] text-[#64748B]">
+        <p className="mt-3 text-center text-xs text-dim">
           Kathmandu · 14 June 1975 · 08:30 — tap any house
         </p>
       </div>
@@ -41,40 +41,40 @@ export function ChartShowcase() {
             ["Yoga", chart.panchang.yoga],
             ["Ayanamsa", `${chart.ayanamsa_value.toFixed(3)}°`],
           ].map(([label, value]) => (
-            <div key={label} className="rounded-[8px] border border-brd bg-[#161B2B] p-3">
-              <div className="text-[10px] font-semibold uppercase tracking-widest text-[#64748B]">
+            <div key={label} className="rounded-lg border border-line-strong bg-surface p-3">
+              <div className="text-2xs font-semibold uppercase tracking-widest text-dim">
                 {label}
               </div>
-              <div className="mt-1 font-mono text-[13px] text-[#F3C766]">{value}</div>
+              <div className="mt-1 font-mono text-xs text-accent-ink">{value}</div>
             </div>
           ))}
         </div>
 
-        <div className="rounded-[10px] border border-brd bg-[#161B2B] p-5">
-          <div className="flex items-baseline justify-between gap-3 border-b border-brd pb-3">
-            <h3 className="font-serif text-base font-bold text-[#F8FAFC]">
+        <div className="rounded-lg border border-line-strong bg-surface p-5">
+          <div className="flex items-baseline justify-between gap-3 border-b border-line pb-3">
+            <h3 className="font-display text-base font-bold text-ink">
               House {selected?.number} · {selected?.sign}
             </h3>
-            <span className="text-[12px] text-[#64748B]">Lord: {selected?.lord}</span>
+            <span className="text-xs text-dim">Lord: {selected?.lord}</span>
           </div>
 
           {occupants.length > 0 ? (
             <ul className="mt-3 space-y-2">
               {occupants.map((p) => (
-                <li key={p.name} className="flex items-baseline justify-between gap-3 text-[13px]">
-                  <span className="text-[#F8FAFC]">
+                <li key={p.name} className="flex items-baseline justify-between gap-3 text-xs">
+                  <span className="text-ink">
                     {p.name}
-                    {p.retrograde && <span className="ml-1.5 text-[#E5A93C]">℞</span>}
-                    {p.combust && <span className="ml-1.5 text-rose-400">combust</span>}
+                    {p.retrograde && <span className="ml-1.5 text-accent-ink">℞</span>}
+                    {p.combust && <span className="ml-1.5 text-danger-ink">combust</span>}
                   </span>
-                  <span className="font-mono text-[#94A3B8]">
+                  <span className="font-mono text-muted">
                     {p.degree_in_sign.toFixed(2)}° · {p.nakshatra.name}
                   </span>
                 </li>
               ))}
             </ul>
           ) : (
-            <p className="mt-3 text-[13px] text-[#94A3B8]">
+            <p className="mt-3 text-xs text-muted">
               No planets here. An empty house is read through its lord and the
               aspects reaching it, not treated as blank.
             </p>

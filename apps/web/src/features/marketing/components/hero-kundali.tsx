@@ -62,7 +62,7 @@ export function HeroKundali() {
       aria-hidden="true"
       className="pointer-events-none h-full w-full"
     >
-      <g fill="none" stroke="#E5A93C" strokeOpacity="0.16" strokeWidth="0.4">
+      <g fill="none" stroke="var(--color-accent)" strokeOpacity="0.16" strokeWidth="0.4">
         <rect x="0" y="0" width="100" height="100" />
         <path d="M50 0 L100 50 L50 100 L0 50 Z" />
         <path d="M0 0 L100 100 M100 0 L0 100" strokeOpacity="0.1" />
@@ -76,7 +76,7 @@ export function HeroKundali() {
             <path
               d={d}
               className="pointer-events-auto cursor-default transition-[fill] duration-500"
-              fill={on ? "#E5A93C" : "transparent"}
+              fill={on ? "var(--color-accent)" : "transparent"}
               fillOpacity={on ? 0.07 : 0}
               onMouseEnter={() => setHovered(n)}
               onMouseLeave={() => setHovered(null)}
@@ -87,7 +87,7 @@ export function HeroKundali() {
                 y={label[1]}
                 textAnchor="middle"
                 className="select-none transition-opacity duration-500"
-                fill={on ? "#F3C766" : "#E5A93C"}
+                fill={on ? "var(--color-accent-ink)" : "var(--color-accent)"}
                 fillOpacity={on ? 0.85 : 0.3}
                 fontSize="3.4"
                 fontFamily="ui-monospace, monospace"
@@ -103,7 +103,7 @@ export function HeroKundali() {
       <text
         x="50" y="8"
         textAnchor="middle"
-        fill="#E5A93C"
+        fill="var(--color-accent)"
         fillOpacity="0.45"
         fontSize="3"
         fontFamily="ui-monospace, monospace"

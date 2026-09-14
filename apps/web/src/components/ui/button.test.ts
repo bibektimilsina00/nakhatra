@@ -20,9 +20,13 @@ describe("buttonClasses", () => {
     }
   });
 
-  it("disabled state removes pointer events, not just opacity", () => {
+  it("disabled state removes pointer events and uses a flat neutral fill, not a faded brand color", () => {
+    // A faded accent fill keeps its own internal contrast (text vs fill) but
+    // blends into the page and reads as illegible — a flat muted fill stays
+    // legible at a glance.
     expect(buttonClasses("primary")).toContain("disabled:pointer-events-none");
-    expect(buttonClasses("primary")).toContain("disabled:opacity-40");
+    expect(buttonClasses("primary")).toContain("disabled:bg-line-strong");
+    expect(buttonClasses("primary")).toContain("disabled:text-dim");
   });
 
   it("appends a caller className without dropping the base classes", () => {

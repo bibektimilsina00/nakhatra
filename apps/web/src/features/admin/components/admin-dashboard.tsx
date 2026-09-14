@@ -41,11 +41,11 @@ export function AdminDashboard() {
     <AppShell>
       <AdminOnly>
         <main className="mx-auto w-full max-w-[900px] px-5 pt-10 pb-24 sm:px-8">
-          <span className={`text-[11px] text-acc ${eyebrow}`}>Admin</span>
-          <h1 className="mt-3 text-[26px] font-bold leading-tight text-fg sm:text-[30px]">
+          <span className={`text-2xs font-semibold text-accent-ink ${eyebrow}`}>Admin</span>
+          <h1 className="mt-3 text-2xl font-bold leading-tight text-ink sm:text-3xl">
             The desk
           </h1>
-          <p className="mt-2 text-[14px] text-mut">
+          <p className="mt-2 text-sm text-muted">
             Tools that are not part of the product. Everything here answers 403 to anyone else.
           </p>
 
@@ -54,18 +54,18 @@ export function AdminDashboard() {
               <Link
                 key={href}
                 href={href}
-                className="group rounded-[10px] border border-brd bg-panel p-4 transition-colors hover:border-acc/50"
+                className="group rounded-lg border border-line-strong bg-surface p-4 transition-colors hover:border-accent/50"
               >
                 <span className="flex items-center gap-2.5">
-                  <Icon className="size-4 text-acc" />
-                  <span className="text-[15px] font-semibold text-fg">{title}</span>
+                  <Icon className="size-4 text-accent-ink" />
+                  <span className="text-base font-semibold text-ink">{title}</span>
                   {!ready && (
-                    <span className="rounded-full border border-brd px-2 py-0.5 text-[10.5px] text-mut">
+                    <span className="rounded-full border border-line px-2 py-0.5 text-2xs text-muted">
                       closed
                     </span>
                   )}
                 </span>
-                <p className="mt-2 text-[13px] leading-[1.7] text-mut">{blurb}</p>
+                <p className="mt-2 text-xs leading-relaxed text-muted">{blurb}</p>
               </Link>
             ))}
           </div>

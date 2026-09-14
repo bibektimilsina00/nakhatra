@@ -55,7 +55,10 @@ export function DashaChakra({
         : lord.slice(0, 3);
 
   return (
-    <div className="overflow-hidden rounded-lg border-2 border-accent-strong/60 bg-accent-tint text-ink">
+    <div
+      className="overflow-hidden rounded-lg border-2 border-accent-strong/60 bg-accent-tint
+        text-ink"
+    >
       <p className="border-b-2 border-accent-strong/60 px-4 py-2 text-center font-display text-sm font-bold tracking-wide text-accent-strong">
         {label(titles[scheme])}
       </p>
@@ -71,7 +74,7 @@ export function DashaChakra({
                   key={`${p.lord}-${p.start}`}
                   className={`border border-accent-strong/40 px-2 py-1.5 font-bold ${
                     isActive(p, now)
-                      ? "bg-accent/40 text-ink"
+                      ? "bg-accent/40 text-accent-contrast"
                       : "text-accent-strong"
                   }`}
                   title={`${p.lord}  ${p.start} → ${p.end}`}

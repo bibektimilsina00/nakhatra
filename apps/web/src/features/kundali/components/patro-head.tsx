@@ -55,8 +55,10 @@ export function PatroHead({
   ) : (
     <EnglishPatro chart={chart} birth={birth} />
   );
-  const frame =
-    "overflow-hidden rounded-lg border-4 border-double border-accent-strong/70 bg-accent-tint text-ink shadow-raised";
+  const frame = [
+    "overflow-hidden rounded-lg border-4 border-double border-accent-strong/70 bg-accent-tint",
+    "text-ink shadow-raised",
+  ].join(" ");
 
   if (!collapsible) {
     return (

@@ -33,7 +33,7 @@ export function LandingRoute() {
 
   // Not the marketing page, and not a blank white frame either: the ground the
   // dashboard is about to paint on, for the one tick the navigation takes.
-  if (leaving) return <div className="min-h-dvh bg-ink" />;
+  if (leaving) return <div className="min-h-dvh bg-cream" />;
 
   return <MarketingPage />;
 }

@@ -872,7 +872,7 @@ export function ReadingDashboard() {
                       : "हरेक ग्रह आफ्नै वास्तविक अंशमा — 3D मा घुमाएर हेर्नुहोस्"}
                   </span>
                 </span>
-                <span className="flex size-8 shrink-0 items-center justify-center rounded-lg border border-white/20 bg-ink/80 text-accent-tint transition group-hover:border-accent group-hover:bg-accent group-hover:text-ink">
+                <span className="flex size-8 shrink-0 items-center justify-center rounded-lg border border-white/20 bg-ink/80 text-accent-tint transition group-hover:border-accent group-hover:bg-accent group-hover:text-accent-contrast">
                   <Maximize2 className="size-4" />
                 </span>
               </div>
@@ -1069,7 +1069,10 @@ export function ReadingDashboard() {
                     <span>{t.activeScriptLabel}</span>
                     <span className="font-mono text-accent-strong">Playback Rate: {playbackSpeed}</span>
                   </div>
-                  <div className="max-h-36 overflow-y-auto rounded-md border border-line-strong bg-surface p-3 text-xs leading-relaxed text-ink font-sans selection:bg-accent-strong selection:text-white">
+                  <div
+                    className="max-h-36 overflow-y-auto rounded-md border border-line-strong bg-surface p-3 text-xs leading-relaxed text-ink font-sans
+                      selection:bg-accent-strong selection:text-white"
+                  >
                     <p className="border-l-2 border-accent pl-2.5 text-accent-strong font-medium leading-relaxed">
                       {audioDebugText || "Synthesizing spoken audio script stream..."}
                     </p>

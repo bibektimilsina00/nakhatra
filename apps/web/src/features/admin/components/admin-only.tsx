@@ -22,8 +22,8 @@ export function AdminOnly({ children }: { children: React.ReactNode }) {
   if (user?.role !== "admin") {
     return (
       <main className="mx-auto w-full max-w-[900px] px-5 pt-16 text-center">
-        <h1 className="text-[20px] font-semibold text-fg">Nothing here</h1>
-        <p className="mt-2 text-[14px] text-mut">This page is for administrators.</p>
+        <h1 className="text-xl font-semibold text-ink">Nothing here</h1>
+        <p className="mt-2 text-sm text-muted">This page is for administrators.</p>
       </main>
     );
   }

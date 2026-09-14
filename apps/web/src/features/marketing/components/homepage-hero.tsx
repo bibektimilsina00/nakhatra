@@ -28,6 +28,7 @@ import { MainNavbar } from "@/components/layout/main-navbar";
 import { MainFooter } from "@/components/layout/main-footer";
 import { useTranslation } from "@/lib/i18n/language-context";
 import { trackKundaliGenerated } from "@/lib/utils/analytics";
+import { buttonClasses } from "@/components/ui/button";
 import {
   Check,
   User,
@@ -117,7 +118,7 @@ export function HomepageHero() {
   }
 
   return (
-    <div className="min-h-dvh bg-[#090A10] text-[#94A3B8]">
+    <div className="min-h-dvh bg-cream text-muted">
       {/* 1. Header (Sticky Top Nav) */}
       <MainNavbar />
 
@@ -134,16 +135,16 @@ export function HomepageHero() {
             </div>
 
             <div className="relative space-y-6">
-              <span className="inline-flex items-center gap-2 rounded-full border border-[#E5A93C]/30 bg-[#161B2B] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#F3C766]">
+              <span className="inline-flex items-center gap-2 rounded-full border border-line-strong bg-accent-wash px-3 py-1 text-2xs font-semibold uppercase tracking-wider text-accent-ink">
                 <Sparkles className="size-3.5" />
                 Sidereal · Lahiri · Whole sign
               </span>
 
-              <h1 className="max-w-[19ch] text-balance font-serif text-4xl font-bold leading-[1.12] text-[#F8FAFC] sm:text-5xl">
+              <h1 className="max-w-[19ch] text-balance font-display text-4xl font-bold leading-tight text-ink sm:text-5xl">
                 {t.heroTitle}
               </h1>
 
-              <p className="max-w-xl text-[17px] leading-relaxed text-[#CBD5E1]">
+              <p className="max-w-xl text-base leading-relaxed text-muted">
                 {t.heroSub}
               </p>
 
@@ -159,24 +160,24 @@ export function HomepageHero() {
                   <a
                     key={label}
                     href={href}
-                    className="rounded-full border border-brd bg-[#161B2B]/80 px-3.5 py-1.5 text-[13px] text-[#CBD5E1] backdrop-blur-sm transition-colors hover:border-[#E5A93C]/40 hover:text-[#F3C766]"
+                    className="rounded-full border border-line bg-surface px-3.5 py-1.5 text-xs text-muted transition-colors hover:border-accent hover:text-accent-ink"
                   >
                     {label}
                   </a>
                 ))}
               </div>
 
-              <ul className="space-y-3 pt-2 text-[15px]">
+              <ul className="space-y-3 pt-2 text-sm">
                 {[
                   ["Historical time zones", "The offset your birthplace actually used that year, not today's."],
                   ["The AI never calculates", "Positions come from the ephemeris. It reads them; it cannot invent one."],
                   ["Free to start", "See your full chart without an account."],
                 ].map(([title, body]) => (
                   <li key={title} className="flex gap-3">
-                    <Check className="mt-0.5 size-[18px] shrink-0 text-[#E5A93C]" />
+                    <Check className="mt-0.5 size-4 shrink-0 text-accent-ink" />
                     <span>
-                      <strong className="font-semibold text-[#F8FAFC]">{title}.</strong>{" "}
-                      <span className="text-[#94A3B8]">{body}</span>
+                      <strong className="font-semibold text-ink">{title}.</strong>{" "}
+                      <span className="text-muted">{body}</span>
                     </span>
                   </li>
                 ))}
@@ -186,21 +187,21 @@ export function HomepageHero() {
 
           {/* RIGHT SIDE: Intake Form with Clean Custom Select Pickers & AD/BS Toggle */}
           <div className="lg:col-span-5" id="form">
-            <div className="rounded-[8px] border border-[#E5A93C]/40 bg-[#161B2B] p-6 sm:p-7 space-y-5 shadow-2xl">
-              <div className="border-b border-brd pb-3 flex items-center justify-between">
+            <div className="rounded-lg border border-line-strong bg-surface p-6 sm:p-7 space-y-5 shadow-raised">
+              <div className="border-b border-line pb-3 flex items-center justify-between">
                 <div>
-                  <h2 className="font-serif text-xl font-bold text-[#F8FAFC]">{t.birthDetails}</h2>
-                  <p className="text-xs text-[#94A3B8] mt-1 leading-relaxed">
+                  <h2 className="font-display text-xl font-bold text-ink">{t.birthDetails}</h2>
+                  <p className="text-xs text-muted mt-1 leading-relaxed">
                     {t.heroTagline}
                   </p>
                 </div>
               </div>
 
-              <form onSubmit={handleGenerate} className="space-y-4.5">
+              <form onSubmit={handleGenerate} className="space-y-4">
                 {/* Full Name */}
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-[#CBD5E1] mb-1.5 flex items-center gap-1.5">
-                    <User className="size-3.5 text-[#E5A93C]" /> {t.fullName} <span className="text-[#E5A93C]">*</span>
+                  <label className="text-xs font-bold uppercase tracking-wider text-ink mb-1.5 flex items-center gap-1.5">
+                    <User className="size-3.5 text-accent-ink" /> {t.fullName} <span className="text-accent-ink">*</span>
                   </label>
                   <input
                     type="text"
@@ -210,28 +211,28 @@ export function HomepageHero() {
                       if (errors.name) setErrors({ ...errors, name: "" });
                     }}
                     placeholder={t.fullName}
-                    className={`w-full rounded-[8px] border bg-[#090A10] px-3.5 py-2.5 text-sm text-[#F8FAFC] placeholder-[#94A3B8] focus:outline-none transition ${
-                      errors.name ? "border-rose-500" : "border-brd focus:border-[#E5A93C]"
+                    className={`w-full rounded-md border bg-surface px-3.5 py-2.5 min-h-11 text-sm text-ink placeholder:text-dim focus-visible:outline-none transition ${
+                      errors.name ? "border-danger" : "border-line-strong focus-visible:border-ring"
                     }`}
                   />
-                  {errors.name && <p className="mt-1 text-xs text-rose-400 font-medium">{errors.name}</p>}
+                  {errors.name && <p className="mt-1 text-xs text-danger font-medium">{errors.name}</p>}
                 </div>
 
                 {/* Gender 3-way toggle */}
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-[#CBD5E1] mb-1.5">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-ink mb-1.5">
                     Gender
                   </label>
-                  <div className="grid grid-cols-3 gap-2 rounded-[8px] border border-brd bg-[#090A10] p-1">
+                  <div className="grid grid-cols-3 gap-2 rounded-md border border-line-strong bg-surface p-1">
                     {(["male", "female", "other"] as const).map((g) => (
                       <button
                         key={g}
                         type="button"
                         onClick={() => setGender(g)}
-                        className={`rounded-[6px] py-1.5 text-xs font-bold capitalize transition ${
+                        className={`rounded-sm py-1.5 min-h-11 text-xs font-bold capitalize transition ${
                           gender === g
-                            ? "bg-[#E5A93C] text-[#090A10]"
-                            : "text-[#CBD5E1] hover:text-[#F8FAFC]"
+                            ? "bg-accent-strong text-white"
+                            : "text-muted hover:text-ink"
                         }`}
                       >
                         {g}
@@ -242,8 +243,8 @@ export function HomepageHero() {
 
                 {/* Modern Date of Birth Calendar Picker */}
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-[#CBD5E1] mb-1.5 flex items-center gap-1.5">
-                    <Calendar className="size-3.5 text-[#E5A93C]" /> {t.birthDate} <span className="text-[#E5A93C]">*</span>
+                  <label className="text-xs font-bold uppercase tracking-wider text-ink mb-1.5 flex items-center gap-1.5">
+                    <Calendar className="size-3.5 text-accent-ink" /> {t.birthDate} <span className="text-accent-ink">*</span>
                   </label>
                   <ModernDatePicker
                     era={era}
@@ -259,13 +260,13 @@ export function HomepageHero() {
                     }}
                     error={errors.date}
                   />
-                  {errors.date && <p className="mt-1 text-xs text-rose-400 font-medium">{errors.date}</p>}
+                  {errors.date && <p className="mt-1 text-xs text-danger font-medium">{errors.date}</p>}
                 </div>
 
                 {/* Modern Time of Birth Visual Clock Picker */}
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-[#CBD5E1] mb-1.5 flex items-center gap-1.5">
-                    <Clock className="size-3.5 text-[#E5A93C]" /> {t.birthTime} <span className="text-[#E5A93C]">*</span>
+                  <label className="text-xs font-bold uppercase tracking-wider text-ink mb-1.5 flex items-center gap-1.5">
+                    <Clock className="size-3.5 text-accent-ink" /> {t.birthTime} <span className="text-accent-ink">*</span>
                   </label>
                   <ModernTimePicker
                     hour={hour}
@@ -281,13 +282,13 @@ export function HomepageHero() {
                     onApproximateChange={(approx) => setApproximateTime(approx)}
                     error={errors.time}
                   />
-                  {errors.time && <p className="mt-1 text-xs text-rose-400 font-medium">{errors.time}</p>}
+                  {errors.time && <p className="mt-1 text-xs text-danger font-medium">{errors.time}</p>}
                 </div>
 
                 {/* Custom Place of Birth Autocomplete */}
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-[#CBD5E1] mb-1.5 flex items-center gap-1.5">
-                    <MapPin className="size-3.5 text-[#E5A93C]" /> {t.birthPlace} <span className="text-[#E5A93C]">*</span>
+                  <label className="text-xs font-bold uppercase tracking-wider text-ink mb-1.5 flex items-center gap-1.5">
+                    <MapPin className="size-3.5 text-accent-ink" /> {t.birthPlace} <span className="text-accent-ink">*</span>
                   </label>
                   <CustomPlaceInput
                     value={selectedPlace?.label ?? ""}
@@ -297,18 +298,18 @@ export function HomepageHero() {
                       if (errors.place) setErrors({ ...errors, place: "" });
                     }}
                   />
-                  {errors.place && <p className="mt-1 text-xs text-rose-400 font-medium">{errors.place}</p>}
+                  {errors.place && <p className="mt-1 text-xs text-danger font-medium">{errors.place}</p>}
                 </div>
 
                 {/* Primary CTA Button */}
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full rounded-[8px] bg-[#E5A93C] hover:bg-[#F3C766] py-3.5 text-sm font-bold text-[#090A10] transition flex items-center justify-center gap-2 disabled:opacity-50 shadow-md mt-1"
+                  className={buttonClasses("primary", { className: "w-full py-3.5 text-sm font-bold mt-1" })}
                 >
-                  <Sparkles className="size-4 text-[#090A10]" />
+                  <Sparkles className="size-4" />
                   <span>{t.calculateKundali}</span>
-                  <ArrowRight className="size-4 text-[#090A10]" />
+                  <ArrowRight className="size-4" />
                 </button>
               </form>
             </div>
@@ -317,16 +318,16 @@ export function HomepageHero() {
       </main>
 
       {/* How it works — the two halves, and why the split matters. */}
-      <section className="border-t border-brd bg-[#0D101A] py-20" id="how">
+      <section className="border-t border-line bg-cream py-20" id="how">
         <div className="mx-auto max-w-5xl space-y-14 px-6">
           <div className="mx-auto max-w-2xl space-y-3 text-center">
-            <span className="text-xs font-bold uppercase tracking-widest text-[#E5A93C]">
+            <span className="text-2xs font-bold uppercase tracking-wider text-accent-ink">
               How it works
             </span>
-            <h2 className="font-serif text-2xl font-bold text-[#F8FAFC] sm:text-3xl">
+            <h2 className="font-display text-2xl font-bold text-ink sm:text-3xl">
               The maths and the meaning are kept apart
             </h2>
-            <p className="text-[15px] leading-relaxed text-[#94A3B8]">
+            <p className="text-sm leading-relaxed text-muted">
               Most AI astrology asks a language model to do both, and a language model
               will happily invent a planetary position that sounds right. Here it never
               gets the chance.
@@ -334,12 +335,12 @@ export function HomepageHero() {
           </div>
 
           <div className="grid gap-6 md:grid-cols-2">
-            <article className="space-y-3 rounded-[10px] border border-brd bg-[#161B2B] p-7">
-              <span className="font-mono text-xs text-[#64748B]">01</span>
-              <h3 className="font-serif text-lg font-bold text-[#F8FAFC]">
+            <article className="space-y-3 rounded-lg border border-line-strong bg-surface p-7">
+              <span className="font-mono text-xs text-dim">01</span>
+              <h3 className="font-display text-lg font-bold text-ink">
                 The ephemeris calculates
               </h3>
-              <p className="text-[15px] leading-relaxed text-[#94A3B8]">
+              <p className="text-sm leading-relaxed text-muted">
                 Your birth moment is converted to universal time using the zone your
                 birthplace kept that year, then Swiss Ephemeris gives every planetary
                 longitude. Lahiri ayanamsa, whole-sign houses, mean nodes. The same
@@ -347,12 +348,12 @@ export function HomepageHero() {
               </p>
             </article>
 
-            <article className="space-y-3 rounded-[10px] border border-brd bg-[#161B2B] p-7">
-              <span className="font-mono text-xs text-[#64748B]">02</span>
-              <h3 className="font-serif text-lg font-bold text-[#F8FAFC]">
+            <article className="space-y-3 rounded-lg border border-line-strong bg-surface p-7">
+              <span className="font-mono text-xs text-dim">02</span>
+              <h3 className="font-display text-lg font-bold text-ink">
                 The astrologer reads it
               </h3>
-              <p className="text-[15px] leading-relaxed text-[#94A3B8]">
+              <p className="text-sm leading-relaxed text-muted">
                 The finished chart is handed to the AI as data. It can interpret,
                 compare and explain — but it is never asked to work out a degree or a
                 date, so it cannot get one wrong.
@@ -364,22 +365,22 @@ export function HomepageHero() {
 
       {/* The time zone argument: specific, checkable, and the thing most
           competitors quietly get wrong. */}
-      <section className="border-t border-brd py-20">
+      <section className="border-t border-line py-20">
         <div className="mx-auto grid max-w-5xl items-center gap-10 px-6 md:grid-cols-5">
           <div className="space-y-4 md:col-span-3">
-            <span className="text-xs font-bold uppercase tracking-widest text-[#E5A93C]">
+            <span className="text-2xs font-bold uppercase tracking-wider text-accent-ink">
               Why charts disagree
             </span>
-            <h2 className="font-serif text-2xl font-bold text-[#F8FAFC] sm:text-3xl">
+            <h2 className="font-display text-2xl font-bold text-ink sm:text-3xl">
               Kathmandu has not always been +5:45
             </h2>
-            <p className="text-[15px] leading-relaxed text-[#94A3B8]">
+            <p className="text-sm leading-relaxed text-muted">
               It kept +5:30 until 1986, and local mean time of +5:41:16 before that. A
               1975 birth calculated with today&apos;s offset lands fifteen minutes off —
-              roughly <strong className="font-semibold text-[#F8FAFC]">3.75° of
+              roughly <strong className="font-semibold text-ink">3.75° of
               ascendant</strong>, enough to move your lagna into the wrong sign.
             </p>
-            <p className="text-[15px] leading-relaxed text-[#94A3B8]">
+            <p className="text-sm leading-relaxed text-muted">
               We store the zone by name and look up what it meant on your date. It is a
               small thing that quietly decides whether the rest of the chart is worth
               reading.
@@ -387,19 +388,19 @@ export function HomepageHero() {
           </div>
 
           <div className="md:col-span-2">
-            <div className="space-y-3 rounded-[10px] border border-brd bg-[#161B2B] p-6 font-mono text-[13px]">
-              <div className="mb-1 text-xs uppercase tracking-widest text-[#64748B]">
+            <div className="space-y-3 rounded-lg border border-line-strong bg-surface p-6 font-mono text-xs">
+              <div className="mb-1 text-2xs uppercase tracking-widest text-dim">
                 Kathmandu, 14 June 1975
               </div>
-              <div className="flex items-baseline justify-between gap-4 border-b border-brd pb-3">
-                <span className="text-[#94A3B8]">Today&apos;s offset</span>
-                <span className="text-rose-400">+5:45</span>
+              <div className="flex items-baseline justify-between gap-4 border-b border-line pb-3">
+                <span className="text-muted">Today&apos;s offset</span>
+                <span className="text-danger-ink">+5:45</span>
               </div>
               <div className="flex items-baseline justify-between gap-4 pb-1">
-                <span className="text-[#94A3B8]">Actual, that year</span>
-                <span className="text-[#E5A93C]">+5:30</span>
+                <span className="text-muted">Actual, that year</span>
+                <span className="text-accent-ink">+5:30</span>
               </div>
-              <p className="pt-2 font-sans text-xs leading-relaxed text-[#64748B]">
+              <p className="pt-2 font-sans text-xs leading-relaxed text-dim">
                 Fifteen minutes of clock time, about 3.75 degrees of ascendant.
               </p>
             </div>

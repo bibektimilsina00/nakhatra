@@ -200,7 +200,9 @@ export function ConsultationRoom({ id }: { id: string }) {
                 <div key={message.id} className={`flex ${mine ? "justify-end" : "justify-start"}`}>
                   <span
                     className={`max-w-[76%] rounded-lg px-3.5 py-2.5 text-sm leading-[1.65] ${
-                      mine ? "bg-accent text-ink" : "border border-line-strong bg-cream text-ink"
+                      mine
+                        ? "bg-accent text-accent-contrast"
+                        : "border border-line-strong bg-cream text-ink"
                     }`}
                   >
                     {message.body}

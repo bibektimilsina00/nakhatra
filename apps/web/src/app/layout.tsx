@@ -6,6 +6,7 @@ import { SessionSync } from "@/features/auth/components/session-sync";
 import { SITE_NAME, SITE_URL } from "@/lib/seo/site";
 import { QueryProvider } from "@/providers/query-provider";
 import { LanguageProvider } from "@/lib/i18n/language-context";
+import { THEME_INIT_SCRIPT, ThemeProvider } from "@/providers/theme-provider";
 
 import "./globals.css";
 
@@ -116,14 +117,24 @@ export default function RootLayout({
   const umamiHost = process.env.NEXT_PUBLIC_UMAMI_HOST || "https://cloud.umami.is/script.js";
 
   return (
-    <html lang="en" className={`${inter.variable} ${poppins.variable}`}>
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={`${inter.variable} ${poppins.variable}`}
+    >
+      <head>
+        {/* Before paint, so the page never flashes the wrong theme. */}
+        <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
+      </head>
       <body className="font-body antialiased bg-cream text-ink min-h-dvh">
+        <ThemeProvider>
         <LanguageProvider>
           <QueryProvider>
             <SessionSync />
             {children}
           </QueryProvider>
         </LanguageProvider>
+        </ThemeProvider>
         {umamiWebsiteId && (
           <Script
             src={umamiHost}
