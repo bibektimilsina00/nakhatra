@@ -46,6 +46,18 @@ export function getDaysInBsMonth(bsYear: number, bsMonth: number): number {
 }
 
 /**
+ * Weekday (0 = Sunday) of the first day of a BS month, for laying out a
+ * calendar grid. Falls back to Sunday outside the library's table range.
+ */
+export function getBsMonthFirstWeekday(bsYear: number, bsMonth: number): number {
+  try {
+    return new NepaliDate(bsYear, bsMonth - 1, 1).getDay();
+  } catch {
+    return 0;
+  }
+}
+
+/**
  * Converts a BS Date (Year, Month 1-12, Day) into AD ISO String YYYY-MM-DD.
  */
 export function convertBsToAd(

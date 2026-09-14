@@ -74,7 +74,11 @@ _NAME_SYLLABLES = (
     ("Pu", "Sha", "Na", "Tha"), ("Pe", "Po", "Ra", "Ri"), ("Ru", "Re", "Ro", "Ta"),
     ("Ti", "Tu", "Te", "To"), ("Na", "Ni", "Nu", "Ne"), ("No", "Ya", "Yi", "Yu"),
     ("Ye", "Yo", "Bha", "Bhi"), ("Bhu", "Dha", "Pha", "Dha"), ("Bhe", "Bho", "Ja", "Ji"),
-    ("Ju", "Je", "Jo", "Gha"), ("Ga", "Gi", "Gu", "Ge"), ("Go", "Sa", "Si", "Su"),
+    # Shravana follows the Nepali patro convention (खी खू खे खो). The
+    # Ju/Je/Jo/Gha variant circulates in Indian software (AstroTalk among
+    # them); Nakhatra's readers check against a patro, so the patro wins.
+    # Decided 2026-09; the rasifal's RASHI_SYLLABLES table matches.
+    ("Khi", "Khu", "Khe", "Kho"), ("Ga", "Gi", "Gu", "Ge"), ("Go", "Sa", "Si", "Su"),
     ("Se", "So", "Da", "Di"), ("Du", "Tha", "Jha", "Tra"), ("De", "Do", "Cha", "Chi"),
 )
 

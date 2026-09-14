@@ -6,7 +6,12 @@ import { useState, useRef, useEffect } from "react";
 
 import { placementClass, popoverFit, type Fit } from "@/components/ui/popover-placement";
 import { Calendar, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
-import { AD_MONTH_SHORT, BS_MONTH_SHORT, getDaysInBsMonth } from "@/lib/utils/date-converter";
+import {
+  AD_MONTH_SHORT,
+  BS_MONTH_SHORT,
+  getBsMonthFirstWeekday,
+  getDaysInBsMonth,
+} from "@/lib/utils/date-converter";
 import { CustomSelect, type CustomSelectOption } from "@/components/ui/custom-select";
 
 interface ModernDatePickerProps {
@@ -86,6 +91,13 @@ export function ModernDatePicker({
   };
 
   const daysInMonth = getDaysInMonth(currentMonth, currentYear);
+
+  // Which column day 1 belongs in. Without this offset every month started
+  // in the Sunday column, so each date sat under the wrong weekday header.
+  const firstWeekday =
+    era === "AD"
+      ? new Date(currentYear, currentMonth - 1, 1).getDay()
+      : getBsMonthFirstWeekday(currentYear, currentMonth);
 
   // Close on outside click
   useEffect(() => {
@@ -210,6 +222,9 @@ export function ModernDatePicker({
 
           {/* Days Grid */}
           <div className="grid grid-cols-7 gap-1 text-center">
+            {Array.from({ length: firstWeekday }, (_, i) => (
+              <span key={`pad-${i}`} aria-hidden="true" />
+            ))}
             {Array.from({ length: daysInMonth }, (_, i) => i + 1).map((d) => {
               const isSelected = parseInt(day, 10) === d;
               return (

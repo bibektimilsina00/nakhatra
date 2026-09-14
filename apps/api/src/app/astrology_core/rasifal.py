@@ -22,6 +22,7 @@ from __future__ import annotations
 from collections import Counter
 from dataclasses import dataclass, field
 from datetime import date, datetime, time, timedelta
+from functools import lru_cache
 
 from app.astrology_core import ephemeris
 from app.astrology_core.constants import SIGN_LORDS, SIGNS
@@ -50,8 +51,9 @@ _VEDHA_PAIRS: dict[str, tuple[tuple[int, int], ...]] = {
     "Jupiter": ((2, 12), (5, 4), (7, 3), (9, 10), (11, 8)),
     "Venus": ((1, 8), (2, 7), (3, 1), (4, 10), (5, 9), (8, 5), (9, 11), (11, 6), (12, 3)),
     "Saturn": ((3, 12), (6, 9), (11, 5)),
-    "Rahu": ((3, 9), (6, 12), (10, 4), (11, 5)),
-    "Ketu": ((3, 9), (6, 12), (10, 4), (11, 5)),
+    # Rahu and Ketu deliberately absent. The classical vedha table is given
+    # for the seven grahas; lending them the Sun's row was an invention of
+    # this file, and an invention that silently cancelled real transits.
 }
 
 # The slow grahas colour a whole season and the fast ones a day; weighting by
@@ -61,13 +63,27 @@ _WEIGHT: dict[str, float] = {
     "Venus": 0.9, "Saturn": 1.6, "Rahu": 0.8, "Ketu": 0.8,
 }
 
+#: How far back an ingress can be. Saturn holds a sign for about two and a
+#: half years; nothing holds one longer.
+_MAX_LOOKBACK_DAYS = 1000
+#: Coarse steps first, then bisection. The Moon changes sign every ~2.25 days,
+#: so the ingress only has to be found to within a few hours for its sign to
+#: be right.
+_STEP_DAYS = 4
+
 _MURTI: dict[int, str] = {
     1: "Swarna", 6: "Swarna", 11: "Swarna",
     2: "Rajata", 5: "Rajata", 9: "Rajata",
     3: "Tamra", 7: "Tamra", 10: "Tamra",
     4: "Loha", 8: "Loha", 12: "Loha",
 }
-_MURTI_BONUS: dict[str, float] = {"Swarna": 1.5, "Rajata": 0.75, "Tamra": 0.0, "Loha": -1.5}
+#: What a murti does to the result a transit was going to give. Swarna gives
+#: the good result fully and blunts a bad one; Loha does the reverse. It
+#: scales the transit rather than adding a flat bonus, because the classical
+#: rule is about *how* a transit manifests, not about a separate merit of its
+#: own.
+_MURTI_ON_GOOD: dict[str, float] = {"Swarna": 1.4, "Rajata": 1.15, "Tamra": 0.85, "Loha": 0.4}
+_MURTI_ON_BAD: dict[str, float] = {"Swarna": 0.6, "Rajata": 0.85, "Tamra": 1.15, "Loha": 1.5}
 
 # The weekday's ruler, used for the day's colour and number rather than
 # invented per rashi. Monday is index 0 in `weekday()`.
@@ -97,6 +113,9 @@ class GrahaTransit:
     favourable: bool
     obstructed: bool    # favourable, but blocked by vedha
     retrograde: bool
+    #: This graha's own Murti Nirnaya, fixed at its ingress — not the day's.
+    murti: str = "Tamra"
+    murti_house: int = 1
 
 
 @dataclass(frozen=True, slots=True)
@@ -132,6 +151,68 @@ class Rasifal:
     signs: list[RashiDay]
 
 
+@lru_cache(maxsize=256)
+def _ingress_moon_signs(on: date, tz_name: str, at_hour: int, at_minute: int) -> dict[str, int]:
+    """For each graha, the Moon's sign at that graha's entry into its current sign.
+
+    This is what Murti Nirnaya actually asks for. The quality of a transit is
+    fixed at the moment the graha *entered* the sign — where the Moon stood
+    then, counted from the native's own — not by where the Moon happens to be
+    on the day you read it. A daily Moon position applied to every graha
+    alike, which is what this used to do, is a different quantity wearing the
+    same name: it makes all nine transits change temper together every two
+    days, when a Saturn transit's temper was settled two years ago and does
+    not move again until it leaves.
+
+    Cached: the walk costs a few hundred ephemeris calls and the answer is the
+    same for every one of the twelve rashis on a given day.
+    """
+    reference = datetime.combine(on, time(at_hour, at_minute))
+
+    def signs_at(offset_days: float) -> dict[str, int]:
+        jd = ephemeris.julian_day(reference - timedelta(days=offset_days), tz_name)
+        raw = ephemeris.planet_positions(jd)
+        ayan = ephemeris.ayanamsa(jd)
+        return {n: int(((p.longitude - ayan) % 360.0) // 30.0) for n, p in raw.items()}
+
+    now = signs_at(0.0)
+    # (graha -> the offset at which it was still in today's sign, and the
+    # first offset at which it was not)
+    same: dict[str, float] = {n: 0.0 for n in now}
+    changed: dict[str, float] = {}
+
+    offset = 0.0
+    while offset < _MAX_LOOKBACK_DAYS and len(changed) < len(now):
+        offset += _STEP_DAYS
+        past = signs_at(offset)
+        for name, sign in now.items():
+            if name in changed:
+                continue
+            if past[name] != sign:
+                changed[name] = offset
+            else:
+                same[name] = offset
+
+    out: dict[str, int] = {}
+    for name in now:
+        if name not in changed:
+            # Nothing found inside the window. Only reachable if a graha has
+            # held one sign for years, which is Saturn at its slowest; the
+            # oldest sample is the honest answer.
+            out[name] = signs_at(float(_MAX_LOOKBACK_DAYS))["Moon"]
+            continue
+        lo, hi = same[name], changed[name]
+        while hi - lo > 0.25:  # six hours
+            mid = (lo + hi) / 2.0
+            if signs_at(mid)[name] == now[name]:
+                lo = mid
+            else:
+                hi = mid
+        # Just inside the sign it now occupies.
+        out[name] = signs_at(lo)["Moon"]
+    return out
+
+
 def _house_from(sign_index: int, janma_index: int) -> int:
     """Houses are counted inclusively in Jyotisha: the sign itself is the 1st."""
     return ((sign_index - janma_index) % 12) + 1
@@ -140,10 +221,11 @@ def _house_from(sign_index: int, janma_index: int) -> int:
 # Star bands, cut at the real percentiles of this scoring function rather
 # than at round numbers. The classical gochara table lists few favourable
 # houses per graha, so raw scores sit well below zero — measured over 1,464
-# sign-days across 2026 the median is -4.1, not 0. Bands at 0/1.5/-1/-3.5
+# sign-days across 2026 the median is -4.08, not 0. Re-measured after the
+# murti became per-graha and the reading moved to sunrise. Bands at 0/1.5/-1/-3.5
 # would have called almost every day of the year poor, which is a bug in the
 # scale, not a fact about the sky. These are the p20/p40/p60/p85 cuts.
-_BANDS: tuple[float, ...] = (-6.6, -4.9, -3.2, -0.7)
+_BANDS: tuple[float, ...] = (-6.58, -4.88, -3.21, -0.46)
 
 
 _BAND_KEYS = ("difficult", "caution", "ordinary", "favourable", "very_good")
@@ -173,19 +255,43 @@ def _rating(score: float) -> int:
     return 5
 
 
+#: Kathmandu. Sunrise is read here because a rasifal is one reading for the
+#: whole country and this is the country's clock.
+_LAT, _LON = 27.7172, 85.3240
+
+
+def reading_moment(for_date: date, tz_name: str = "Asia/Kathmandu") -> datetime:
+    """The instant a day is judged from: its own sunrise.
+
+    The Vedic day begins at sunrise, not at midnight and not at a round hour
+    someone picked. It matters: the Moon moves about half a degree an hour, so
+    a reading taken at six when the sun rose at five past five can place it in
+    a different house from the one a panchanga prints.
+
+    Falls back to six in the morning above the arctic circle, which this
+    product's readers are not.
+    """
+    midnight = datetime.combine(for_date, time(0, 0))
+    rise, _ = ephemeris.sun_rise_set(midnight, tz_name, _LAT, _LON)
+    if rise is None:
+        return datetime.combine(for_date, time(6, 0))
+    return ephemeris.to_local(rise, tz_name).replace(tzinfo=None)
+
+
 def compute(
     for_date: date,
     tz_name: str = "Asia/Kathmandu",
-    at: time = time(6, 0),
+    at: time | None = None,
 ) -> Rasifal:
     """Judge `for_date` for all twelve rashis.
 
-    The sky is read once, at a fixed morning hour in the given zone, so the
-    same date always produces the same reading — a horoscope that changed
-    every time the page loaded would be worthless. Kathmandu by default,
-    because +5:45 is the zone this is written for.
+    Read once, at that day's sunrise in the given zone, so the same date
+    always produces the same reading — a horoscope that changed every time the
+    page loaded would be worthless. Kathmandu by default, because +5:45 is the
+    zone this is written for.
     """
-    jd = ephemeris.julian_day(datetime.combine(for_date, at), tz_name)
+    moment = datetime.combine(for_date, at) if at else reading_moment(for_date, tz_name)
+    jd = ephemeris.julian_day(moment, tz_name)
     raw = ephemeris.planet_positions(jd)
     ayan = ephemeris.ayanamsa(jd)
 
@@ -201,6 +307,7 @@ def compute(
     sign_index_of = {n: int(lon // 30) for n, lon in sidereal.items()}
 
     weekday_lord = _WEEKDAY_LORD[for_date.weekday()]
+    ingress_moon = _ingress_moon_signs(for_date, tz_name, moment.hour, moment.minute)
 
     days: list[RashiDay] = []
     for janma in range(12):
@@ -216,6 +323,10 @@ def compute(
         for name, idx in sign_index_of.items():
             house = _house_from(idx, janma)
             good = house in GOCHARA_GOOD[name]
+            # This graha's own murti, from where the Moon stood when it
+            # entered the sign it is in now.
+            graha_murti_house = _house_from(ingress_moon[name], janma)
+            graha_murti = _MURTI[graha_murti_house]
 
             # Vedha only ever cancels a benefic transit; a malefic one is not
             # rescued by an obstruction.
@@ -236,10 +347,10 @@ def compute(
 
             weight = _WEIGHT[name]
             if good and not obstructed:
-                score += weight
+                score += weight * _MURTI_ON_GOOD[graha_murti]
                 supports.append(name)
             elif not good:
-                score -= weight
+                score -= weight * _MURTI_ON_BAD[graha_murti]
                 strains.append(name)
 
             transits.append(
@@ -250,12 +361,17 @@ def compute(
                     favourable=good,
                     obstructed=obstructed,
                     retrograde=retro[name],
+                    murti=graha_murti,
+                    murti_house=graha_murti_house,
                 )
             )
 
+        # The day's murti is the Moon's own — the Moon enters a sign and its
+        # murti is read from where it stands at that moment, which is the sign
+        # it has just entered. Correct as a property of the Moon; the mistake
+        # was ever applying it to the other eight.
         murti_house = _house_from(sign_index_of["Moon"], janma)
         murti = _MURTI[murti_house]
-        score += _MURTI_BONUS[murti]
 
         days.append(
             RashiDay(
@@ -337,7 +453,7 @@ def compute_period(
     start: date,
     days: int,
     tz_name: str = "Asia/Kathmandu",
-    at: time = time(6, 0),
+    at: time | None = None,
 ) -> PeriodRasifal:
     """Judge a span by computing every day in it and reading the aggregate.
 
