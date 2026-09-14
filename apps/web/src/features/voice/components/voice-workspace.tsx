@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { NorthIndianChart } from "@/features/kundali/components/north-indian-chart";
 import { AppShell } from "@/features/dashboard/components/app-shell";
+import { useDismissable } from "@/components/ui/use-dismissable";
 import { ChartSwitcher } from "@/features/kundali/components/chart-switcher";
 import { currentDasha, useToday } from "@/features/kundali/dasha";
 import { loadKundaliFromStorage } from "@/features/kundali/store/kundali-store";
@@ -52,6 +53,8 @@ import {
   Headphones,
   Heart,
   LogOut,
+  ChevronDown,
+  History,
 } from "lucide-react";
 
 export function LiveModeWorkspace() {
@@ -986,6 +989,13 @@ export function LiveModeWorkspace() {
               </span>
             }
           />
+          {isSignedIn && (
+            <HistorySwitcher
+              sessions={chatSessions}
+              activeSessionId={sessionId}
+              onSelect={(id) => setSessionId(id)}
+            />
+          )}
         </div>
       }
     >
@@ -1857,6 +1867,71 @@ onClick={() => setupMicAnalyzer()}
       )}
     </div>
     </AppShell>
+  );
+}
+
+function HistorySwitcher({
+  sessions,
+  activeSessionId,
+  onSelect,
+}: {
+  sessions: { id: string; title: string; updated_at: string }[];
+  activeSessionId: string | null;
+  onSelect: (id: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const box = useRef<HTMLDivElement>(null);
+  useDismissable(open, box, useCallback(() => setOpen(false), []));
+
+  return (
+    <div ref={box} className="relative shrink-0">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        aria-expanded={open}
+        className="flex items-center gap-1.5 rounded-md border border-line-strong px-2.5 py-1.5 text-xs text-muted transition-colors hover:border-line-strong hover:text-ink"
+      >
+        <History className="size-3.5" />
+        <span className="hidden sm:inline">Past conversations</span>
+        <ChevronDown className={`size-3.5 shrink-0 text-dim transition-transform ${open ? "rotate-180" : ""}`} />
+      </button>
+
+      {open && (
+        <div className="absolute right-0 z-50 mt-2 w-[280px] rounded-xl border border-line-strong bg-surface p-1.5 shadow-raised">
+          <ul className="max-h-[300px] space-y-1 overflow-y-auto">
+            {sessions.length > 0 ? (
+              sessions.map((s) => (
+                <li key={s.id}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onSelect(s.id);
+                      setOpen(false);
+                    }}
+                    className={`flex w-full flex-col gap-0.5 rounded-md border p-2 text-left transition-colors ${
+                      s.id === activeSessionId
+                        ? "border-accent/35 bg-accent-wash"
+                        : "border-transparent hover:border-line-strong hover:bg-cream"
+                    }`}
+                  >
+                    <span className="truncate text-sm font-medium text-ink">{s.title}</span>
+                    <span className="text-2xs text-dim">
+                      {new Date(s.updated_at).toLocaleDateString(undefined, {
+                        year: "numeric",
+                        month: "short",
+                        day: "numeric",
+                      })}
+                    </span>
+                  </button>
+                </li>
+              ))
+            ) : (
+              <p className="px-2.5 py-4 text-center text-xs text-dim">No past conversations</p>
+            )}
+          </ul>
+        </div>
+      )}
+    </div>
   );
 }
 
