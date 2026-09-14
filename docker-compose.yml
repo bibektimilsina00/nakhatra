@@ -58,6 +58,11 @@ services:
       # Voice: the API synthesises TTS itself; without this the endpoint 503s
       # in production while working on every dev machine.
       - OPENAI_API_KEY=${OPENAI_API_KEY}
+      # Live voice prefers a Gemini Live session (about a third of
+      # gpt-realtime's price); without the key it quietly falls back to
+      # OpenAI. The mint moved from the web app to this API, so the key
+      # belongs here — the web keeps its own copy for the rasifal studio.
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
     depends_on:
       nakhatra_postgres:
         condition: service_healthy
