@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { MapPin, MoreHorizontal, Trash2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -40,41 +41,65 @@ export function KundaliCard({
     "flex min-h-11 min-w-11 items-center justify-center rounded-sm border border-line-strong px-2.5 text-xs text-muted transition-colors hover:text-ink disabled:pointer-events-none disabled:opacity-40";
 
   return (
-    <article className="relative overflow-hidden rounded-lg border border-line-strong bg-surface transition-colors hover:border-accent/50">
-      <div className="relative flex h-[104px] items-center justify-center" style={{ background: fill }}>
-        <ChartLattice stroke={stroke} className="size-[74px]" />
+    <article className="group relative overflow-hidden rounded-lg border border-line-strong bg-surface transition-colors hover:border-accent/50">
+      <Link
+        href={`/reading?id=${kundali.id}`}
+        onClick={(e) => {
+          e.preventDefault();
+          if (!openable || busy) return;
+          onOpen();
+        }}
+        aria-label={`${kundali.name}: ${t.dashReadingAction}`}
+        className="block focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+      >
+        <div className="relative flex h-[104px] items-center justify-center" style={{ background: fill }}>
+          <ChartLattice stroke={stroke} className="size-[74px]" />
 
-        {busy && (
-          <span className="absolute inset-0 grid place-items-center bg-cream/75 text-sm font-semibold text-accent-ink">
-            {t.dashOpening}
-          </span>
-        )}
-      </div>
+          {busy && (
+            <span className="absolute inset-0 grid place-items-center bg-cream/75 text-sm font-semibold text-accent-ink">
+              {t.dashOpening}
+            </span>
+          )}
+        </div>
 
-      <div className="px-3.5 pb-3.5 pt-3">
-        <h3 className="truncate text-sm font-semibold text-ink">{kundali.name}</h3>
-        <p className="mt-1 truncate text-xs text-muted">
-          {kundali.dob} · {kundali.tob}
-        </p>
-        <p className="mt-1 flex items-center gap-1.5 text-xs text-dim">
-          <MapPin className="size-3 shrink-0" />
-          <span className="truncate">{kundali.place_name}</span>
-        </p>
+        <div className="px-3.5 pt-3">
+          <h3 className="truncate text-sm font-semibold text-ink transition-colors group-hover:text-accent-ink">
+            {kundali.name}
+          </h3>
+          <p className="mt-1 truncate text-xs text-muted">
+            {kundali.dob} · {kundali.tob}
+          </p>
+          <p className="mt-1 flex items-center gap-1.5 text-xs text-dim">
+            <MapPin className="size-3 shrink-0" />
+            <span className="truncate">{kundali.place_name}</span>
+          </p>
+        </div>
+      </Link>
 
+      <div className="px-3.5 pb-3.5">
         <div className="mt-3 flex gap-1.5 border-t border-line pt-3">
-          <button
-            type="button"
-            disabled={!openable || busy}
-            onClick={onOpen}
+          <Link
+            href={`/reading?id=${kundali.id}`}
+            onClick={(e) => {
+              e.preventDefault();
+              if (!openable || busy) return;
+              onOpen();
+            }}
             title={openable ? undefined : t.dashNotRecalculable}
-            className="flex min-h-11 flex-1 items-center justify-center rounded-sm bg-accent-strong px-2 text-xs font-bold text-white transition-colors hover:bg-accent-ink disabled:pointer-events-none disabled:opacity-40"
+            aria-disabled={!openable || busy}
+            className={`flex min-h-11 flex-1 items-center justify-center rounded-sm bg-accent-strong px-2 text-xs font-bold text-white transition-colors hover:bg-accent-ink ${
+              !openable || busy ? "pointer-events-none opacity-40" : ""
+            }`}
           >
             {t.dashReadingAction}
-          </button>
+          </Link>
           <button
             type="button"
             disabled={!openable || busy}
-            onClick={onAsk}
+            onClick={(e) => {
+              e.stopPropagation();
+              onAsk();
+            }}
             title={openable ? undefined : t.dashNotRecalculable}
             className={ghost}
           >
@@ -82,7 +107,10 @@ export function KundaliCard({
           </button>
           <button
             type="button"
-            onClick={() => setConfirming(true)}
+            onClick={(e) => {
+              e.stopPropagation();
+              setConfirming(true);
+            }}
             aria-label={`${t.dashDelete}: ${kundali.name}`}
             className={ghost}
           >
@@ -103,7 +131,10 @@ export function KundaliCard({
       </div>
 
       {confirming && (
-        <div className="absolute inset-0 grid place-items-center bg-surface/95 p-4 text-center">
+        <div
+          className="absolute inset-0 z-20 grid place-items-center bg-surface/95 p-4 text-center"
+          onClick={(e) => e.stopPropagation()}
+        >
           <div>
             <Trash2 className="mx-auto size-4 text-danger" />
             <p className="mt-2 text-sm font-semibold text-ink">{t.dashConfirmDelete}</p>
@@ -113,11 +144,21 @@ export function KundaliCard({
                 type="button"
                 variant="danger"
                 disabled={remove.isPending}
-                onClick={() => remove.mutate(kundali.id, { onSettled: () => setConfirming(false) })}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  remove.mutate(kundali.id, { onSettled: () => setConfirming(false) });
+                }}
               >
                 {t.dashDelete}
               </Button>
-              <Button type="button" variant="secondary" onClick={() => setConfirming(false)}>
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setConfirming(false);
+                }}
+              >
                 {t.dashCancel}
               </Button>
             </div>
