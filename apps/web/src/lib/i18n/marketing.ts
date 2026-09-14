@@ -28,6 +28,15 @@ export interface ChatLine {
   refs?: string[];
 }
 
+export interface AstrologerProfileSample {
+  initials: string;
+  name: string;
+  tradition: string;
+  rating: string;
+  ratingCount: string;
+  rate: string;
+}
+
 export interface MarketingCopy {
   /**
    * Chart vocabulary — signs, grahas, nakshatras — keyed by the English name
@@ -106,6 +115,11 @@ export interface MarketingCopy {
     tenthHouse: string;
     tenthLord: string;
     illustrative: string;
+    seeRealChart: string;
+    readSample: string;
+    seeHowItAnswers: string;
+    openMilan: string;
+    whatIsComing: string;
   };
   chart: {
     eyebrow: string;
@@ -186,6 +200,7 @@ export interface MarketingCopy {
     manglikNote: string;
     kutaNames: string[];
     illustrative: string;
+    cta: string;
   };
   accuracy: {
     eyebrow: string;
@@ -215,6 +230,7 @@ export interface MarketingCopy {
     marriage: string;
     shareNote: string;
     cards: Step[];
+    profiles: AstrologerProfileSample[];
   };
   faq: {
     eyebrow: string;
@@ -350,8 +366,8 @@ const en: MarketingCopy = {
     ayanamsa: "Ayanamsa",
     sectionOf: "Section 03 of 07",
     careerTitle: "Career & Financial Outlook",
-    careerSummary: "Prominent trajectory aligned with Aries leadership, strategic management or independent consulting.",
-    careerBody: "Your tenth house of career falls in Aries, ruled by Mars, with Saturn placed there retrograde. This configuration favours executive authority and rewards autonomy over rigid micromanagement.",
+    careerSummary: "Tenth house in Aries with Saturn retrograde: disciplined responsibility, delayed recognition, and authority built on depth.",
+    careerBody: "Your tenth house of profession is Aries, ruled by Mars, with Saturn placed there retrograde in debilitation. In Vedic astrology, Saturn in the tenth demands sustained effort and self-reliance rather than quick advancement. Responsibilities feel heavy early in career, but establish durable structural authority as professional maturity sets in.",
     basedOn: "Based on",
     chatQuestion: "Is this a good year to change jobs?",
     chatAnswerA: "You are running ",
@@ -362,6 +378,11 @@ const en: MarketingCopy = {
     tenthHouse: "10th House in Aries",
     tenthLord: "10th lord placement",
     illustrative: "Illustrative. They arrive already holding your chart, your questions and what the AI told you — so the hour is spent reading, not re-explaining.",
+    seeRealChart: "See a real chart",
+    readSample: "Read a sample",
+    seeHowItAnswers: "See how it answers",
+    openMilan: "Open Milan",
+    whatIsComing: "What is coming",
   },
   chart: {
     eyebrow: "A sample chart",
@@ -370,7 +391,7 @@ const en: MarketingCopy = {
     sample: "Sample",
     stamp: "Kathmandu · 14 June 1975 · 08:30 · +05:30",
     stats: ["Lagna", "Moon", "Nakshatra", "Tithi", "Yoga", "Ayanamsa"],
-    statValues: ["Cancer 15.93°", "Cancer", "Ashlesha 2", "Panchami", "Shukla", "23.514°"],
+    statValues: ["Cancer 15.93°", "Cancer", "Ashlesha 3", "Shukla Panchami", "Harshana", "23.514°"],
     house: "House",
     lord: "Lord",
     empty: "No planets here. An empty house is read through its lord and the aspects reaching it, not treated as blank.",
@@ -405,45 +426,45 @@ const en: MarketingCopy = {
     entries: [
       {
         title: "Personality & Intellect",
-        summary: "Distinctive Cancer Ascendant mindset driven by Water elemental focus and Ashlesha Nakshatra lunar qualities.",
-        body: "Your birth chart features a Cancer Ascendant rising at 15.93°, shaping your fundamental approach to life with integrity, purpose and strong personal principles. Your Moon is placed in Cancer under Ashlesha Nakshatra (Pada 2), granting high mental acuity and emotional depth in social and professional environments.",
-        refs: ["Cancer Ascendant (15.93°)", "Moon in Cancer (Ashlesha Pada 2)", "Deva Gana · Water Tatva"],
+        summary: "Cancer Ascendant with Lagna lord Moon in the first house: acute emotional perception, protective loyalty, and guarded trust.",
+        body: "Cancer rising at 15.93° places your Lagna lord Moon in its own sign in the 1st house. This anchors your worldview in strong instinctual discernment and deep attachment to family foundations. Under Ashlesha Nakshatra (Pada 3), your intellect is sharp, observant, and cautious — you evaluate situations thoroughly before revealing your intentions.",
+        refs: ["Cancer Ascendant (15.93°)", "Lagna Lord Moon in 1st House", "Ashlesha Nakshatra (Pada 3)"],
       },
       {
         title: "Strengths & Growth Areas",
-        summary: "Extraordinary capacity for deep focus balanced against periodic mental overthinking.",
-        body: "Remarkable perseverance, strategic foresight and a natural aptitude for mastering complex technical or financial systems. With active energy in house 6 (Sagittarius), beware of over-analysing minor setbacks or absorbing unnecessary workplace friction.",
-        refs: ["Ruler of House 1 (Moon)", "Planetary spread across Kendras"],
+        summary: "Tenacious observational focus and crisis resilience, balanced against repetitive over-deliberation under conflict.",
+        body: "Lagna lord Moon in the first house grants exceptional psychological endurance and instinct under pressure. However, with Ketu positioned in the sixth house of disputes (Sagittarius), you tend to internalize professional disagreements and re-analyze past friction long after matters resolve. Growth requires addressing conflicts directly rather than ruminating.",
+        refs: ["Moon in 1st House (Cancer)", "Ketu in 6th House (Sagittarius)", "6th Lord Jupiter in 9th"],
       },
       {
         title: "Career & Financial Outlook",
-        summary: "Prominent trajectory aligned with Aries leadership, strategic management or independent consulting.",
-        body: "Your tenth house of career falls in Aries, ruled by Mars, with Saturn placed there retrograde. This configuration favours executive authority and analytical consulting, and rewards autonomy over rigid micromanagement.",
-        refs: ["10th House in Aries (Lord: Mars)", "Saturn ℞ in the 10th", "Mercury Mahadasha"],
+        summary: "Tenth house in Aries with Saturn retrograde: disciplined responsibility, delayed recognition, and authority built on depth.",
+        body: "Your tenth house of profession is Aries, ruled by Mars, with Saturn placed there retrograde in debilitation. In Vedic astrology, Saturn in the tenth demands sustained effort and self-reliance rather than quick advancement. Responsibilities feel heavy early in career, but establish durable structural authority as professional maturity sets in.",
+        refs: ["10th House in Aries (Mars Lord)", "Saturn ℞ in 10th House", "Mercury Mahadasha"],
       },
       {
         title: "Love & Marriage",
-        summary: "Intellectual partnership and shared life values under Capricorn relationship influence.",
-        body: "Your seventh house is located in Capricorn, ruled by Saturn, with the Sun and Mercury placed there. Your ideal partner is communicative and emotionally steady, likely met through professional or educational settings.",
-        refs: ["7th House in Capricorn", "Venus in Gemini (House 12)"],
+        summary: "Seventh house in Capricorn with Sun and Mercury: partnership centered on practical duty, candid dialogue, and mutual autonomy.",
+        body: "Your seventh house falls in Capricorn, ruled by Saturn, indicating that long-term relationships are approached with sobriety and practical commitment. Sun and Mercury placed together in the seventh indicate an intellectually capable, outspoken partner with strong administrative judgment. Marital harmony thrives on clear contractual boundaries and mutual respect for independent work.",
+        refs: ["7th House in Capricorn (Saturn Lord)", "Sun & Mercury in 7th House", "Venus in 12th House"],
       },
       {
         title: "Foreign Travel & Spirituality",
-        summary: "Active twelfth house in Gemini indicating foreign connections and international growth.",
-        body: "With Venus, Mars and Rahu in your twelfth house, overseas travel or long-distance relocation plays a meaningful role in your destiny. Spiritually you lean toward introspection and philosophy over ritual.",
-        refs: ["12th House in Gemini", "Rahu in the 12th"],
+        summary: "Twelfth house cluster in Gemini: strong overseas connections, high discretionary expenditure, and private contemplative reflection.",
+        body: "With Venus, Mars, and Rahu situated together in Gemini in your twelfth house of distant lands and expenditures, relocation far from your birthplace brings major life milestones. The Mars-Rahu conjunction here demands intentional budgeting against impulsive outflow. Spiritually, solitary contemplation and study provide far deeper restoration than ceremonial public ritual.",
+        refs: ["12th House in Gemini", "Mars & Rahu Conjunction in 12th", "Venus in 12th House"],
       },
       {
         title: "Current Dasha & Periods",
-        summary: "Navigating Mercury Mahadasha ➔ Ketu Antardasha.",
-        body: "You are currently under Mercury Mahadasha, directing focus toward strategic growth and foundational life progress. This period favours disciplined execution and expanding key professional skills.",
-        refs: ["Mercury Mahadasha (1964 → 1981)", "Calculated from Ashlesha"],
+        summary: "Mercury Mahadasha with Ketu Antardasha: an introspective transition marked by professional re-evaluation and consolidation.",
+        body: "Under Vimshottari dasha, Mercury governs intellect, communications, and trade. Moving through a Ketu Antardasha creates an intentional pause in external momentum — you may experience detachment from routine obligations or question long-held goals. This sub-period favors auditing past commitments and resolving obligations before starting new ventures.",
+        refs: ["Mercury Mahadasha (17-year cycle)", "Ketu Antardasha (sub-period)", "Calculated from Moon in Ashlesha"],
       },
       {
         title: "Remedial Measures",
-        summary: "Tailored Vedic remedies for Cancer Ascendant and Cancer Moon placement.",
-        body: "Offer water to the morning sun and recite the Gayatri Mantra for mental clarity. Silver and pearl-white bring focus for a Cancer Ascendant. Supporting educational causes on Mondays brings planetary grace.",
-        refs: ["Ascendant Ruler: Moon"],
+        summary: "Classical Vedic remedies balancing Cancer Lagna and stabilizing twelfth-house Mars-Rahu energy.",
+        body: "To ground the Lagna lord Moon, practice morning water offerings (Surya Arghya) and maintain consistent sleep routines. To pacify the Mars-Rahu conjunction in the twelfth house, perform focused breathing meditation and donate red lentils or warm clothing on Tuesdays. Natural silver assists in steadying emotional reactivity.",
+        refs: ["Lagna Lord: Moon", "Mars-Rahu in 12th House", "Vedic Upaya (Charity & Meditation)"],
       },
     ],
   },
@@ -463,7 +484,7 @@ const en: MarketingCopy = {
       { text: "What about the timing?" },
       {
         text: "Mercury runs to <strong class='text-paper'>January 1981</strong> in this cycle. The Ketu antardasha inside it is the restless stretch; act before it, or wait it out.",
-        refs: ["Vimshottari dasha", "Ketu antardasha", "Moon in Ashlesha 2"],
+        refs: ["Vimshottari dasha", "Ketu antardasha", "Moon in Ashlesha 3"],
       },
     ],
     readAloudTitle: "Read aloud",
@@ -499,6 +520,7 @@ const en: MarketingCopy = {
     manglikNote: "Present on both sides, which cancels it — the classical rule, rather than flagging one chart and alarming the couple.",
     kutaNames: ["Varna", "Vashya", "Tara", "Yoni", "Graha Maitri", "Gana", "Bhakoot", "Nadi"],
     illustrative: "Illustrative. Bhakoot at zero is exactly the result worth reading the reasoning for, rather than reading the total — it costs seven of the eight points lost here.",
+    cta: "Match two charts",
   },
   accuracy: {
     eyebrow: "Why charts disagree",
@@ -532,6 +554,32 @@ const en: MarketingCopy = {
       { title: "Chat first", body: "Start in writing, at your pace, with your chart already shared." },
       { title: "Then speak", body: "Audio or video when writing is not enough, scheduled across time zones." },
       { title: "Your data, your call", body: "Sharing a chart is an explicit grant to one person, and revocable." },
+    ],
+    profiles: [
+      {
+        initials: "RS",
+        name: "Pt. Ram Sharma",
+        tradition: "Parashari · 24 yrs · नेपाली · हिन्दी",
+        rating: "5.0",
+        ratingCount: "(Vetted)",
+        rate: "NPR 1,500 / 30 min",
+      },
+      {
+        initials: "RA",
+        name: "Radha Acharya",
+        tradition: "KP paddhati · 16 yrs · English · हिन्दी",
+        rating: "5.0",
+        ratingCount: "(Vetted)",
+        rate: "NPR 2,000 / 30 min",
+      },
+      {
+        initials: "SJ",
+        name: "Suresh Joshi",
+        tradition: "Nadi · 31 yrs · English · नेपाली",
+        rating: "5.0",
+        ratingCount: "(Vetted)",
+        rate: "NPR 2,500 / 45 min",
+      },
     ],
   },
   faq: {
