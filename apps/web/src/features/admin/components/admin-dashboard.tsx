@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Clapperboard, ShieldCheck } from "lucide-react";
 
 import { AdminOnly } from "@/features/admin/components/admin-only";
+import { useAdminStats } from "@/features/admin/hooks/use-admin";
 import { AppShell } from "@/features/dashboard/components/app-shell";
 import { MARKETPLACE_LIVE } from "@/features/practitioners/marketplace";
 import { useLatinTracking } from "@/lib/i18n/language-context";
@@ -34,6 +35,74 @@ const TOOLS = [
   },
 ];
 
+function StatCard({ label, value, subLabel }: { label: string; value: number | string; subLabel?: string }) {
+  return (
+    <div className="rounded-lg border border-line-strong bg-surface p-4">
+      <p className="text-xs font-semibold text-muted">{label}</p>
+      <p className="mt-2 text-2xl font-bold text-ink">{value}</p>
+      {subLabel && <p className="mt-1 text-xs text-muted">{subLabel}</p>}
+    </div>
+  );
+}
+
+function Overview() {
+  const { data: stats, isLoading, isError } = useAdminStats();
+
+  if (isLoading) {
+    return (
+      <div className="mt-8 animate-pulse rounded-xl border border-line-strong bg-surface p-6">
+        <div className="h-5 w-32 rounded bg-line-strong" />
+        <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className="h-24 rounded-lg bg-line-strong" />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (isError || !stats) {
+    return (
+      <div className="mt-8 rounded-xl border border-line-strong bg-surface p-6 text-center text-sm text-muted">
+        Failed to load overview.
+      </div>
+    );
+  }
+
+  return (
+    <div className="mt-8">
+      <h2 className="mb-4 text-sm font-semibold text-ink">Overview</h2>
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+        <StatCard 
+          label="Users" 
+          value={stats.total_users} 
+          subLabel={`+${stats.users_last_7_days} this week`} 
+        />
+        <StatCard 
+          label="Chat Sessions" 
+          value={stats.total_chat_sessions} 
+          subLabel={`${stats.total_chat_messages} messages`} 
+        />
+        <StatCard 
+          label="Saved Kundalis" 
+          value={stats.total_saved_kundalis} 
+        />
+        <StatCard 
+          label="Consultations" 
+          value={stats.total_consultations} 
+        />
+        {MARKETPLACE_LIVE && (
+          <StatCard 
+            label="Pending Applications" 
+            value={stats.practitioner_applications.pending}
+            subLabel={`${stats.practitioner_applications.approved} approved`}
+          />
+        )}
+      </div>
+    </div>
+  );
+}
+
 export function AdminDashboard() {
   const eyebrow = useLatinTracking("uppercase tracking-[0.2em]");
 
@@ -49,25 +118,30 @@ export function AdminDashboard() {
             Tools that are not part of the product. Everything here answers 403 to anyone else.
           </p>
 
-          <div className="mt-7 grid gap-3 sm:grid-cols-2">
-            {TOOLS.map(({ href, icon: Icon, title, blurb, ready }) => (
-              <Link
-                key={href}
-                href={href}
-                className="group rounded-lg border border-line-strong bg-surface p-4 transition-colors hover:border-accent/50"
-              >
-                <span className="flex items-center gap-2.5">
-                  <Icon className="size-4 text-accent-ink" />
-                  <span className="text-base font-semibold text-ink">{title}</span>
-                  {!ready && (
-                    <span className="rounded-full border border-line px-2 py-0.5 text-2xs text-muted">
-                      closed
-                    </span>
-                  )}
-                </span>
-                <p className="mt-2 text-xs leading-relaxed text-muted">{blurb}</p>
-              </Link>
-            ))}
+          <Overview />
+
+          <div className="mt-10">
+            <h2 className="mb-4 text-sm font-semibold text-ink">Tools</h2>
+            <div className="grid gap-3 sm:grid-cols-2">
+              {TOOLS.map(({ href, icon: Icon, title, blurb, ready }) => (
+                <Link
+                  key={href}
+                  href={href}
+                  className="group rounded-lg border border-line-strong bg-surface p-4 transition-colors hover:border-accent/50"
+                >
+                  <span className="flex items-center gap-2.5">
+                    <Icon className="size-4 text-accent-ink" />
+                    <span className="text-base font-semibold text-ink">{title}</span>
+                    {!ready && (
+                      <span className="rounded-full border border-line px-2 py-0.5 text-2xs text-muted">
+                        closed
+                      </span>
+                    )}
+                  </span>
+                  <p className="mt-2 text-xs leading-relaxed text-muted">{blurb}</p>
+                </Link>
+              ))}
+            </div>
           </div>
         </main>
       </AdminOnly>

@@ -1,6 +1,53 @@
 {
   "components": {
     "schemas": {
+      "AdminStatsOverview": {
+        "properties": {
+          "practitioner_applications": {
+            "$ref": "#/components/schemas/PractitionerApplicationStats"
+          },
+          "total_chat_messages": {
+            "title": "Total Chat Messages",
+            "type": "integer"
+          },
+          "total_chat_sessions": {
+            "title": "Total Chat Sessions",
+            "type": "integer"
+          },
+          "total_consultations": {
+            "title": "Total Consultations",
+            "type": "integer"
+          },
+          "total_saved_kundalis": {
+            "title": "Total Saved Kundalis",
+            "type": "integer"
+          },
+          "total_users": {
+            "title": "Total Users",
+            "type": "integer"
+          },
+          "users_last_30_days": {
+            "title": "Users Last 30 Days",
+            "type": "integer"
+          },
+          "users_last_7_days": {
+            "title": "Users Last 7 Days",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "total_users",
+          "users_last_7_days",
+          "users_last_30_days",
+          "total_saved_kundalis",
+          "total_chat_sessions",
+          "total_chat_messages",
+          "practitioner_applications",
+          "total_consultations"
+        ],
+        "title": "AdminStatsOverview",
+        "type": "object"
+      },
       "ApplicationIn": {
         "description": "Setting up a practitioner profile.\n\nShort on purpose. This was an essay \u2014 where you trained, and a written\nsample reading \u2014 which is a reasonable thing to ask a stranger and a\nterrible thing to put between someone and joining. What a reader actually\nchooses on is the name, the photograph, the languages and what you practise;\neverything else can be filled in later from the desk.",
         "properties": {
@@ -2668,6 +2715,29 @@
         "title": "PlanetOut",
         "type": "object"
       },
+      "PractitionerApplicationStats": {
+        "properties": {
+          "approved": {
+            "title": "Approved",
+            "type": "integer"
+          },
+          "pending": {
+            "title": "Pending",
+            "type": "integer"
+          },
+          "rejected": {
+            "title": "Rejected",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "pending",
+          "approved",
+          "rejected"
+        ],
+        "title": "PractitionerApplicationStats",
+        "type": "object"
+      },
       "PractitionerCard": {
         "description": "One row of the directory.\n\nRating and consultation count are absent until reviews exist \u2014 a card that\ninvents `4.9 \u00b7 1,204 readings` for someone who has taken no consultations\nis a fabricated credential, and the preview data in the web app is already\nlabelled as such for the same reason.",
         "properties": {
@@ -4554,6 +4624,56 @@
         "summary": "Approve, reject, or move an application to in-review",
         "tags": [
           "practitioners"
+        ]
+      }
+    },
+    "/v1/admin/stats": {
+      "get": {
+        "description": "Returns aggregate system statistics for the admin dashboard.\n\nNever exposes PII. Used for high-level health monitoring.",
+        "operationId": "get_stats_v1_admin_stats_get",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminStatsOverview"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get admin dashboard stats",
+        "tags": [
+          "admin"
         ]
       }
     },

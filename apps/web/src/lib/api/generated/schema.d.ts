@@ -58,6 +58,28 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/admin/stats": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get admin dashboard stats
+         * @description Returns aggregate system statistics for the admin dashboard.
+         *
+         *     Never exposes PII. Used for high-level health monitoring.
+         */
+        get: operations["get_stats_v1_admin_stats_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/auth/google": {
         parameters: {
             query?: never;
@@ -986,7 +1008,8 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /** Get Session Messages */
+        get: operations["get_session_messages_v1_vault_sessions__session_id__messages_get"];
         put?: never;
         /** Add Message */
         post: operations["add_message_v1_vault_sessions__session_id__messages_post"];
@@ -1057,6 +1080,24 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** AdminStatsOverview */
+        AdminStatsOverview: {
+            practitioner_applications: components["schemas"]["PractitionerApplicationStats"];
+            /** Total Chat Messages */
+            total_chat_messages: number;
+            /** Total Chat Sessions */
+            total_chat_sessions: number;
+            /** Total Consultations */
+            total_consultations: number;
+            /** Total Saved Kundalis */
+            total_saved_kundalis: number;
+            /** Total Users */
+            total_users: number;
+            /** Users Last 30 Days */
+            users_last_30_days: number;
+            /** Users Last 7 Days */
+            users_last_7_days: number;
+        };
         /**
          * ApplicationIn
          * @description Setting up a practitioner profile.
@@ -1453,6 +1494,8 @@ export interface components {
         };
         /** ChatSessionIn */
         ChatSessionIn: {
+            /** Chart Key */
+            chart_key?: string | null;
             /** Kundali Id */
             kundali_id?: string | null;
             /**
@@ -1463,6 +1506,8 @@ export interface components {
         };
         /** ChatSessionOut */
         ChatSessionOut: {
+            /** Chart Key */
+            chart_key?: string | null;
             /** Created At */
             created_at: string;
             /** Id */
@@ -2256,6 +2301,15 @@ export interface components {
             sign: string;
             /** Sign Index */
             sign_index: number;
+        };
+        /** PractitionerApplicationStats */
+        PractitionerApplicationStats: {
+            /** Approved */
+            approved: number;
+            /** Pending */
+            pending: number;
+            /** Rejected */
+            rejected: number;
         };
         /**
          * PractitionerCard
@@ -3144,6 +3198,37 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ApplicationReviewOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_stats_v1_admin_stats_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminStatsOverview"];
                 };
             };
             /** @description Validation Error */
@@ -5054,6 +5139,39 @@ export interface operations {
                     "application/json": {
                         [key: string]: boolean;
                     };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_session_messages_v1_vault_sessions__session_id__messages_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path: {
+                session_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ChatMessageOut"][];
                 };
             };
             /** @description Validation Error */
