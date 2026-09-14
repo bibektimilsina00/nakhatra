@@ -27,6 +27,10 @@ from sqlmodel import SQLModel  # noqa: E402
 # against. Before Phase 9 there was no metadata and autogenerate silently
 # produced empty migrations.
 import app.modules.auth.models  # noqa: E402,F401
+import app.modules.billing.models  # noqa: E402,F401
+import app.modules.consultations.models  # noqa: E402,F401
+import app.modules.kundali.models  # noqa: E402,F401
+import app.modules.practitioners.models  # noqa: E402,F401
 import app.modules.rasifal.models  # noqa: E402,F401
 import app.modules.report.models  # noqa: E402,F401
 import app.modules.vault.models  # noqa: E402,F401

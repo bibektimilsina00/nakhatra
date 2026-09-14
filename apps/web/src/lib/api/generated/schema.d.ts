@@ -80,6 +80,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/admin/users": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List users */
+        get: operations["list_users_v1_admin_users_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/users/{user_id}/role": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update user role */
+        patch: operations["update_user_role_v1_admin_users__user_id__role_patch"];
+        trace?: never;
+    };
     "/v1/auth/google": {
         parameters: {
             query?: never;
@@ -1089,6 +1123,10 @@ export interface components {
             total_chat_sessions: number;
             /** Total Consultations */
             total_consultations: number;
+            /** Total Guest Kundalis All Time */
+            total_guest_kundalis_all_time: number;
+            /** Total Guest Kundalis Last 7 Days */
+            total_guest_kundalis_last_7_days: number;
             /** Total Saved Kundalis */
             total_saved_kundalis: number;
             /** Total Users */
@@ -1097,6 +1135,21 @@ export interface components {
             users_last_30_days: number;
             /** Users Last 7 Days */
             users_last_7_days: number;
+        };
+        /** AdminUserItem */
+        AdminUserItem: {
+            /** Chat Session Count */
+            chat_session_count: number;
+            /** Created At */
+            created_at: string;
+            /** Email */
+            email: string;
+            /** Id */
+            id: string;
+            /** Kundali Count */
+            kundali_count: number;
+            /** Role */
+            role: string;
         };
         /**
          * ApplicationIn
@@ -3012,6 +3065,25 @@ export interface components {
             /** Sign */
             sign: string;
         };
+        /** UpdateRoleRequest */
+        UpdateRoleRequest: {
+            /**
+             * Role
+             * @enum {string}
+             */
+            role: "seeker" | "practitioner" | "admin";
+        };
+        /** UserListResponse */
+        UserListResponse: {
+            /** Items */
+            items: components["schemas"]["AdminUserItem"][];
+            /** Limit */
+            limit: number;
+            /** Page */
+            page: number;
+            /** Total */
+            total: number;
+        };
         /** UserLoginIn */
         UserLoginIn: {
             /**
@@ -3231,6 +3303,81 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AdminStatsOverview"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_users_v1_admin_users_get: {
+        parameters: {
+            query?: {
+                page?: number;
+                limit?: number;
+                /** @description Search by email substring */
+                search?: string | null;
+            };
+            header?: {
+                authorization?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserListResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_user_role_v1_admin_users__user_id__role_patch: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path: {
+                user_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateRoleRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: string;
+                    };
                 };
             };
             /** @description Validation Error */
@@ -3982,7 +4129,9 @@ export interface operations {
                 /** @description Dasha levels to return: 1 maha, 2 +antar, 3 +pratyantar. Defaults to 2 — the full tree is 819 periods and ~78KB, against ~12KB for two levels. Request 3 only when drilling into a specific period. */
                 dasha_depth?: number;
             };
-            header?: never;
+            header?: {
+                authorization?: string | null;
+            };
             path?: never;
             cookie?: never;
         };

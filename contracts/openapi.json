@@ -18,6 +18,14 @@
             "title": "Total Consultations",
             "type": "integer"
           },
+          "total_guest_kundalis_all_time": {
+            "title": "Total Guest Kundalis All Time",
+            "type": "integer"
+          },
+          "total_guest_kundalis_last_7_days": {
+            "title": "Total Guest Kundalis Last 7 Days",
+            "type": "integer"
+          },
           "total_saved_kundalis": {
             "title": "Total Saved Kundalis",
             "type": "integer"
@@ -42,10 +50,50 @@
           "total_saved_kundalis",
           "total_chat_sessions",
           "total_chat_messages",
+          "total_guest_kundalis_all_time",
+          "total_guest_kundalis_last_7_days",
           "practitioner_applications",
           "total_consultations"
         ],
         "title": "AdminStatsOverview",
+        "type": "object"
+      },
+      "AdminUserItem": {
+        "properties": {
+          "chat_session_count": {
+            "title": "Chat Session Count",
+            "type": "integer"
+          },
+          "created_at": {
+            "title": "Created At",
+            "type": "string"
+          },
+          "email": {
+            "title": "Email",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "kundali_count": {
+            "title": "Kundali Count",
+            "type": "integer"
+          },
+          "role": {
+            "title": "Role",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "email",
+          "role",
+          "created_at",
+          "kundali_count",
+          "chat_session_count"
+        ],
+        "title": "AdminUserItem",
         "type": "object"
       },
       "ApplicationIn": {
@@ -4240,6 +4288,55 @@
         "title": "TransitOut",
         "type": "object"
       },
+      "UpdateRoleRequest": {
+        "properties": {
+          "role": {
+            "enum": [
+              "seeker",
+              "practitioner",
+              "admin"
+            ],
+            "title": "Role",
+            "type": "string"
+          }
+        },
+        "required": [
+          "role"
+        ],
+        "title": "UpdateRoleRequest",
+        "type": "object"
+      },
+      "UserListResponse": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/AdminUserItem"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "limit": {
+            "title": "Limit",
+            "type": "integer"
+          },
+          "page": {
+            "title": "Page",
+            "type": "integer"
+          },
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "total",
+          "page",
+          "limit"
+        ],
+        "title": "UserListResponse",
+        "type": "object"
+      },
       "UserLoginIn": {
         "properties": {
           "email": {
@@ -4683,6 +4780,168 @@
           }
         },
         "summary": "Get admin dashboard stats",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/v1/admin/users": {
+      "get": {
+        "operationId": "list_users_v1_admin_users_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "default": 1,
+              "minimum": 1,
+              "title": "Page",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 20,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "description": "Search by email substring",
+            "in": "query",
+            "name": "search",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Search by email substring",
+              "title": "Search"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserListResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List users",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/v1/admin/users/{user_id}/role": {
+      "patch": {
+        "operationId": "update_user_role_v1_admin_users__user_id__role_patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "user_id",
+            "required": true,
+            "schema": {
+              "title": "User Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateRoleRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "title": "Response Update User Role V1 Admin Users  User Id  Role Patch",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Update user role",
         "tags": [
           "admin"
         ]
@@ -5927,6 +6186,22 @@
               "minimum": 1,
               "title": "Dasha Depth",
               "type": "integer"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
             }
           }
         ],

@@ -69,6 +69,7 @@ def create_all() -> None:
     import app.modules.auth.models  # noqa: F401
     import app.modules.billing.models  # noqa: F401
     import app.modules.consultations.models  # noqa: F401
+    import app.modules.kundali.models  # noqa: F401
     import app.modules.practitioners.models  # noqa: F401
     import app.modules.report.models  # noqa: F401
     import app.modules.vault.models  # noqa: F401
