@@ -730,8 +730,14 @@ export function BirthSky3D({
        every graha here is a two-dozen-pixel dot, and no texture survives
        that. So the wheel zooms, and selecting a graha flies the focus to it
        until it fills the frame. */
-    const HOME_DIST = 440;
-    let az = Math.PI / 3.2, pol = 0.92, vAz = 0, vPol = 0;
+    // The hero's canvas is a very wide, short strip (the whole section, not
+    // a square card) — the standalone viewer's angle puts the ring's far
+    // arc close enough to the top of a narrow vertical FOV that it read as
+    // clipped by the section edge. A flatter angle and a touch more distance
+    // gives the ring room to sit fully in frame there without touching the
+    // chart viewer's own tuned composition.
+    const HOME_DIST = subtleRing ? 520 : 440;
+    let az = Math.PI / 3.2, pol = subtleRing ? 1.08 : 0.92, vAz = 0, vPol = 0;
     let dist = HOME_DIST, distTarget = HOME_DIST;
     const focus = new THREE.Vector3(0, 0, 0);
     const focusTarget = new THREE.Vector3(0, 0, 0);
@@ -966,7 +972,7 @@ export function BirthSky3D({
         }
         frame++;
         const b = canvas.getBoundingClientRect();
-        const PAD = 10;
+        const PAD = 28;
         for (const sp of signMarks) {
           sp.getWorldPosition(_lp).project(camera);
           if (_lp.z > 1) { sp.visible = false; continue; }
