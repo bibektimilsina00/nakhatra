@@ -19,6 +19,7 @@ import pytest
 from sqlmodel import SQLModel, create_engine
 
 import app.modules.auth.models  # noqa: F401  (registers tables on the metadata)
+import app.modules.report.models  # noqa: F401
 import app.modules.vault.models  # noqa: F401
 
 API_DIR = Path(__file__).resolve().parents[2]
