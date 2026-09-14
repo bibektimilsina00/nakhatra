@@ -115,6 +115,17 @@ def delete_session(session: Session, session_id: str, user_id: str) -> None:
         raise SessionNotFoundError()
 
 
+def list_session_messages(
+    session: Session, session_id: str, user_id: str
+) -> list[ChatMessageOut]:
+    chat_session = repository.find_session(session, session_id, user_id)
+    if not chat_session:
+        raise SessionNotFoundError()
+    return [
+        ChatMessageOut(**m.model_dump()) for m in repository.list_messages(session, session_id)
+    ]
+
+
 def add_message(
     session: Session, session_id: str, body: ChatMessageIn, user_id: str
 ) -> ChatMessageOut:

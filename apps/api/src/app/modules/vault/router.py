@@ -66,6 +66,13 @@ def get_session(
     return service.get_session_detail(session, session_id, user_id)
 
 
+@router.get("/sessions/{session_id}/messages", response_model=list[ChatMessageOut])
+def get_session_messages(
+    session_id: str, session: SessionDep, user_id: str = Depends(get_current_user)
+) -> list[ChatMessageOut]:
+    return service.list_session_messages(session, session_id, user_id)
+
+
 @router.post("/sessions/{session_id}/messages", response_model=ChatMessageOut)
 def add_message(
     session_id: str,

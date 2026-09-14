@@ -859,6 +859,17 @@
       },
       "ChatSessionIn": {
         "properties": {
+          "chart_key": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Chart Key"
+          },
           "kundali_id": {
             "anyOf": [
               {
@@ -883,6 +894,17 @@
       },
       "ChatSessionOut": {
         "properties": {
+          "chart_key": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Chart Key"
+          },
           "created_at": {
             "title": "Created At",
             "type": "string"
@@ -7823,6 +7845,66 @@
       }
     },
     "/v1/vault/sessions/{session_id}/messages": {
+      "get": {
+        "operationId": "get_session_messages_v1_vault_sessions__session_id__messages_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "session_id",
+            "required": true,
+            "schema": {
+              "title": "Session Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ChatMessageOut"
+                  },
+                  "title": "Response Get Session Messages V1 Vault Sessions  Session Id  Messages Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Session Messages",
+        "tags": [
+          "vault"
+        ]
+      },
       "post": {
         "operationId": "add_message_v1_vault_sessions__session_id__messages_post",
         "parameters": [
