@@ -35,11 +35,15 @@ class SavedKundali(SQLModel, table=True):
 
 class ChatSession(SQLModel, table=True):
     __tablename__ = "chat_sessions"
-    __table_args__ = (Index("idx_chat_sessions_user_id", "user_id"),)
+    __table_args__ = (
+        Index("idx_chat_sessions_user_id", "user_id"),
+        Index("idx_chat_sessions_chart_key", "chart_key"),
+    )
 
     id: str = Field(primary_key=True, max_length=64)
     user_id: str = Field(max_length=64)
     kundali_id: str | None = Field(default=None, max_length=64)
+    chart_key: str | None = Field(default=None, max_length=255)
     title: str = Field(max_length=255)
     created_at: str
     updated_at: str

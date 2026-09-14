@@ -74,12 +74,14 @@ class ChatMessageOut(ChatMessageIn):
 class ChatSessionIn(BaseModel):
     title: str = Field("Kundali Chat", min_length=1, max_length=200)
     kundali_id: str | None = None
+    chart_key: str | None = None
 
 
 class ChatSessionOut(BaseModel):
     id: str
     user_id: str
     kundali_id: str | None = None
+    chart_key: str | None = None
     title: str
     created_at: str
     updated_at: str

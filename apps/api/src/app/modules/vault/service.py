@@ -101,6 +101,7 @@ def create_session(session: Session, body: ChatSessionIn, user_id: str) -> ChatS
             id=f"ses_{uuid.uuid4().hex[:12]}",
             user_id=user_id,
             kundali_id=body.kundali_id,
+            chart_key=body.chart_key,
             title=body.title,
             created_at=now_iso,
             updated_at=now_iso,
