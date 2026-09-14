@@ -45,15 +45,15 @@ export function ReadingSkeleton({ count = 3 }: { count?: number }) {
           <div className="flex items-center gap-3">
             <div className="size-9 shrink-0 animate-pulse rounded-lg bg-line" />
             <div className="min-w-0 flex-1 space-y-2">
-              <div className="h-3.5 w-40 animate-pulse rounded bg-line" />
-              <div className="h-2.5 w-56 animate-pulse rounded bg-line" />
+              <div className="h-3.5 w-40 animate-pulse rounded-sm bg-line" />
+              <div className="h-2.5 w-56 animate-pulse rounded-sm bg-line" />
             </div>
           </div>
           <div className="mt-5 space-y-2.5">
             {[100, 96, 88, 92, 64].map((w, i) => (
               <div
                 key={w}
-                className="h-2.5 animate-pulse rounded bg-line"
+                className="h-2.5 animate-pulse rounded-sm bg-line"
                 style={{ width: `${w}%`, animationDelay: `${i * 90}ms` }}
               />
             ))}

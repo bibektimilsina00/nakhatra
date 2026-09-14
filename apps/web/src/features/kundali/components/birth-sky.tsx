@@ -267,7 +267,7 @@ function PlanetCard({ planet }: { planet: Planet }) {
           {planet.combust && (
             <span
               title={sk ? "अस्त — सूर्यको नजिक" : "Combust — close to the Sun"}
-              className="rounded border border-line px-1.5 py-0.5 text-2xs font-medium text-combust"
+              className="rounded-sm border border-line px-1.5 py-0.5 text-2xs font-medium text-combust"
             >
               C
             </span>

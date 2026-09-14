@@ -146,7 +146,7 @@ export function PlatformShowcase() {
             >
               <span className="mt-1 font-mono text-xs tabular-nums opacity-60">05</span>
               <span className="min-w-0">
-                <span className="flex flex-wrap items-center gap-2.5 font-display text-base font-semibold">{m.items[4].title}<span className={`rounded border border-accent/35 px-1.5 py-px font-mono text-2xs font-bold text-accent-ink ${badge}`}>{m.soon}</span></span>
+                <span className="flex flex-wrap items-center gap-2.5 font-display text-base font-semibold">{m.items[4].title}<span className={`rounded-sm border border-accent/35 px-1.5 py-px font-mono text-2xs font-bold text-accent-ink ${badge}`}>{m.soon}</span></span>
                 <span className="mt-1.5 block text-xs leading-relaxed text-dim">{m.items[4].body}</span>
               </span>
             </button>
@@ -191,9 +191,9 @@ export function PlatformShowcase() {
                 <div className="mt-auto pt-5">
                   <div className={`mb-2.5 font-mono text-xs text-accent-ink ${label}`}>{p.basedOn}</div>
                   <div className="flex flex-wrap gap-1.5">
-                    <span className="rounded border border-line bg-surface px-2 py-1 text-xs text-ink">{p.tenthHouse}</span>
-                    <span className="rounded border border-line bg-surface px-2 py-1 text-xs text-ink">{refs[1]}</span>
-                    <span className="rounded border border-line bg-surface px-2 py-1 text-xs text-ink">{refs[2]}</span>
+                    <span className="rounded-sm border border-line bg-surface px-2 py-1 text-xs text-ink">{p.tenthHouse}</span>
+                    <span className="rounded-sm border border-line bg-surface px-2 py-1 text-xs text-ink">{refs[1]}</span>
+                    <span className="rounded-sm border border-line bg-surface px-2 py-1 text-xs text-ink">{refs[2]}</span>
                   </div>
                 </div>
               </div></div>
@@ -209,8 +209,8 @@ export function PlatformShowcase() {
                 <div className="w-fit max-w-[92%] space-y-2.5 rounded-lg border border-line bg-cream/30 px-3.5 py-3">
                   <p className="text-xs leading-relaxed text-muted">{p.chatAnswerA}<strong className="font-semibold text-ink">{p.chatAnswerEm}</strong>{p.chatAnswerB}</p>
                   <div className="flex flex-wrap gap-1.5 border-t border-line pt-2">
-                    <span className="rounded border border-line px-1.5 py-0.5 text-2xs text-dim">{p.tenthLord}</span>
-                    <span className="rounded border border-line px-1.5 py-0.5 text-2xs text-dim">{refs[2]}</span>
+                    <span className="rounded-sm border border-line px-1.5 py-0.5 text-2xs text-dim">{p.tenthLord}</span>
+                    <span className="rounded-sm border border-line px-1.5 py-0.5 text-2xs text-dim">{refs[2]}</span>
                   </div>
                 </div>
                 <div className="mt-2 flex items-center gap-3 rounded-lg border border-line bg-cream/30 px-3.5 py-2.5">

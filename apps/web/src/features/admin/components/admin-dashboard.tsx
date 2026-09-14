@@ -20,7 +20,7 @@ function Overview() {
   if (isLoading) {
     return (
       <div className="mt-8 animate-pulse rounded-xl border border-line-strong bg-surface p-6">
-        <div className="h-5 w-32 rounded bg-line-strong" />
+        <div className="h-5 w-32 rounded-md bg-line-strong" />
         <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3">
           {Array.from({ length: 6 }).map((_, i) => (
             <div key={i} className="h-24 rounded-lg bg-line-strong" />

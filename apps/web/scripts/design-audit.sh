@@ -20,7 +20,7 @@ check() {
 
 check "bright accent + white text" 'bg-accent\([^-a-z][^"]*\)\?\(text-white\|text-surface\)'
 check "opacity on text tokens"     'text-\(fg\|muted\|dim\|on-accent[a-z-]*\)/[0-9]'
-check "off-scale radii"            'rounded-\['
+check "off-scale radii"            'rounded-\[\|rounded \(border\|bg-\|px-\|py-\|p-\|text-\)'
 check "arbitrary font sizes"       'text-\[[0-9]'
 check "off-system font faces"      'font-\(serif\|logo\)[^-a-zA-Z]'
 check "brand accent as text"       'text-accent[^-a-zA-Z]'

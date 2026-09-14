@@ -562,7 +562,7 @@ function Tag({
   return (
     <span
       title={title}
-      className={`rounded border border-line px-1.5 py-0.5 text-2xs font-medium ${className}`}
+      className={`rounded-sm border border-line px-1.5 py-0.5 text-2xs font-medium ${className}`}
     >
       {children}
     </span>

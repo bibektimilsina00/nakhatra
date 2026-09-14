@@ -155,7 +155,7 @@ function UserRow({ user }: { user: AdminUserItem }) {
             value={user.role}
             onChange={handleRoleChange}
             disabled={isPending}
-            className="rounded border border-line-strong bg-surface px-2 py-1 text-xs text-ink focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent disabled:opacity-50"
+            className="rounded-md border border-line-strong bg-surface px-2 py-1 text-xs text-ink focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent disabled:opacity-50"
           >
             <option value="seeker">Seeker</option>
             <option value="practitioner">Practitioner</option>

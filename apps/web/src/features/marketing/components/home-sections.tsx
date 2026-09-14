@@ -283,7 +283,7 @@ export function ConversationSection() {
                 {["10th lord placement", `${maha} Mahadasha`, "D10 Dasamsa"].map((tag) => (
                   <span
                     key={tag}
-                    className="rounded border border-line px-2 py-0.5 text-2xs text-dim"
+                    className="rounded-sm border border-line px-2 py-0.5 text-2xs text-dim"
                   >
                     {tag}
                   </span>

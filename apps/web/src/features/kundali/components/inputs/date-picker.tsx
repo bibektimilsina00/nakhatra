@@ -92,7 +92,7 @@ export function DatePicker({
         <span className={value ? "text-ink font-semibold" : "text-dim"}>
           {displayLabel}
         </span>
-        <span className="rounded bg-accent-tint px-1.5 py-0.5 text-2xs font-bold text-accent-strong">
+        <span className="rounded-sm bg-accent-tint px-1.5 py-0.5 text-2xs font-bold text-accent-strong">
           {era} ▾
         </span>
       </button>

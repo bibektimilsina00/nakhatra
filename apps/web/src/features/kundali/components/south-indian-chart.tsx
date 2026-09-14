@@ -128,7 +128,7 @@ export function SouthIndianChart({
                 {planets.map((p) => (
                   <span
                     key={p.name}
-                    className={`rounded px-1 text-2xs font-extrabold ${
+                    className={`rounded-sm px-1 text-2xs font-extrabold ${
                       p.dignity === "exalted" ? T.exalted : T.planet
                     }`}
                   >

@@ -50,7 +50,7 @@ export function AskSection() {
                     <p className="text-xs leading-relaxed text-muted" dangerouslySetInnerHTML={{ __html: turn.text }} />
                     <div className="flex flex-wrap gap-1.5 border-t border-line pt-2.5">
                       {turn.refs.map((r) => (
-                        <span key={r} className="rounded border border-line px-1.5 py-0.5 font-mono text-2xs text-dim">{r}</span>
+                        <span key={r} className="rounded-sm border border-line px-1.5 py-0.5 font-mono text-2xs text-dim">{r}</span>
                       ))}
                     </div>
                   </div>

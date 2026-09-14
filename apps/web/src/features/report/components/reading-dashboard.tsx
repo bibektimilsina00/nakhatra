@@ -1055,10 +1055,10 @@ export function ReadingDashboard() {
                   </div>
 
                   <div className="flex items-center gap-2 text-xs">
-                    <span className="rounded bg-surface px-2 py-0.5 font-mono text-muted border border-line-strong">
+                    <span className="rounded-sm bg-surface px-2 py-0.5 font-mono text-muted border border-line-strong">
                       Engine: {audioSource || "hd_mp3_audio_engine"}
                     </span>
-                    <span className="rounded bg-accent-strong px-2 py-0.5 font-bold text-white">
+                    <span className="rounded-sm bg-accent-strong px-2 py-0.5 font-bold text-white">
                       {isPlaying ? "PLAYING" : "PAUSED"}
                     </span>
                   </div>

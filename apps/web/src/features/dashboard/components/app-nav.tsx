@@ -131,7 +131,7 @@ export function AppNav({
               type="button"
               onClick={() => onQueryChange("")}
               aria-label={t.dashClear}
-              className="absolute inset-y-0 right-0 flex w-11 items-center justify-center rounded text-xs text-dim hover:text-ink"
+              className="absolute inset-y-0 right-0 flex w-11 items-center justify-center rounded-md text-xs text-dim hover:text-ink"
             >
               ✕
             </button>

@@ -42,10 +42,10 @@
   --color-retrograde: var(--t-retrograde);
   --color-combust: var(--t-dim);
 
-  --radius-sm: 2px;
-  --radius-md: 3px;
-  --radius-lg: 4px;
-  --radius-xl: 6px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
 
   /* Poppins for display, Inter for body — next/font/google, wired in
    * layout.tsx. font-serif and font-logo are gone with the marketing
