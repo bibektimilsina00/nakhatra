@@ -201,23 +201,28 @@ export function SiteHeader() {
               <ThemeToggle />
             </div>
             {user ? (
-        <Link href="/dashboard" className="hidden min-h-11 items-center text-muted transition-colors hover:text-ink sm:inline-flex">
+        <Link
+          href="/dashboard"
+          className={buttonClasses("primary", { className: "hidden px-7 sm:inline-flex" })}
+        >
           {nav.dashboard}
         </Link>
       ) : (
-        <Link
-          href="/login"
-          className="hidden min-h-11 items-center rounded-md border border-line-strong bg-surface px-6 py-2 text-sm font-medium text-muted transition-colors hover:border-line-strong hover:bg-cream hover:text-ink sm:inline-flex"
-        >
-          {nav.signIn}
-        </Link>
+        <>
+          <Link
+            href="/login"
+            className="hidden min-h-11 items-center rounded-md border border-line-strong bg-surface px-6 py-2 text-sm font-medium text-muted transition-colors hover:border-line-strong hover:bg-cream hover:text-ink sm:inline-flex"
+          >
+            {nav.signIn}
+          </Link>
+          <a
+            href="#form"
+            className={buttonClasses("primary", { className: "px-7" })}
+          >
+            {nav.startFree}
+          </a>
+        </>
       )}
-            <a
-              href="#form"
-              className={buttonClasses("primary", { className: "px-7" })}
-            >
-              {nav.startFree}
-            </a>
             <button type="button" id="mobbtn" onClick={() => setMobOpen((v) => !v)} className="-mr-1 flex min-h-11 min-w-11 items-center justify-center rounded-md p-1.5 text-muted transition-colors hover:text-ink lg:hidden" aria-expanded="false" aria-controls="mobnav" aria-label="Menu">
               <svg className="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
             </button>
@@ -276,9 +281,15 @@ export function SiteHeader() {
               <Link href="/rasifal" className="hover:text-ink">{nav.rasifal}</Link>
               <Link href="/patro" className="hover:text-ink">{nav.patro}</Link>
               <Link href="/consultations" className="text-muted transition-colors hover:text-ink">{nav.consultation}</Link>
-              <Link href="/login" className="text-muted transition-colors hover:text-ink">
-          {nav.signIn}
-        </Link>
+              {user ? (
+                <Link href="/dashboard" className="text-muted transition-colors hover:text-ink">
+                  {nav.dashboard}
+                </Link>
+              ) : (
+                <Link href="/login" className="text-muted transition-colors hover:text-ink">
+                  {nav.signIn}
+                </Link>
+              )}
               <span className="ml-auto flex items-center gap-3"><LangStrip className="font-mono text-2xs" /></span>
             </div>
           </nav>

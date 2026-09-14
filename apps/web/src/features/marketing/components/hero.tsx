@@ -1,5 +1,8 @@
 "use client";
 
+import Link from "next/link";
+
+import { useSession } from "@/features/auth/hooks/use-auth";
 import { buttonClasses } from "@/components/ui/button";
 import { HeroSky } from "@/features/marketing/components/hero-sky";
 import {
@@ -10,18 +13,20 @@ import { useLatinTracking, useMarketing } from "@/lib/i18n/language-context";
 
 /**
  * The hero: real planetary positions behind the copy, and the D1/D9 pair
- * a Jyotishi always reads together beside it.
+ * that reflects whatever planet is being hovered or tapped.
  *
- * This is the one component that drives the shared sky — everything else
- * on the page reads from it.
+ * Positions come from the engine (`useSky`), not math in this component:
+ * astronomy is not a presentation concern.
  */
 export function Hero() {
   const m = useMarketing().hero;
+  const nav = useMarketing().nav;
   const tracking = useLatinTracking("uppercase tracking-[0.25em]");
   const sky = useSky(true);
   const d1 = useChartFocus();
   const d9 = useChartFocus();
   const focus = d1.focus ?? d9.focus;
+  const { isSignedIn } = useSession();
 
   return (
     // The sky is a real starfield with real bloom — it needs a dark stage to
@@ -49,10 +54,17 @@ export function Hero() {
             {m.sub}
           </p>
           <div className="mt-8 flex flex-wrap items-center gap-3">
-            <a href="#form" className={buttonClasses("primary", { className: "group text-sm" })}>
-              {m.ctaPrimary}
-              <svg className="size-4 transition-transform group-hover:translate-x-0.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2"><path d="M2 8h11M9 4l4 4-4 4" /></svg>
-            </a>
+            {isSignedIn ? (
+              <Link href="/dashboard" className={buttonClasses("primary", { className: "group text-sm" })}>
+                {nav.dashboard}
+                <svg className="size-4 transition-transform group-hover:translate-x-0.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2"><path d="M2 8h11M9 4l4 4-4 4" /></svg>
+              </Link>
+            ) : (
+              <a href="#form" className={buttonClasses("primary", { className: "group text-sm" })}>
+                {m.ctaPrimary}
+                <svg className="size-4 transition-transform group-hover:translate-x-0.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2"><path d="M2 8h11M9 4l4 4-4 4" /></svg>
+              </a>
+            )}
             <a href="#reading" className={buttonClasses("secondary", { className: "text-sm" })}>{m.ctaSecondary}</a>
           </div>
         </div>
