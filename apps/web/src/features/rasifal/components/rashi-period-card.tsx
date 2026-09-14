@@ -5,12 +5,15 @@ import {
   periodReadingFor,
   RASHI_SYLLABLES,
   bandLabel,
+  SECTION_LABELS,
 } from "@/features/rasifal/rasifal-i18n";
 import type { RashiPeriod } from "@/features/rasifal/types";
 import { RashiGlyph } from "@/features/rasifal/components/rashi-glyph";
 import { useTranslation } from "@/lib/i18n/language-context";
 import { getSignName, toLocalizedDigit } from "@/lib/i18n/vedic-translations";
 import { formatDateFor } from "@/lib/utils/date-converter";
+
+const SECTIONS = ["career", "love", "finance", "health"] as const;
 
 /** One sign across a week or a month. */
 export function RashiPeriodCard({
@@ -92,6 +95,36 @@ export function RashiPeriodCard({
           </dd>
         </div>
       </dl>
+
+      {/* The written reading when the writer has been round; the composed
+          one from the findings while it has not. Never a blank card. */}
+      <p className="mt-3 text-sm leading-relaxed text-ink">
+        {period.reading?.summary || periodReadingFor(period, span, language)}
+      </p>
+
+      {period.reading && (
+        <dl className="mt-3.5 flex-1 space-y-2.5">
+          {SECTIONS.map((key) =>
+            period.reading?.[key] ? (
+              <div key={key} className="text-sm leading-relaxed">
+                <dt className="inline font-semibold text-ink">
+                  {SECTION_LABELS[key][language]}
+                </dt>
+                <dd className="ml-1.5 inline text-muted">{period.reading[key]}</dd>
+              </div>
+            ) : null,
+          )}
+
+          {period.reading.remedy && (
+            <div className="rounded-lg border border-accent/25 bg-accent-wash p-2.5 text-sm leading-relaxed">
+              <dt className="inline font-semibold text-accent-ink">
+                {SECTION_LABELS.remedy[language]}
+              </dt>
+              <dd className="ml-1.5 inline text-ink">{period.reading.remedy}</dd>
+            </div>
+          )}
+        </dl>
+      )}
     </article>
   );
 }
