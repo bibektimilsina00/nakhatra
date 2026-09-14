@@ -14,7 +14,6 @@
 
 import { useEffect, useRef } from "react";
 
-import { useTheme } from "@/providers/theme-provider";
 import type { Chart } from "@/features/kundali/types";
 import { useTranslation } from "@/lib/i18n/language-context";
 import {
@@ -130,8 +129,6 @@ export function BirthSky3D({
   planetLabels = true,
   hint = true,
   onSelectNakshatra,
-  skybox = true,
-  bloom = true,
 }: {
   chart: Chart;
   selected: string | null;
@@ -165,26 +162,11 @@ export function BirthSky3D({
   /** A yogatara was tapped (null: the selection was dismissed). Stars are
    *  pickable only while the nakshatra layer is shown. */
   onSelectNakshatra?: (name: string | null) => void;
-  /** Whether to render the starfield cubemap background. */
-  skybox?: boolean;
-  /**
-   * Whether to run the scene through EffectComposer + UnrealBloomPass.
-   * UnrealBloomPass's composite shader writes alpha=1 across its blur
-   * radius regardless of the underlying scene's transparency, so on a
-   * transparent canvas (alpha:true) it paints an opaque, soft-edged patch
-   * wherever bloom reaches — invisible on the standalone chart viewer's
-   * own opaque backdrop, but a visible dark smudge floating over the
-   * marketing hero's cream/dark page background. Off for that use case.
-   */
-  bloom?: boolean;
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const chipRef = useRef<HTMLDivElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const { language } = useTranslation();
-  const { theme } = useTheme();
-  const themeRef = useRef(theme);
-  useEffect(() => { themeRef.current = theme; }, [theme]);
 
   // Live prop mirrors, read inside the frame loop without rebuilding the scene.
   const selRef = useRef(selected);
@@ -234,14 +216,9 @@ export function BirthSky3D({
     };
     const D = T;
 
-    const themeUpdaters: Array<(isLight: boolean) => void> = [];
-    const isLightInit = themeRef.current === "light";
-
     const scene = new THREE.Scene();
-    if (skybox) {
-      scene.background = new THREE.CubeTextureLoader().setPath(IMG)
-        .load(["3.jpg", "1.jpg", "2.jpg", "2.jpg", "4.jpg", "2.jpg"]);
-    }
+    scene.background = new THREE.CubeTextureLoader().setPath(IMG)
+      .load(["3.jpg", "1.jpg", "2.jpg", "2.jpg", "4.jpg", "2.jpg"]);
 
     const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 2000);
 
@@ -467,20 +444,11 @@ export function BirthSky3D({
 
       // one faint gold shell each (the nodes share the lunar band)
       if (p.name !== "Ketu") {
-        const mat = new THREE.LineBasicMaterial({
-          color: isLightInit ? 0xe8931f : 0xe5a93c,
-          transparent: true,
-          opacity: isLightInit ? 0.15 : 0.05,
-        });
-        themeUpdaters.push((isLight) => {
-          mat.color.setHex(isLight ? 0xe8931f : 0xe5a93c);
-          mat.opacity = isLight ? 0.15 : 0.05;
-        });
         const band = new THREE.LineLoop(
           new THREE.BufferGeometry().setFromPoints(
             new THREE.EllipseCurve(0, 0, shell.r, shell.r, 0, 2 * Math.PI, false, 0).getPoints(140),
           ),
-          mat,
+          new THREE.LineBasicMaterial({ color: 0xe5a93c, transparent: true, opacity: 0.05 }),
         );
         band.rotation.x = Math.PI / 2;
         scene.add(band);
@@ -571,47 +539,25 @@ export function BirthSky3D({
       // alternating sector shading, as a printed wheel alternates its signs
       const isLagnaSign = i === chart.lagna_sign_index;
       const start = (i * 30 * Math.PI) / 180;
-      const sectorMat = new THREE.MeshBasicMaterial({
-        color: isLightInit ? 0xe8931f : 0xe5a93c,
-        transparent: true,
-        opacity: isLightInit
-          ? (isLagnaSign ? 0.25 : i % 2 ? 0.05 : 0.1)
-          : (isLagnaSign ? 0.13 : i % 2 ? 0.02 : 0.045),
-        side: THREE.DoubleSide,
-        depthWrite: false,
-      });
-      themeUpdaters.push((isLight) => {
-        sectorMat.color.setHex(isLight ? 0xe8931f : 0xe5a93c);
-        let op = isLight
-          ? (isLagnaSign ? 0.25 : i % 2 ? 0.05 : 0.1)
-          : (isLagnaSign ? 0.13 : i % 2 ? 0.02 : 0.045);
-        if (subtleRing) op *= 0.45;
-        sectorMat.opacity = op;
-      });
       const sector = new THREE.Mesh(
         new THREE.RingGeometry(RING_IN, RING_OUT, 24, 1, start, Math.PI / 6),
-        sectorMat,
+        new THREE.MeshBasicMaterial({
+          color: 0xe5a93c,
+          transparent: true,
+          opacity: isLagnaSign ? 0.13 : i % 2 ? 0.02 : 0.045,
+          side: THREE.DoubleSide,
+          depthWrite: false,
+        }),
       );
       sector.rotation.x = -Math.PI / 2;
-      ringMats.push(sectorMat);
+      ringMats.push(sector.material as THREE.MeshBasicMaterial);
       scene.add(sector);
 
-      const spokeMat = new THREE.LineBasicMaterial({
-        color: isLightInit ? 0xe8931f : 0xe5a93c,
-        transparent: true,
-        opacity: isLightInit ? 0.45 : 0.3,
-      });
-      themeUpdaters.push((isLight) => {
-        spokeMat.color.setHex(isLight ? 0xe8931f : 0xe5a93c);
-        let op = isLight ? 0.45 : 0.3;
-        if (subtleRing) op *= 0.45;
-        spokeMat.opacity = op;
-      });
       const spoke = new THREE.Line(
         new THREE.BufferGeometry().setFromPoints([at(i * 30, RING_IN), at(i * 30, RING_OUT)]),
-        spokeMat,
+        new THREE.LineBasicMaterial({ color: 0xe5a93c, transparent: true, opacity: 0.3 }),
       );
-      ringMats.push(spokeMat);
+      ringMats.push(spoke.material as THREE.LineBasicMaterial);
       scene.add(spoke);
 
       const label = makeLabel(
@@ -643,38 +589,19 @@ export function BirthSky3D({
     /* ── nakshatra ring (toggleable) ─────────────────────────────── */
     const nakGroup = new THREE.Group();
     {
-      const circleMat = new THREE.LineBasicMaterial({
-        color: isLightInit ? 0x6b5642 : 0x7a9cc6,
-        transparent: true,
-        opacity: isLightInit ? 0.35 : 0.25,
-      });
-      themeUpdaters.push((isLight) => {
-        circleMat.color.setHex(isLight ? 0x6b5642 : 0x7a9cc6);
-        circleMat.opacity = isLight ? 0.35 : 0.25;
-      });
       const c = new THREE.LineLoop(
         new THREE.BufferGeometry().setFromPoints(
           new THREE.EllipseCurve(0, 0, NAK_R, NAK_R, 0, 2 * Math.PI, false, 0).getPoints(216),
         ),
-        circleMat,
+        new THREE.LineBasicMaterial({ color: 0x7a9cc6, transparent: true, opacity: 0.25 }),
       );
       c.rotation.x = Math.PI / 2;
       nakGroup.add(c);
-      
-      const tickMat = new THREE.LineBasicMaterial({
-        color: isLightInit ? 0x6b5642 : 0x7a9cc6,
-        transparent: true,
-        opacity: isLightInit ? 0.45 : 0.3,
-      });
-      themeUpdaters.push((isLight) => {
-        tickMat.color.setHex(isLight ? 0x6b5642 : 0x7a9cc6);
-        tickMat.opacity = isLight ? 0.45 : 0.3;
-      });
       for (let i = 0; i < 27; i++) {
         const lon = i * (360 / 27);
         const tick = new THREE.Line(
           new THREE.BufferGeometry().setFromPoints([at(lon, NAK_R - 4), at(lon, NAK_R + 4)]),
-          tickMat,
+          new THREE.LineBasicMaterial({ color: 0x7a9cc6, transparent: true, opacity: 0.3 }),
         );
         nakGroup.add(tick);
       }
@@ -704,36 +631,23 @@ export function BirthSky3D({
         const pos = at(lonSidereal, R_STAR * Math.cos(beta), R_STAR * sinBeta);
 
         const glowSize = star.bright ? 30 : 18;
-        const drawStarGlow = (isLight: boolean) => {
-          const cnv = document.createElement("canvas");
-          cnv.width = cnv.height = 64;
-          const g3 = cnv.getContext("2d")!;
-          const grad3 = g3.createRadialGradient(32, 32, 1, 32, 32, 32);
-          if (isLight) {
-            grad3.addColorStop(0, "rgba(43,23,16,0.95)");
-            grad3.addColorStop(0.2, star.bright ? "rgba(163,45,34,0.6)" : "rgba(107,86,66,0.5)");
-            grad3.addColorStop(1, "rgba(107,86,66,0)");
-          } else {
-            grad3.addColorStop(0, "rgba(255,255,255,0.95)");
-            grad3.addColorStop(0.2, star.bright ? "rgba(243,199,102,0.6)" : "rgba(201,212,230,0.5)");
-            grad3.addColorStop(1, "rgba(201,212,230,0)");
-          }
-          g3.fillStyle = grad3;
-          g3.fillRect(0, 0, 64, 64);
-          return new THREE.CanvasTexture(cnv);
-        };
-        const dotMat = new THREE.SpriteMaterial({
-          map: drawStarGlow(isLightInit),
-          transparent: true, depthWrite: false,
-          blending: THREE.AdditiveBlending,
-          sizeAttenuation: false,
-        });
-        themeUpdaters.push((isLight) => {
-          const oldMap = dotMat.map;
-          dotMat.map = drawStarGlow(isLight);
-          oldMap?.dispose();
-        });
-        const dot = new THREE.Sprite(dotMat);
+        const cnv = document.createElement("canvas");
+        cnv.width = cnv.height = 64;
+        const g3 = cnv.getContext("2d")!;
+        const grad3 = g3.createRadialGradient(32, 32, 1, 32, 32, 32);
+        grad3.addColorStop(0, "rgba(255,255,255,0.95)");
+        grad3.addColorStop(0.2, star.bright ? "rgba(243,199,102,0.6)" : "rgba(201,212,230,0.5)");
+        grad3.addColorStop(1, "rgba(201,212,230,0)");
+        g3.fillStyle = grad3;
+        g3.fillRect(0, 0, 64, 64);
+        const dot = new THREE.Sprite(
+          new THREE.SpriteMaterial({
+            map: new THREE.CanvasTexture(cnv),
+            transparent: true, depthWrite: false,
+            blending: THREE.AdditiveBlending,
+            sizeAttenuation: false,
+          }),
+        );
         dot.scale.setScalar(glowSize * 0.0005);
         dot.position.copy(pos);
         nakGroup.add(dot);
@@ -801,11 +715,9 @@ export function BirthSky3D({
     }
 
     /* ── bloom ───────────────────────────────────────────────────── */
-    const composer = bloom ? new EffectComposer(renderer) : null;
-    if (composer) {
-      composer.addPass(new RenderPass(scene, camera));
-      composer.addPass(new UnrealBloomPass(new THREE.Vector2(1, 1), 0.42, 0.4, 0.85));
-    }
+    const composer = new EffectComposer(renderer);
+    composer.addPass(new RenderPass(scene, camera));
+    composer.addPass(new UnrealBloomPass(new THREE.Vector2(1, 1), 0.42, 0.4, 0.85));
 
     const uiTarget = (e: Event) =>
       globalInteract &&
@@ -957,7 +869,7 @@ export function BirthSky3D({
       const w = canvas.clientWidth, h = canvas.clientHeight;
       if (w && h && (canvas.width !== w || canvas.height !== h)) {
         renderer.setSize(w, h, false);
-        composer?.setSize(w, h);
+        composer.setSize(w, h);
         camera.aspect = w / h;
         camera.updateProjectionMatrix();
       }
@@ -965,20 +877,12 @@ export function BirthSky3D({
 
     let raf = 0;
     let lastSel: string | null = null;
-    let lastTheme = isLightInit ? "light" : "dark";
     let frame = 0;
     let avoidRects: DOMRect[] = [];
     const _lp = new THREE.Vector3();
     function animate() {
       raf = requestAnimationFrame(animate);
       resize();
-
-      const currentTheme = themeRef.current;
-      if (lastTheme !== currentTheme) {
-        lastTheme = currentTheme;
-        const isLight = currentTheme === "light";
-        themeUpdaters.forEach((update) => update(isLight));
-      }
 
       if (!still) {
         earth.rotateY(0.0016);
@@ -1076,8 +980,7 @@ export function BirthSky3D({
         }
       }
 
-      if (composer) composer.render();
-      else renderer.render(scene, camera);
+      composer.render();
     }
     animate();
 
@@ -1085,7 +988,7 @@ export function BirthSky3D({
       cancelAnimationFrame(raf);
       cleanup.forEach((f) => f());
       renderer.dispose();
-      composer?.dispose();
+      composer.dispose();
     };
     // The scene is built once per chart and language; toggles and selection
     // flow through refs above rather than rebuilding WebGL state.

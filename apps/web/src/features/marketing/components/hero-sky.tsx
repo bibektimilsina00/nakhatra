@@ -65,8 +65,6 @@ export function HeroSky() {
       animateOrbits
       globalInteract
       subtleRing
-      skybox={false}
-      bloom={false}
       planetLabels={false}
       hint={false}
       avoidSelector="[data-sky-avoid]"
