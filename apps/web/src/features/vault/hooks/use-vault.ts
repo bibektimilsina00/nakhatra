@@ -76,3 +76,33 @@ export function useSaveKundali() {
     },
   });
 }
+
+export function useCreateSession() {
+  const queryClient = useQueryClient();
+  return useMutation<ChatSession, ApiError, vaultApi.ChatSessionIn>({
+    mutationFn: vaultApi.createSession,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: vaultKeys.sessions });
+    },
+  });
+}
+
+export function useSessionMessages(sessionId: string | null) {
+  const { isSignedIn } = useSession();
+  return useQuery<vaultApi.ChatMessageOut[], ApiError>({
+    queryKey: ["vault", "sessions", sessionId, "messages"],
+    queryFn: () => vaultApi.getSessionMessages(sessionId!),
+    enabled: isSignedIn && Boolean(sessionId),
+    placeholderData: [],
+  });
+}
+
+export function useAddSessionMessage(sessionId: string | null) {
+  const queryClient = useQueryClient();
+  return useMutation<vaultApi.ChatMessageOut, ApiError, vaultApi.ChatMessageIn>({
+    mutationFn: (body) => vaultApi.addSessionMessage(sessionId!, body),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["vault", "sessions", sessionId, "messages"] });
+    },
+  });
+}

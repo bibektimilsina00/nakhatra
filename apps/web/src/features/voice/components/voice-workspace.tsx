@@ -25,6 +25,15 @@ import { authHeaders } from "@/features/auth/store/auth-store";
 import { useAskAstrologer } from "@/features/chat/hooks/use-ask-astrologer";
 import { MarkdownRenderer } from "@/components/ui/markdown-renderer";
 import { ChatMessageBubble } from "@/features/chat/components/chat-message-bubble";
+import { useSession } from "@/features/auth/hooks/use-auth";
+import {
+  useChatSessions,
+  useCreateSession,
+  useSessionMessages,
+  useAddSessionMessage,
+} from "@/features/vault/hooks/use-vault";
+import { buttonClasses } from "@/components/ui/button";
+import Link from "next/link";
 
 import { useTranslation } from "@/lib/i18n/language-context";
 import { trackAiChatMessageSent, trackLiveVoiceStarted } from "@/lib/utils/analytics";
@@ -54,6 +63,15 @@ export function LiveModeWorkspace() {
   const [inputQuery, setInputQuery] = useState("");
   const [isThinking, setIsThinking] = useState(false);
   const [highlightedHouse, setHighlightedHouse] = useState<number | null>(null);
+
+  const { isSignedIn } = useSession();
+  const { data: chatSessions = [], isSuccess: isChatSessionsLoaded } = useChatSessions();
+  const createSession = useCreateSession();
+  const [sessionId, setSessionId] = useState<string | null>(null);
+  const [isCreatingSession, setIsCreatingSession] = useState(false);
+  const { data: sessionMessages = [], isFetched: isMessagesFetched } = useSessionMessages(sessionId);
+  const addSessionMessage = useAddSessionMessage(sessionId);
+  const [chatError, setChatError] = useState<{ status?: number; message: string } | null>(null);
 
   const chatScrollRef = useRef<HTMLDivElement | null>(null);
 
@@ -211,6 +229,34 @@ export function LiveModeWorkspace() {
   const transcriptKey = (b: BirthDetailsIn) =>
     `nakhatra_chat:${b.name}|${b.date}|${b.time}`;
 
+  const currentChartKey = activeBirth ? transcriptKey(activeBirth) : null;
+
+  // Find or Create Chat Session
+  useEffect(() => {
+    if (!isSignedIn || !currentChartKey || !isChatSessionsLoaded || isCreatingSession || sessionId) return;
+
+    const existing = chatSessions.find((s) => s.chart_key === currentChartKey);
+    if (existing) {
+      setSessionId(existing.id);
+    } else {
+      setIsCreatingSession(true);
+      createSession.mutate(
+        {
+          title: `Chat with ${activeBirth?.name}`,
+          chart_key: currentChartKey,
+        },
+        {
+          onSuccess: (newSession) => {
+            setSessionId(newSession.id);
+          },
+          onSettled: () => {
+            setIsCreatingSession(false);
+          },
+        }
+      );
+    }
+  }, [isSignedIn, currentChartKey, isChatSessionsLoaded, chatSessions, sessionId, isCreatingSession, activeBirth]);
+
   // A match handed over from the milan page, if the visitor came from one.
   // Held in a ref as well, because the realtime mint reads it outside render.
   const [milanLive, setMilanLive] = useState<MilanLive | null>(null);
@@ -232,6 +278,7 @@ export function LiveModeWorkspace() {
     if (stored) {
       setActiveBirth(stored.birth);
       setActiveChart(stored.chart);
+      // We no longer load from sessionStorage if signed in. If anonymous, we can still load from sessionStorage.
       try {
         const saved = sessionStorage.getItem(transcriptKey(stored.birth));
         if (saved) setMessages(JSON.parse(saved));
@@ -245,6 +292,22 @@ export function LiveModeWorkspace() {
       router.replace("/reading/choose?mode=live");
     }
   }, []);
+
+  // Sync messages from vault session
+  useEffect(() => {
+    if (isSignedIn && sessionId && isMessagesFetched) {
+      if (sessionMessages.length > 0) {
+        setMessages(
+          sessionMessages.map((sm) => ({
+            id: sm.id,
+            sender: sm.sender as "user" | "astrologer",
+            text: sm.content,
+            timestamp: new Date(sm.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+          }))
+        );
+      }
+    }
+  }, [isSignedIn, sessionId, isMessagesFetched, sessionMessages]);
 
   // Mirrors the app bar's selector rather than owning a second copy of it.
   // Two selectors on screen disagreed about what "language" meant.
@@ -395,8 +458,12 @@ export function LiveModeWorkspace() {
   };
 
   // Initialize initial greeting dynamically
+  const isReadyForGreeting = isSignedIn
+    ? isMessagesFetched && messages.length === 0
+    : messages.length === 0;
+
   useEffect(() => {
-    if (activeChart && messages.length === 0) {
+    if (activeChart && isReadyForGreeting) {
       // `periods[0]` and `periods[1]` were the first two mahadashas *from
       // birth*, the second mislabelled as the antardasha. A 1998 chart opened
       // with its birth-era dashas announced as current.
@@ -412,10 +479,10 @@ export function LiveModeWorkspace() {
 
       const greeting =
         selectedLanguage === "ne"
-          ? `नमस्ते ${activeBirth.name}! मैले तपाईंको कुण्डलीको विस्तृत विश्लेषण गरेको छु। तपाईंको ${getSignName(activeChart.lagna_sign, selectedLanguageRef.current)} लग्न${activeChart.panchang?.moon_sign ? ` र ${getSignName(activeChart.panchang.moon_sign, selectedLanguageRef.current)} चन्द्रमा` : ""} तथा वर्तमान ${getPlanetName(mahaLord, selectedLanguageRef.current)}-${getPlanetName(antarLord, selectedLanguageRef.current)} दशाले तपाईंको जीवनमा नयाँ अवसर सङ्केत गर्दछ। आज तपाईं के सोध्न चाहनुहुन्छ?`
+          ? `नमस्ते ${activeBirth?.name}! मैले तपाईंको कुण्डलीको विस्तृत विश्लेषण गरेको छु। तपाईंको ${getSignName(activeChart.lagna_sign, selectedLanguageRef.current)} लग्न${activeChart.panchang?.moon_sign ? ` र ${getSignName(activeChart.panchang.moon_sign, selectedLanguageRef.current)} चन्द्रमा` : ""} तथा वर्तमान ${getPlanetName(mahaLord, selectedLanguageRef.current)}-${getPlanetName(antarLord, selectedLanguageRef.current)} दशाले तपाईंको जीवनमा नयाँ अवसर सङ्केत गर्दछ। आज तपाईं के सोध्न चाहनुहुन्छ?`
           : selectedLanguage === "hi"
-          ? `नमस्ते ${activeBirth.name}! मैंने आपकी कुंडली का विस्तृत विश्लेषण किया है। आपका ${getSignName(activeChart.lagna_sign, selectedLanguageRef.current)} लग्न${activeChart.panchang?.moon_sign ? ` एवं ${getSignName(activeChart.panchang.moon_sign, selectedLanguageRef.current)} चंद्रमा` : ""} तथा वर्तमान ${getPlanetName(mahaLord, selectedLanguageRef.current)}-${getPlanetName(antarLord, selectedLanguageRef.current)} दशा आपके जीवन में महत्वपूर्ण समय का संकेत देती है। आज आप क्या पूछना चाहते हैं?`
-          : `Namaste ${activeBirth.name}! I have thoroughly analyzed your Kundali. Your ${getSignName(activeChart.lagna_sign, selectedLanguageRef.current)} Ascendant${activeChart.panchang?.moon_sign ? ` with ${getSignName(activeChart.panchang.moon_sign, selectedLanguageRef.current)} Moon` : ""} under current ${dashaText} make this a significant phase for your personal growth. What specific questions do you have today?`;
+          ? `नमस्ते ${activeBirth?.name}! मैंने आपकी कुंडली का विस्तृत विश्लेषण किया है। आपका ${getSignName(activeChart.lagna_sign, selectedLanguageRef.current)} लग्न${activeChart.panchang?.moon_sign ? ` एवं ${getSignName(activeChart.panchang.moon_sign, selectedLanguageRef.current)} चंद्रमा` : ""} तथा वर्तमान ${getPlanetName(mahaLord, selectedLanguageRef.current)}-${getPlanetName(antarLord, selectedLanguageRef.current)} दशा आपके जीवन में महत्वपूर्ण समय का संकेत देती है। आज आप क्या पूछना चाहते हैं?`
+          : `Namaste ${activeBirth?.name}! I have thoroughly analyzed your Kundali. Your ${getSignName(activeChart.lagna_sign, selectedLanguageRef.current)} Ascendant${activeChart.panchang?.moon_sign ? ` with ${getSignName(activeChart.panchang.moon_sign, selectedLanguageRef.current)} Moon` : ""} under current ${dashaText} make this a significant phase for your personal growth. What specific questions do you have today?`;
 
       const matched = milanRef.current;
       const matchLine = matched
@@ -426,20 +493,28 @@ export function LiveModeWorkspace() {
             : ` Your match with ${matched.partner.name} scores ${matched.match.total_guna} of 36 — I have both charts in front of me, so ask me anything about the two of you.`
         : "";
 
+      const fullText = greeting + matchLine;
+      const astrologicalBasis = `${getSignName(activeChart.lagna_sign, selectedLanguageRef.current)} ${ascendantWord} · ${dashaText}`;
+
       setMessages([
         {
           id: "msg-init",
           sender: "astrologer",
-          text: greeting + matchLine,
+          text: fullText,
           timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-          astrologicalBasis: `${getSignName(activeChart.lagna_sign, selectedLanguageRef.current)} ${ascendantWord} · ${dashaText}`,
+          astrologicalBasis,
         },
       ]);
-      setTeleprompterText(greeting);
-      setTeleprompterBasis(`${getSignName(activeChart.lagna_sign, selectedLanguageRef.current)} Ascendant · ${dashaText}`);
-      addDebugLog("SESSION_INIT", `Dynamic greeting built for ${activeBirth.name} (${getSignName(activeChart.lagna_sign, selectedLanguageRef.current)} Ascendant)`);
+      
+      if (isSignedIn && sessionId) {
+        addSessionMessage.mutate({ sender: "astrologer", content: fullText });
+      }
+
+      setTeleprompterText(fullText);
+      setTeleprompterBasis(astrologicalBasis);
+      addDebugLog("SESSION_INIT", `Dynamic greeting built for ${activeBirth?.name} (${getSignName(activeChart.lagna_sign, selectedLanguageRef.current)} Ascendant)`);
     }
-  }, [activeChart, activeBirth, messages.length, selectedLanguage]);
+  }, [activeChart, activeBirth, isReadyForGreeting, selectedLanguage, isSignedIn, sessionId]);
 
   useEffect(() => {
     if (!activeBirth.name || messages.length === 0) return;
@@ -475,6 +550,9 @@ export function LiveModeWorkspace() {
         timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
       };
       setMessages((prev) => [...prev, userMsg]);
+      if (isSignedIn && sessionId) {
+        addSessionMessage.mutate({ sender: "user", content: query });
+      }
       if (!textToSend) setInputQuery("");
       return;
     }
@@ -489,8 +567,13 @@ export function LiveModeWorkspace() {
     };
 
     setMessages((prev) => [...prev, userMsg]);
+    if (isSignedIn && sessionId) {
+      addSessionMessage.mutate({ sender: "user", content: query });
+    }
+    
     if (!textToSend) setInputQuery("");
     setIsThinking(true);
+    setChatError(null);
     if (viewMode === "live_voice") {
       updateVoiceState("thinking");
     }
@@ -511,7 +594,7 @@ export function LiveModeWorkspace() {
         // every time is bandwidth the backend immediately discards.
         messages: messages.map((m) => ({ sender: m.sender, text: m.text })),
         chart: activeChart,
-        birth: activeBirth,
+        birth: activeBirth!,
         language: selectedLanguageRef.current,
         ...(milanRef.current ? { milan: toMilanContext(milanRef.current) } : {}),
       });
@@ -529,6 +612,10 @@ export function LiveModeWorkspace() {
         };
 
         setMessages((prev) => [...prev, aiMsg]);
+        if (isSignedIn && sessionId) {
+          addSessionMessage.mutate({ sender: "astrologer", content: data.text });
+        }
+        
         setTeleprompterText(data.text);
         setTeleprompterBasis(data.astrological_basis || "");
 
@@ -547,6 +634,9 @@ export function LiveModeWorkspace() {
       }
     } catch (err: any) {
       console.error("Failed to fetch AI Astrologer response", err);
+      if (err?.status === 401) {
+        setChatError({ status: 401, message: "Unauthorized" });
+      }
       addDebugLog("API_ERROR", err?.message || "Chat completion failed");
       setIsThinking(false);
       if (activeSessionRef.current) updateVoiceState("listening");
@@ -1210,6 +1300,14 @@ onClick={() => setupMicAnalyzer()}
                     {realtimeError}
                   </div>
                 )}
+                {chatError && chatError.status === 401 && (
+                  <div className="w-full max-w-md shrink-0 flex flex-col items-center gap-3 rounded-lg border border-accent/30 bg-cream px-4 py-3 text-center shadow-raised">
+                    <span className="text-sm text-ink">{t.chatSignUpPrompt}</span>
+                    <Link href="/login" className={buttonClasses("primary", { className: "w-full sm:w-auto" })}>
+                      {t.dashSignIn}
+                    </Link>
+                  </div>
+                )}
               </div>
 
               {/* ── One console: suggestions, input, controls ─────────────── */}
@@ -1642,6 +1740,15 @@ onClick={() => setupMicAnalyzer()}
                 >
                   ✕
                 </button>
+              </div>
+            )}
+            
+            {chatError && chatError.status === 401 && (
+              <div className="mx-4 mb-2 flex flex-col items-center gap-3 rounded-lg border border-accent/30 bg-cream px-4 py-3 text-center shadow-raised">
+                <span className="text-sm text-ink">{t.chatSignUpPrompt}</span>
+                <Link href="/login" className={buttonClasses("primary", { className: "w-full sm:w-auto" })}>
+                  {t.dashSignIn}
+                </Link>
               </div>
             )}
 
