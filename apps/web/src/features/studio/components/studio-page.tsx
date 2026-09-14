@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from "react";
 import { Check, ExternalLink } from "lucide-react";
 
 import { AdminOnly } from "@/features/admin/components/admin-only";
-import { AppShell } from "@/features/dashboard/components/app-shell";
 import { Button } from "@/components/ui/button";
 import { inputClasses } from "@/components/ui/input";
 import type {
@@ -280,158 +279,156 @@ function Studio() {
   const s = config.data?.settings;
 
   return (
-    <AppShell>
-      <AdminOnly>
-        <main className="mx-auto w-full max-w-[960px] px-5 pt-10 pb-24 sm:px-8">
-          <span className={`text-xs font-semibold text-accent-ink ${eyebrow}`}>Admin</span>
-          <h1 className="mt-3 font-display text-2xl font-bold leading-tight text-ink sm:text-3xl">Rasifal studio</h1>
-          <p className="mt-2 text-sm text-muted">
-            बाह्र स्लाइड, नेपाली आवाज र दुई भागको भिडियो — एउटै थिचाइमा।
+    <AdminOnly>
+      <main className="mx-auto w-full max-w-[960px] px-5 pt-10 pb-24 sm:px-8">
+        <span className={`text-xs font-semibold text-accent-ink ${eyebrow}`}>Admin</span>
+        <h1 className="mt-3 font-display text-2xl font-bold leading-tight text-ink sm:text-3xl">Rasifal studio</h1>
+        <p className="mt-2 text-sm text-muted">
+          बाह्र स्लाइड, नेपाली आवाज र दुई भागको भिडियो — एउटै थिचाइमा।
+        </p>
+
+        {notice && (
+          <p
+            className={`mt-4 rounded-md border p-3 text-xs ${
+              notice.ok
+                ? "border-success/30 bg-success-tint text-success-ink"
+                : "border-danger/30 bg-danger-tint text-danger-ink"
+            }`}
+          >
+            {notice.text}
           </p>
+        )}
 
-          {notice && (
-            <p
-              className={`mt-4 rounded-md border p-3 text-xs ${
-                notice.ok
-                  ? "border-success/30 bg-success-tint text-success-ink"
-                  : "border-danger/30 bg-danger-tint text-danger-ink"
-              }`}
-            >
-              {notice.text}
-            </p>
-          )}
-
-          {/* ── At a glance ────────────────────────────────────────── */}
-          {s && (
-            <div className="mt-5 grid gap-2 text-xs sm:grid-cols-3">
-              <div className={`${card} !p-3`}>
-                <span className="text-muted">Every day</span>
-                <p className="mt-0.5 font-semibold text-ink">
-                  {s.daily.enabled ? `On · renders at ${s.daily.time}` : "Off · by the button only"}
-                </p>
-              </div>
-              <div className={`${card} !p-3`}>
-                <span className="text-muted">Voice</span>
-                <p className="mt-0.5 font-semibold text-ink">{s.voice}</p>
-              </div>
-              <div className={`${card} !p-3`}>
-                <span className="text-muted">Posts to</span>
-                <p className="mt-0.5 font-semibold text-ink">
-                  {live.length ? live.join(" · ") : "Nowhere yet"}
-                </p>
-              </div>
+        {/* ── At a glance ────────────────────────────────────────── */}
+        {s && (
+          <div className="mt-5 grid gap-2 text-xs sm:grid-cols-3">
+            <div className={`${card} !p-3`}>
+              <span className="text-muted">Every day</span>
+              <p className="mt-0.5 font-semibold text-ink">
+                {s.daily.enabled ? `On · renders at ${s.daily.time}` : "Off · by the button only"}
+              </p>
             </div>
-          )}
+            <div className={`${card} !p-3`}>
+              <span className="text-muted">Voice</span>
+              <p className="mt-0.5 font-semibold text-ink">{s.voice}</p>
+            </div>
+            <div className={`${card} !p-3`}>
+              <span className="text-muted">Posts to</span>
+              <p className="mt-0.5 font-semibold text-ink">
+                {live.length ? live.join(" · ") : "Nowhere yet"}
+              </p>
+            </div>
+          </div>
+        )}
 
-          {/* ── Render ─────────────────────────────────────────────── */}
-          <section className={`mt-5 ${card}`}>
-            <h2 className="font-display text-base font-semibold text-ink">Render</h2>
-            <div className="mt-3 flex flex-wrap items-center gap-3">
-              <input
-                type="date"
-                value={date}
-                max={todayInNepal() > date ? undefined : date}
-                onChange={(e) => setDate(e.target.value)}
-                className={inputClasses({ className: "!w-auto" })}
-              />
+        {/* ── Render ─────────────────────────────────────────────── */}
+        <section className={`mt-5 ${card}`}>
+          <h2 className="font-display text-base font-semibold text-ink">Render</h2>
+          <div className="mt-3 flex flex-wrap items-center gap-3">
+            <input
+              type="date"
+              value={date}
+              max={todayInNepal() > date ? undefined : date}
+              onChange={(e) => setDate(e.target.value)}
+              className={inputClasses({ className: "!w-auto" })}
+            />
+            <Button
+              type="button"
+              disabled={running || start.isPending}
+              onClick={() =>
+                start.mutate(undefined, {
+                  onError: (err) => snack({ tone: "error", text: err.message }),
+                })
+              }
+            >
+              {running ? `Rendering… ${elapsed(status.data)}` : done ? "Render again" : "Generate the day's video"}
+            </Button>
+            {done && !running && (
               <Button
                 type="button"
-                disabled={running || start.isPending}
-                onClick={() =>
-                  start.mutate(undefined, {
-                    onError: (err) => snack({ tone: "error", text: err.message }),
-                  })
-                }
+                variant="secondary"
+                disabled={!live.length || publish.isPending || status.data?.publishing}
+                onClick={() => runPublish({})}
+                title={live.length ? `Upload to ${live.join(" and ")}` : "Connect a channel below and switch it on"}
               >
-                {running ? `Rendering… ${elapsed(status.data)}` : done ? "Render again" : "Generate the day's video"}
+                {publish.isPending || status.data?.publishing ? "Publishing…" : "Publish now"}
               </Button>
-              {done && !running && (
-                <Button
-                  type="button"
-                  variant="secondary"
-                  disabled={!live.length || publish.isPending || status.data?.publishing}
-                  onClick={() => runPublish({})}
-                  title={live.length ? `Upload to ${live.join(" and ")}` : "Connect a channel below and switch it on"}
-                >
-                  {publish.isPending || status.data?.publishing ? "Publishing…" : "Publish now"}
-                </Button>
-              )}
-              {running && <span className="text-xs text-muted">About six minutes.</span>}
-            </div>
-
-            {status.data?.log && (
-              <pre className="mt-4 max-h-56 overflow-auto rounded-md border border-line-strong bg-cream p-3 text-xs leading-relaxed whitespace-pre-wrap text-muted">
-                {status.data.log}
-              </pre>
             )}
-          </section>
-
-          {/* ── Preview ────────────────────────────────────────────── */}
-          <div className="mt-4">
-            <StudioPreview date={date} />
+            {running && <span className="text-xs text-muted">About six minutes.</span>}
           </div>
 
-          {/* ── Output ─────────────────────────────────────────────── */}
-          {done && (
-            <div className="mt-4 grid gap-4 sm:grid-cols-2">
-              {(["1", "2"] as const).map((p) => (
-                <Part
-                  key={p}
-                  date={date}
-                  part={p}
-                  file={status.data?.files.find((f) => f.name === `rasifal-${date}-part${p}.mp4`)}
-                  poster={status.data?.files.find((f) => f.name === `rasifal-${date}-part${p}.jpg`)}
-                  publish={{
-                    youtube: status.data?.publish.youtube?.[`part${p}`],
-                    tiktok: status.data?.publish.tiktok?.[`part${p}`],
-                  }}
-                />
+          {status.data?.log && (
+            <pre className="mt-4 max-h-56 overflow-auto rounded-md border border-line-strong bg-cream p-3 text-xs leading-relaxed whitespace-pre-wrap text-muted">
+              {status.data.log}
+            </pre>
+          )}
+        </section>
+
+        {/* ── Preview ────────────────────────────────────────────── */}
+        <div className="mt-4">
+          <StudioPreview date={date} />
+        </div>
+
+        {/* ── Output ─────────────────────────────────────────────── */}
+        {done && (
+          <div className="mt-4 grid gap-4 sm:grid-cols-2">
+            {(["1", "2"] as const).map((p) => (
+              <Part
+                key={p}
+                date={date}
+                part={p}
+                file={status.data?.files.find((f) => f.name === `rasifal-${date}-part${p}.mp4`)}
+                poster={status.data?.files.find((f) => f.name === `rasifal-${date}-part${p}.jpg`)}
+                publish={{
+                  youtube: status.data?.publish.youtube?.[`part${p}`],
+                  tiktok: status.data?.publish.tiktok?.[`part${p}`],
+                }}
+              />
+            ))}
+          </div>
+        )}
+
+        {/* ── Settings & channels ────────────────────────────────── */}
+        <div className="mt-8">
+          {config.data ? (
+            <StudioSettingsPanel
+              key={JSON.stringify(config.data.settings)}
+              config={config.data}
+              date={date}
+              publish={status.data?.publish ?? {}}
+              rendered={done}
+              busy={publish.isPending || Boolean(status.data?.publishing)}
+              onPublish={(channel, force) => runPublish({ channel, force })}
+            />
+          ) : (
+            <p className="text-xs text-muted">{config.error ? config.error.message : "Loading settings…"}</p>
+          )}
+        </div>
+
+        {/* ── History ────────────────────────────────────────────── */}
+        {(status.data?.days.length ?? 0) > 0 && (
+          <section className={`mt-8 ${card}`}>
+            <h2 className="font-display text-base font-semibold text-ink">Past days</h2>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {status.data!.days.map((d) => (
+                <button
+                  key={d}
+                  type="button"
+                  onClick={() => setDate(d)}
+                  aria-pressed={d === date}
+                  className={`min-h-11 cursor-pointer rounded-md border px-3 py-1.5 text-xs font-medium transition-colors ${
+                    d === date
+                      ? "border-accent bg-accent-wash text-accent-ink"
+                      : "border-line-strong text-muted hover:border-accent hover:text-ink hover:bg-surface"
+                  }`}
+                >
+                  {d}
+                </button>
               ))}
             </div>
-          )}
-
-          {/* ── Settings & channels ────────────────────────────────── */}
-          <div className="mt-8">
-            {config.data ? (
-              <StudioSettingsPanel
-                key={JSON.stringify(config.data.settings)}
-                config={config.data}
-                date={date}
-                publish={status.data?.publish ?? {}}
-                rendered={done}
-                busy={publish.isPending || Boolean(status.data?.publishing)}
-                onPublish={(channel, force) => runPublish({ channel, force })}
-              />
-            ) : (
-              <p className="text-xs text-muted">{config.error ? config.error.message : "Loading settings…"}</p>
-            )}
-          </div>
-
-          {/* ── History ────────────────────────────────────────────── */}
-          {(status.data?.days.length ?? 0) > 0 && (
-            <section className={`mt-8 ${card}`}>
-              <h2 className="font-display text-base font-semibold text-ink">Past days</h2>
-              <div className="mt-3 flex flex-wrap gap-2">
-                {status.data!.days.map((d) => (
-                  <button
-                    key={d}
-                    type="button"
-                    onClick={() => setDate(d)}
-                    aria-pressed={d === date}
-                    className={`min-h-11 cursor-pointer rounded-md border px-3 py-1.5 text-xs font-medium transition-colors ${
-                      d === date
-                        ? "border-accent bg-accent-wash text-accent-ink"
-                        : "border-line-strong text-muted hover:border-accent hover:text-ink hover:bg-surface"
-                    }`}
-                  >
-                    {d}
-                  </button>
-                ))}
-              </div>
-            </section>
-          )}
-        </main>
-      </AdminOnly>
-    </AppShell>
+          </section>
+        )}
+      </main>
+    </AdminOnly>
   );
 }

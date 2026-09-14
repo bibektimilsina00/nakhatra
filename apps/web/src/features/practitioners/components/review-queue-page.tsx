@@ -6,7 +6,6 @@ import { Check, ShieldQuestion, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cardClasses } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { AppShell } from "@/features/dashboard/components/app-shell";
 import { useReview, useReviewQueue } from "@/features/practitioners/hooks/use-practitioners";
 import type { ApplicationReview } from "@/features/practitioners/types";
 import { useLatinTracking, useTranslation } from "@/lib/i18n/language-context";
@@ -28,60 +27,58 @@ export function ReviewQueuePage() {
   const queue = useReviewQueue(state, true);
 
   return (
-    <AppShell>
-      <main className="mx-auto w-full max-w-[900px] px-5 pb-24 pt-10 sm:px-8">
-        <span className={`text-2xs text-accent-strong ${eyebrow}`}>Admin</span>
-        <h1 className="mt-3 text-2xl font-bold leading-tight text-ink">
-          {t.practReviewQueue}
-        </h1>
+    <main className="mx-auto w-full max-w-[900px] px-5 pb-24 pt-10 sm:px-8">
+      <span className={`text-2xs text-accent-strong ${eyebrow}`}>Admin</span>
+      <h1 className="mt-3 text-2xl font-bold leading-tight text-ink">
+        {t.practReviewQueue}
+      </h1>
 
-        <div className="mt-6 flex flex-wrap gap-2">
-          {STATES.map((value) => (
-            <button
-              key={value}
-              type="button"
-              onClick={() => setState(value)}
-              aria-pressed={state === value}
-              className={`flex min-h-11 items-center rounded-sm border px-2.5 text-xs transition-colors ${
-                state === value
-                  ? "border-accent bg-accent-tint text-accent-ink"
-                  : "border-line-strong text-muted hover:border-accent hover:text-ink"
-              }`}
-            >
-              {value.replace("_", " ")}
-            </button>
+      <div className="mt-6 flex flex-wrap gap-2">
+        {STATES.map((value) => (
+          <button
+            key={value}
+            type="button"
+            onClick={() => setState(value)}
+            aria-pressed={state === value}
+            className={`flex min-h-11 items-center rounded-sm border px-2.5 text-xs transition-colors ${
+              state === value
+                ? "border-accent bg-accent-tint text-accent-ink"
+                : "border-line-strong text-muted hover:border-accent hover:text-ink"
+            }`}
+          >
+            {value.replace("_", " ")}
+          </button>
+        ))}
+      </div>
+
+      {queue.isError ? (
+        <p className="mt-8 text-sm text-dim">
+          This account cannot review applications.
+        </p>
+      ) : queue.isPending ? (
+        <div className="mt-6 space-y-3">
+          {[0, 1].map((row) => (
+            <div
+              key={row}
+              className="h-[120px] animate-pulse rounded-lg border border-line-strong bg-surface"
+            />
           ))}
         </div>
-
-        {queue.isError ? (
-          <p className="mt-8 text-sm text-dim">
-            This account cannot review applications.
-          </p>
-        ) : queue.isPending ? (
-          <div className="mt-6 space-y-3">
-            {[0, 1].map((row) => (
-              <div
-                key={row}
-                className="h-[120px] animate-pulse rounded-lg border border-line-strong bg-surface"
-              />
-            ))}
-          </div>
-        ) : queue.data && queue.data.length > 0 ? (
-          <ul className="mt-6 space-y-3">
-            {queue.data.map((application) => (
-              <ApplicationRow key={application.id} application={application} />
-            ))}
-          </ul>
-        ) : (
-          <div className="mt-6 rounded-lg border border-dashed border-line-strong px-6 py-12 text-center">
-            <span className="mx-auto grid size-11 place-items-center rounded-full border border-line-strong text-accent-strong">
-              <ShieldQuestion className="size-5" />
-            </span>
-            <p className="mt-3 text-sm text-muted">Nothing in this queue.</p>
-          </div>
-        )}
-      </main>
-    </AppShell>
+      ) : queue.data && queue.data.length > 0 ? (
+        <ul className="mt-6 space-y-3">
+          {queue.data.map((application) => (
+            <ApplicationRow key={application.id} application={application} />
+          ))}
+        </ul>
+      ) : (
+        <div className="mt-6 rounded-lg border border-dashed border-line-strong px-6 py-12 text-center">
+          <span className="mx-auto grid size-11 place-items-center rounded-full border border-line-strong text-accent-strong">
+            <ShieldQuestion className="size-5" />
+          </span>
+          <p className="mt-3 text-sm text-muted">Nothing in this queue.</p>
+        </div>
+      )}
+    </main>
   );
 }
 
