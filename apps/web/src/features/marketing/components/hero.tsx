@@ -37,7 +37,6 @@ export function Hero() {
     // the rest of the page keeps following the real light/dark toggle.
     <section
       id="top"
-      data-theme="dark"
       className="grain relative min-h-screen overflow-hidden bg-cream"
     >
       <HeroSky />

@@ -129,6 +129,7 @@ export function BirthSky3D({
   planetLabels = true,
   hint = true,
   onSelectNakshatra,
+  transparentBg = false,
 }: {
   chart: Chart;
   selected: string | null;
@@ -162,6 +163,7 @@ export function BirthSky3D({
   /** A yogatara was tapped (null: the selection was dismissed). Stars are
    *  pickable only while the nakshatra layer is shown. */
   onSelectNakshatra?: (name: string | null) => void;
+  transparentBg?: boolean;
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const chipRef = useRef<HTMLDivElement>(null);
@@ -217,8 +219,10 @@ export function BirthSky3D({
     const D = T;
 
     const scene = new THREE.Scene();
-    scene.background = new THREE.CubeTextureLoader().setPath(IMG)
-      .load(["3.jpg", "1.jpg", "2.jpg", "2.jpg", "4.jpg", "2.jpg"]);
+    if (!transparentBg) {
+      scene.background = new THREE.CubeTextureLoader().setPath(IMG)
+        .load(["3.jpg", "1.jpg", "2.jpg", "2.jpg", "4.jpg", "2.jpg"]);
+    }
 
     const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 2000);
 

@@ -68,6 +68,7 @@ export function HeroSky() {
       planetLabels={false}
       hint={false}
       avoidSelector="[data-sky-avoid]"
+      transparentBg
       className="absolute inset-0 h-full w-full overflow-hidden"
     />
   );
