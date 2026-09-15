@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -168,13 +169,110 @@ export function ContentsSection() {
 /* -------------------------------------------------- 4. the reading itself */
 
 export function ReadingSection() {
-  const reading = demoReading as {
-    title: string;
-    subtitle: string;
-    summary: string;
-    content: string[];
-    reasoning: { placement: string; explanation: string }[];
-  };
+  const [activeIdx, setActiveIdx] = useState(0);
+
+  const sections = [
+    {
+      title: "Personality & Intellect",
+      subtitle: "Cancer Ascendant with Lagna lord Moon in 1st house",
+      summary: "Cancer rising places your Lagna lord Moon in its own sign in the 1st house, anchoring your worldview in strong instinctual discernment and deep attachment to family foundations.",
+      content: [
+        "Cancer rising at 15.93° places your Lagna lord Moon in its own sign in the 1st house. This anchors your worldview in strong instinctual discernment and deep attachment to family foundations. Under Ashlesha Nakshatra (Pada 3), your intellect is sharp, observant, and cautious.",
+        "You evaluate situations thoroughly before revealing your intentions. The combination of Cancer Lagna and Moon gives a deeply empathetic nature balanced by strong self-protective boundaries."
+      ],
+      reasoning: [
+        { placement: "Cancer Ascendant (15.93°)" },
+        { placement: "Lagna Lord Moon in 1st House" },
+        { placement: "Ashlesha Nakshatra (Pada 3)" }
+      ]
+    },
+    {
+      title: "Strengths & Growth Areas",
+      subtitle: "Tenacious observational focus and crisis resilience",
+      summary: "Lagna lord Moon in the first house grants exceptional psychological endurance and instinct under pressure, while Ketu in the sixth requires direct conflict resolution.",
+      content: [
+        "Lagna lord Moon in the first house grants exceptional psychological endurance and instinct under pressure. However, with Ketu positioned in the sixth house of disputes (Sagittarius), you tend to internalize professional disagreements and re-analyze past friction long after matters resolve.",
+        "Growth requires addressing conflicts directly rather than ruminating."
+      ],
+      reasoning: [
+        { placement: "Moon in 1st House (Cancer)" },
+        { placement: "Ketu in 6th House (Sagittarius)" },
+        { placement: "6th Lord Jupiter in 9th" }
+      ]
+    },
+    {
+      title: "Career & Financial Outlook",
+      subtitle: "Tenth house in Aries with Saturn retrograde",
+      summary: "Your tenth house of profession is Aries, ruled by Mars, with Saturn placed there retrograde in debilitation, demanding sustained effort and self-reliance for structural authority.",
+      content: [
+        "Your tenth house of profession is Aries, ruled by Mars, with Saturn placed there retrograde in debilitation. In Vedic astrology, Saturn in the tenth demands sustained effort and self-reliance rather than quick advancement.",
+        "Responsibilities feel heavy early in career, but establish durable structural authority as professional maturity sets in."
+      ],
+      reasoning: [
+        { placement: "10th House in Aries (Mars Lord)" },
+        { placement: "Saturn ℞ in 10th House" },
+        { placement: "Mercury Mahadasha" }
+      ]
+    },
+    {
+      title: "Love & Marriage",
+      subtitle: "Seventh house in Capricorn with Sun and Mercury",
+      summary: "Your seventh house falls in Capricorn, ruled by Saturn, indicating long-term relationships are approached with sobriety, practical commitment, and mutual autonomy.",
+      content: [
+        "Your seventh house falls in Capricorn, ruled by Saturn, indicating that long-term relationships are approached with sobriety and practical commitment.",
+        "Sun and Mercury placed together in the seventh indicate an intellectually capable, outspoken partner with strong administrative judgment. Marital harmony thrives on clear contractual boundaries."
+      ],
+      reasoning: [
+        { placement: "7th House in Capricorn (Saturn Lord)" },
+        { placement: "Sun & Mercury in 7th House" },
+        { placement: "Venus in 12th House" }
+      ]
+    },
+    {
+      title: "Foreign Travel & Spirituality",
+      subtitle: "Twelfth house cluster in Gemini with Venus, Mars & Rahu",
+      summary: "With Venus, Mars, and Rahu situated together in Gemini in your twelfth house, relocation far from your birthplace brings major life milestones.",
+      content: [
+        "With Venus, Mars, and Rahu situated together in Gemini in your twelfth house of distant lands and expenditures, relocation far from your birthplace brings major life milestones.",
+        "The Mars-Rahu conjunction here demands intentional budgeting against impulsive outflow. Spiritually, solitary contemplation provides deep restoration."
+      ],
+      reasoning: [
+        { placement: "12th House in Gemini" },
+        { placement: "Mars & Rahu Conjunction in 12th" },
+        { placement: "Venus in 12th House" }
+      ]
+    },
+    {
+      title: "Current Dasha & Periods",
+      subtitle: "Mercury Mahadasha with Ketu Antardasha",
+      summary: "Under Vimshottari dasha, Mercury governs intellect, communications, and trade, while Ketu Antardasha creates an intentional pause in external momentum.",
+      content: [
+        "Under Vimshottari dasha, Mercury governs intellect, communications, and trade. Moving through a Ketu Antardasha creates an intentional pause in external momentum.",
+        "You may experience detachment from routine obligations or question long-held goals. This sub-period favors auditing past commitments before starting new ventures."
+      ],
+      reasoning: [
+        { placement: "Mercury Mahadasha (17-year cycle)" },
+        { placement: "Ketu Antardasha (sub-period)" },
+        { placement: "Calculated from Moon in Ashlesha" }
+      ]
+    },
+    {
+      title: "Remedial Measures",
+      subtitle: "Classical Vedic remedies for Cancer Lagna and 12th House Mars-Rahu",
+      summary: "Classical Vedic remedies balancing Cancer Lagna and stabilizing twelfth-house Mars-Rahu energy through daily rituals and charity.",
+      content: [
+        "To ground the Lagna lord Moon, practice morning water offerings (Surya Arghya) and maintain consistent sleep routines.",
+        "To pacify the Mars-Rahu conjunction in the twelfth house, perform focused breathing meditation and donate red lentils or warm clothing on Tuesdays. Natural silver assists in steadying emotional reactivity."
+      ],
+      reasoning: [
+        { placement: "Lagna Lord: Moon" },
+        { placement: "Mars-Rahu in 12th House" },
+        { placement: "Vedic Upaya (Charity & Meditation)" }
+      ]
+    }
+  ];
+
+  const current = sections[activeIdx];
 
   return (
     <section className="border-t border-line py-20" id="reading">
@@ -187,64 +285,91 @@ export function ReadingSection() {
 
         <div className="grid items-start gap-8 lg:grid-cols-5">
           <div className="space-y-3 lg:col-span-2">
-            {[
-              "Personality & Intellect",
-              "Strengths & Growth Areas",
-              "Career & Financial Outlook",
-              "Love & Marriage",
-              "Foreign Travel & Spirituality",
-              "Current Dasha & Periods",
-              "Remedial Measures",
-            ].map((s, i) => (
-              <div
-                key={s}
-                className={`flex items-center gap-3 rounded-md border px-4 py-3 text-sm ${
-                  i === 0
-                    ? "border-line-strong bg-surface text-ink font-medium"
-                    : "border-line text-muted"
-                }`}
-              >
-                <span className="font-mono text-2xs text-dim">
-                  {String(i + 1).padStart(2, "0")}
-                </span>
-                {s}
-              </div>
-            ))}
+            {sections.map((s, idx) => {
+              const isActive = idx === activeIdx;
+              return (
+                <button
+                  key={s.title}
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setActiveIdx(idx);
+                  }}
+                  className={`flex w-full items-center gap-3 rounded-md border px-4 py-3 text-left text-sm transition-all cursor-pointer ${
+                    isActive
+                      ? "border-accent-strong bg-surface text-ink font-semibold shadow-sm"
+                      : "border-line text-muted hover:border-line-strong hover:bg-surface/50 hover:text-ink"
+                  }`}
+                >
+                  <span className={`font-mono text-2xs ${isActive ? "text-accent-ink font-bold" : "text-dim"}`}>
+                    {String(idx + 1).padStart(2, "0")}
+                  </span>
+                  <span className="flex-1">{s.title}</span>
+                  {isActive && <span className="text-accent-ink text-xs font-bold">→</span>}
+                </button>
+              );
+            })}
           </div>
 
-          {/* An actual generated section, not placeholder copy. */}
-          <article className="space-y-4 rounded-lg border border-line-strong bg-surface p-7 lg:col-span-3">
+          <article key={activeIdx} className="space-y-4 rounded-lg border border-line-strong bg-surface p-7 lg:col-span-3 transition-all animate-in fade-in-50 duration-150">
             <div>
-              <h3 className="font-display text-lg font-bold text-ink">
-                {reading.title}
+              <div className="mb-1 font-mono text-2xs font-semibold text-dim uppercase">Section {String(activeIdx + 1).padStart(2, "0")} of 07</div>
+              <h3 className="font-display text-xl font-bold text-ink">
+                {current.title}
               </h3>
-              <p className="mt-0.5 text-xs text-muted">{reading.subtitle}</p>
+              <p className="mt-0.5 text-xs text-muted">{current.subtitle}</p>
             </div>
 
-            <p className="rounded-md border border-line-strong bg-accent-wash p-3 text-xs font-medium text-accent-ink">
-              {reading.summary}
+            <p className="rounded-md border border-line-strong bg-accent-wash p-3.5 text-xs font-medium text-accent-ink">
+              {current.summary}
             </p>
 
-            {reading.content.slice(0, 2).map((para, i) => (
+            {current.content.map((para, i) => (
               <p key={i} className="text-sm leading-relaxed text-ink">
                 {para}
               </p>
             ))}
 
             <div className="border-t border-line pt-4">
-              <p className="mb-2 text-2xs font-bold uppercase tracking-wider text-accent-ink">
-                Based on
+              <p className="mb-2.5 text-2xs font-bold uppercase tracking-wider text-accent-ink">
+                Drawn From
               </p>
               <div className="flex flex-wrap gap-2">
-                {reading.reasoning.map((r) => (
+                {current.reasoning.map((r) => (
                   <span
                     key={r.placement}
-                    className="rounded-sm border border-line-strong bg-surface px-2.5 py-1 text-xs text-ink"
+                    className="rounded-sm border border-line-strong bg-cream px-2.5 py-1 text-xs text-ink"
                   >
                     {r.placement}
                   </span>
                 ))}
               </div>
+            </div>
+
+            <div className="flex items-center justify-between border-t border-line pt-4 mt-6">
+              <button
+                type="button"
+                disabled={activeIdx === 0}
+                onClick={(e) => {
+                  e.preventDefault();
+                  setActiveIdx((prev: number) => Math.max(0, prev - 1));
+                }}
+                className="text-xs font-medium text-muted hover:text-ink disabled:opacity-30 cursor-pointer"
+              >
+                ← Previous
+              </button>
+              <span className="font-mono text-2xs text-dim">{activeIdx + 1} / {sections.length}</span>
+              <button
+                type="button"
+                disabled={activeIdx === sections.length - 1}
+                onClick={(e) => {
+                  e.preventDefault();
+                  setActiveIdx((prev: number) => Math.min(sections.length - 1, prev + 1));
+                }}
+                className="text-xs font-medium text-muted hover:text-ink disabled:opacity-30 cursor-pointer"
+              >
+                Next →
+              </button>
             </div>
           </article>
         </div>

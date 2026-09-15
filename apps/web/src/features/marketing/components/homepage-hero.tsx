@@ -22,8 +22,8 @@ import {
   FaqSection,
   HowItWorksSection,
   MilanSection,
-  ReadingSection,
 } from "@/features/marketing/components/home-sections";
+import { ReadingSection } from "@/features/marketing/components/reading-section";
 import { MainNavbar } from "@/components/layout/main-navbar";
 import { MainFooter } from "@/components/layout/main-footer";
 import { useTranslation } from "@/lib/i18n/language-context";
