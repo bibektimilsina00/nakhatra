@@ -20,10 +20,10 @@ install: install-api install-web  ## install all dependencies for api and web
 migrate:  ## run database migrations
 	cd apps/api && uv run alembic upgrade head
 
-serve-api:  ## run the backend fastapi server (port 8000)
+api:  ## run the backend fastapi server (port 8000)
 	cd apps/api && uv run uvicorn app.main:app --reload --port 8000
 
-serve-web:  ## run the frontend next.js server (port 3000)
+ui:  ## run the frontend next.js server (port 3000)
 	cd apps/web && npm run dev
 
 dev: db-up  ## start database and run both api & web concurrently
