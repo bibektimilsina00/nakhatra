@@ -42,7 +42,10 @@ export function LanguageMenu({
     <div ref={box} className={`relative ${className}`}>
       <button
         type="button"
-        onClick={() => setOpen((v) => !v)}
+        onClick={(e) => {
+          e.stopPropagation();
+          setOpen((v) => !v);
+        }}
         aria-expanded={open}
         aria-haspopup="true"
         aria-label={LANGUAGES.find((l) => l.code === language)?.label ?? "Language"}
@@ -82,7 +85,8 @@ export function LanguageMenu({
                 key={l.code}
                 type="button"
                 aria-pressed={l.code === language}
-                onClick={() => {
+                onClick={(e) => {
+                  e.stopPropagation();
                   setLanguage(l.code);
                   setOpen(false);
                 }}

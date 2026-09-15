@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Poppins } from "next/font/google";
+import { Inter, Poppins, Mukta, Noto_Sans_Devanagari } from "next/font/google";
 import Script from "next/script";
 
 import { SessionSync } from "@/features/auth/components/session-sync";
@@ -12,7 +12,7 @@ import "./globals.css";
 
 const inter = Inter({
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
+  weight: ["400", "500", "600", "700"],
   variable: "--font-inter",
   display: "swap",
 });
@@ -21,6 +21,20 @@ const poppins = Poppins({
   subsets: ["latin"],
   weight: ["500", "600", "700"],
   variable: "--font-poppins",
+  display: "swap",
+});
+
+const mukta = Mukta({
+  subsets: ["devanagari", "latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-mukta",
+  display: "swap",
+});
+
+const notoDevanagari = Noto_Sans_Devanagari({
+  subsets: ["devanagari", "latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-noto-devanagari",
   display: "swap",
 });
 
@@ -120,7 +134,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${inter.variable} ${poppins.variable}`}
+      className={`${inter.variable} ${poppins.variable} ${mukta.variable} ${notoDevanagari.variable}`}
     >
       <head>
         {/* Before paint, so the page never flashes the wrong theme. */}

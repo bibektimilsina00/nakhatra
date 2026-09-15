@@ -20,7 +20,10 @@ function LangStrip({ className = "" }: { className?: string }) {
           {i > 0 && <span className="mx-1 text-dim" aria-hidden> · </span>}
           <button
             type="button"
-            onClick={() => setLanguage(l.code)}
+            onClick={(e) => {
+              e.stopPropagation();
+              setLanguage(l.code);
+            }}
             aria-pressed={language === l.code}
             className={`min-h-11 py-2 transition-colors hover:text-ink ${language === l.code ? "text-accent-ink" : "text-dim"}`}
           >
@@ -92,8 +95,11 @@ export function SiteHeader() {
     });
 
     const esc = (e: KeyboardEvent) => e.key === "Escape" && closeAll(null);
-    const outside = (e: MouseEvent) =>
-      !(e.target as HTMLElement).closest(".navmenu") && closeAll(null);
+    const outside = (e: MouseEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (target?.closest(".navmenu")) return;
+      closeAll(null);
+    };
     addEventListener("keydown", esc);
     addEventListener("click", outside);
 
