@@ -127,12 +127,12 @@ export function BirthDetailsForm({ onSubmit, pending, serverFieldErrors, chrome 
       onSubmit={handleSubmit}
       className={
         chrome
-          ? "mx-auto w-full max-w-lg rounded-xl border border-line-strong bg-surface p-6 sm:p-7"
+          ? "mx-auto w-full max-w-lg rounded-xl border border-line-strong/80 bg-surface/95 p-6 shadow-raised backdrop-blur-sm sm:p-7"
           : "w-full"
       }
     >
       <div className="mb-5">
-        <h2 className="font-display text-xl font-bold text-ink">{t.birthDetails}</h2>
+        <h2 className="font-display text-2xl font-bold tracking-tight text-ink">{t.birthDetails}</h2>
         <p className="mt-1 text-xs leading-relaxed text-muted">
           {t.birthTimeNote}
         </p>
@@ -197,7 +197,7 @@ export function BirthDetailsForm({ onSubmit, pending, serverFieldErrors, chrome 
           />
         </Field>
 
-        <Button type="submit" disabled={pending} className="mt-1 w-full">
+        <Button type="submit" disabled={pending} className="mt-2 w-full text-sm font-semibold">
           <span>{pending ? t.calculating : t.calculateKundali}</span>
           {!pending && <span className="text-base">→</span>}
         </Button>
@@ -219,7 +219,7 @@ function Field({
 }) {
   return (
     <div>
-      <span className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-muted">
+      <span className="mb-1.5 block font-mono text-2xs font-bold uppercase tracking-widest text-ink">
         {label} {required && <span className="text-accent-strong">*</span>}
       </span>
       {children}

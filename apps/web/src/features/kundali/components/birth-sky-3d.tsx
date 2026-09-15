@@ -725,7 +725,7 @@ export function BirthSky3D({
 
     const uiTarget = (e: Event) =>
       globalInteract &&
-      !!(e.target as HTMLElement | null)?.closest?.("a, button, input, textarea, select, [role=button]");
+      !!(e.target as HTMLElement | null)?.closest?.("a, button, input, textarea, select, [role=button], header, nav, #hdr, [data-sky-avoid]");
     const interactTarget: Window | HTMLElement = globalInteract ? window : canvas;
 
     /* ── drag-orbit camera around a movable focus ─────────────────────

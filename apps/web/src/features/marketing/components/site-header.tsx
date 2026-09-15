@@ -200,9 +200,8 @@ export function SiteHeader() {
             <Link href="/patro" className="flex min-h-11 items-center rounded-md px-3 py-2 text-sm text-muted transition-colors hover:text-ink">{nav.patro}</Link>
           </nav>
           </div>
-
           <div className="flex items-center gap-2.5 text-sm">
-            <div className="hidden items-center gap-1.5 xl:flex">
+            <div className="flex items-center gap-1.5">
               <LanguageMenu />
               <ThemeToggle />
             </div>

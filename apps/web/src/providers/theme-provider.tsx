@@ -29,9 +29,6 @@ function snapshot(): Theme {
 const serverSnapshot = (): Theme => "light";
 
 export function getRouteDefaultTheme(pathname: string): Theme {
-  if (pathname === "/" || pathname.startsWith("/landing") || pathname.startsWith("/marketing")) {
-    return "dark";
-  }
   return "light";
 }
 
@@ -85,9 +82,7 @@ export const THEME_INIT_SCRIPT = `(function(){
     if (hasOverride && (stored === "dark" || stored === "light")) {
       document.documentElement.dataset.theme = stored;
     } else {
-      var path = window.location.pathname;
-      var defaultTheme = (path === "/" || path.indexOf("/landing") === 0 || path.indexOf("/marketing") === 0) ? "dark" : "light";
-      document.documentElement.dataset.theme = defaultTheme;
+      document.documentElement.dataset.theme = "light";
     }
   } catch(e) {
     document.documentElement.dataset.theme = "light";

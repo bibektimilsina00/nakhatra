@@ -69,22 +69,22 @@
    cream bg: ink 13.4, muted 5.5, dim 4.6 (the floor — nothing lighter). */
 :root, [data-theme="light"] {
   color-scheme: light;
-  --t-cream: #ede3d3;
-  --t-surface: #f7f0e3;
-  --t-line: #ddccb0;
-  --t-line-strong: #c9b48f;
+  --t-cream: #f4efe6;
+  --t-surface: #faf7f2;
+  --t-line: #dfd5c6;
+  --t-line-strong: #c2b4a0;
 
-  --t-ink: #2b1710;
-  --t-muted: #6b5642;
-  --t-dim: #79604a;
+  --t-ink: #1c1512;
+  --t-muted: #4e3f35;
+  --t-dim: #5c4b3e;
 
-  --t-accent-strong: #a32d22; /* sindoor red, 7.10:1 with white — the primary action */
-  --t-accent-ink: #8a2419;    /* sindoor used as text/links, 7.04:1 on cream */
+  --t-accent-strong: #a32d22; /* sindoor red */
+  --t-accent-ink: #8a2419;    /* sindoor used as text/links */
   --t-accent-wash: #f8ece6;
   --t-accent-tint: #f0d5c9;
   --t-ring: #8a2419;
 
-  --t-danger: #7a1f1f;        /* a cooler maroon than sindoor, so "destructive" never reads as the same red as the primary action */
+  --t-danger: #7a1f1f;
   --t-success-tint: #eaf4ea;
   --t-success-ink: #2c6b2f;
   --t-danger-tint: #f7e9e7;
@@ -102,30 +102,30 @@
    accent-ink 10.29, accent-strong (gold) 4.59 with white. */
 [data-theme="dark"] {
   color-scheme: dark;
-  --t-cream: #14131f;
-  --t-surface: #1d1c2c;
-  --t-line: #262536;
-  --t-line-strong: #33314a;
+  --t-cream: #0f1117;
+  --t-surface: #181b24;
+  --t-line: #242936;
+  --t-line-strong: #32384a;
 
-  --t-ink: #ede9f5;
-  --t-muted: #a6a3be;
-  --t-dim: #827fa0;
+  --t-ink: #f0f4f8;
+  --t-muted: #94a3b8;
+  --t-dim: #64748b;
 
-  --t-accent-strong: #a8660f; /* marigold-gold, 4.59:1 with white — the primary action (saffron-700's dark cousin, richer than the light theme's saffron-700 so it still clears AA on this cooler ground) */
-  --t-accent-ink: #f0b866;    /* marigold used as text/links, 10.29:1 on this ground */
-  --t-accent-wash: rgba(232, 147, 31, 0.12);
-  --t-accent-tint: rgba(232, 147, 31, 0.18);
-  --t-ring: #eca23c;
+  --t-accent-strong: #d97706; /* warm amber marigold */
+  --t-accent-ink: #fbbf24;    /* amber text */
+  --t-accent-wash: rgba(245, 158, 11, 0.12);
+  --t-accent-tint: rgba(245, 158, 11, 0.2);
+  --t-ring: #f59e0b;
 
-  --t-danger: #dc382d;
-  --t-success-tint: rgba(58, 134, 61, 0.18);
-  --t-success-ink: #6fcb77;
-  --t-danger-tint: rgba(220, 56, 45, 0.18);
-  --t-danger-ink: #f0776d;
+  --t-danger: #ef4444;
+  --t-success-tint: rgba(34, 197, 94, 0.18);
+  --t-success-ink: #4ade80;
+  --t-danger-tint: rgba(239, 68, 68, 0.18);
+  --t-danger-ink: #f87171;
 
-  --t-benefic: #5fb87f;
-  --t-malefic: #e0685c;
-  --t-retrograde: #eca23c;
+  --t-benefic: #10b981;
+  --t-malefic: #f43f5e;
+  --t-retrograde: #f59e0b;
 }
 
 /* @theme only maps --color-* to --t-* once, effectively at :root — so a
@@ -314,8 +314,7 @@ body {
    specifically) without doubling it. */
 input:focus-visible, textarea:focus-visible, select:focus-visible { outline:none }
 
-.reveal { opacity:0; transform:translateY(26px);
-  transition:opacity .8s cubic-bezier(.2,.7,.2,1), transform .8s cubic-bezier(.2,.7,.2,1) }
+.reveal { opacity:1; transform:none }
 .reveal.in { opacity:1; transform:none }
 .reveal[data-d="1"]{transition-delay:.08s} .reveal[data-d="2"]{transition-delay:.16s}
 .reveal[data-d="3"]{transition-delay:.24s} .reveal[data-d="4"]{transition-delay:.32s}
